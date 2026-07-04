@@ -33,6 +33,10 @@ export interface PluginTabPanelProps {
 
   languageCode: string;
   appVersion: string;
+
+  /** Host handler for the `selectFile` plugin API: make `relPath` (a bare file name in the
+   * owning folder) the selected file. Returns true if a file was selected. */
+  onSelectFile?: (relPath: string) => Promise<boolean> | boolean;
 }
 
 const HANDSHAKE_TIMEOUT_MS = 10000;
@@ -96,13 +100,21 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
       fileName: props.fileName,
       folderDirectory: props.folderDirectory,
       pluginId: props.pluginId,
-      permissions: props.permissions
+      permissions: props.permissions,
+      onSelectFile: props.onSelectFile
     });
 
-    // Watch for the handshake so we can clear the timeout / hide the overlay.
+    // Watch for evidence the plugin is alive so we can clear the timeout / hide the overlay.
+    // We accept EITHER `lameta:ready` OR any `lameta:request`: the client posts `ready` once
+    // (which the host may race past — see PluginHostBridge.attach) and, once it has received
+    // `init`, starts issuing requests. Treating a request as proof-of-life means a plugin that
+    // connected via the bridge's proactive init (its one-shot `ready` having been missed here
+    // too) still clears the overlay, while a genuinely broken plugin that never speaks still
+    // trips the timeout.
     const readyListener = (event: MessageEvent) => {
       if (event.source !== iframe.contentWindow) return;
-      if (event.data && event.data.type === "lameta:ready") {
+      const type = event.data && event.data.type;
+      if (type === "lameta:ready" || type === "lameta:request") {
         setStatus("ready");
       }
     };

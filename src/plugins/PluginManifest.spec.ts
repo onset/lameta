@@ -102,6 +102,32 @@ describe("parsePluginManifest", () => {
     expect(result.errors!.join(" ")).toMatch(/duplicate tab id/);
   });
 
+  it("accepts a tabProvider manifest with no static tabs (and normalizes handles.extensions)", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      tabProvider: { entry: "index.html", handles: { lametaTypes: ["Audio"], extensions: ["EAF"] } }
+    }`);
+    expect(result.errors).toBeUndefined();
+    expect(result.manifest!.tabProvider!.entry).toBe("index.html");
+    expect(result.manifest!.tabProvider!.handles!.extensions).toEqual(["eaf"]);
+    expect(result.manifest!.tabs).toEqual([]);
+  });
+
+  it("requires tabProvider.entry when tabProvider is present", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      tabProvider: { handles: {} }
+    }`);
+    expect(result.errors!.join(" ")).toMatch(/tabProvider\.entry/);
+  });
+
+  it("errors when neither tabProvider nor tabs is declared", () => {
+    const result = parsePluginManifest(
+      `{ id: "a.b", name: "n", version: "1", apiVersion: 1 }`
+    );
+    expect(result.errors!.join(" ")).toMatch(/tabProvider|tabs/);
+  });
+
   it("accepts a known permission and normalizes absent permissions to []", () => {
     const withPermission = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,

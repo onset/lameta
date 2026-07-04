@@ -3,51 +3,40 @@ import * as Path from "path";
 import {
   isAllowedCompanionPath,
   resolveCompanionPath,
-  getAllowedCompanionSubdirs,
-  getTopLevelCompanionNames
+  companionAnchor
 } from "./companions";
 
-const F = "ETR009_Source.mp3"; // selected file, non-wav so StandardAudio matters
-const S = "ETR009_Source_StandardAudio.wav";
+// The generic prefix rule: A = selected file's name up to its first "."; a relPath is allowed
+// iff it's relative, <=2 segments, and its first segment either equals the selected file's whole
+// name or starts with A immediately followed by "." or "_". No plugin-specific naming knowledge.
 
-describe("getTopLevelCompanionNames", () => {
-  it("returns F's family, S, and S's family", () => {
-    expect(getTopLevelCompanionNames(F)).toEqual([
-      "ETR009_Source.mp3.annotations.eaf",
-      "ETR009_Source.mp3.annotations.pfsx",
-      "ETR009_Source.mp3.annotations.psfx",
-      "ETR009_Source.mp3.oralAnnotations.wav",
-      "ETR009_Source_StandardAudio.wav",
-      "ETR009_Source_StandardAudio.wav.annotations.eaf",
-      "ETR009_Source_StandardAudio.wav.annotations.pfsx",
-      "ETR009_Source_StandardAudio.wav.annotations.psfx",
-      "ETR009_Source_StandardAudio.wav.oralAnnotations.wav"
-    ]);
-  });
-  it("handles a file with no extension", () => {
-    expect(getTopLevelCompanionNames("README")).toContain(
-      "README_StandardAudio.wav"
-    );
-  });
-});
+const F = "ETR009_Source.mp3"; // selected file; anchor A = "ETR009_Source"
+const S = "ETR009_Source_StandardAudio.wav"; // SayMore's PCM conversion (still within the stem)
 
-describe("getAllowedCompanionSubdirs", () => {
-  it("returns F_Annotations and S_Annotations", () => {
-    expect(getAllowedCompanionSubdirs(F)).toEqual([
-      `${F}_Annotations`,
-      `${S}_Annotations`
-    ]);
+describe("companionAnchor", () => {
+  it("truncates at the first dot", () => {
+    expect(companionAnchor("foo.wav")).toBe("foo");
+    expect(companionAnchor(F)).toBe("ETR009_Source");
+    // A dotted stem anchors at the first dot (accepted looseness).
+    expect(companionAnchor("session.1.wav")).toBe("session");
+  });
+  it("returns the whole name when there is no dot", () => {
+    expect(companionAnchor("README")).toBe("README");
+  });
+  it("an .eaf selection still anchors on the underlying media (first dot)", () => {
+    // The whole point: selecting <media>.annotations.eaf re-anchors on <media> with no special case.
+    expect(companionAnchor("longerSound.wav.annotations.eaf")).toBe("longerSound");
   });
 });
 
 describe("isAllowedCompanionPath", () => {
-  // --- each allowed top-level pattern ---
+  // --- the real SayMore family is all reachable under the generic rule ---
   it.each([
     `${F}.annotations.eaf`,
-    `${F}.annotations.pfsx`, // ELAN's real prefs extension
-    `${F}.annotations.psfx`, // SayMore's transposed kEafPreferencesFileExtension
+    `${F}.annotations.pfsx`, // ELAN's real prefs extension (regression example)
+    `${F}.annotations.psfx`, // SayMore's transposed spelling (regression example)
     `${F}.oralAnnotations.wav`,
-    S,
+    S, // "ETR009_Source_StandardAudio.wav" — starts with A + "_"
     `${S}.annotations.eaf`,
     `${S}.annotations.pfsx`,
     `${S}.annotations.psfx`,
@@ -56,25 +45,28 @@ describe("isAllowedCompanionPath", () => {
     expect(isAllowedCompanionPath(F, p)).toBe(true);
   });
 
-  it("rejects the old appended prefs form F.annotations.eaf.psfx", () => {
-    expect(isAllowedCompanionPath(F, `${F}.annotations.eaf.psfx`)).toBe(false);
-    expect(isAllowedCompanionPath(F, `${S}.annotations.eaf.psfx`)).toBe(false);
-  });
-
-  it("accepts .wav files one level inside F_Annotations and S_Annotations", () => {
-    expect(isAllowedCompanionPath(F, `${F}_Annotations/1.2_to_3.4_Careful.wav`)).toBe(
-      true
-    );
+  it("accepts files one level inside annotation dirs (F and S families)", () => {
+    expect(
+      isAllowedCompanionPath(F, `${F}_Annotations/1.2_to_3.4_Careful.wav`)
+    ).toBe(true);
     expect(isAllowedCompanionPath(F, `${S}_Annotations/seg_Translation.wav`)).toBe(
       true
     );
   });
 
-  it("accepts comma-decimal segment names (comma-locale machines) inside _Annotations", () => {
-    // e.g. "1,5_to_2,5_Careful.wav" — still <name>.wav, commas must not be rejected
+  it("accepts comma-decimal segment names inside annotation dirs (comma-locale machines)", () => {
     expect(
       isAllowedCompanionPath(F, `${F}_Annotations/1,5_to_2,5_Careful.wav`)
     ).toBe(true);
+  });
+
+  it("accepts NON-wav files inside annotation dirs (the .wav-only restriction is dropped)", () => {
+    expect(isAllowedCompanionPath(F, `${F}_Annotations/notes.txt`)).toBe(true);
+    expect(isAllowedCompanionPath(F, `${F}_Annotations/seg.TextGrid`)).toBe(true);
+  });
+
+  it("accepts the selected file itself (reachable through companions.*)", () => {
+    expect(isAllowedCompanionPath(F, F)).toBe(true);
   });
 
   it("accepts backslash separators as equivalent to forward slashes", () => {
@@ -90,14 +82,40 @@ describe("isAllowedCompanionPath", () => {
     ).toBe(true);
   });
 
-  // --- rejections ---
-  it("rejects non-wav files inside an _Annotations dir", () => {
-    expect(isAllowedCompanionPath(F, `${F}_Annotations/notes.txt`)).toBe(false);
-    expect(isAllowedCompanionPath(F, `${F}_Annotations/seg.wav.bak`)).toBe(false);
+  // --- an .eaf selection re-anchors on the media with no special case ---
+  it("scopes an .eaf selection to the underlying media", () => {
+    const EAF = "longerSound.wav.annotations.eaf"; // A = "longerSound"
+    expect(isAllowedCompanionPath(EAF, "longerSound.wav")).toBe(true); // media itself
+    expect(isAllowedCompanionPath(EAF, "longerSound.wav.annotations.eaf")).toBe(
+      true
+    ); // the eaf
+    expect(
+      isAllowedCompanionPath(EAF, "longerSound.wav_Annotations/1.25_to_2.121_Careful.wav")
+    ).toBe(true); // segment recordings
+    expect(isAllowedCompanionPath(EAF, "longerSound_StandardAudio.wav")).toBe(
+      true
+    );
   });
 
-  it("rejects a bare '.wav' filename inside an _Annotations dir", () => {
-    expect(isAllowedCompanionPath(F, `${F}_Annotations/.wav`)).toBe(false);
+  // --- rejections ---
+  it("rejects a first segment that does not anchor on the stem (boundary char must be . or _)", () => {
+    // "ETR009_SourceX..." shares a prefix but the next char is not "." or "_"
+    expect(isAllowedCompanionPath(F, "ETR009_SourceX.annotations.eaf")).toBe(
+      false
+    );
+    // classic foo/foobar case
+    expect(isAllowedCompanionPath("foo.wav", "foobar.wav")).toBe(false);
+  });
+
+  it("rejects companions of a DIFFERENT file", () => {
+    expect(isAllowedCompanionPath(F, "Other.mp3.annotations.eaf")).toBe(false);
+    expect(isAllowedCompanionPath(F, "Other.mp3_Annotations/seg.wav")).toBe(false);
+    expect(isAllowedCompanionPath(F, "random.eaf")).toBe(false);
+  });
+
+  it("rejects a bare-dot or empty second segment", () => {
+    expect(isAllowedCompanionPath(F, `${F}_Annotations/`)).toBe(false); // trailing slash
+    expect(isAllowedCompanionPath(F, `${F}_Annotations/.`)).toBe(false);
   });
 
   it("rejects nesting deeper than one level", () => {
@@ -119,19 +137,7 @@ describe("isAllowedCompanionPath", () => {
 
   it("rejects empty and non-matching paths", () => {
     expect(isAllowedCompanionPath(F, "")).toBe(false);
-    expect(isAllowedCompanionPath(F, F)).toBe(false); // the file itself
-    expect(isAllowedCompanionPath(F, "random.eaf")).toBe(false);
-    expect(isAllowedCompanionPath(F, `${F}_Annotations`)).toBe(false); // the dir itself
-  });
-
-  it("rejects companions derived from a DIFFERENT file name", () => {
-    expect(isAllowedCompanionPath(F, "Other.mp3.annotations.eaf")).toBe(false);
-    expect(isAllowedCompanionPath(F, "Other.mp3_Annotations/seg.wav")).toBe(
-      false
-    );
-    expect(
-      isAllowedCompanionPath(F, "Other_StandardAudio.wav.annotations.eaf")
-    ).toBe(false);
+    expect(isAllowedCompanionPath(F, "evil.txt")).toBe(false);
   });
 });
 

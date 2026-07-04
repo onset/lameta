@@ -35,6 +35,19 @@ export interface PluginTabManifest {
   defaultPriority?: number;
 }
 
+/**
+ * A tab PROVIDER: a hidden page lameta loads once and queries (on every selection change) for
+ * which tabs to show. This is the current model; it supersedes a static `tabs` list by letting
+ * the plugin decide tabs + labels live per file. See docs/plugin-authoring.md "Tab provider".
+ */
+export interface PluginTabProviderManifest {
+  /** HTML file (relative to the plugin folder) lameta loads hidden to answer tab queries. */
+  entry: string;
+  /** OPTIONAL coarse capability filter — only query this provider for files matching ANY
+   * criterion. Absent = queried for every selection. */
+  handles?: PluginTabMatch;
+}
+
 export interface PluginManifest {
   id: string;
   name: string;
@@ -46,6 +59,10 @@ export interface PluginManifest {
   /** Capabilities the plugin asks the host for. Each must be one of KNOWN_PERMISSIONS;
    * absent in the manifest text normalizes to []. */
   permissions: string[];
+  /** The tab provider (current model). A manifest must declare `tabProvider` OR a non-empty
+   * `tabs` list (legacy static tabs). */
+  tabProvider?: PluginTabProviderManifest;
+  /** Legacy static tab list. Prefer `tabProvider`. */
   tabs: PluginTabManifest[];
 }
 
@@ -100,6 +117,44 @@ function validateStringArray(
     if (typeof v !== "string")
       errors.push(`${path}[${i}] must be a string`);
   });
+}
+
+/** Validate a match/handles object (both share the {lametaTypes,extensions,mimePatterns} shape)
+ * and return the normalized form (extensions lowercased, dot stripped). */
+function validateMatch(
+  match: any,
+  path: string,
+  errors: string[]
+): PluginTabMatch | undefined {
+  if (match === undefined) return undefined;
+  if (!isPlainObject(match)) {
+    errors.push(`${path} must be an object`);
+    return undefined;
+  }
+  validateStringArray(match.lametaTypes, `${path}.lametaTypes`, errors);
+  validateStringArray(match.extensions, `${path}.extensions`, errors);
+  validateStringArray(match.mimePatterns, `${path}.mimePatterns`, errors);
+  return {
+    lametaTypes: match.lametaTypes,
+    extensions: match.extensions
+      ? match.extensions.map((e: string) => e.toLowerCase().replace(/^\./, ""))
+      : undefined,
+    mimePatterns: match.mimePatterns
+  };
+}
+
+function validateTabProvider(
+  tp: any,
+  errors: string[]
+): PluginTabProviderManifest | undefined {
+  if (!isPlainObject(tp)) {
+    errors.push("tabProvider must be an object");
+    return undefined;
+  }
+  if (typeof tp.entry !== "string" || tp.entry.trim().length === 0)
+    errors.push("tabProvider.entry is required and must be a non-empty string");
+  const handles = validateMatch(tp.handles, "tabProvider.handles", errors);
+  return { entry: tp.entry, handles };
 }
 
 function validateTab(
@@ -223,22 +278,35 @@ export function parsePluginManifest(text: string): ParseManifestResult {
     }
   }
 
-  let tabs: PluginTabManifest[] = [];
-  if (!Array.isArray(raw.tabs) || raw.tabs.length === 0) {
-    errors.push("tabs is required and must be a non-empty array");
-  } else {
-    tabs = raw.tabs
-      .map((tab: any, i: number) => validateTab(tab, i, errors))
-      .filter(Boolean) as PluginTabManifest[];
+  // A manifest declares a tab PROVIDER (current model) OR a non-empty static `tabs` list (legacy).
+  const hasTabProvider = raw.tabProvider !== undefined;
+  const hasTabs = Array.isArray(raw.tabs) && raw.tabs.length > 0;
 
-    // tab ids must be unique within a plugin
-    const seen = new Set<string>();
-    for (const tab of tabs) {
-      if (seen.has(tab.id))
-        errors.push(`duplicate tab id "${tab.id}"`);
-      seen.add(tab.id);
+  let tabProvider: PluginTabProviderManifest | undefined;
+  if (hasTabProvider) tabProvider = validateTabProvider(raw.tabProvider, errors);
+
+  let tabs: PluginTabManifest[] = [];
+  if (raw.tabs !== undefined) {
+    if (!Array.isArray(raw.tabs)) {
+      errors.push("tabs must be an array");
+    } else {
+      tabs = raw.tabs
+        .map((tab: any, i: number) => validateTab(tab, i, errors))
+        .filter(Boolean) as PluginTabManifest[];
+
+      // tab ids must be unique within a plugin
+      const seen = new Set<string>();
+      for (const tab of tabs) {
+        if (seen.has(tab.id)) errors.push(`duplicate tab id "${tab.id}"`);
+        seen.add(tab.id);
+      }
     }
   }
+
+  if (!hasTabProvider && !hasTabs)
+    errors.push(
+      "a manifest must declare a `tabProvider` or a non-empty `tabs` array"
+    );
 
   if (errors.length > 0) return { errors };
 
@@ -252,6 +320,7 @@ export function parsePluginManifest(text: string): ParseManifestResult {
       author: raw.author,
       minLametaVersion: raw.minLametaVersion,
       permissions: Array.isArray(raw.permissions) ? raw.permissions : [],
+      tabProvider,
       tabs
     }
   };

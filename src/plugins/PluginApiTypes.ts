@@ -18,11 +18,8 @@ export type PluginFolderType =
   | "project"
   | "project documents";
 
-/**
- * The one-time context lameta hands a plugin at startup (the `lameta:init` message).
- * Everything here is a plain, serializable value (no functions, no live objects).
- */
-export interface PluginInitContext {
+/** Fields common to every `lameta:init` context, regardless of the iframe's role. */
+export interface PluginContextBase {
   /** The API major version lameta is speaking. Matches the plugin manifest's apiVersion. */
   apiVersion: number;
   plugin: {
@@ -32,6 +29,51 @@ export interface PluginInitContext {
      * them, e.g. ["companionFiles"]). Check this before calling permission-gated APIs. */
     grantedPermissions: string[];
   };
+  ui: {
+    /** lameta's current UI language code, e.g. "en", "es". */
+    languageCode: string;
+    /** lameta version string, for display / compatibility checks. */
+    appVersion: string;
+  };
+}
+
+/**
+ * The context for a persistent, hidden **tab-provider** iframe. lameta loads one of these per
+ * plugin (see the manifest `tabProvider` entry) and asks it, on EVERY selection change, which
+ * tabs to show for the selected file (`lameta:getTabs` → `lameta:tabs`). It carries no file —
+ * the file arrives with each query. Use `connectAsTabProvider()` in the client kit.
+ */
+export interface PluginTabProviderContext extends PluginContextBase {
+  role: "tabProvider";
+}
+
+/**
+ * A tab the provider claims for the currently selected file. Returning `[]` means "no tab for
+ * this file" (e.g. an audio file that already has its annotation companion). The provider is
+ * re-queried on every selection change and its answer is never cached, so it MAY differ across
+ * calls for the same file as that file's companions come and go.
+ */
+export interface TabDescriptor {
+  /** stable id lameta echoes back as `context.tab.id` when this tab's content iframe loads. */
+  id: string;
+  /** plain string, or a language-code→string map (host localizes; `en` is the fallback). */
+  label: string | Record<string, string>;
+  /** open this tab instead of the built-in viewer. */
+  claimDefault?: boolean;
+  /** tiebreak among default claimants (higher wins); then plugin id, then tab id. */
+  defaultPriority?: number;
+}
+
+/**
+ * The one-time context lameta hands a plugin's **content tab** iframe at startup (the
+ * `lameta:init` message). Everything here is a plain, serializable value (no functions, no live
+ * objects).
+ */
+export interface PluginInitContext extends PluginContextBase {
+  /** Discriminator; "tab" for a content tab iframe (the default/omitted case is also a tab). */
+  role?: "tab";
+  /** Which provider-supplied tab this iframe is rendering (echoes TabDescriptor.id). */
+  tab?: { id: string };
   file: {
     /** Absolute path on disk to the actual file (link files already resolved). */
     path: string;
@@ -51,12 +93,7 @@ export interface PluginInitContext {
     /** Absolute path to the folder that "owns" the file. Sidecars live under here. */
     directory: string;
   };
-  ui: {
-    /** lameta's current UI language code, e.g. "en", "es". */
-    languageCode: string;
-    /** lameta version string, for display / compatibility checks. */
-    appVersion: string;
-  };
+  // `ui` is inherited from PluginContextBase.
 }
 
 /**
@@ -118,6 +155,17 @@ export interface PluginHostApiV1 {
   /** List the sidecar names that currently exist for this file & plugin. */
   listSidecars(): Promise<string[]>;
 
+  /**
+   * Ask lameta to make another file in the SAME folder the selected file, re-driving the
+   * file-pane tabs (so a plugin can, e.g., create `<media>.annotations.eaf` via companions
+   * and then switch selection to it so its "Segments" tab shows). `relPath` is relative to
+   * `folder.directory`; the file must already exist on disk (write it first) and lie directly
+   * in that folder (no `..`, no absolute paths, no subdirectories). Resolves to true if a file
+   * was selected, false if it could not be found. Ungated (a plugin can only select a file the
+   * user could select by hand).
+   */
+  selectFile(relPath: string): Promise<boolean>;
+
   /** Companion-file access; requires the `companionFiles` manifest permission. */
   companions: PluginCompanionsApiV1;
 }
@@ -134,10 +182,39 @@ export interface PluginReadyMessage {
   type: "lameta:ready";
 }
 
-/** host -> plugin: the one-time init handshake carrying the context. */
+/** host -> plugin: the one-time init handshake carrying the context. The context is a
+ * PluginInitContext for a content-tab iframe, or a PluginTabProviderContext for the hidden
+ * tab-provider iframe. */
 export interface PluginInitMessage {
   type: "lameta:init";
-  context: PluginInitContext;
+  context: PluginInitContext | PluginTabProviderContext;
+}
+
+/** host -> tab-provider: "which tabs do you claim for this selected file?" Sent on EVERY
+ * selection change (never cached). While a query is outstanding, the provider's `companions.*`
+ * calls are scoped to `file` so it can decide live (e.g. `companions.exists(eaf)`). */
+export interface PluginGetTabsMessage {
+  type: "lameta:getTabs";
+  id: number;
+  file: {
+    name: string;
+    extension: string;
+    mimeType: string;
+    lametaType: string;
+    path: string;
+    uri: string;
+  };
+  folder: {
+    type: PluginFolderType;
+    directory: string;
+  };
+}
+
+/** tab-provider -> host: the tabs to show for the queried file (`[]` = none). */
+export interface PluginTabsMessage {
+  type: "lameta:tabs";
+  id: number;
+  tabs: TabDescriptor[];
 }
 
 /** plugin -> host: a request to invoke one of the PluginHostApiV1 methods. Nested API
@@ -158,5 +235,11 @@ export interface PluginResponseMessage {
   error?: string;
 }
 
-export type PluginToHostMessage = PluginReadyMessage | PluginRequestMessage;
-export type HostToPluginMessage = PluginInitMessage | PluginResponseMessage;
+export type PluginToHostMessage =
+  | PluginReadyMessage
+  | PluginRequestMessage
+  | PluginTabsMessage;
+export type HostToPluginMessage =
+  | PluginInitMessage
+  | PluginResponseMessage
+  | PluginGetTabsMessage;

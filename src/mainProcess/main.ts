@@ -23,6 +23,17 @@ if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
+// In dev, expose a CDP endpoint so tooling can drive/inspect the renderer.
+// Guarded to dev/non-packaged runs; never enabled in a shipped build.
+if (
+  !app.isPackaged &&
+  (is.dev ||
+    process.env.VITE_DEV_SERVER_URL ||
+    process.env.NODE_ENV === "development")
+) {
+  app.commandLine.appendSwitch("remote-debugging-port", "9222");
+}
+
 // In normal runs we enforce a single instance. For E2E we allow parallel instances
 // so tests can launch while a developer has `yarn dev` running. The E2E harness
 // sets process.env.E2E. We also optionally redirect userData to an isolated temp

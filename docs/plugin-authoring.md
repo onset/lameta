@@ -47,27 +47,59 @@ Distributed as a **`.lmplug`** file — this is just a zip with a different exte
   // "companionFiles" (see "Companion files" below); anything else is a validation error.
   permissions: ["companionFiles"],
 
-  tabs: [                       // one plugin may declare MULTIPLE tabs
-    {
-      id: "waveform",
-      // label may be a plain string, or a map of language code -> string (en is the fallback)
-      label: { en: "Waveform", fr: "Forme d'onde" },
-      entry: "index.html",      // loaded into the iframe
-      match: {                  // a tab matches a file if ANY criterion hits; all optional
-        lametaTypes: ["Audio"], // lameta's file-type strings (Audio, Video, Image, …)
-        extensions: ["wav", "mp3"], // lowercase, no dot
-        mimePatterns: ["audio/*"]   // exact ("image/png") or trailing wildcard ("audio/*")
-      },
-      claimDefault: true,       // open this tab instead of the built-in viewer
-      defaultPriority: 100      // tiebreak among default claimants; then plugin id, then tab id
+  // A plugin contributes tabs by declaring a TAB PROVIDER: a hidden page lameta loads once and
+  // asks, on every file selection, which tabs to show for that file (see "Tab provider" below).
+  tabProvider: {
+    entry: "index.html",        // the page lameta loads (hidden) to answer tab queries
+    handles: {                  // OPTIONAL coarse filter — only query me for these files;
+      lametaTypes: ["Audio"],   // omit `handles` entirely to be queried for every selection.
+      extensions: ["eaf"],      // lowercase, no dot
+      mimePatterns: ["audio/*"] // exact ("image/png") or trailing wildcard ("audio/*")
     }
-  ]
+  }
 }
 ```
 
-A tab with no `match` (or an empty one) never matches anything. Plugin tabs are inserted
-**after** the built-in viewer tab and **before** the Properties/Contributors/Notes tabs, in
-order of plugin id (alphabetical) then manifest order.
+Plugin tabs are inserted **after** the built-in viewer tab and **before** the
+Properties/Contributors/Notes tabs, ordered by plugin id (alphabetical) then the order the
+provider returns them.
+
+## Tab provider — lameta asks your plugin which tabs to show
+
+Instead of a static tab list, lameta **asks your plugin, on every selection change, which tabs it
+wants for the selected file** — and never caches the answer. This lets the *same* file yield
+different tabs over time: an audio file with no annotations can show a "Start Annotating" tab, and
+once your plugin creates the annotation companion (and `api.selectFile`s to it), the next query for
+that audio file can return `[]` (no tab).
+
+- lameta loads your `tabProvider.entry` in a **hidden, persistent iframe** (one per plugin). In it,
+  call `connectAsTabProvider(handler)`:
+
+  ```js
+  import { connectAsTabProvider } from "./lametaPluginClient.js";
+  await connectAsTabProvider(async ({ file, folder, api }) => {
+    if (file.lametaType === "Audio") {
+      const hasEaf = await api.companions.exists(file.name + ".annotations.eaf");
+      return hasEaf ? [] : [{ id: "start", label: "SayMore: Start Annotating" }];
+    }
+    if (file.extension === "eaf")
+      return [{ id: "segments", label: "Segments", claimDefault: true }];
+    return [];  // no tab for this file
+  });
+  ```
+
+- Your handler runs on **every** selection change and must **recompute live** — don't cache a
+  flag; check the current state (e.g. `api.companions.exists(...)`). While a query is in flight the
+  `api.companions.*` calls are **scoped to the file being queried**, so you can inspect its
+  companions directly.
+- Return an array of `{ id, label, claimDefault?, defaultPriority? }`. `label` is a plain string or
+  a language-code→string map (`en` fallback). Return `[]` for "no tab". `claimDefault: true` opens
+  that tab instead of the built-in viewer.
+- When the user opens one of your tabs, lameta creates the **content** iframe from the same
+  `entry` and passes the chosen tab's id as `context.tab.id` (see `connectToLameta` below) so your
+  SPA renders the right view.
+- If your provider fails to load, errors, or doesn't answer in time, lameta simply shows no tab for
+  your plugin for that file — it never blocks the UI.
 
 ## The API (v1)
 
@@ -106,6 +138,7 @@ api.readFileRange(offset, length): Promise<ArrayBuffer>  // a slice of the file 
 api.readSidecar(name?): Promise<string | null>    // name defaults to "annotations"
 api.writeSidecar(contents, name?): Promise<void>
 api.listSidecars(): Promise<string[]>
+api.selectFile(relPath): Promise<boolean>         // select another file in the same folder
 api.companions.…                                  // see "Companion files" below
 ```
 
@@ -119,40 +152,41 @@ api.companions.…                                  // see "Companion files" bel
 
 ## Companion files (`permissions: ["companionFiles"]`)
 
-Some plugins (notably SayMore-compatible annotation tools) must read and write SayMore's own
-files at SayMore's own paths, **beside the actual media file** — not in `plugin-data/`.
-Declare the `companionFiles` permission in your manifest to unlock `api.companions`. The
-`api.companions` object is always present on the client; without the permission every call
-rejects with an error.
+Some plugins (annotation tools, transcription editors, subtitle editors) must read and write
+sibling files that belong to the selected file, at those files' own paths, **beside the actual
+media file** — not in `plugin-data/`. Declare the `companionFiles` permission in your manifest to
+unlock `api.companions`. The `api.companions` object is always present on the client; without the
+permission every call rejects with an error.
 
-All paths are **relative to the selected file's own directory** (for `.link` files that is
-where the real media lives, which may be outside the project) and are validated by the host
-against an allowlist derived from the selected file's name `F` (with extension). With
-`S = <F without extension>_StandardAudio.wav` (SayMore's PCM conversion of non-WAV media),
-the allowed paths are exactly:
+All paths are **relative to the selected file's own directory** (for `.link` files that is where
+the real media lives, which may be outside the project) and are validated by the host against one
+generic **prefix rule** — lameta core knows nothing about any particular plugin's naming
+conventions. Let `A` be the selected file's name **truncated at its first `.`** (the whole name if
+it has no dot). A `relPath` is an allowed companion iff:
 
-| Allowed path                | Meaning                                             |
-| --------------------------- | --------------------------------------------------- |
-| `F.annotations.eaf`         | the ELAN annotation file                            |
-| `F.annotations.pfsx`        | ELAN prefs file (extension replaced on the eaf name) |
-| `F.annotations.psfx`        | same prefs file under SayMore's transposed spelling |
-| `F.oralAnnotations.wav`     | generated oral-annotations file                     |
-| `F_Annotations/<name>.wav`  | per-segment recordings; one level deep, `.wav` only |
-| `S`                         | the `_StandardAudio.wav` conversion itself          |
-| `S.annotations.eaf`         | …and the same family derived from S                 |
-| `S.annotations.pfsx`        |                                                     |
-| `S.annotations.psfx`        |                                                     |
-| `S.oralAnnotations.wav`     |                                                     |
-| `S_Annotations/<name>.wav`  |                                                     |
+1. it is relative — no absolute paths, no `..`, no empty segments (`\` and `/` are equivalent;
+   comparison is case-insensitive);
+2. it is at most **two segments** (one directory level deep);
+3. its **first segment** either equals the selected file's whole name, or starts with `A`
+   immediately followed by `.` or `_`;
+4. in the two-segment case the second segment is any non-empty file name.
 
-The prefs file appears under two extensions because ELAN writes `.pfsx` while SayMore's
-`kEafPreferencesFileExtension` constant is the transposed `.psfx`; both replace the eaf's
-extension (neither appends), so both spellings are allowed.
+So for a selected `foo.wav` (`A = "foo"`) the whole SayMore family is reachable with no special
+knowledge in the host — `foo.wav.annotations.eaf`, `foo.wav.annotations.pfsx`/`.psfx`,
+`foo.wav.oralAnnotations.wav`, `foo_StandardAudio.wav` and its family (starts with `foo_`),
+`foo.wav_Annotations/1,5_to_2,5_Careful.wav`, etc. And because the anchor stops at the first dot,
+selecting `foo.wav.annotations.eaf` still anchors on `foo`, so the media `foo.wav`, its
+`_Annotations/` recordings, and the whole family remain reachable — no special case. (Accepted
+looseness under this stability-boundary stance: a dotted stem like `session.1.wav` anchors at
+`session`, and the selected file itself is reachable through `companions.*`.)
 
-Validation is case-insensitive (these are Windows/mac filesystems) and accepts `\` or `/` as
-separators. Everything else is rejected: absolute paths, `..` anywhere, nesting deeper than
-one level, non-`.wav` files inside an `_Annotations/` folder, and companions derived from a
-different file's name.
+> The pfsx/psfx pair above is plugin lore, not a host rule: ELAN writes `.pfsx` while SayMore's
+> `kEafPreferencesFileExtension` is the transposed `.psfx`; both replace the eaf's extension. The
+> host allows both simply because both share the file's name-stem.
+
+Everything else is rejected: absolute paths, `..` anywhere, nesting deeper than one level, and any
+first segment that does not anchor on the selected file's stem (a shared prefix that is not
+followed by `.` or `_`, like `foobar.wav` for `foo.wav`, does not match).
 
 ```ts
 api.companions.list(subdir?): Promise<{name, size, mtimeMs}[]>
@@ -166,9 +200,11 @@ api.companions.delete(relPath): Promise<void>             // files only, never a
 api.companions.stat(relPath): Promise<{size, mtimeMs} | null>
 ```
 
-- **`list()`** with no argument stats each allowed top-level companion that exists and
-  returns those. With a `subdir` (which must be `F_Annotations` or `S_Annotations`) it lists
-  the `.wav` files directly inside that folder — an empty array if the folder doesn't exist.
+- **`list()`** with no argument reads the selected file's directory and returns the files whose
+  name passes the prefix rule (so it may include the selected file itself and any sibling in the
+  stem family — filter for what you care about). With a `subdir` (a single directory segment that
+  itself passes the rule, e.g. `foo.wav_Annotations`) it lists **all** files directly inside that
+  folder — an empty array if the folder doesn't exist.
 - **Writes are atomic**: the host writes to a temp file in the target's directory and then
   renames it over the target, so a crash never leaves a truncated companion. The parent
   folder is created as needed (your first segment write creates `F_Annotations/`).
@@ -177,6 +213,33 @@ api.companions.stat(relPath): Promise<{size, mtimeMs} | null>
 - **Detecting external edits** (e.g. the user saving the `.eaf` from ELAN while lameta is
   open): poll `companions.stat()` on the file — every ~2 s is plenty — and reload when
   `mtimeMs` changes. There is no watch/event API in this version.
+
+### When the selected file is itself a companion (e.g. the `.eaf`)
+
+Because the prefix rule anchors at the first dot, selecting `<media>.annotations.eaf` (for example
+after `api.selectFile` switches to a freshly created `.eaf`) anchors on `<media>` just like
+selecting the media would — so the media file, its `_Annotations/` recordings, and the rest of the
+family are all reachable, with no host special case. Note that `context.file.uri` then points at
+the `.eaf` (not the media), so derive the media name from `context.file.name` and read the audio
+for your waveform/playback via `companions.readBytes("<media>")`.
+
+## Selecting another file (`api.selectFile`)
+
+`api.selectFile(relPath)` asks lameta to make another file in the **same folder** the selected
+file. The host registers the file into the folder's file list if it isn't already there (so a
+file your plugin *just wrote* is picked up without a manual refresh), sets it as the selected
+file, and re-drives the file pane — which **tears down your current iframe and creates a fresh one
+bound to the newly selected file**. `relPath` is relative to `context.folder.directory` and must
+be a bare file name (no `..`, no absolute paths, no subdirectories) that already exists on disk in
+that directory — so write the file first (e.g. via
+`companions.writeText("<media>.annotations.eaf", …)`) and then call `selectFile` on it. It
+resolves to `true` if a file was selected, `false` if none was found. This powers the
+"create an annotation file and switch to it" flow: write `<media>.annotations.eaf`, then
+`await api.selectFile("<media>.annotations.eaf")` to land on its (e.g. "Segments") tab.
+
+> Because `selectFile` destroys the calling iframe, treat it as the last thing you do — resolve
+> any pending writes first (the host still completes writes it has already received; see the
+> write-completion guarantee above), and don't expect code after the `await` to run reliably.
 
 ## Sidecars
 

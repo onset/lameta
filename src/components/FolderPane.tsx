@@ -2,6 +2,7 @@ import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { FileList } from "./FileList";
 import { observer } from "mobx-react";
+import { runInAction } from "mobx";
 import * as Path from "path";
 import PropertyPanel from "./PropertyPanel";
 import { Folder } from "../model/Folder/Folder";
@@ -150,6 +151,26 @@ const FileTabs: React.FunctionComponent<
 
   // search context (for highlighting the Notes tab label when a match is inside notes)
   const { searchTerm } = React.useContext(SearchContext);
+
+  // Host handler for a plugin's `selectFile` API. The plugin passes a bare file name that
+  // already exists in this folder (e.g. an `.eaf` it just wrote via companions); we register
+  // it in the folder's file list if needed and make it the selected file, which re-drives
+  // this observer and the plugin tabs (SayMore's "Start Annotating" -> "Segments" flow).
+  const handlePluginSelectFile = React.useCallback(
+    async (relPath: string): Promise<boolean> => {
+      const folder = props.folder;
+      const abs = Path.join(folder.directory, relPath);
+      const target = folder.registerExistingFile(abs);
+      if (!target) return false;
+      runInAction(() => {
+        if (folder.selectedFile && folder.selectedFile !== target)
+          folder.selectedFile.save();
+        folder.selectedFile = target;
+      });
+      return true;
+    },
+    [props.folder]
+  );
 
   // tabIndex: number,
   // setTabIndex: (index: number) => void,
@@ -400,6 +421,7 @@ const FileTabs: React.FunctionComponent<
             folderDirectory={props.folder.directory}
             languageCode={currentUILanguage}
             appVersion={pkg.version}
+            onSelectFile={handlePluginSelectFile}
           />
         </ErrorBoundary>
       </TabPanel>

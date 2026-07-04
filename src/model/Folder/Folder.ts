@@ -248,6 +248,35 @@ export abstract class Folder {
       });
     });
   }
+
+  /**
+   * Register a file that ALREADY exists on disk in this folder's directory into the in-memory
+   * file list (if not already present) and return it. Unlike copyInFiles, this does not copy —
+   * it's for a file the host has been told about out-of-band, e.g. a companion a plugin just
+   * wrote via the companions API and now wants selected (see the `selectFile` plugin API and
+   * SayMore's "Start Annotating" flow, which writes `<media>.annotations.eaf` then selects it).
+   * Returns undefined if the path is outside this folder or does not exist.
+   */
+  public registerExistingFile(absolutePath: string): File | undefined {
+    const normalized = Path.normalize(absolutePath);
+    // Must live directly in this folder's directory.
+    if (Path.normalize(Path.dirname(normalized)) !== Path.normalize(this.directory))
+      return undefined;
+    const existing = this.files.find(
+      (f) =>
+        Path.normalize(f.pathInFolderToLinkFileOrLocalCopy) === normalized ||
+        Path.normalize(f.getActualFilePath()) === normalized
+    );
+    if (existing) return existing;
+    if (!fs.existsSync(normalized)) return undefined;
+    let file: File | undefined;
+    runInAction(() => {
+      file = new OtherFile(normalized, this.customVocabularies);
+      this.files.push(file);
+    });
+    return file;
+  }
+
   get type(): string {
     const x = this.properties.getValue("type") as Field;
     return x ? x.text : "???";
