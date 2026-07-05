@@ -44,9 +44,9 @@ Distributed as a **`.lmplug`** file — this is just a zip with a different exte
   // OPTIONAL user-facing label: a plain string or a {languageCode: string} map ("en" is the
   // fallback). Falls back to `name` where it is shown in the UI.
   label: { en: "My Plugin", es: "Mi complemento" },
-  // OPTIONAL web page about your plugin. When present, the corner of your plugin's tab pane
-  // shows an "About <label>" link that opens this URL in the user's default browser.
-  "info-url": "https://example.org/my-plugin",
+  // REQUIRED web page about your plugin. The corner of your plugin's tab pane shows an
+  // "About Plugin: <name>" link that opens this URL in the user's default browser.
+  "infoUrl": "https://example.org/my-plugin",
   minLametaVersion: "3.6.0",    // optional, informational
 
   // Optional capabilities you ask the host for. Currently the only known permission is

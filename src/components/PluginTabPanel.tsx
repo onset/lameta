@@ -14,12 +14,10 @@ import {
 export interface PluginTabPanelProps {
   pluginId: string;
   pluginVersion: string;
-  /** Manifest `name`, shown in the pane's corner badge. */
+  /** Manifest `name`, shown in the pane's corner badge as "About Plugin: <name>". */
   pluginName: string;
-  /** Manifest `label` (already localized), preferred over `name` in the About link. */
-  pluginLabel?: string;
-  /** Manifest `info-url`; when present the corner badge becomes an "About <label>" link. */
-  pluginInfoUrl?: string;
+  /** Manifest `infoUrl` (required); the corner badge is an "About Plugin: <name>" link to it. */
+  pluginInfoUrl: string;
   pluginDir: string;
   entry: string;
   apiVersion: number;
@@ -161,8 +159,7 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
     Path.join(props.pluginDir, props.entry)
   ).toString();
 
-  const aboutLabel = props.pluginLabel || props.pluginName;
-  const cornerBadge = props.pluginInfoUrl ? (
+  const cornerBadge = (
     <a
       css={cornerBadgeCss}
       data-testid="plugin-about-link"
@@ -170,17 +167,12 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
       href={props.pluginInfoUrl}
       onClick={(e) => {
         e.preventDefault();
-        require("electron").shell.openExternal(props.pluginInfoUrl!);
+        require("electron").shell.openExternal(props.pluginInfoUrl);
       }}
     >
       <img src={pluginIcon} alt="" css={cornerIconCss} />
-      <Trans>About {aboutLabel}</Trans>
+      <Trans>About Plugin: {props.pluginName}</Trans>
     </a>
-  ) : (
-    <span css={cornerBadgeCss} data-testid="plugin-name-badge">
-      <img src={pluginIcon} alt="" css={cornerIconCss} />
-      {props.pluginName}
-    </span>
   );
 
   return (
@@ -244,8 +236,8 @@ const messageCss = css`
   padding: 20px;
 `;
 
-// The little identity badge in the pane's upper-right corner: plugin icon + name, or an
-// "About <label>" link when the manifest has an info-url. Spec'd as 90%-opaque black.
+// The little identity badge in the pane's upper-right corner: plugin icon + an
+// "About Plugin: <name>" link to the manifest's infoUrl. Spec'd as 90%-opaque black.
 const cornerBadgeCss = css`
   display: flex;
   align-items: center;

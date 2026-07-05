@@ -8,6 +8,7 @@ const goodManifest = `{
   apiVersion: 1,
   description: "Annotate audio",
   author: "Example",
+  "infoUrl": "https://example.org/waveform",
   tabs: [
     {
       id: "waveform",
@@ -38,6 +39,7 @@ describe("parsePluginManifest", () => {
   it("defaults claimDefault to false and defaultPriority to 0", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
+      "infoUrl": "https://example.org",
       tabs: [{ id: "t", label: "L", entry: "i.html", match: { extensions: ["x"] } }]
     }`);
     expect(result.errors).toBeUndefined();
@@ -45,11 +47,11 @@ describe("parsePluginManifest", () => {
     expect(result.manifest!.tabs[0].defaultPriority).toBe(0);
   });
 
-  it("accepts optional plugin-level label and info-url", () => {
+  it("accepts a required infoUrl and an optional plugin-level label", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       label: { en: "Nice Name", es: "Buen nombre" },
-      "info-url": "https://example.org/about",
+      "infoUrl": "https://example.org/about",
       tabs: [{ id: "t", label: "L", entry: "i.html" }]
     }`);
     expect(result.errors).toBeUndefined();
@@ -60,24 +62,33 @@ describe("parsePluginManifest", () => {
     expect(result.manifest!.infoUrl).toBe("https://example.org/about");
   });
 
-  it("leaves label and infoUrl undefined when absent", () => {
+  it("leaves label undefined when absent (infoUrl still required)", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
+      "infoUrl": "https://example.org/about",
       tabs: [{ id: "t", label: "L", entry: "i.html" }]
     }`);
     expect(result.errors).toBeUndefined();
     expect(result.manifest!.label).toBeUndefined();
-    expect(result.manifest!.infoUrl).toBeUndefined();
   });
 
-  it("rejects a non-string info-url and an empty label", () => {
+  it("requires infoUrl", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
-      label: "", "info-url": 7,
       tabs: [{ id: "t", label: "L", entry: "i.html" }]
     }`);
     expect(result.errors).toBeDefined();
-    expect(result.errors!.join(" ")).toMatch(/info-url must be a string/);
+    expect(result.errors!.join(" ")).toMatch(/infoUrl is required/);
+  });
+
+  it("rejects a non-string infoUrl and an empty label", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      label: "", "infoUrl": 7,
+      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+    }`);
+    expect(result.errors).toBeDefined();
+    expect(result.errors!.join(" ")).toMatch(/infoUrl is required/);
     expect(result.errors!.join(" ")).toMatch(/label must not be an empty string/);
   });
 
@@ -141,6 +152,7 @@ describe("parsePluginManifest", () => {
   it("accepts a tabProvider manifest with no static tabs (and normalizes handles.extensions)", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
+      "infoUrl": "https://example.org",
       tabProvider: { entry: "index.html", handles: { lametaTypes: ["Audio"], extensions: ["EAF"] } }
     }`);
     expect(result.errors).toBeUndefined();
@@ -167,6 +179,7 @@ describe("parsePluginManifest", () => {
   it("accepts a known permission and normalizes absent permissions to []", () => {
     const withPermission = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
+      "infoUrl": "https://example.org",
       permissions: ["companionFiles"],
       tabs: [{ id: "t", label: "L", entry: "i.html" }]
     }`);
@@ -180,6 +193,7 @@ describe("parsePluginManifest", () => {
   it("accepts the ffmpeg permission alongside companionFiles", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
+      "infoUrl": "https://example.org",
       permissions: ["companionFiles", "ffmpeg"],
       tabs: [{ id: "t", label: "L", entry: "i.html" }]
     }`);
@@ -224,6 +238,7 @@ describe("parsePluginManifest", () => {
         name: "n",
         version: "1",
         apiVersion: 1,
+        "infoUrl": "https://example.org",
         tabs: [{ id: "t", label: "L", entry: "i.html" }]
       })
     );

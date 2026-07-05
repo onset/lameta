@@ -16,6 +16,7 @@ function plugin(
     name: id,
     version: "1.0.0",
     apiVersion: 1,
+    infoUrl: "https://example.org",
     permissions: [],
     tabs: tabs.map((t, i) => ({
       id: t.id ?? `tab${i}`,

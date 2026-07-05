@@ -464,12 +464,7 @@ const FileTabs: React.FunctionComponent<
             pluginId={m.pluginId}
             pluginVersion={m.pluginVersion}
             pluginName={record?.manifest?.name || m.pluginId}
-            pluginLabel={
-              record?.manifest?.label
-                ? localizeLabel(record.manifest.label, currentUILanguage)
-                : undefined
-            }
-            pluginInfoUrl={record?.manifest?.infoUrl}
+            pluginInfoUrl={record?.manifest?.infoUrl ?? ""}
             pluginDir={record?.directory || ""}
             entry={m.entry}
             tabId={m.tab.id}

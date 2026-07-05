@@ -4,6 +4,7 @@
   version: "1.0.0",
   apiVersion: 1,
   description: "E2E fixture plugin.",
+  infoUrl: "https://example.org/test-plugin",
   tabs: [
     {
       id: "main",
