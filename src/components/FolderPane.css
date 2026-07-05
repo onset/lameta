@@ -15,6 +15,15 @@
   background-color: transparent;
 }
 
+/* 90%-opaque file-tab labels. Applied via a class (not an emotion css prop on <TabList>,
+   which would wrap it in an Emotion component and break react-tabs' selected-tab drawing). */
+.folderPane .fileTabsList .react-tabs__tab {
+  color: rgba(0, 0, 0, 0.9);
+}
+.folderPane .fileTabsList .react-tabs__tab img {
+  opacity: 0.9;
+}
+
 .folderPane .react-tabs__tab-panel--selected {
   padding-left: 8px;
   flex: 1 1 auto;

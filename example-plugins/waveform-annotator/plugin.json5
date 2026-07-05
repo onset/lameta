@@ -2,6 +2,10 @@
   // Namespaces this plugin's sidecar files and its install folder.
   id: "org.lameta.example.waveform-annotator",
   name: "Waveform Annotator",
+  // OPTIONAL user-facing label (plain string or {languageCode: string} map); falls back to `name`.
+  label: { en: "Waveform Annotator", es: "Anotador de forma de onda" },
+  // OPTIONAL web page about this plugin; shown as an "About <label>" link in the tab pane.
+  "info-url": "https://github.com/onset/lameta",
   version: "1.0.0",
   apiVersion: 1,
   description: "Show a waveform for audio files and let you annotate regions.",

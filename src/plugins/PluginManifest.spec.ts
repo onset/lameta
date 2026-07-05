@@ -45,6 +45,42 @@ describe("parsePluginManifest", () => {
     expect(result.manifest!.tabs[0].defaultPriority).toBe(0);
   });
 
+  it("accepts optional plugin-level label and info-url", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      label: { en: "Nice Name", es: "Buen nombre" },
+      "info-url": "https://example.org/about",
+      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+    }`);
+    expect(result.errors).toBeUndefined();
+    expect(result.manifest!.label).toEqual({
+      en: "Nice Name",
+      es: "Buen nombre"
+    });
+    expect(result.manifest!.infoUrl).toBe("https://example.org/about");
+  });
+
+  it("leaves label and infoUrl undefined when absent", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+    }`);
+    expect(result.errors).toBeUndefined();
+    expect(result.manifest!.label).toBeUndefined();
+    expect(result.manifest!.infoUrl).toBeUndefined();
+  });
+
+  it("rejects a non-string info-url and an empty label", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      label: "", "info-url": 7,
+      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+    }`);
+    expect(result.errors).toBeDefined();
+    expect(result.errors!.join(" ")).toMatch(/info-url must be a string/);
+    expect(result.errors!.join(" ")).toMatch(/label must not be an empty string/);
+  });
+
   it("reports a parse error for malformed text", () => {
     const result = parsePluginManifest("{ this is not json ");
     expect(result.manifest).toBeUndefined();

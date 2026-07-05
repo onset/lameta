@@ -4,6 +4,7 @@ import Path from "path";
 import { css } from "@emotion/react";
 import { Trans } from "@lingui/macro";
 import { PluginHostBridge } from "../plugins/PluginHostBridge";
+import pluginIcon from "@assets/plugin.svg";
 import {
   LAMETA_PLUGIN_API_VERSIONS_SUPPORTED,
   PluginFolderType,
@@ -13,6 +14,12 @@ import {
 export interface PluginTabPanelProps {
   pluginId: string;
   pluginVersion: string;
+  /** Manifest `name`, shown in the pane's corner badge. */
+  pluginName: string;
+  /** Manifest `label` (already localized), preferred over `name` in the About link. */
+  pluginLabel?: string;
+  /** Manifest `info-url`; when present the corner badge becomes an "About <label>" link. */
+  pluginInfoUrl?: string;
   pluginDir: string;
   entry: string;
   apiVersion: number;
@@ -154,15 +161,52 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
     Path.join(props.pluginDir, props.entry)
   ).toString();
 
+  const aboutLabel = props.pluginLabel || props.pluginName;
+  const cornerBadge = props.pluginInfoUrl ? (
+    <a
+      css={cornerBadgeCss}
+      data-testid="plugin-about-link"
+      title={props.pluginInfoUrl}
+      href={props.pluginInfoUrl}
+      onClick={(e) => {
+        e.preventDefault();
+        require("electron").shell.openExternal(props.pluginInfoUrl!);
+      }}
+    >
+      <img src={pluginIcon} alt="" css={cornerIconCss} />
+      <Trans>About {aboutLabel}</Trans>
+    </a>
+  ) : (
+    <span css={cornerBadgeCss} data-testid="plugin-name-badge">
+      <img src={pluginIcon} alt="" css={cornerIconCss} />
+      {props.pluginName}
+    </span>
+  );
+
   return (
     <div
       css={css`
         position: relative;
+        display: flex;
+        flex-direction: column;
         width: 100%;
         height: 100%;
         min-height: 400px;
       `}
     >
+      {/* Thin identity strip above the plugin's iframe, so the badge never overlaps the
+          plugin's own UI. It sits at the top of the panel (which the tab strip already leaves
+          close under its line); no negative margin, which would push it above the panel's
+          overflow:auto content box and clip it. */}
+      <div
+        css={css`
+          display: flex;
+          justify-content: flex-end;
+          padding: 0 8px;
+        `}
+      >
+        {cornerBadge}
+      </div>
       <iframe
         key={iframeKey}
         ref={iframeRef}
@@ -172,8 +216,8 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
         src={src}
         css={css`
           width: 100%;
-          height: 100%;
-          min-height: 400px;
+          flex: 1;
+          min-height: 0;
           border: none;
         `}
       />
@@ -198,6 +242,28 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
 
 const messageCss = css`
   padding: 20px;
+`;
+
+// The little identity badge in the pane's upper-right corner: plugin icon + name, or an
+// "About <label>" link when the manifest has an info-url. Spec'd as 90%-opaque black.
+const cornerBadgeCss = css`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.9);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+// The svg is solid black, so 0.9 opacity renders it 90%-opaque black to match the text.
+const cornerIconCss = css`
+  width: 12px;
+  height: 12px;
+  opacity: 0.9;
 `;
 
 const overlayCss = css`

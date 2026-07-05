@@ -53,6 +53,11 @@ export interface PluginManifest {
   name: string;
   version: string;
   apiVersion: number;
+  /** OPTIONAL user-facing (localizable) label; falls back to `name` where shown in the UI. */
+  label?: LocalizableLabel;
+  /** OPTIONAL `info-url` in the manifest: a web page about the plugin. When present, plugin
+   * tab panes show an "About <label>" link that opens it in the user's default browser. */
+  infoUrl?: string;
   description?: string;
   author?: string;
   minLametaVersion?: string;
@@ -254,6 +259,9 @@ export function parsePluginManifest(text: string): ParseManifestResult {
     errors.push("version is required and must be a non-empty string");
   if (typeof raw.apiVersion !== "number")
     errors.push("apiVersion is required and must be a number");
+  if (raw.label !== undefined) validateLabel(raw.label, "label", errors);
+  if (raw["info-url"] !== undefined && typeof raw["info-url"] !== "string")
+    errors.push("info-url must be a string");
   if (raw.description !== undefined && typeof raw.description !== "string")
     errors.push("description must be a string");
   if (raw.author !== undefined && typeof raw.author !== "string")
@@ -316,6 +324,8 @@ export function parsePluginManifest(text: string): ParseManifestResult {
       name: raw.name,
       version: raw.version,
       apiVersion: raw.apiVersion,
+      label: raw.label,
+      infoUrl: raw["info-url"],
       description: raw.description,
       author: raw.author,
       minLametaVersion: raw.minLametaVersion,

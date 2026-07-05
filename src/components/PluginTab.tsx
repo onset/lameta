@@ -1,5 +1,7 @@
 import React from "react";
 import { Tab } from "react-tabs";
+import { css } from "@emotion/react";
+import pluginIcon from "@assets/plugin.svg";
 
 // A tab-strip entry contributed by a plugin. Thin wrapper over react-tabs' Tab so we can add
 // a stable data-testid and (later) plugin-specific styling. Like HighlightableTab, we set
@@ -22,6 +24,18 @@ export const PluginTab = React.forwardRef<HTMLLIElement, PluginTabProps>(
         className={baseClass}
         data-testid={testId || "plugin-tab"}
       >
+        <img
+          src={pluginIcon}
+          alt=""
+          css={css`
+            /* 1em so the icon fits inside the text's line box; anything taller grows the
+               whole tab strip. */
+            width: 1em;
+            height: 1em;
+            margin-right: 4px;
+            vertical-align: -0.15em;
+          `}
+        />
         <span className="plugin-tab-label">{label}</span>
       </Tab>
     );

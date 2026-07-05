@@ -463,6 +463,13 @@ const FileTabs: React.FunctionComponent<
           <PluginTabPanel
             pluginId={m.pluginId}
             pluginVersion={m.pluginVersion}
+            pluginName={record?.manifest?.name || m.pluginId}
+            pluginLabel={
+              record?.manifest?.label
+                ? localizeLabel(record.manifest.label, currentUILanguage)
+                : undefined
+            }
+            pluginInfoUrl={record?.manifest?.infoUrl}
             pluginDir={record?.directory || ""}
             entry={m.entry}
             tabId={m.tab.id}
@@ -494,7 +501,13 @@ const FileTabs: React.FunctionComponent<
     viewerPanel: JSX.Element
   ) => (
     <Tabs key={tabsKey} defaultIndex={fileTabsDefaultIndex}>
-      <TabList>
+      {/* 90%-opaque tab labels (see .fileTabsList in FolderPane.css). The dimming lives in a
+          plain stylesheet class, NOT an emotion `css` prop: putting `css` on <TabList> wraps
+          it in an Emotion component, so react-tabs no longer recognizes it as a TabList and
+          never marks the selected tab (no white "connected" box, no break in the strip line).
+          We add "react-tabs__tab-list" because react-tabs replaces its default class when we
+          pass a className. */}
+      <TabList className="react-tabs__tab-list fileTabsList">
         {viewerTab}
         {pluginTabs}
         {standardMetaTabs}
@@ -775,7 +788,10 @@ const FileTabs: React.FunctionComponent<
         <Tab>
           <>ELAN {/* should not be translated */}</>
         </Tab>,
-        <TabPanel className="unhandledFileType">
+        // NB: must keep the react-tabs__tab-panel class; passing only "unhandledFileType"
+        // replaces it, so the panel loses its display:none and leaks (visible + its 2em
+        // top margin) whenever another tab — e.g. a plugin tab — is selected.
+        <TabPanel className="react-tabs__tab-panel unhandledFileType">
           <a
             onClick={() => {
               // the "file://" prefix is required on mac, works fine on windows
@@ -791,7 +807,9 @@ const FileTabs: React.FunctionComponent<
         <Tab>
           <Trans>File</Trans>
         </Tab>,
-        <TabPanel className="unhandledFileType">
+        // keep react-tabs__tab-panel (see the ELAN case) so this viewer panel hides when a
+        // different tab is selected instead of leaking its content + top margin.
+        <TabPanel className="react-tabs__tab-panel unhandledFileType">
           <a
             href=""
             onClick={(e) => {
