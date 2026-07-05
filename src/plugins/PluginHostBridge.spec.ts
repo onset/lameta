@@ -351,6 +351,45 @@ describe("PluginHostBridge — companions.* round-trips (generic scoping)", () =
   });
 });
 
+describe("PluginHostBridge — ffmpeg permission gating & validation", () => {
+  // These all fail BEFORE the ffmpeg binary is ever invoked (permission check, then argument
+  // validation, then the companion-allowlist path check), so they're fast and deterministic;
+  // real conversion is exercised live by the plugin's end-to-end test.
+  it("rejects ffmpeg.probe and ffmpeg.run without the ffmpeg permission", async () => {
+    const h = makeHarness(mediaOpts(["companionFiles"])); // no "ffmpeg"
+    expect((await h.raw("ffmpeg.probe", [])).error).toMatch(/ffmpeg permission/);
+    expect(
+      (
+        await h.raw("ffmpeg.run", [
+          { outputRelPath: "foo_StandardAudio.wav", args: ["-vn"] }
+        ])
+      ).error
+    ).toMatch(/ffmpeg permission/);
+  });
+
+  it("rejects ffmpeg.run with a missing outputRelPath or non-string args", async () => {
+    const h = makeHarness(mediaOpts(["companionFiles", "ffmpeg"]));
+    expect((await h.raw("ffmpeg.run", [{ args: ["-vn"] }])).error).toMatch(
+      /outputRelPath must be a non-empty string/
+    );
+    expect(
+      (
+        await h.raw("ffmpeg.run", [
+          { outputRelPath: "foo_StandardAudio.wav", args: [1, 2] }
+        ])
+      ).error
+    ).toMatch(/args must be an array of strings/);
+  });
+
+  it("rejects an ffmpeg.run output that escapes the companion allowlist", async () => {
+    const h = makeHarness(mediaOpts(["companionFiles", "ffmpeg"]));
+    const r = await h.raw("ffmpeg.run", [
+      { outputRelPath: "../escape.wav", args: ["-vn"] }
+    ]);
+    expect(r.error).toMatch(/not an allowed companion path|outside the file/);
+  });
+});
+
 describe("PluginHostBridge — selectFile", () => {
   it("invokes onSelectFile for a bare filename and returns its result", async () => {
     const calls: string[] = [];

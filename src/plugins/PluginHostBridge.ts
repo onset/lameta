@@ -11,6 +11,7 @@
 import fs from "fs-extra";
 import Path from "path";
 import {
+  FfprobeResult,
   PluginInitContext,
   PluginTabProviderContext,
   TabDescriptor
@@ -23,6 +24,45 @@ import {
   DEFAULT_SIDECAR_NAME
 } from "./sidecar";
 import { resolveCompanionPath, isAllowedCompanionPath } from "./companions";
+
+// Lazily require & configure the bundled ffmpeg/ffprobe binaries, once. Kept out of module
+// scope (and behind the first ffmpeg.* call) so importing the bridge — e.g. in unit tests that
+// never touch ffmpeg — doesn't pull in fluent-ffmpeg or resolve the static binary paths.
+let ffmpegLib: any = null;
+function getFfmpeg(): any {
+  if (ffmpegLib) return ffmpegLib;
+  const ffmpeg = require("fluent-ffmpeg");
+  const statics = require("ffmpeg-ffprobe-static");
+  // For a packaged app the binaries are unpacked out of the asar (see MediaStats.tsx).
+  const unpack = (p: string | null | undefined) =>
+    p ? p.replace("app.asar", "app.asar.unpacked") : p;
+  const ffmpegPath = unpack(statics.ffmpegPath);
+  const ffprobePath = unpack(statics.ffprobePath);
+  if (ffmpegPath) ffmpeg.setFfmpegPath(ffmpegPath);
+  if (ffprobePath) ffmpeg.setFfprobePath(ffprobePath);
+  ffmpegLib = ffmpeg;
+  return ffmpeg;
+}
+
+/** Coerce an ffprobe field (which may be a number, a numeric string, or "N/A") to a number,
+ * or undefined if it isn't a finite number. */
+function numOrUndef(v: any): number | undefined {
+  if (v === undefined || v === null) return undefined;
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+/** Parse an ffmpeg progress `timemark` ("HH:MM:SS.xx", occasionally bare seconds) to seconds. */
+function timemarkToSeconds(timemark: any): number | undefined {
+  const parts = String(timemark).split(":");
+  if (parts.length === 3) {
+    const [h, m, s] = parts.map(Number);
+    if ([h, m, s].every((n) => Number.isFinite(n))) return h * 3600 + m * 60 + s;
+    return undefined;
+  }
+  const n = Number(timemark);
+  return Number.isFinite(n) ? n : undefined;
+}
 
 export interface PluginBridgeOptions {
   iframe: HTMLIFrameElement;
@@ -221,6 +261,11 @@ export class PluginHostBridge {
       // Companion-file methods travel as dotted strings ("companions.readText", ...).
       if (method.startsWith("companions.")) {
         await this.handleCompanionRequest(id, method, params);
+        return;
+      }
+      // ffmpeg methods likewise ("ffmpeg.probe", "ffmpeg.run").
+      if (method.startsWith("ffmpeg.")) {
+        await this.handleFfmpegRequest(id, method, params);
         return;
       }
       switch (method) {
@@ -454,6 +499,145 @@ export class PluginHostBridge {
       default:
         throw new Error(`Unknown plugin API method: ${method}`);
     }
+  }
+
+  // The "ffmpeg.*" family: probe / convert the ACTUAL selected file or one of its companions.
+  // Input defaults to the selected file; input & output are validated against the same generic
+  // companion allowlist as companions.* (resolveCompanionPath), so an ffmpeg output can never
+  // escape the selected file's directory family. Requires the "ffmpeg" permission. Called from
+  // inside handleRequest's try/catch, so throwing here produces a normal error response.
+  private async handleFfmpegRequest(id: number, method: string, params: any[]) {
+    if (!this.opts.permissions.includes("ffmpeg"))
+      throw new Error("This plugin does not have the ffmpeg permission");
+    const companionDir = Path.dirname(this.sFilePath);
+    const scopeFileName = this.sFileName;
+    // Input default = the selected file; otherwise a validated companion.
+    const resolveInput = (relPath?: string): string =>
+      relPath === undefined || relPath === null || relPath === ""
+        ? this.sFilePath
+        : resolveCompanionPath(companionDir, scopeFileName, relPath);
+
+    switch (method) {
+      case "ffmpeg.probe": {
+        const result = await this.ffprobe(resolveInput(params[0]));
+        this.post({ type: "lameta:response", id, result });
+        return;
+      }
+      case "ffmpeg.run": {
+        const spec = params[0] || {};
+        const { inputRelPath, outputRelPath, args, inputArgs } = spec;
+        if (typeof outputRelPath !== "string" || outputRelPath.length === 0)
+          throw new Error("ffmpeg.run: outputRelPath must be a non-empty string");
+        if (!Array.isArray(args) || args.some((a: any) => typeof a !== "string"))
+          throw new Error("ffmpeg.run: args must be an array of strings");
+        if (
+          inputArgs !== undefined &&
+          (!Array.isArray(inputArgs) ||
+            inputArgs.some((a: any) => typeof a !== "string"))
+        )
+          throw new Error("ffmpeg.run: inputArgs must be an array of strings");
+        const input = resolveInput(inputRelPath);
+        const output = resolveCompanionPath(
+          companionDir,
+          scopeFileName,
+          outputRelPath
+        );
+        await this.runFfmpeg(id, input, output, args, inputArgs || []);
+        this.post({ type: "lameta:response", id, result: undefined });
+        return;
+      }
+      default:
+        throw new Error(`Unknown plugin API method: ${method}`);
+    }
+  }
+
+  // ffprobe a file and map fluent-ffmpeg's raw result into the curated FfprobeResult contract.
+  private ffprobe(input: string): Promise<FfprobeResult> {
+    const ffmpeg = getFfmpeg();
+    return new Promise<FfprobeResult>((resolve, reject) => {
+      ffmpeg.ffprobe(input, (err: any, data: any) => {
+        if (err) return reject(err);
+        const fmt = data?.format || {};
+        const streams = Array.isArray(data?.streams) ? data.streams : [];
+        resolve({
+          format: {
+            durationSec: numOrUndef(fmt.duration),
+            formatName: fmt.format_name,
+            formatLongName: fmt.format_long_name
+          },
+          streams: streams.map((s: any) => ({
+            codecType: s.codec_type,
+            codecName: s.codec_name,
+            channels: numOrUndef(s.channels),
+            sampleRate: numOrUndef(s.sample_rate),
+            width: numOrUndef(s.width),
+            height: numOrUndef(s.height),
+            durationSec: numOrUndef(s.duration)
+          }))
+        });
+      });
+    });
+  }
+
+  // Run one ffmpeg conversion, reporting 0..1 progress via `lameta:progress` messages, and
+  // land the output atomically. We write to a temp file IN THE TARGET DIR THAT KEEPS THE TARGET
+  // EXTENSION — ffmpeg picks its muxer from the output extension when no `-f` is given, so the
+  // tmp name must end in e.g. ".wav" — then rename over the target on success.
+  private async runFfmpeg(
+    id: number,
+    input: string,
+    output: string,
+    args: string[],
+    inputArgs: string[]
+  ): Promise<void> {
+    const ffmpeg = getFfmpeg();
+    // Probe once up front for the input duration → lets us turn timemark into a fraction.
+    let durationSec = 0;
+    try {
+      durationSec = (await this.ffprobe(input)).format.durationSec || 0;
+    } catch {
+      // Unknown duration: progress simply won't fire; the conversion still runs.
+    }
+    await fs.ensureDir(Path.dirname(output));
+    const ext = Path.extname(output);
+    const tmp = `${output}.${Math.random().toString(36).slice(2)}.lameta-tmp${ext}`;
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const command = ffmpeg(input);
+        if (inputArgs.length) command.inputOptions(inputArgs);
+        command
+          .outputOptions(args)
+          .on("progress", (p: any) => {
+            if (durationSec > 0 && p?.timemark) {
+              const done = timemarkToSeconds(p.timemark);
+              if (done !== undefined) {
+                const fraction = Math.max(0, Math.min(1, done / durationSec));
+                this.post({ type: "lameta:progress", id, fraction });
+              }
+            }
+          })
+          .on("error", (err: any, _stdout: any, stderr: any) => {
+            const tail = (stderr || "")
+              .toString()
+              .trim()
+              .split("\n")
+              .slice(-8)
+              .join("\n");
+            reject(
+              new Error(
+                `ffmpeg failed: ${err?.message || err}${tail ? "\n" + tail : ""}`
+              )
+            );
+          })
+          .on("end", () => resolve())
+          .save(tmp);
+      });
+    } catch (e) {
+      await fs.remove(tmp).catch(() => {});
+      throw e;
+    }
+    await fs.rename(tmp, output);
   }
 
   // Atomic write: to a temp file in the target's own directory, then rename over the

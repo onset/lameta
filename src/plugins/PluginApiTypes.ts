@@ -130,6 +130,60 @@ export interface PluginCompanionsApiV1 {
 }
 
 /**
+ * Generic ffmpeg/ffprobe access for the selected file and its companions. Requires the
+ * `ffmpeg` manifest permission — the client object always has `api.ffmpeg`, but every call
+ * errors if the permission is absent (mirrors `companions.*`). On the wire these travel as
+ * dotted method strings ("ffmpeg.probe", "ffmpeg.run"). All input/output paths are validated
+ * exactly like `companions.*` (the selected file, or a companion of it); nothing else is
+ * reachable, so an ffmpeg output can never escape the companion allowlist.
+ */
+export interface PluginFfmpegApiV1 {
+  /** ffprobe a file → curated metadata. `relPath` defaults to the SELECTED file; otherwise it
+   * must be a companion path (same allowlist as `companions.*`). */
+  probe(relPath?: string): Promise<FfprobeResult>;
+
+  /**
+   * Run one ffmpeg conversion to a companion file.
+   *  - input   = the selected file (default) OR companion `inputRelPath`
+   *  - output  = companion `outputRelPath` (same allowlist + atomic tmp+rename as
+   *              `companions.writeBytes`; ffmpeg writes the tmp, the host renames it into
+   *              place on success). Give it a real extension for the container you want:
+   *              ffmpeg picks its muxer from that extension unless you pass `-f` in `args`.
+   *  - `args`      = ffmpeg OUTPUT options placed BEFORE the output file
+   *                  (e.g. ["-vn","-ac","1","-ar","22050","-acodec","pcm_s16le"])
+   *  - `inputArgs` = optional options placed BEFORE `-i` (rarely needed)
+   *  - `onProgress(fraction)` fires 0..1 as ffmpeg reports progress (the host computes it from
+   *    the probed input duration). Advisory: it may fire 0 times if the duration is unknown,
+   *    and is not guaranteed to reach exactly 1 — treat the promise resolving as "done".
+   * Resolves once the output has been renamed into place. Rejects on a non-zero ffmpeg exit
+   * (the message carries a stderr tail) or an invalid/denied path — never crashes the host.
+   */
+  run(spec: {
+    inputRelPath?: string;
+    outputRelPath: string;
+    args: string[];
+    inputArgs?: string[];
+    onProgress?: (fraction: number) => void;
+  }): Promise<void>;
+}
+
+/** Curated subset of ffprobe output (the host maps fluent-ffmpeg's raw result into this).
+ * All durations are in seconds. Fields are optional because not every stream/format reports
+ * every value. */
+export interface FfprobeResult {
+  format: { durationSec?: number; formatName?: string; formatLongName?: string };
+  streams: Array<{
+    codecType?: "audio" | "video" | string;
+    codecName?: string;
+    channels?: number;
+    sampleRate?: number;
+    width?: number;
+    height?: number;
+    durationSec?: number;
+  }>;
+}
+
+/**
  * The RPC surface a plugin can call on the host. In the iframe, a plugin obtains an
  * object implementing this interface from `connectToLameta()` in the client kit; each
  * method is a thin wrapper that posts a `lameta:request` and awaits the matching
@@ -168,6 +222,9 @@ export interface PluginHostApiV1 {
 
   /** Companion-file access; requires the `companionFiles` manifest permission. */
   companions: PluginCompanionsApiV1;
+
+  /** ffmpeg/ffprobe access; requires the `ffmpeg` manifest permission. */
+  ffmpeg: PluginFfmpegApiV1;
 }
 
 // ---------------------------------------------------------------------------
@@ -235,6 +292,15 @@ export interface PluginResponseMessage {
   error?: string;
 }
 
+/** host -> plugin: advisory, fire-and-forget progress for an in-flight `lameta:request`
+ * (currently only `ffmpeg.run`). Keyed by that request's id. The final `lameta:response`
+ * still resolves the promise; progress messages may be dropped or coalesced. */
+export interface PluginProgressMessage {
+  type: "lameta:progress";
+  id: number;
+  fraction: number; // 0..1, monotonic-ish
+}
+
 export type PluginToHostMessage =
   | PluginReadyMessage
   | PluginRequestMessage
@@ -242,4 +308,5 @@ export type PluginToHostMessage =
 export type HostToPluginMessage =
   | PluginInitMessage
   | PluginResponseMessage
-  | PluginGetTabsMessage;
+  | PluginGetTabsMessage
+  | PluginProgressMessage;

@@ -36,6 +36,7 @@
 import {
   PluginHostApiV1,
   PluginInitContext,
+  PluginProgressMessage,
   PluginResponseMessage,
   PluginTabProviderContext,
   TabDescriptor
@@ -76,9 +77,13 @@ function makeApiPlumbing() {
     number,
     { resolve: (v: any) => void; reject: (e: any) => void }
   >();
+  // onProgress callbacks are functions (not serializable), so they never cross the wire —
+  // the client stashes them by request id and invokes them on `lameta:progress`.
+  const progress = new Map<number, (fraction: number) => void>();
 
   function handleResponse(data: PluginResponseMessage) {
     const entry = pending.get(data.id);
+    progress.delete(data.id); // the response is terminal: drop any progress cb for this id
     if (!entry) return;
     pending.delete(data.id);
     if (data.error !== undefined && data.error !== null)
@@ -86,12 +91,24 @@ function makeApiPlumbing() {
     else entry.resolve(data.result);
   }
 
+  function handleProgress(data: PluginProgressMessage) {
+    const cb = progress.get(data.id);
+    if (!cb) return;
+    try {
+      cb(data.fraction);
+    } catch {
+      // a throwing progress callback must never break the message loop
+    }
+  }
+
   function request(
     method: string,
     params: any[],
-    transfer?: Transferable[]
+    transfer?: Transferable[],
+    onProgress?: (fraction: number) => void
   ): Promise<any> {
     const id = nextId++;
+    if (onProgress) progress.set(id, onProgress);
     return new Promise((res, rej) => {
       pending.set(id, { resolve: res, reject: rej });
       const message = { type: "lameta:request", id, method, params };
@@ -123,10 +140,24 @@ function makeApiPlumbing() {
         request("companions.rename", [fromRelPath, toRelPath]),
       delete: (relPath: string) => request("companions.delete", [relPath]),
       stat: (relPath: string) => request("companions.stat", [relPath])
+    },
+    ffmpeg: {
+      probe: (relPath?: string) => request("ffmpeg.probe", [relPath]),
+      run: (spec: {
+        inputRelPath?: string;
+        outputRelPath: string;
+        args: string[];
+        inputArgs?: string[];
+        onProgress?: (fraction: number) => void;
+      }) => {
+        // onProgress isn't serializable: keep it client-side and send only the rest.
+        const { onProgress, ...params } = spec;
+        return request("ffmpeg.run", [params], undefined, onProgress);
+      }
     }
   };
 
-  return { api, handleResponse };
+  return { api, handleResponse, handleProgress };
 }
 
 // The tab-provider handler, registered via serveTabProvider(). Because one shared `entry` can be
@@ -157,7 +188,7 @@ export function connectToLameta(
   timeoutMs = 10000
 ): Promise<LametaConnection> {
   return new Promise((resolve, reject) => {
-    const { api, handleResponse } = makeApiPlumbing();
+    const { api, handleResponse, handleProgress } = makeApiPlumbing();
     let connected = false;
 
     let initTimer: any = setTimeout(() => {
@@ -185,6 +216,11 @@ export function connectToLameta(
 
       if (data.type === "lameta:response") {
         handleResponse(data as PluginResponseMessage);
+        return;
+      }
+
+      if (data.type === "lameta:progress") {
+        handleProgress(data as PluginProgressMessage);
         return;
       }
 
