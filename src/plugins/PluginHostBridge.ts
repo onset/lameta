@@ -5,8 +5,11 @@
 // PluginHostApiV1 method calls to filesystem operations. All IO is wrapped in try/catch and
 // turned into error responses so a plugin can't crash the host.
 //
-// NOTE: if lameta ever turns webSecurity back on, file access here (and file.uri in the
-// iframe) will break; switch to a registered custom scheme via protocol.handle(...).
+// NOTE: the plugin iframe's HTML/JS is now served over the registered lameta-plugin:// scheme
+// (see main.ts) so it has a real secure origin — needed for microphone Permissions-Policy
+// delegation. The bridge's own file access (below) still uses node fs, and file.uri media is
+// still a file:// URL; if lameta ever turns webSecurity back on, those would need to move
+// behind a scheme/handler too.
 
 import fs from "fs-extra";
 import Path from "path";
@@ -216,7 +219,7 @@ export class PluginHostBridge {
   private post(message: any, transfer?: Transferable[]) {
     const w = this.pluginWindow;
     if (!w) return;
-    // targetOrigin "*" is fine: the iframe loads a local file:// URL we control.
+    // targetOrigin "*" is fine: the iframe loads a local lameta-plugin:// URL we control.
     // The iframe can be torn down between an fs operation finishing and this post (see
     // the write-completion guarantee in docs/plugin-authoring.md); an undeliverable
     // response is silently dropped, never thrown.

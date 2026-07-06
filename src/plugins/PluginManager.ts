@@ -184,7 +184,22 @@ export class PluginManager {
       this.plugins = observable(records);
     });
 
+    this.registerDirsWithMain(records);
     this.setupWatchers();
+  }
+
+  /** Tell the main process where each plugin lives, so the lameta-plugin:// protocol handler
+   * (main.ts) can serve a plugin's assets by id. Re-sent on every rescan. */
+  private registerDirsWithMain(records: PluginRecord[]) {
+    try {
+      const { ipcRenderer } = require("electron");
+      ipcRenderer.invoke(
+        "plugins:registerDirs",
+        records.map((r) => ({ id: r.id, directory: r.directory }))
+      );
+    } catch (e) {
+      console.warn("PluginManager: could not register plugin dirs with main", e);
+    }
   }
 
   /** Re-parse just one dev plugin's manifest and bump its reloadCounter to hot-reload its tab. */

@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import * as URL from "url";
-import Path from "path";
 import { css } from "@emotion/react";
 import { Trans } from "@lingui/macro";
 import { PluginHostBridge } from "../plugins/PluginHostBridge";
+import { pluginAssetUrl } from "../plugins/pluginScheme";
 import pluginIcon from "@assets/plugin.svg";
 import {
   LAMETA_PLUGIN_API_VERSIONS_SUPPORTED,
@@ -155,9 +154,9 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
     );
   }
 
-  const src = URL.pathToFileURL(
-    Path.join(props.pluginDir, props.entry)
-  ).toString();
+  // Served over the custom secure scheme (not file://) so the iframe has a real tuple origin
+  // and can receive the microphone Permissions-Policy delegation. See pluginScheme.ts.
+  const src = pluginAssetUrl(props.pluginId, props.entry);
 
   const cornerBadge = (
     <a
@@ -251,11 +250,11 @@ const cornerBadgeCss = css`
   }
 `;
 
-// The svg is solid black, so 0.9 opacity renders it 90%-opaque black to match the text.
+// The svg is solid black; render it at 50% opacity to match the plugin icon everywhere else.
 const cornerIconCss = css`
   width: 12px;
   height: 12px;
-  opacity: 0.9;
+  opacity: 0.5;
 `;
 
 const overlayCss = css`

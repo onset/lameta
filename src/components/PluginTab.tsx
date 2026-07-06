@@ -34,6 +34,7 @@ export const PluginTab = React.forwardRef<HTMLLIElement, PluginTabProps>(
             height: 1em;
             margin-right: 4px;
             vertical-align: -0.15em;
+            opacity: 0.5;
           `}
         />
         <span className="plugin-tab-label">{label}</span>

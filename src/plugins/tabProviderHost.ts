@@ -7,9 +7,8 @@
 // which tabs it wants for the selected file. The provider's companions.* calls are scoped (by the
 // bridge) to the file being queried, so it decides live (e.g. `companions.exists(<media>.eaf)`).
 
-import Path from "path";
-import * as URL from "url";
 import { PluginHostBridge } from "./PluginHostBridge";
+import { pluginAssetUrl } from "./pluginScheme";
 import pluginManager, { PluginRecord } from "./PluginManager";
 import { PluginTabMatch } from "./PluginManifest";
 import { tabMatchesFile } from "./pluginMatching";
@@ -106,9 +105,8 @@ class TabProviderHost {
       iframe.style.display = "none";
       iframe.setAttribute("aria-hidden", "true");
       iframe.setAttribute("data-lameta-tab-provider", record.id);
-      iframe.src = URL.pathToFileURL(
-        Path.join(record.directory, entry)
-      ).toString();
+      // Same custom secure scheme as the visible content iframe (origin consistency).
+      iframe.src = pluginAssetUrl(record.id, entry);
 
       const context: PluginTabProviderContext = {
         apiVersion: record.manifest!.apiVersion,

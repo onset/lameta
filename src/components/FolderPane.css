@@ -21,7 +21,7 @@
   color: rgba(0, 0, 0, 0.9);
 }
 .folderPane .fileTabsList .react-tabs__tab img {
-  opacity: 0.9;
+  opacity: 0.5;
 }
 
 .folderPane .react-tabs__tab-panel--selected {

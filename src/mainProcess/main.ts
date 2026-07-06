@@ -7,11 +7,21 @@ process.env.PUBLIC = app.isPackaged
 import { dialog } from "electron";
 
 import { is } from "@electron-toolkit/utils";
-import { app, BrowserWindow, shell, ipcMain, screen, session } from "electron";
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  screen,
+  session,
+  protocol,
+  net
+} from "electron";
 import { release } from "os";
 import { join } from "path";
 import { mkdirSync } from "fs";
 import * as path from "path";
+import { pathToFileURL } from "url";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { initLaunchTest } from "./launchTest";
@@ -33,6 +43,27 @@ if (
 ) {
   app.commandLine.appendSwitch("remote-debugging-port", "9222");
 }
+
+// Plugin iframes are served from this registered, privileged+secure custom scheme rather
+// than file://. A file:// subframe is an *opaque* origin, and Chromium refuses to delegate
+// powerful Permissions-Policy features (microphone/camera) to an opaque origin — so
+// `allow="microphone"` on the iframe is silently dropped and getUserMedia throws
+// NotAllowedError (the plugin recorder then shows "No microphone / No devices found").
+// A real tuple origin (lameta-plugin://<pluginId>/…) *can* receive the delegation.
+// registerSchemesAsPrivileged must run before the app 'ready' event, hence module scope.
+// `standard` gives normal (relative-URL-resolving) origin semantics; `secure` marks it a
+// secure context; `supportFetchAPI`/`stream` let the plugin's fetch/worklet/module loads work.
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "lameta-plugin",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      stream: true
+    }
+  }
+]);
 
 // In normal runs we enforce a single instance. For E2E we allow parallel instances
 // so tests can launch while a developer has `yarn dev` running. The E2E harness
@@ -138,6 +169,21 @@ async function createWindow() {
     (webContents, permission, callback) => callback(true)
   );
 
+  // getUserMedia for `media` runs a synchronous permission *check* first; if that is
+  // denied it never reaches the request handler above and the plugin sees
+  // NotAllowedError (its recorder then shows "No microphone / No devices found").
+  // Electron's default check rejects `media` for the plugin iframes (a cross-origin
+  // file:// subframe: `webContents` is null and `requestingOrigin` is the file origin),
+  // so we must also grant here for the mic to work. Same allow-all stance as the
+  // request handler; narrow later by inspecting `permission` / `requestingOrigin`.
+  session.defaultSession.setPermissionCheckHandler(
+    (webContents, permission, requestingOrigin, details) => true
+  );
+
+  // Allow device enumeration/selection (mic device chosen by getUserMedia) without a
+  // chooser; without this, device labels stay empty and selection can be blocked.
+  session.defaultSession.setDevicePermissionHandler((details) => true);
+
   if (process.env.VITE_DEV_SERVER_URL) {
     console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
     // electron-vite-vue#298
@@ -182,7 +228,45 @@ async function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+// pluginId -> absolute plugin directory on disk. The renderer's PluginManager owns plugin
+// discovery (it runs with nodeIntegration), so it registers the current map here whenever it
+// (re)scans. The lameta-plugin:// handler resolves requests against this. Keys are lowercased
+// because URL parsing lowercases the host component.
+const pluginDirById = new Map<string, string>();
+ipcMain.handle(
+  "plugins:registerDirs",
+  (_event, entries: { id: string; directory: string }[]) => {
+    pluginDirById.clear();
+    for (const e of entries || [])
+      if (e && e.id && e.directory)
+        pluginDirById.set(e.id.toLowerCase(), e.directory);
+    return true;
+  }
+);
+
+// Serve lameta-plugin://<pluginId>/<assetPath> from that plugin's directory. Serves ALL
+// assets (index.html, hashed JS chunks, the recorder's AudioWorklet), not just the entry.
+// Must be registered after 'ready'.
+function registerPluginProtocol(): void {
+  protocol.handle("lameta-plugin", (request) => {
+    const { host, pathname } = new URL(request.url);
+    const dir = pluginDirById.get(host.toLowerCase());
+    if (!dir) return new Response("unknown plugin", { status: 404 });
+    const rel = decodeURIComponent(pathname).replace(/^\/+/, "") || "index.html";
+    const pathToServe = path.resolve(dir, rel);
+    // Reject paths that escape the plugin directory (e.g. lameta-plugin://id/../../secret).
+    const relative = path.relative(dir, pathToServe);
+    const isSafe =
+      !!relative && !relative.startsWith("..") && !path.isAbsolute(relative);
+    if (!isSafe) return new Response("forbidden", { status: 403 });
+    return net.fetch(pathToFileURL(pathToServe).toString());
+  });
+}
+
+app.whenReady().then(() => {
+  registerPluginProtocol();
+  createWindow();
+});
 
 app.on("window-all-closed", () => {
   win = null;

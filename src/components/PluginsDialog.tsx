@@ -11,7 +11,7 @@ import extract from "extract-zip";
 import { app } from "@electron/remote";
 import pluginManager, { PluginRecord } from "../plugins/PluginManager";
 import { parsePluginManifest } from "../plugins/PluginManifest";
-import { revealInFolder, asyncTrash } from "../other/crossPlatformUtilities";
+import { asyncTrash } from "../other/crossPlatformUtilities";
 import { NotifyError, NotifyWarning } from "./Notify";
 import { lameta_dark_green } from "../containers/theme";
 import userSettings from "../other/UserSettings";
@@ -115,8 +115,10 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
   }
 }
 
-const PluginRow: React.FunctionComponent<{ record: PluginRecord }> = observer(
-  ({ record }) => {
+const PluginRow: React.FunctionComponent<{
+  record: PluginRecord;
+  showSource: boolean;
+}> = observer(({ record, showSource }) => {
     const name = record.manifest?.name || record.id;
     const version = record.manifest?.version || "";
     const description = record.manifest?.description || "";
@@ -145,7 +147,7 @@ const PluginRow: React.FunctionComponent<{ record: PluginRecord }> = observer(
         </td>
         <td>{version}</td>
         <td css={css`max-width: 260px;`}>{description}</td>
-        <td>{record.source}</td>
+        {showSource && <td>{record.source}</td>}
         <td>
           {record.source === "user" && (
             <a
@@ -188,6 +190,8 @@ export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
   };
 
   const plugins = pluginManager.plugins;
+  const showDeveloperUi =
+    userSettings.DeveloperMode || getTestEnvironment().E2E;
 
   return (
     <LametaDialog
@@ -227,21 +231,27 @@ export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
                 <th>
                   <Trans>Description</Trans>
                 </th>
-                <th>
-                  <Trans>Source</Trans>
-                </th>
+                {showDeveloperUi && (
+                  <th>
+                    <Trans>Source</Trans>
+                  </th>
+                )}
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {plugins.map((record) => (
-                <PluginRow key={record.id} record={record} />
+                <PluginRow
+                  key={record.id}
+                  record={record}
+                  showSource={showDeveloperUi}
+                />
               ))}
             </tbody>
           </table>
         )}
 
-        {(userSettings.DeveloperMode || getTestEnvironment().E2E) && (
+        {showDeveloperUi && (
           <div
             css={css`
               margin-top: 20px;
@@ -321,18 +331,6 @@ export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
             }}
           >
             <Trans>Install plugin…</Trans>
-          </DialogButton>
-          <DialogButton
-            onClick={() => {
-              const dir = pluginManager.userPluginsDir;
-              fs.ensureDirSync(dir);
-              revealInFolder(dir);
-            }}
-          >
-            <Trans>Open plugins folder</Trans>
-          </DialogButton>
-          <DialogButton onClick={() => pluginManager.reload()}>
-            <Trans>Reload plugins</Trans>
           </DialogButton>
         </DialogBottomLeftButtons>
         <DialogButton default={true} onClick={() => setOpen(false)}>
