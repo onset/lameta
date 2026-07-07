@@ -226,9 +226,12 @@ export function csvEncode(value: string): string {
   let needsQuotes = false;
   needsQuotes = value.indexOf(",") > -1;
 
-  // mac,linux, windows all have an \r, so that's
-  // enough, even though windows also has \n.
+  // A field containing any line break must be quoted, or the embedded
+  // newline splits the record. Check both \r and \n: a pasted value can
+  // contain a bare \n with no \r, and the row delimiter is os.EOL, which
+  // is a bare \n on mac/linux (so an unquoted \n would break the row there).
   needsQuotes = needsQuotes || value.indexOf("\r") > -1;
+  needsQuotes = needsQuotes || value.indexOf("\n") > -1;
 
   // LAM-115: https://linear.app/lameta/issue/LAM-115
   // If the value contains quotes, we must wrap the entire value in quotes.
