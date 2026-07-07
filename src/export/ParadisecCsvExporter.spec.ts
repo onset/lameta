@@ -68,4 +68,43 @@ describe("Paradisec session csv export", () => {
     );
     expect(first).toContain("Heole");
   });
+
+  it("should flatten line separators in item descriptions", () => {
+    const projectWithLineBreaks = Project.fromDirectory("sample data/Edolo sample");
+    const sessionWithLineBreaks = projectWithLineBreaks.sessions.items[0];
+    const description =
+      "On spine: Mon intervent 1/12/77\nOn back cover: Solomon Is.\u2028On reel: N 1";
+
+    sessionWithLineBreaks.properties.setText("description", description);
+
+    const csv = makeParadisecSessionCsv(projectWithLineBreaks, (f) => true);
+    const parsed = parseSync(csv, { relax_column_count: true });
+    const descriptionColumn = parsed[0].indexOf("Item Description");
+    const itemDescription = parsed[1][descriptionColumn];
+
+    expect(descriptionColumn).toBeGreaterThan(-1);
+    expect(itemDescription).toContain(
+      "On spine: Mon intervent 1/12/77 On back cover: Solomon Is. On reel: N 1"
+    );
+    expect(itemDescription).not.toContain("| description:");
+    expect(itemDescription).not.toMatch(/[\r\n\u0085\u2028\u2029]/);
+  });
+
+  it("should not duplicate the description field in item descriptions", () => {
+    const projectWithDescription = Project.fromDirectory("sample data/Edolo sample");
+    const sessionWithDescription = projectWithDescription.sessions.items[0];
+
+    sessionWithDescription.properties.setText(
+      "description",
+      "Sticker on cover: 3-2/59"
+    );
+
+    const csv = makeParadisecSessionCsv(projectWithDescription, (f) => true);
+    const parsed = parseSync(csv, { relax_column_count: true });
+    const descriptionColumn = parsed[0].indexOf("Item Description");
+    const itemDescription = parsed[1][descriptionColumn];
+
+    expect(itemDescription).toContain("Sticker on cover: 3-2/59");
+    expect(itemDescription).not.toContain("| description: Sticker on cover: 3-2/59");
+  });
 });

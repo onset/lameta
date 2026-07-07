@@ -194,6 +194,7 @@ const sessionBlacklist = [
   "size",
   "type",
   "filename",
+  "description", // output as the leading Item Description content
   "id", // output in its own column
   "title", // output in its own column
   "languages", // output in its own column
@@ -208,17 +209,26 @@ function getDescriptionWithAllHomelessFields(
   relabel: (label: string) => string
 ): string {
   const descriptionComponents = [
-    folder.properties.getTextStringOrEmpty(descriptionField)
+    flattenLineSeparators(folder.properties.getTextStringOrEmpty(descriptionField))
   ];
   folder.properties.keys().forEach((key) => {
     if (blacklist.indexOf(key) < 0) {
-      const fieldContents = folder.properties.getTextStringOrEmpty(key);
+      const fieldContents = flattenLineSeparators(
+        folder.properties.getTextStringOrEmpty(key)
+      );
       if (fieldContents && fieldContents.length > 0) {
         descriptionComponents.push(`${relabel(key)}: ${fieldContents}`);
       }
     }
   });
   return descriptionComponents.join(" | ");
+}
+
+function flattenLineSeparators(value: string): string {
+  // PARADISEC consumers expect a single physical CSV line per item description,
+  // so normalize any embedded line separators to spaces before encoding.
+  // This also avoids accidental row splitting in spreadsheet imports.
+  return value.replace(/[\r\n\u0085\u2028\u2029]+/g, " ");
 }
 
 // Get 3 fields for each contributor: [role,first,last,role,first,last,role,first,last, etc]

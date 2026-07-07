@@ -133,6 +133,25 @@ describe("sessions csv export", () => {
   it("should contain right number of sessions", () => {
     expect(sessionMatrix.length).toBe(1 + 1);
   });
+  it("should preserve bare line feeds inside description fields", () => {
+    const projectWithLineFeeds = Project.fromDirectory("sample data/Edolo sample");
+    const sessionWithLineFeeds = projectWithLineFeeds.sessions.items[0];
+    const description = [
+      "On spine: Mon intervent 1/12/77",
+      "On back cover: Solomon Is.",
+      "On reel: N 1"
+    ].join("\n");
+
+    sessionWithLineFeeds.properties.setText("description", description);
+
+    const csv = makeCsvForSessions(projectWithLineFeeds, () => true);
+    const parsed = parseSync(csv, { relax_column_count: false });
+    const descriptionColumn = parsed[0].indexOf("description");
+
+    expect(parsed.length).toBe(2);
+    expect(descriptionColumn).toBeGreaterThan(-1);
+    expect(parsed[1][descriptionColumn]).toBe(description);
+  });
   it("should contain id", () => {
     expect(session(1, "id")).toBe("ETR009");
   });
