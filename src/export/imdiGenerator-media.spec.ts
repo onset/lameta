@@ -1,5 +1,6 @@
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
+import { kMediaStatsCacheKey } from "../model/file/File";
 import {
   setResultXml,
   xexpect as expect,
@@ -73,5 +74,32 @@ describe("Imdi generation for images", () => {
     setResultXml(xml!);
     expect(value("MediaFile/Type")).toBe("Audio");
     expect(value("MediaFile/Format")).toBe("audio/mpeg");
+  });
+
+  // Regression test: mediaStatsCache is internal bookkeeping (probed
+  // ffprobe/ExifReader results + the size/mtime used to invalidate them),
+  // not archival metadata, and must never show up in IMDI output.
+  it("does not leak the internal mediaStatsCache field into IMDI Keys", () => {
+    const session = project.sessions.items[0];
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, session, project);
+    const f = session.files.find((file) => file.type === "Audio");
+    assert(f !== undefined);
+
+    f!.setCachedMediaStats(
+      { Length: "42s", Format: "MPEG Audio" },
+      { sizeBytes: f!.getSizeInBytes(), mtimeMs: f!.getMtimeMs() }
+    );
+    expect(f!.getCachedMediaStats()).toBeTruthy();
+
+    const xml = gen.mediaFile(f!);
+    setResultXml(xml!);
+
+    // Check case-insensitively: the Keys writer runs the raw property key
+    // through capitalCase() for the @Name attribute, so a literal-casing
+    // check on "mediaStatsCache" would miss a leak.
+    expect(xml!.toLowerCase()).not.toContain(kMediaStatsCacheKey.toLowerCase());
+    // And check that the actual cached values don't show up anywhere either.
+    expect(xml).not.toContain("MPEG Audio");
+    expect(xml).not.toContain("42s");
   });
 });
