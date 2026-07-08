@@ -311,6 +311,22 @@ export default class LametaMenu {
           enabled: !Project.getMultilingualConversionPending(),
           click: () =>
             (userSettings.ShowLanguageTags = !userSettings.ShowLanguageTags)
+        },
+        {
+          label: t`Automatically make cloud files available if smaller than`,
+          submenu: [
+            { mb: 0, label: t`Never` },
+            { mb: 1, label: "1 MB" },
+            { mb: 10, label: "10 MB" },
+            { mb: 100, label: "100 MB" },
+            { mb: 1024, label: "1 GB" },
+            { mb: Infinity, label: t`Always` }
+          ].map(({ mb, label }) => ({
+            label,
+            type: "radio",
+            checked: userSettings.AutoFetchCloudFilesUnderMB === mb,
+            click: () => (userSettings.AutoFetchCloudFilesUnderMB = mb)
+          }))
         }
       ]
     };

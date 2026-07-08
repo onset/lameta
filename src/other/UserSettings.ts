@@ -33,6 +33,8 @@ export class UserSettings {
   private sendErrors: boolean;
   private ignoreFileNamingRules: boolean; // for testing only
   private disableSavingProjectData: boolean; // DEBUG: flag to prevent saving project data during testing
+  // 0 = never auto-fetch cloud-only files, Infinity = always auto-fetch, regardless of size.
+  private autoFetchCloudFilesUnderMB: number;
 
   private clientId: string;
 
@@ -46,6 +48,7 @@ export class UserSettings {
       | "sendErrors"
       | "ignoreFileNamingRules"
       | "disableSavingProjectData"
+      | "autoFetchCloudFilesUnderMB"
     >(this, {
       showIMDI: observable,
       paradisecMode: observable,
@@ -55,6 +58,7 @@ export class UserSettings {
       sendErrors: observable,
       ignoreFileNamingRules: observable,
       disableSavingProjectData: observable,
+      autoFetchCloudFilesUnderMB: observable,
       HowUsing: computed
     });
 
@@ -118,6 +122,14 @@ export class UserSettings {
       "disableSavingProjectData",
       false
     );
+    // JSON (and thus electron-store) cannot round-trip Infinity, so "always" is
+    // persisted as the sentinel -1 and translated back here.
+    const storedAutoFetchUnderMB = this.store.get(
+      "autoFetchCloudFilesUnderMB",
+      10
+    );
+    this.autoFetchCloudFilesUnderMB =
+      storedAutoFetchUnderMB === -1 ? Infinity : storedAutoFetchUnderMB;
   }
 
   public get SendErrors() {
@@ -196,6 +208,17 @@ export class UserSettings {
   public set DisableSavingProjectData(disable: boolean) {
     this.disableSavingProjectData = disable;
     this.store.set("disableSavingProjectData", disable);
+  }
+  // 0 = never auto-fetch cloud-only files; Infinity = always auto-fetch, regardless of size.
+  public get AutoFetchCloudFilesUnderMB() {
+    return this.autoFetchCloudFilesUnderMB;
+  }
+  public set AutoFetchCloudFilesUnderMB(mb: number) {
+    this.autoFetchCloudFilesUnderMB = mb;
+    this.store.set(
+      "autoFetchCloudFilesUnderMB",
+      mb === Infinity ? -1 : mb
+    );
   }
   public get Email() {
     return this.store.get("email", "");

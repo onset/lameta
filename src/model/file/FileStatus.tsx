@@ -9,10 +9,17 @@ import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaF
 import { Button } from "@mui/material"; // Update this import
 
 import { t, Trans } from "@lingui/macro";
-import { error_color, lameta_orange } from "../../containers/theme";
+import {
+  error_color,
+  lameta_blue,
+  lameta_dark_blue,
+  lameta_orange
+} from "../../containers/theme";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { observer } from "mobx-react";
 import { Folder } from "../Folder/Folder";
+import { CloudFileFetchControl } from "../../components/CloudFilePanel";
+const filesize = require("filesize");
 
 export function getStatusOfFile(f: File): {
   missing: boolean;
@@ -22,7 +29,8 @@ export function getStatusOfFile(f: File): {
     | "missing"
     | "goodLink"
     | "copyInProgress"
-    | "noMediaFolderConnection";
+    | "noMediaFolderConnection"
+    | "cloudOnly";
   info: string;
 } {
   if (f.copyInProgress) {
@@ -41,6 +49,16 @@ export function getStatusOfFile(f: File): {
         id: "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}",
         values: { path: f.getActualFilePath() }
       })
+    };
+  }
+
+  // Read only the observable cloudStatus here -- this runs per row on every
+  // render, so it must never call fswin/getCloudFileStatus() itself.
+  if (f.isCloudFileNotPresent) {
+    return {
+      missing: false,
+      status: "cloudOnly",
+      info: t`This file is online-only (OneDrive). Select it to see how to make it available on this device.`
     };
   }
 
@@ -130,6 +148,8 @@ export function getLinkStatusIconPath(f: File): string {
       return "assets/noMediaFolder.png";
     case "fileNamingProblem":
       return "assets/error.png";
+    case "cloudOnly":
+      return "assets/cloud.svg";
     default:
       return "";
   }
@@ -141,13 +161,56 @@ export const FileStatusBlock: React.FunctionComponent<{
   folder: Folder;
 }> = observer((props) => {
   const fileStatus = getStatusOfFile(props.file);
+
+  if (
+    fileStatus.status === "normalFile" ||
+    fileStatus.status === "goodLink"
+  ) {
+    return null;
+  }
+
+  if (fileStatus.status === "cloudOnly") {
+    const sizeLabel = filesize(props.file.getSizeInBytes(), { round: 0 });
+    return (
+      <div
+        css={css`
+          display: flex;
+          flex-direction: column;
+          margin: 10px;
+          margin-left: 0;
+          padding: 20px;
+          border-radius: 4px;
+          background-color: ${lameta_blue};
+          color: ${lameta_dark_blue};
+        `}
+      >
+        <p
+          css={css`
+            margin-block-start: 0;
+            margin-block-end: 0;
+            font-size: 16px;
+          `}
+        >
+          {fileStatus.info} ({sizeLabel})
+        </p>
+        <div
+          css={css`
+            align-self: flex-end;
+            margin-top: 10px;
+          `}
+        >
+          <CloudFileFetchControl file={props.file} />
+        </div>
+      </div>
+    );
+  }
+
   const color =
     fileStatus.status === "noMediaFolderConnection"
       ? lameta_orange
       : error_color;
 
-  return fileStatus.status === "normalFile" ||
-    fileStatus.status === "goodLink" ? null : (
+  return (
     <div
       css={css`
         display: flex;
