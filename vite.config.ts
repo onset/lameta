@@ -44,7 +44,7 @@ export default defineConfig({
     // and electron-builder.json5 leaves them out of the installer.
     sourcemap: "hidden",
     rollupOptions: {
-      external: ["ts-node"]
+      external: ["ts-node", "fswin"]
     }
   },
   plugins: [
