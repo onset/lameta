@@ -30,7 +30,15 @@ import HighlightSearchTerm from "./HighlightSearchTerm";
 import { lameta_orange } from "../containers/theme";
 import SearchIcon from "@mui/icons-material/Search";
 import { getTestEnvironment } from "../getTestEnvironment";
+import {
+  AutoFetchCloudFiles,
+  mbToBytes
+} from "../other/autoFetchCloudFiles";
 const electron = require("electron");
+
+// Throttle window-focus-triggered cloud status refreshes so that rapid
+// alt-tabbing doesn't hammer the filesystem for every file in the folder.
+const kWindowFocusRefreshThrottleMs = 5000;
 export const _FileList: React.FunctionComponent<{
   folder: Folder;
   extraButtons?: object[];
@@ -64,6 +72,33 @@ export const _FileList: React.FunctionComponent<{
 
   const { searchTerm } = React.useContext(SearchContext);
   const highlight = (text: string) => <HighlightSearchTerm text={text} />;
+
+  // Debounced/capped auto-fetch of small cloud-only files as the selection
+  // rests on them. One scheduler per mounted FileList (i.e. per folder).
+  const autoFetchSchedulerRef = React.useRef<AutoFetchCloudFiles>();
+  if (!autoFetchSchedulerRef.current) {
+    autoFetchSchedulerRef.current = new AutoFetchCloudFiles();
+  }
+  React.useEffect(() => {
+    return () => autoFetchSchedulerRef.current?.dispose();
+  }, []);
+
+  // Refresh cloud status of this folder's files when the window regains
+  // focus (e.g. after OneDrive finishes syncing in the background), but no
+  // more often than every few seconds.
+  const lastFocusRefreshRef = React.useRef(0);
+  React.useEffect(() => {
+    const onFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusRefreshRef.current < kWindowFocusRefreshThrottleMs) {
+        return;
+      }
+      lastFocusRefreshRef.current = now;
+      props.folder.files.forEach((f) => f.updateCloudStatus());
+    };
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [props.folder]);
 
   const fileHasMetadataMatch = (file: any, trimmed: string): boolean => {
     if (!trimmed || !file) return false;
@@ -361,6 +396,11 @@ export const _FileList: React.FunctionComponent<{
                   }
                   props.folder.selectedFile = rowInfo.original;
                   setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
+                  file.updateCloudStatus();
+                  autoFetchSchedulerRef.current?.onSelectionChanged(
+                    file,
+                    mbToBytes(userSettings.AutoFetchCloudFilesUnderMB)
+                  );
                 }
               },
               className:
