@@ -258,6 +258,52 @@ Your persisted data lives at:
 The `plugin-data/` subfolder is invisible to lameta's file list, so your files never show up as
 phantom rows and are not swept into `.meta` metadata. Sidecars are keyed by the **file name**.
 
+For per-user, per-machine preferences that shouldn't travel with the project, see "User
+preferences (machine-local)" below instead.
+
+## User preferences (machine-local)
+
+Not everything a plugin remembers belongs in the project. Pick the store that matches what
+you're persisting:
+
+- **`localStorage`** — a preference that belongs to *this user, on this machine* (a zoom level,
+  a last-used option, "don't show this again"). Never travels with the project.
+- **Sidecars** (`readSidecar`/`writeSidecar`) — data about the specific selected file that
+  should travel with the project (annotations, segment lists).
+- **Companion files** (`api.companions`) — user-visible sibling files next to the media, meant
+  to be read by other tools too (ELAN, SayMore).
+
+Plugin iframes are served from a real, stable origin — `lameta-plugin://<pluginId>` — so plain
+`localStorage` works exactly like it does on any web page: it's automatically namespaced per
+plugin (one plugin can never see another's data), it's written into lameta's own user-data
+profile on this machine rather than the project folder, and it survives app restarts and even
+uninstalling and reinstalling the plugin.
+
+`localStorage` only stores strings, so `JSON.stringify`/`JSON.parse` anything structured:
+
+```js
+const ZOOM_KEY = "zoom";
+let zoom = Number(localStorage.getItem(ZOOM_KEY)) || 1;
+
+zoomSlider.addEventListener("input", () => {
+  zoom = Number(zoomSlider.value);
+  localStorage.setItem(ZOOM_KEY, String(zoom));
+});
+```
+
+Your tab provider's hidden iframe and your content iframe share the same origin, so they share
+the same `localStorage`. The standard DOM `storage` event fires in your *other* iframe when one
+of them writes (verified), so live sync is possible — but the simple pattern is to just read
+whatever you need at load time.
+
+`sessionStorage` and `IndexedDB` are available on the same per-plugin-origin basis; reach for
+IndexedDB instead of `localStorage` once you're storing anything sizeable (`localStorage`'s
+~5MB limit is easy to hit).
+
+> **Caveat:** these stores are keyed to your manifest's `id`. Changing `id` gives you a fresh
+> origin and orphans everything you previously stored — the same shape of problem as renaming a
+> session orphaning its sidecars (see "Known limitations" below).
+
 ## Lifecycle & the eager-persistence rule
 
 **Your iframe is bound to exactly one file for its lifetime.** lameta creates it when its tab

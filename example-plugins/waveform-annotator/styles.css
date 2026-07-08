@@ -21,3 +21,12 @@
 #label-input {
   min-width: 200px;
 }
+
+.zoom-label {
+  color: var(--lameta-muted);
+  margin-left: 8px;
+}
+
+#zoom-slider {
+  width: 120px;
+}
