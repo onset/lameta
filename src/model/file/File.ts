@@ -3,7 +3,7 @@ import * as xml2js from "xml2js";
 import fs from "fs";
 import * as Path from "path";
 const filesize = require("filesize");
-import { makeObservable, observable } from "mobx";
+import { makeObservable, observable, runInAction } from "mobx";
 import * as mobx from "mobx";
 import assert from "assert";
 const camelcase = require("camelcase");
@@ -36,6 +36,11 @@ import { PatientFS } from "../../other/patientFile";
 import { t } from "@lingui/macro";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import userSettings from "../../other/UserSettings";
+import {
+  CloudFileStatus,
+  getCloudFileStatus,
+  hydrateFile
+} from "../../other/cloudFileStatus";
 
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
@@ -83,6 +88,10 @@ export /*babel doesn't like this: abstract*/ class File {
   public copyInProgress: boolean;
 
   public copyProgress: string;
+
+  public cloudStatus: CloudFileStatus = "unknown";
+
+  private hydratingPromise: Promise<void> | undefined;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
@@ -384,6 +393,7 @@ export /*babel doesn't like this: abstract*/ class File {
       describedFileOrLinkFilePath: observable,
       copyInProgress: observable,
       copyProgress: observable,
+      cloudStatus: observable,
       properties: observable,
       contributions: observable
     });
@@ -463,6 +473,47 @@ export /*babel doesn't like this: abstract*/ class File {
       return this.describedFileOrLinkFilePath;
     }
   }
+  public updateCloudStatus(): void {
+    // Never clobber "hydrating" -- makeAvailableOffline() owns that transition
+    // and polls until the file is actually local.
+    if (this.cloudStatus === "hydrating") {
+      return;
+    }
+    this.cloudStatus = getCloudFileStatus(this.getActualFilePath());
+  }
+
+  public get isCloudFileNotPresent(): boolean {
+    return this.cloudStatus === "cloudOnly" || this.cloudStatus === "hydrating";
+  }
+
+  public async makeAvailableOffline(): Promise<void> {
+    if (this.cloudStatus === "hydrating" && this.hydratingPromise) {
+      return this.hydratingPromise;
+    }
+
+    runInAction(() => {
+      this.cloudStatus = "hydrating";
+    });
+
+    this.hydratingPromise = (async () => {
+      try {
+        await hydrateFile(this.getActualFilePath());
+        runInAction(() => {
+          this.cloudStatus = "local";
+        });
+      } catch (e) {
+        runInAction(() => {
+          this.cloudStatus = "cloudOnly";
+        });
+        throw e;
+      } finally {
+        this.hydratingPromise = undefined;
+      }
+    })();
+
+    return this.hydratingPromise;
+  }
+
   public getModifiedDate(): Date | undefined {
     // when you drag a file into the filelist, it doesn't have a modifiedDate
     if (this.properties.getHasValue("modifiedDate"))
@@ -477,6 +528,7 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     const stats = fs.statSync(this.getActualFilePath());
+    this.updateCloudStatus();
 
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);

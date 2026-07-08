@@ -6,7 +6,8 @@ import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
-import { describe, it } from "vitest";
+import { describe, it, afterEach } from "vitest";
+import { setAttributeReaderForTests } from "../../other/cloudFileStatus";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
@@ -446,5 +447,39 @@ describe("Genre normalization during reading", () => {
     } catch (e) {
       console.error("could not remove test folder " + tmpFolder);
     }
+  });
+});
+
+describe("File cloudStatus", () => {
+  afterEach(() => {
+    setAttributeReaderForTests(undefined);
+  });
+
+  it("is set from the attribute reader when the file is loaded", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: true,
+      IS_RECALL_ON_OPEN: false
+    }));
+
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    expect(f.cloudStatus).toBe("cloudOnly");
+    expect(f.isCloudFileNotPresent).toBe(true);
+  });
+
+  it("reports local and not-cloud-file-not-present for a normal file", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false
+    }));
+
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    expect(f.cloudStatus).toBe("local");
+    expect(f.isCloudFileNotPresent).toBe(false);
   });
 });

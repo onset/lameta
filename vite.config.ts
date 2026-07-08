@@ -19,7 +19,7 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     rollupOptions: {
-      external: ["ts-node"]
+      external: ["ts-node", "fswin"]
     }
   },
   plugins: [

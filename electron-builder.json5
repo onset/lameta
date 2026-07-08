@@ -56,6 +56,7 @@
     "!node_modules/ffmpeg-ffprobe-static/bin/*/ffmpeg*"
   ],
   extraFiles: [],
+  asarUnpack: ["**/node_modules/fswin/**"],
   directories: {
     buildResources: "resources",
     output: "release"
