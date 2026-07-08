@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import * as fs from "fs-extra";
-import * as temp from "temp";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import {
   getCloudFileStatus,
   hydrateFile,
-  setAttributeReaderForTests
+  setAttributeReaderForTests,
+  setHydrationRunnerForTests,
+  HydrationRunner
 } from "./cloudFileStatus";
 
 describe("getCloudFileStatus", () => {
@@ -53,135 +53,102 @@ describe("getCloudFileStatus", () => {
 });
 
 describe("hydrateFile", () => {
-  let filePath: string;
-
-  beforeEach(() => {
-    filePath = temp.path({ suffix: ".bin" }) as string;
-    fs.writeFileSync(filePath, "pretend cloud-only file contents");
-  });
-
   afterEach(() => {
     setAttributeReaderForTests(undefined);
-    try {
-      fs.removeSync(filePath);
-    } catch (e) {
-      // ignore cleanup errors
-    }
+    setHydrationRunnerForTests(undefined);
   });
 
-  // Real (short) timers are used here rather than vi.useFakeTimers(), because
-  // hydrateFile's initial open()/read() is genuine, unmocked fs I/O -- under
-  // load (e.g. the full test suite) that real I/O can be slow enough that a
-  // fixed number of fake-timer advances races it and flakes.
-  it("resolves once polling observes the file has become local", async () => {
-    let pollCount = 0;
-    setAttributeReaderForTests(() => {
-      pollCount++;
-      const isLocalNow = pollCount > 3;
-      return {
-        IS_OFFLINE: !isLocalNow,
-        IS_RECALL_ON_DATA_ACCESS: !isLocalNow,
-        IS_RECALL_ON_OPEN: false
-      };
+  function abortError(): Error {
+    const e = new Error("Aborted");
+    e.name = "AbortError";
+    return e;
+  }
+
+  // A runner that never finishes on its own -- it only settles (by rejecting)
+  // when its signal aborts. Stands in for a hydration still in progress.
+  const runnerPendingUntilAbort: HydrationRunner = (_path, { signal }) =>
+    new Promise((_resolve, reject) => {
+      if (signal?.aborted) return reject(abortError());
+      signal?.addEventListener("abort", () => reject(abortError()), {
+        once: true
+      });
     });
 
-    await hydrateFile(filePath, { pollIntervalMs: 10 });
+  it("resolves when the hydration runner completes, forwarding progress", async () => {
+    const progress: Array<[number, number]> = [];
+    setHydrationRunnerForTests(async (_path, { onProgress }) => {
+      onProgress?.(50, 100);
+      onProgress?.(100, 100);
+    });
 
-    expect(pollCount).toBeGreaterThan(3);
+    await hydrateFile("C:/fake/media.bin", {
+      onProgress: (bytes, total) => progress.push([bytes, total])
+    });
+
+    expect(progress).toEqual([
+      [50, 100],
+      [100, 100]
+    ]);
   });
 
-  it("rejects when the AbortSignal is aborted", async () => {
-    setAttributeReaderForTests(() => ({
-      IS_OFFLINE: true,
-      IS_RECALL_ON_DATA_ACCESS: true,
-      IS_RECALL_ON_OPEN: false
-    }));
-
+  it("throws AbortError immediately (without starting a hydration) if the signal is already aborted", async () => {
+    let started = false;
+    setHydrationRunnerForTests(async () => {
+      started = true;
+    });
     const controller = new AbortController();
-    const promise = hydrateFile(filePath, {
-      pollIntervalMs: 10,
+    controller.abort();
+
+    await expect(
+      hydrateFile("C:/fake/media.bin", { signal: controller.signal })
+    ).rejects.toMatchObject({ name: "AbortError" });
+    expect(started).toBe(false);
+  });
+
+  it("rejects with an AbortError when the signal is aborted mid-hydration", async () => {
+    setHydrationRunnerForTests(runnerPendingUntilAbort);
+    const controller = new AbortController();
+
+    const promise = hydrateFile("C:/fake/media.bin", {
       signal: controller.signal
     });
-    const expectation = expect(promise).rejects.toThrow();
-
-    setTimeout(() => controller.abort(), 25);
+    const expectation = expect(promise).rejects.toMatchObject({
+      name: "AbortError"
+    });
+    setTimeout(() => controller.abort(), 10);
 
     await expectation;
   });
 
-  it("rejects after timeoutMs elapses when the file never becomes local", async () => {
-    setAttributeReaderForTests(() => ({
-      IS_OFFLINE: true,
-      IS_RECALL_ON_DATA_ACCESS: true,
-      IS_RECALL_ON_OPEN: false
-    }));
+  it("rejects with a timeout error when the hydration does not finish within timeoutMs", async () => {
+    setHydrationRunnerForTests(runnerPendingUntilAbort);
 
-    const promise = hydrateFile(filePath, {
-      pollIntervalMs: 10,
-      timeoutMs: 30
-    });
-
-    await expect(promise).rejects.toThrow(/timed out/);
+    await expect(
+      hydrateFile("C:/fake/media.bin", { timeoutMs: 20 })
+    ).rejects.toThrow(/timed out/);
   });
 
-  it("rejects after repeated 'unknown' status instead of polling forever", async () => {
-    // simulates fswin being unreadable / erroring on every call
-    setAttributeReaderForTests(() => undefined);
-
-    const promise = hydrateFile(filePath, { pollIntervalMs: 10 });
-
-    await expect(promise).rejects.toThrow(/consecutive/);
-  });
-
-  it("does not give up on 'unknown' status if it recovers before the threshold", async () => {
-    let pollCount = 0;
-    setAttributeReaderForTests(() => {
-      pollCount++;
-      // "unknown" (undefined) a couple of times, then recover to local --
-      // should NOT trip the consecutive-unknown failure.
-      if (pollCount <= 2) {
-        return undefined;
-      }
-      return {
-        IS_OFFLINE: false,
-        IS_RECALL_ON_DATA_ACCESS: false,
-        IS_RECALL_ON_OPEN: false
-      };
+  it("propagates a hydration failure such as the cloud recall 'UNKNOWN' error", async () => {
+    setHydrationRunnerForTests(async () => {
+      const e: any = new Error("UNKNOWN: unknown error, read");
+      e.code = "UNKNOWN";
+      throw e;
     });
 
-    await hydrateFile(filePath, { pollIntervalMs: 10 });
-
-    expect(pollCount).toBeGreaterThan(2);
+    await expect(hydrateFile("C:/fake/media.bin")).rejects.toThrow(/UNKNOWN/);
   });
 
-  it("does not leak an abort listener on the signal after each poll", async () => {
-    let pollCount = 0;
-    setAttributeReaderForTests(() => {
-      pollCount++;
-      const isLocalNow = pollCount > 20;
-      return {
-        IS_OFFLINE: !isLocalNow,
-        IS_RECALL_ON_DATA_ACCESS: !isLocalNow,
-        IS_RECALL_ON_OPEN: false
-      };
+  it("removes its abort listener from the caller's signal after resolving (no leak)", async () => {
+    setHydrationRunnerForTests(async () => {
+      /* resolves immediately */
     });
-
     const controller = new AbortController();
     const addSpy = vi.spyOn(controller.signal, "addEventListener");
     const removeSpy = vi.spyOn(controller.signal, "removeEventListener");
 
-    await hydrateFile(filePath, {
-      pollIntervalMs: 1,
-      signal: controller.signal
-    });
+    await hydrateFile("C:/fake/media.bin", { signal: controller.signal });
 
-    // Each poll iteration calls sleep() once with this signal, which adds an
-    // "abort" listener; on normal (non-abort) resolution it must remove that
-    // same listener, or a multi-hour hydration would leak one per poll and
-    // eventually hit Node's MaxListenersExceededWarning.
-    expect(pollCount).toBeGreaterThan(20);
-    // one sleep() (and thus one addEventListener) per poll that wasn't yet local
-    expect(addSpy.mock.calls.length).toBeGreaterThan(0);
-    expect(removeSpy).toHaveBeenCalledTimes(addSpy.mock.calls.length);
+    expect(addSpy).toHaveBeenCalledTimes(1);
+    expect(removeSpy).toHaveBeenCalledTimes(1);
   });
 });
