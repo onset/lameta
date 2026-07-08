@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as fs from "fs-extra";
 import * as temp from "temp";
 import {
@@ -122,5 +122,66 @@ describe("hydrateFile", () => {
     });
 
     await expect(promise).rejects.toThrow(/timed out/);
+  });
+
+  it("rejects after repeated 'unknown' status instead of polling forever", async () => {
+    // simulates fswin being unreadable / erroring on every call
+    setAttributeReaderForTests(() => undefined);
+
+    const promise = hydrateFile(filePath, { pollIntervalMs: 10 });
+
+    await expect(promise).rejects.toThrow(/consecutive/);
+  });
+
+  it("does not give up on 'unknown' status if it recovers before the threshold", async () => {
+    let pollCount = 0;
+    setAttributeReaderForTests(() => {
+      pollCount++;
+      // "unknown" (undefined) a couple of times, then recover to local --
+      // should NOT trip the consecutive-unknown failure.
+      if (pollCount <= 2) {
+        return undefined;
+      }
+      return {
+        IS_OFFLINE: false,
+        IS_RECALL_ON_DATA_ACCESS: false,
+        IS_RECALL_ON_OPEN: false
+      };
+    });
+
+    await hydrateFile(filePath, { pollIntervalMs: 10 });
+
+    expect(pollCount).toBeGreaterThan(2);
+  });
+
+  it("does not leak an abort listener on the signal after each poll", async () => {
+    let pollCount = 0;
+    setAttributeReaderForTests(() => {
+      pollCount++;
+      const isLocalNow = pollCount > 20;
+      return {
+        IS_OFFLINE: !isLocalNow,
+        IS_RECALL_ON_DATA_ACCESS: !isLocalNow,
+        IS_RECALL_ON_OPEN: false
+      };
+    });
+
+    const controller = new AbortController();
+    const addSpy = vi.spyOn(controller.signal, "addEventListener");
+    const removeSpy = vi.spyOn(controller.signal, "removeEventListener");
+
+    await hydrateFile(filePath, {
+      pollIntervalMs: 1,
+      signal: controller.signal
+    });
+
+    // Each poll iteration calls sleep() once with this signal, which adds an
+    // "abort" listener; on normal (non-abort) resolution it must remove that
+    // same listener, or a multi-hour hydration would leak one per poll and
+    // eventually hit Node's MaxListenersExceededWarning.
+    expect(pollCount).toBeGreaterThan(20);
+    // one sleep() (and thus one addEventListener) per poll that wasn't yet local
+    expect(addSpy.mock.calls.length).toBeGreaterThan(0);
+    expect(removeSpy).toHaveBeenCalledTimes(addSpy.mock.calls.length);
   });
 });

@@ -71,16 +71,24 @@ export function getCloudFileStatus(path: string): CloudFileStatus {
 
 function sleep(ms: number, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve) => {
-    const timer = setTimeout(resolve, ms);
+    let onAbort: (() => void) | undefined;
+    const timer = setTimeout(() => {
+      // Normal (non-abort) resolution: must remove the listener ourselves --
+      // {once: true} only removes it when the "abort" event actually fires,
+      // so without this, hours-long polling (one sleep() call per poll, same
+      // long-lived signal) would leak one listener per poll and eventually
+      // hit Node's MaxListenersExceededWarning.
+      if (onAbort) {
+        signal?.removeEventListener("abort", onAbort);
+      }
+      resolve();
+    }, ms);
     if (signal) {
-      signal.addEventListener(
-        "abort",
-        () => {
-          clearTimeout(timer);
-          resolve();
-        },
-        { once: true }
-      );
+      onAbort = () => {
+        clearTimeout(timer);
+        resolve();
+      };
+      signal.addEventListener("abort", onAbort, { once: true });
     }
   });
 }
@@ -90,6 +98,11 @@ function makeAbortError(): Error {
   error.name = "AbortError";
   return error;
 }
+
+// If fswin can't be read (e.g. it fails to load, or errors on every call),
+// getCloudFileStatus() returns "unknown" forever. Since hydrateFile has no
+// default timeout, that would otherwise poll forever with no way out.
+const MAX_CONSECUTIVE_UNKNOWN_POLLS = 5;
 
 export async function hydrateFile(
   path: string,
@@ -118,12 +131,24 @@ export async function hydrateFile(
   }
 
   const startTime = Date.now();
+  let consecutiveUnknownCount = 0;
   // Note: if the caller aborts or the timeout is hit, we simply stop polling
   // here -- OneDrive keeps hydrating the file in the background regardless.
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    if (getCloudFileStatus(path) === "local") {
+    const status = getCloudFileStatus(path);
+    if (status === "local") {
       return;
+    }
+    if (status === "unknown") {
+      consecutiveUnknownCount++;
+      if (consecutiveUnknownCount >= MAX_CONSECUTIVE_UNKNOWN_POLLS) {
+        throw new Error(
+          `hydrateFile: could not determine cloud file status for ${consecutiveUnknownCount} consecutive polls, giving up: ${path}`
+        );
+      }
+    } else {
+      consecutiveUnknownCount = 0;
     }
     if (signal?.aborted) {
       throw makeAbortError();
