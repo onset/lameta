@@ -52,8 +52,9 @@ export const kLinkExtensionWithFullStop = ".link";
 
 // Property key under which probed media stats (ffprobe/ExifReader results)
 // are cached into the .meta file, alongside the file identity (size + mtime)
-// they were probed from.
-const kMediaStatsCacheKey = "mediaStatsCache";
+// they were probed from. Exported so exporters (IMDI, RO-Crate, CSV, ...) can
+// blacklist it -- it's internal bookkeeping, not metadata to archive.
+export const kMediaStatsCacheKey = "mediaStatsCache";
 
 interface IMediaStatsCachePayload {
   stats: Record<string, string>;

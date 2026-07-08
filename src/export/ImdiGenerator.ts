@@ -5,7 +5,7 @@ import * as XmlBuilder from "xmlbuilder";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
 import moment from "moment";
-import { File } from "../model/file/File";
+import { File, kMediaStatsCacheKey } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
 import { Set } from "typescript-collections";
@@ -706,7 +706,8 @@ export default class ImdiGenerator {
       "contributions",
       "access",
       "notes", // ELAR says not to export Notes to IMDI
-      "accessDescription" // output by addAccess()
+      "accessDescription", // output by addAccess()
+      kMediaStatsCacheKey // internal cache of probed media stats, not archival metadata
     ];
     if (target instanceof Person) {
       blacklist.push("description"); // gets its own element
