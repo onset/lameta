@@ -6,8 +6,9 @@ import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
-import { describe, it, afterEach } from "vitest";
+import { describe, it, afterEach, vi } from "vitest";
 import { setAttributeReaderForTests } from "../../other/cloudFileStatus";
+import { PatientFS } from "../../other/patientFile";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
@@ -446,6 +447,91 @@ describe("Genre normalization during reading", () => {
       fs.removeSync(tmpFolder);
     } catch (e) {
       console.error("could not remove test folder " + tmpFolder);
+    }
+  });
+});
+
+describe("File cached media stats", () => {
+  it("roundtrips cached stats through save/load", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    const identity = {
+      sizeBytes: f.getSizeInBytes(),
+      mtimeMs: f.getMtimeMs()
+    };
+    f.setCachedMediaStats({ Length: "1:02", Format: "MPEG Audio" }, identity);
+    f.save();
+
+    const f2 = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    expect(f2.getCachedMediaStats()).toEqual({
+      Length: "1:02",
+      Format: "MPEG Audio"
+    });
+  });
+
+  it("returns undefined when there is no cache yet", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.getCachedMediaStats()).toBeUndefined();
+  });
+
+  it("is stale (undefined) when the file's size has changed since caching", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    f.setCachedMediaStats(
+      { Length: "1:02" },
+      { sizeBytes: f.getSizeInBytes(), mtimeMs: f.getMtimeMs() }
+    );
+    f.save();
+
+    fs.appendFileSync(mediaFilePath, "more bytes, changing the size");
+
+    const f2 = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    expect(f2.getCachedMediaStats()).toBeUndefined();
+  });
+
+  it("is stale (undefined) when the file's mtime has changed since caching, even with the same size", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    f.setCachedMediaStats(
+      { Length: "1:02" },
+      { sizeBytes: f.getSizeInBytes(), mtimeMs: f.getMtimeMs() }
+    );
+    f.save();
+
+    const future = new Date(Date.now() + 60_000);
+    fs.utimesSync(mediaFilePath, future, future);
+
+    const f2 = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    expect(f2.getCachedMediaStats()).toBeUndefined();
+  });
+
+  it("does not rewrite the .meta file when setting identical cached stats again", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    const identity = {
+      sizeBytes: f.getSizeInBytes(),
+      mtimeMs: f.getMtimeMs()
+    };
+    f.setCachedMediaStats({ Length: "1:02" }, identity);
+    f.save();
+
+    const writeSpy = vi.spyOn(PatientFS, "writeFileSyncWithNotifyThenRethrow");
+    try {
+      f.setCachedMediaStats({ Length: "1:02" }, identity);
+      f.save();
+      expect(writeSpy).not.toHaveBeenCalled();
+    } finally {
+      writeSpy.mockRestore();
     }
   });
 });

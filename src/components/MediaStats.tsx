@@ -1,10 +1,10 @@
 import { css } from "@emotion/react";
 import { default as React, useState, useEffect } from "react";
+import { observer } from "mobx-react";
 import ReactTable from "react-table-6";
+import { t } from "@lingui/macro";
 import { File } from "../model/file/File";
 import ffmpeg from "fluent-ffmpeg";
-// import { i18n } from "../localization";
-// import { t } from "@lingui/macro";
 import ExifReader from "exifreader";
 import fs from "fs";
 import * as Path from "path";
@@ -12,7 +12,7 @@ import * as Path from "path";
 //const imagesize = require("image-size");
 const humanizeDuration = require("humanize-duration");
 
-type Stats = object;
+type Stats = Record<string, string>;
 
 let ffprobePath = require("ffmpeg-ffprobe-static").ffprobePath;
 //console.log("raw ffprobePath: " + ffprobePath);
@@ -21,51 +21,119 @@ ffprobePath = ffprobePath.replace("app.asar", "app.asar.unpacked");
 //console.log(`final ffprobePath: ${ffprobePath}`);
 ffmpeg.setFfprobePath(ffprobePath);
 
-export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {
-  const [message, setMessage] = useState<string>("Processing...");
-  const [stats, setStats] = useState<Stats>({});
+// The minimal shape decideMediaStatsFlow() needs from a File. Kept narrow
+// (rather than importing the whole `File` type) so this stays trivially
+// unit-testable with a plain object.
+export interface IMediaStatsCacheHost {
+  isCloudFileNotPresent: boolean;
+  getCachedMediaStats(): Record<string, string> | undefined;
+}
 
-  useEffect(() => {
-    getStatsFromFileAsync(props.file).then((s) => {
-      setStats(s);
-      setMessage("");
-    });
-  }, [props.file]);
+// Note: deliberately holds no user-facing text -- that's translated at
+// render/use time (see MediaStats below) so this stays both unit-testable
+// without an i18n context and fully localized for the user.
+export type MediaStatsFlow =
+  | { kind: "cached"; stats: Stats; recordedWhileCloudOnly: boolean }
+  | { kind: "blocked" }
+  | { kind: "probe" };
 
-  const columns = [
-    {
-      id: "key",
-      Header: "Stat",
-      width: 120,
-      accessor: (key) => key
-    },
-    {
-      id: "value",
-      Header: "Value",
-      //width: 200,
-      accessor: (key) => (stats[key] ? stats[key].toString() : "---")
-    }
-  ];
+// Decide, without touching the file's content, whether to show cached stats,
+// show a "not available on this device yet" message, or go probe the file.
+// Pulled out of the component so it can be unit-tested without React/ffmpeg/ExifReader.
+export function decideMediaStatsFlow(
+  file: IMediaStatsCacheHost
+): MediaStatsFlow {
+  const cached = file.getCachedMediaStats();
+  if (cached) {
+    return {
+      kind: "cached",
+      stats: cached,
+      recordedWhileCloudOnly: file.isCloudFileNotPresent
+    };
+  }
+  if (file.isCloudFileNotPresent) {
+    return { kind: "blocked" };
+  }
+  return { kind: "probe" };
+}
 
-  return (
-    <div>
-      {message.toString()}
-      <ReactTable
-        css={css`
-          border: solid red;
-          overflow: auto;
-        `}
-        className={"mediaStatsTable"}
-        showPagination={false}
-        defaultPageSize={10000}
-        data={Object.keys(stats)}
-        sorted={[{ id: "key", desc: false }]}
-        columns={columns}
-        minRows={0}
-      />
-    </div>
-  );
-};
+export const MediaStats: React.FunctionComponent<{ file: File }> = observer(
+  (props) => {
+    const [message, setMessage] = useState<string>("");
+    const [stats, setStats] = useState<Stats>({});
+
+    useEffect(() => {
+      const flow = decideMediaStatsFlow(props.file);
+      switch (flow.kind) {
+        case "cached":
+          setMessage("");
+          setStats(
+            flow.recordedWhileCloudOnly
+              ? {
+                  ...flow.stats,
+                  [t`Note`]: t`recorded when the file was last on this device`
+                }
+              : flow.stats
+          );
+          break;
+        case "blocked":
+          setMessage("");
+          setStats({
+            [t`Status`]: t`Available after this file is made available on this device`
+          });
+          break;
+        case "probe":
+          setMessage("Processing...");
+          getStatsFromFileAsync(props.file).then((s) => {
+            setStats(s);
+            setMessage("");
+            if (!s.error) {
+              props.file.setCachedMediaStats(s, {
+                sizeBytes: props.file.getSizeInBytes(),
+                mtimeMs: props.file.getMtimeMs()
+              });
+            }
+          });
+          break;
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.file, props.file.cloudStatus]);
+
+    const columns = [
+      {
+        id: "key",
+        Header: "Stat",
+        width: 120,
+        accessor: (key) => key
+      },
+      {
+        id: "value",
+        Header: "Value",
+        //width: 200,
+        accessor: (key) => (stats[key] ? stats[key].toString() : "---")
+      }
+    ];
+
+    return (
+      <div>
+        {message.toString()}
+        <ReactTable
+          css={css`
+            border: solid red;
+            overflow: auto;
+          `}
+          className={"mediaStatsTable"}
+          showPagination={false}
+          defaultPageSize={10000}
+          data={Object.keys(stats)}
+          sorted={[{ id: "key", desc: false }]}
+          columns={columns}
+          minRows={0}
+        />
+      </div>
+    );
+  }
+);
 
 function roundToOneDecimalPlace(n: number): number {
   return Math.round(10 * n) / 10;
@@ -115,7 +183,7 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
                   round: true
                 }
               );
-              stats["Format"] = result.format.format_long_name;
+              stats["Format"] = result.format.format_long_name ?? "";
               result.streams.forEach((stream) => {
                 processVideoStream(stream, stats);
               });
@@ -136,8 +204,10 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
 function processVideoStream(stream: ffmpeg.FfprobeStream, stats: Stats) {
   switch (stream.codec_type) {
     case "audio":
-      stats["Audio Codec"] = stream.codec_name;
-      stats["Audio Channels"] = stream.channels;
+      stats["Audio Codec"] = stream.codec_name ?? "";
+      if (stream.channels !== undefined) {
+        stats["Audio Channels"] = stream.channels.toString();
+      }
       if (stream.bit_rate) {
         const br = Number(stream.bit_rate);
         stats["Audio Bit Rate"] = Math.round(br / 1000).toString() + " Kbps";
@@ -152,7 +222,7 @@ function processVideoStream(stream: ffmpeg.FfprobeStream, stats: Stats) {
 
       break;
     case "video":
-      stats["Video Codec"] = stream.codec_name;
+      stats["Video Codec"] = stream.codec_name ?? "";
       if (stream.width && stream.height) {
         stats["Resolution"] = `${stream.width} x ${stream.height}`;
       }

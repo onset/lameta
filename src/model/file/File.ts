@@ -50,6 +50,17 @@ function getCannotRenameFileMsg() {
 
 export const kLinkExtensionWithFullStop = ".link";
 
+// Property key under which probed media stats (ffprobe/ExifReader results)
+// are cached into the .meta file, alongside the file identity (size + mtime)
+// they were probed from.
+const kMediaStatsCacheKey = "mediaStatsCache";
+
+interface IMediaStatsCachePayload {
+  stats: Record<string, string>;
+  sizeBytes: number;
+  mtimeMs: number;
+}
+
 export class Contribution {
   //review this @observable
   public personReference: string; // this is the contributor
@@ -92,6 +103,7 @@ export /*babel doesn't like this: abstract*/ class File {
   public cloudStatus: CloudFileStatus = "unknown";
 
   private hydratingPromise: Promise<void> | undefined;
+  private hydratingAbortController: AbortController | undefined;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
@@ -486,6 +498,80 @@ export /*babel doesn't like this: abstract*/ class File {
     return this.cloudStatus === "cloudOnly" || this.cloudStatus === "hydrating";
   }
 
+  // Size in bytes of the actual file on disk. For a cloud-only placeholder,
+  // fs.statSync() reports the eventual full size without triggering hydration
+  // (unlike opening/reading the file, which downloads it).
+  public getSizeInBytes(): number {
+    try {
+      return fs.statSync(this.getActualFilePath()).size;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // Modification time (ms since epoch) of the actual file on disk. Like
+  // getSizeInBytes(), this is safe to call on a cloud-only placeholder.
+  public getMtimeMs(): number {
+    try {
+      return fs.statSync(this.getActualFilePath()).mtimeMs;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // Returns media stats (e.g. from ffprobe/ExifReader) previously cached via
+  // setCachedMediaStats(), or undefined if there is none, or if the file's
+  // size/mtime no longer match what was recorded (i.e. the file has changed).
+  public getCachedMediaStats(): Record<string, string> | undefined {
+    const raw = this.getTextProperty(kMediaStatsCacheKey, "");
+    if (!raw) {
+      return undefined;
+    }
+    let parsed: IMediaStatsCachePayload | undefined;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      return undefined;
+    }
+    if (!parsed || !parsed.stats) {
+      return undefined;
+    }
+    if (
+      parsed.sizeBytes !== this.getSizeInBytes() ||
+      parsed.mtimeMs !== this.getMtimeMs()
+    ) {
+      return undefined;
+    }
+    return parsed.stats;
+  }
+
+  // Persist probed media stats into this file's .meta, along with the file
+  // identity (size + mtime) they were probed from, so future loads can serve
+  // them without re-probing (which, for a cloud-only file, would force a full
+  // download of its content). A no-op (and does not dirty the file) if the
+  // incoming value is identical to what's already cached.
+  public setCachedMediaStats(
+    stats: Record<string, string>,
+    identity: { sizeBytes: number; mtimeMs: number }
+  ): void {
+    const payload: IMediaStatsCachePayload = {
+      stats,
+      sizeBytes: identity.sizeBytes,
+      mtimeMs: identity.mtimeMs
+    };
+    const json = JSON.stringify(payload);
+    const isNewField = !this.properties.getValue(kMediaStatsCacheKey);
+    this.addTextProperty(kMediaStatsCacheKey, json, true, false, false);
+    // Creating a brand-new property on `properties` isn't itself observed by
+    // the mobx reaction that watches for changes to save (see
+    // recomputedChangeWatcher()); and setting an unchanged value on an
+    // existing field is already a no-op for mobx. So we only need to
+    // explicitly mark the file dirty when the field didn't exist before.
+    if (isNewField) {
+      this.wasChangeThatMobxDoesNotNotice();
+    }
+  }
+
   public async makeAvailableOffline(): Promise<void> {
     if (this.cloudStatus === "hydrating" && this.hydratingPromise) {
       return this.hydratingPromise;
@@ -495,9 +581,12 @@ export /*babel doesn't like this: abstract*/ class File {
       this.cloudStatus = "hydrating";
     });
 
+    this.hydratingAbortController = new AbortController();
+    const signal = this.hydratingAbortController.signal;
+
     this.hydratingPromise = (async () => {
       try {
-        await hydrateFile(this.getActualFilePath());
+        await hydrateFile(this.getActualFilePath(), { signal });
         runInAction(() => {
           this.cloudStatus = "local";
         });
@@ -508,10 +597,26 @@ export /*babel doesn't like this: abstract*/ class File {
         throw e;
       } finally {
         this.hydratingPromise = undefined;
+        this.hydratingAbortController = undefined;
       }
     })();
 
     return this.hydratingPromise;
+  }
+
+  // Stops *waiting* for hydration to complete; OneDrive may continue fetching
+  // the file in the background regardless. Safe to call even if nothing is
+  // in progress.
+  public async stopWaiting(): Promise<void> {
+    this.hydratingAbortController?.abort();
+    if (this.hydratingPromise) {
+      try {
+        await this.hydratingPromise;
+      } catch (e) {
+        // expected: aborting causes the pending makeAvailableOffline() to reject
+      }
+    }
+    this.updateCloudStatus();
   }
 
   public getModifiedDate(): Date | undefined {
