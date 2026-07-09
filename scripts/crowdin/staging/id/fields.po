@@ -1,0 +1,26 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Language: id\n"
+"mime-version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "lameta/project/collectionDescription"
+msgid "Description"
+msgstr "Deskripsi"
+
+msgctxt "lameta/project/collectionSubjectLanguages"
+msgid "Subject Languages"
+msgstr "Bahasa Subjek"
+
+msgctxt "lameta/project/collectionWorkingLanguages"
+msgid "Working Languages"
+msgstr "Bahasa Komunikasi"
+
+msgctxt "lameta/project/grantId"
+msgid "Project ID"
+msgstr "Kode Proyek"
+
+msgctxt "lameta/project/title"
+msgid "Title"
+msgstr "Judul"

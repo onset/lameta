@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Language: es\n"
+"mime-version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "lameta/person/customFields/tipOnUsingThisField"
+msgid ""
+"Use commas if you want multiple values. To remove a custom field, clear out "
+"the value everywhere you have used it, then restart lameta."
+msgstr ""
+"Use comas si usted desea valores múltiples. Para remover un campo "
+"personalizado, retire el valor en todos los sitios donde lo usó, depués "
+"reinicie lameta."
+
+msgctxt "lameta/project/collectionDescription"
+msgid "Description"
+msgstr "Descripción"
+
+msgctxt "lameta/project/collectionSubjectLanguages"
+msgid "Subject Languages"
+msgstr "Idiomas del Contenido"
+
+msgctxt "lameta/project/collectionWorkingLanguages"
+msgid "Working Languages"
+msgstr "Idiomas de Trabajo"
+
+msgctxt "lameta/project/grantId"
+msgid "Project ID"
+msgstr "ID del Proyecto"
+
+msgctxt "lameta/project/title"
+msgid "Title"
+msgstr "Título"
+
+msgctxt "lameta/session/customFields"
+msgid "Custom Fields"
+msgstr "Campos Personalizados"
+
+msgctxt "lameta/session/customFields/tipOnUsingThisField"
+msgid ""
+"Use commas if you want multiple values. To remove a custom field, clear out "
+"the value everywhere you have used it, then restart lameta."
+msgstr ""
+"Use comas si usted desea valores múltiples. Para remover un campo "
+"personalizado, retire el valor en todos los sitios donde lo usó, depués "
+"reinicie lameta."

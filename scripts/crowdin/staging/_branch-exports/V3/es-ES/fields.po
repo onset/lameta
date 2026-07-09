@@ -3,18 +3,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: saymorex\n"
 "X-Crowdin-Project-ID: 324607\n"
-"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-Language: es-ES\n"
 "X-Crowdin-File: /V3/fields.po\n"
 "X-Crowdin-File-ID: 70\n"
 "Project-Id-Version: saymorex\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Language-Team: Portuguese, Brazilian\n"
-"Language: pt_BR\n"
-"PO-Revision-Date: 2024-01-01 22:29\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"PO-Revision-Date: 2026-07-09 19:22\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
-msgstr "Ano de nascimento"
+msgstr "Año de nacimiento"
 
 msgctxt "lameta/person/birthYear/tipOnUsingThisField"
 msgid "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
@@ -24,9 +24,21 @@ msgctxt "lameta/person/code"
 msgid "Code"
 msgstr "Código"
 
+msgctxt "lameta/person/customFields"
+msgid "Custom Fields"
+msgstr "Campos definidos por el usuario"
+
+msgctxt "lameta/person/customFields/description"
+msgid "A table of labels and values for a person."
+msgstr ""
+
+msgctxt "lameta/person/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr ""
+
 msgctxt "lameta/person/description"
 msgid "Description"
-msgstr "Descrição"
+msgstr "Descripción"
 
 msgctxt "lameta/person/description/description"
 msgid "Relevant details such as where they learned the language(s)"
@@ -34,23 +46,23 @@ msgstr ""
 
 msgctxt "lameta/person/education"
 msgid "Education"
-msgstr "Educação"
+msgstr "Educación"
 
 msgctxt "lameta/person/ethnicGroup"
 msgid "Ethnic Group"
-msgstr "Grupo Étnico"
+msgstr "Grupo étnico"
 
 msgctxt "lameta/person/fathersLanguage"
 msgid "Father's Language"
-msgstr ""
+msgstr "Idioma del padre"
 
 msgctxt "lameta/person/gender"
 msgid "Gender"
-msgstr "Gênero"
+msgstr "Género"
 
 msgctxt "lameta/person/gender/choices"
 msgid "Unknown"
-msgstr "Desconhecido"
+msgstr "Desconocido"
 
 msgctxt "lameta/person/gender/choices"
 msgid "Male"
@@ -58,71 +70,75 @@ msgstr "Masculino"
 
 msgctxt "lameta/person/gender/choices"
 msgid "Female"
-msgstr "Feminino"
+msgstr "Femenino"
 
 msgctxt "lameta/person/gender/choices"
 msgid "Other"
-msgstr "Outro"
+msgstr "Otro"
 
 msgctxt "lameta/person/howToContact"
 msgid "How to Contact"
-msgstr ""
+msgstr "Información de contacto"
 
 msgctxt "lameta/person/languages"
 msgid "Languages"
-msgstr "Línguas"
+msgstr "Idiomas"
 
 msgctxt "lameta/person/mothersLanguage"
 msgid "Mother's Language"
-msgstr ""
+msgstr "Otros idiomas"
 
 msgctxt "lameta/person/name"
 msgid "Full Name"
-msgstr "Nome Completo"
+msgstr "Nombre completo"
 
 msgctxt "lameta/person/nickname"
 msgid "Nickname"
-msgstr "Apelido"
+msgstr "Sobrenombre"
 
 msgctxt "lameta/person/otherLanguages"
 msgid "Other Languages"
-msgstr ""
+msgstr "Otros idiomas"
 
 msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
-msgstr "Ocupação Principal"
+msgstr "Ocupación principal"
 
-msgctxt "lameta/project/accessProtocol"
-msgid "Access Protocol used by this project"
-msgstr "Protocolo de Acesso Usado Por Esse Projeto"
-
-msgctxt "lameta/project/analysisIso3CodeAndName"
-msgid "Working Language"
-msgstr "Língua de trabalho"
-
-msgctxt "lameta/project/collectionDescription"
-msgid "Collection Description"
+msgctxt "lameta/project/archiveConfigurationName"
+msgid "Archive Configuration used by this project"
 msgstr ""
 
-msgctxt "lameta/project/collectionName"
-msgid "Collection Name"
+msgctxt "lameta/project/collectionDeputySteward"
+msgid "Deputy Stewards"
+msgstr ""
+
+msgctxt "lameta/project/collectionDeputySteward/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr ""
+
+msgctxt "lameta/project/collectionDescription"
+msgid "Description"
+msgstr ""
+
+msgctxt "lameta/project/collectionKey"
+msgid "Collection Key"
 msgstr ""
 
 msgctxt "lameta/project/collectionSteward"
-msgid "Collection Steward"
+msgid "Steward"
 msgstr ""
 
-msgctxt "lameta/project/collectionTitle"
-msgid "Collection Title"
+msgctxt "lameta/project/collectionSubjectLanguages"
+msgid "Subject Languages"
+msgstr ""
+
+msgctxt "lameta/project/collectionWorkingLanguages"
+msgid "Working Languages"
 msgstr ""
 
 msgctxt "lameta/project/contactPerson"
-msgid "Contact Person"
-msgstr "Pessoa de Contato"
-
-msgctxt "lameta/project/contactPerson/description"
-msgid "Contact information about the person or institution responsible for the project."
-msgstr "Informações de contato sobre a pessoa ou instituição responsável pelo projeto."
+msgid "Project Lead"
+msgstr ""
 
 msgctxt "lameta/project/continent"
 msgid "Continent"
@@ -130,7 +146,7 @@ msgstr "Continente"
 
 msgctxt "lameta/project/continent/choices"
 msgid "unspecified"
-msgstr ""
+msgstr "no especificado"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Africa"
@@ -138,11 +154,11 @@ msgstr "África"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Asia"
-msgstr "Ásia"
+msgstr "Asia"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Australia"
-msgstr "Austrália"
+msgstr "Australia"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Europe"
@@ -150,103 +166,119 @@ msgstr "Europa"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Americas"
-msgstr ""
+msgstr "Américas"
 
 msgctxt "lameta/project/continent/choices"
 msgid "North-America"
-msgstr "América do Norte"
+msgstr "América del Norte"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Middle-America"
-msgstr "América Central"
+msgstr "Centroamérica"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Oceania"
-msgstr "Oceania"
+msgstr "Oceanía"
 
 msgctxt "lameta/project/continent/choices"
 msgid "South-America"
-msgstr "América do Sul"
+msgstr "Sudamérica"
 
 msgctxt "lameta/project/country"
 msgid "Country"
 msgstr "País"
 
 msgctxt "lameta/project/customAccessChoices"
-msgid "Custom access choices"
+msgid "Custom Session Access Choices"
 msgstr ""
 
 msgctxt "lameta/project/depositor"
-msgid "Depositor"
-msgstr "Depositante"
-
-msgctxt "lameta/project/depositor"
-msgid "Depositor"
-msgstr "Depositante"
+msgid "Depositors"
+msgstr ""
 
 msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward"
-msgid "Deputy Collection Stewards"
+msgctxt "lameta/project/fundingProjectAffiliation"
+msgid "Project Affiliation"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions"
-msgid "For multiple people, separate with commas"
+msgctxt "lameta/project/fundingProjectFunder"
+msgid "Funder"
 msgstr ""
 
 msgctxt "lameta/project/fundingProjectTitle"
 msgid "Funding Project Title"
-msgstr "Título do Projeto Patrocinador"
+msgstr "Título del Proyecto Financiado"
 
 msgctxt "lameta/project/grantId"
-msgid "Grant ID"
-msgstr "ID do Financiamento"
+msgid "Project ID"
+msgstr ""
 
 msgctxt "lameta/project/location"
 msgid "Location/Address"
-msgstr "Localização/Endereço"
+msgstr "Ubicación/Dirección"
 
-msgctxt "lameta/project/projectDescription"
-msgid "Description"
-msgstr "Descrição"
+msgctxt "lameta/project/metadataLanguages"
+msgid "Metadata Languages"
+msgstr ""
+
+msgctxt "lameta/project/metadataLanguages/description"
+msgid "Languages used in metadata fields throughout the project (e.g., descriptions, titles). These determine the language options available for multilingual text fields."
+msgstr ""
+
+msgctxt "lameta/project/multilingualConversionPending"
+msgid "Multilingual Conversion Pending"
+msgstr ""
+
+msgctxt "lameta/project/multilingualConversionPending/description"
+msgid "Internal flag: true if slash-syntax fields need conversion to tagged format"
+msgstr ""
 
 msgctxt "lameta/project/region"
 msgid "Region"
-msgstr "Região"
+msgstr "Región"
 
 msgctxt "lameta/project/title"
-msgid "Project ID"
-msgstr "ID do projeto"
-
-msgctxt "lameta/project/vernacularIso3CodeAndName"
-msgid "Subject Language"
+msgid "Title"
 msgstr ""
 
 msgctxt "lameta/session/access"
 msgid "Access"
-msgstr "Acesso"
+msgstr "Acceso"
 
 msgctxt "lameta/session/accessDescription"
 msgid "Access Explanation"
-msgstr "Explicação de Acesso"
+msgstr "Explicación de Acceso"
 
 msgctxt "lameta/session/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
-msgstr "Se o acesso não for aberto/gratuito, use isto para explicar o motivo."
+msgstr "Si el acceso no es abierto/libre, use esto para explicar por qué."
+
+msgctxt "lameta/session/customFields"
+msgid "Custom Fields"
+msgstr ""
+
+msgctxt "lameta/session/customFields/description"
+msgid "A table of labels and values for a session."
+msgstr ""
+
+msgctxt "lameta/session/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr ""
 
 msgctxt "lameta/session/date"
 msgid "Date"
-msgstr "Data"
+msgstr "Fecha"
 
 msgctxt "lameta/session/description"
 msgid "Description"
-msgstr "Descrição"
+msgstr "Descripción"
 
 msgctxt "lameta/session/genre"
 msgid "Genre"
-msgstr "Gênero"
+msgstr "Género"
 
 msgctxt "lameta/session/id"
 msgid "ID"
@@ -254,11 +286,11 @@ msgstr "ID"
 
 msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
-msgstr "Envolvimento do Pesquisador"
+msgstr "Intervención del Investigador"
 
 msgctxt "lameta/session/involvement/choices"
 msgid "unspecified"
-msgstr ""
+msgstr "no especificado"
 
 msgctxt "lameta/session/involvement/choices"
 msgid "//leaving out until Windows SayMore can handle it: unknown"
@@ -270,11 +302,11 @@ msgstr "elicitado"
 
 msgctxt "lameta/session/involvement/choices"
 msgid "non-elicited"
-msgstr "não-elicitado"
+msgstr "no elicitado"
 
 msgctxt "lameta/session/involvement/choices"
 msgid "no-observer"
-msgstr "sem-observador"
+msgstr "sin observador"
 
 msgctxt "lameta/session/keyword"
 msgid "Keywords"
@@ -282,19 +314,19 @@ msgstr ""
 
 msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual keywords cannot contain a comma."
-msgstr "Separar com vírgulas. Note que palavras-chave individuais não podem conter uma vírgula."
+msgstr "Separe con comas. Tenga en cuenta que las palabras clave individuales no pueden contener una coma."
 
 msgctxt "lameta/session/languages"
 msgid "Subject Languages"
-msgstr "Línguas temáticas"
+msgstr "Idiomas del Contenido"
 
 msgctxt "lameta/session/location"
 msgid "Neighborhood/Town/Village"
-msgstr "Bairro/Cidade"
+msgstr "Vecindario/Pueblo/Aldea"
 
 msgctxt "lameta/session/location/description"
 msgid "A location that is relevant within the group you are studying"
-msgstr "Um local que seja relevante dentro do grupo que você está estudando"
+msgstr "Una ubicación que sea relevante para el grupo que estudia"
 
 msgctxt "lameta/session/locationContinent"
 msgid "Continent"
@@ -302,7 +334,7 @@ msgstr "Continente"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "unspecified"
-msgstr ""
+msgstr "no especificado"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Africa"
@@ -314,11 +346,11 @@ msgstr ""
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Asia"
-msgstr "Ásia"
+msgstr "Asia"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Australia"
-msgstr "Austrália"
+msgstr "Australia"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Europe"
@@ -326,19 +358,19 @@ msgstr "Europa"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "North-America"
-msgstr "América do Norte"
+msgstr "América del Norte"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Middle-America"
-msgstr "América Central"
+msgstr "Centroamérica"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Oceania"
-msgstr "Oceania"
+msgstr "Oceanía"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "South-America"
-msgstr "América do Sul"
+msgstr "Sudamérica"
 
 msgctxt "lameta/session/locationCountry"
 msgid "Country"
@@ -346,19 +378,19 @@ msgstr "País"
 
 msgctxt "lameta/session/locationRegion"
 msgid "Region"
-msgstr "Região"
+msgstr "Región"
 
 msgctxt "lameta/session/participants"
 msgid "People"
-msgstr "Pessoas"
+msgstr "Personas"
 
 msgctxt "lameta/session/planningType"
 msgid "Planning Type"
-msgstr "Tipo de planejamento"
+msgstr "Tipo de Planificación"
 
 msgctxt "lameta/session/planningType/choices"
 msgid "unspecified"
-msgstr ""
+msgstr "no especificado"
 
 msgctxt "lameta/session/planningType/choices"
 msgid "//leaving out until Windows SayMore can handle it: unknown"
@@ -366,23 +398,23 @@ msgstr ""
 
 msgctxt "lameta/session/planningType/choices"
 msgid "spontaneous"
-msgstr "espontâneo"
+msgstr "espontáneo"
 
 msgctxt "lameta/session/planningType/choices"
 msgid "semi-spontaneous"
-msgstr "semi-espontâneo"
+msgstr "semi-espontáneo"
 
 msgctxt "lameta/session/planningType/choices"
 msgid "planned"
-msgstr "planejado"
+msgstr "planificado"
 
 msgctxt "lameta/session/socialContext"
 msgid "Social Context"
-msgstr "Contexto Social"
+msgstr "Contexto social"
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "unspecified"
-msgstr ""
+msgstr "no especificado"
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "//leaving out until Windows SayMore can handle it: unknown"
@@ -390,7 +422,7 @@ msgstr ""
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "family"
-msgstr "família"
+msgstr "familiar"
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "private"
@@ -406,11 +438,11 @@ msgstr "ambiente controlado"
 
 msgctxt "lameta/session/status"
 msgid "Status"
-msgstr "Status"
+msgstr "Estado"
 
 msgctxt "lameta/session/status/choices"
 msgid "Incoming"
-msgstr "Novo"
+msgstr "Recién iniciado"
 
 msgctxt "lameta/session/status/choices"
 msgid "In_Progress"
@@ -418,15 +450,15 @@ msgstr ""
 
 msgctxt "lameta/session/status/choices"
 msgid "Finished"
-msgstr "Concluído"
+msgstr "Completado"
 
 msgctxt "lameta/session/status/choices"
 msgid "Skipped"
-msgstr "Interrompido"
+msgstr "Omitido"
 
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
-msgstr "Subgênero"
+msgstr "Subgénero"
 
 msgctxt "lameta/session/title"
 msgid "Title"
@@ -434,15 +466,15 @@ msgstr "Título"
 
 msgctxt "lameta/session/topic"
 msgid "Topic"
-msgstr "Tópico"
+msgstr "Temática"
 
 msgctxt "lameta/session/topic/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual topics cannot contain a comma."
-msgstr "Separar com vírgulas. Observe que tópicos individuais não podem conter uma vírgula."
+msgstr "Separe con comas. Tenga en cuenta que los temas individuales no pueden contener una coma."
 
 msgctxt "lameta/session/workingLanguages"
 msgid "Working Languages"
-msgstr "Línguas de trabalho"
+msgstr "Idiomas de Trabajo"
 
 msgctxt "ELAR/project/collectionSteward/description"
 msgid "This is usually the same person as the Depositor."

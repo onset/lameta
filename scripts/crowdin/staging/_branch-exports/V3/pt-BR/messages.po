@@ -8,7 +8,7 @@ msgstr ""
 "Language: pt\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-01-06 23:05\n"
+"PO-Revision-Date: 2026-07-09 19:22\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -18,10 +18,10 @@ msgstr ""
 "X-Crowdin-File: /V3/messages.po\n"
 "X-Crowdin-File-ID: 68\n"
 
-#~ msgid "\"Open in program associated with this file type"
-#~ msgstr ""
-
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
+msgstr ""
+
+msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
 msgstr ""
 
 msgid "A file with the same name already exists at that location."
@@ -30,44 +30,23 @@ msgstr "Já existe um arquivo com o mesmo nome nesse local."
 msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
 msgstr "Uma pasta que contém todos os arquivos do projeto, com o IMDI agrupado para o OPEX."
 
-#~ msgid "A folder containing both the IMDI files and all the project's archivable files."
-#~ msgstr ""
-
 msgid "A folder with an IMDI file for the project and each session."
 msgstr "Uma pasta com um arquivo IMDI para o projeto e cada sessão."
-
-#~ msgid "A single ISLE Meta Data Initiative XML file."
-#~ msgstr ""
 
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
 msgstr "Um único arquivo (separado por vírgula) com informações do projeto seguido de uma linha por sessão. Muitos campos do lameta são omitidos."
 
-#~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
-#~ msgstr ""
-
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
 msgstr "Um único arquivo zip que contém um arquivo (separado por vírgula) para cada um dos Projetos, Sessões e Pessoas."
 
-#~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
-#~ msgstr ""
-
-#~ msgid "A zip file with an IMDI file for the project and each session."
-#~ msgstr ""
-
 msgid "Abandon files that are still copying"
 msgstr "Abandonar arquivos que ainda estão sendo copiados"
-
-msgid "About This Project"
-msgstr "Sobre Este Projeto"
 
 msgid "About lameta"
 msgstr "Sobre lameta"
 
 msgid "Access"
 msgstr "Acesso"
-
-msgid "Access Protocol"
-msgstr "Protocolo de acesso"
 
 msgid "Add Files"
 msgstr "Adicionar arquivos"
@@ -81,11 +60,17 @@ msgstr "Adicione aqui documentos que descrevem os projetos e o corpus."
 msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
 msgstr "Adicione aqui documentos que não parecem se encaixar em nenhum outro lugar. Um exemplo seriam os documentos que explicam como o projeto foi financiado."
 
+msgid "Add to Dictionary"
+msgstr ""
+
 msgid "All Sessions"
 msgstr "Todas as sessões"
 
-msgid "As Personally Identifiable Information, this will not be exported to other formats."
-msgstr "Como são Dados Pessoais de Identificação, estes não serão exportados para outros formatos."
+msgid "All translations complete"
+msgstr ""
+
+msgid "Archive"
+msgstr ""
 
 msgid "As a curator"
 msgstr "Como curador"
@@ -103,35 +88,26 @@ msgstr ""
 msgid "Audio"
 msgstr "Áudio"
 
-#~ msgid "Audio Bit Depth"
-#~ msgstr ""
-
-#~ msgid "Audio Bit Rate"
-#~ msgstr ""
-
-#~ msgid "Audio Channels"
-#~ msgstr ""
-
-#~ msgid "Audio Codec"
-#~ msgstr ""
-
-#~ msgid "Audio Sample Rate"
-#~ msgstr ""
+msgid "CSV export complete"
+msgstr ""
 
 msgid "Cancel"
 msgstr "Cancelar"
 
+msgid "Cancelling..."
+msgstr ""
+
 msgid "Cannot add files of that type"
 msgstr "Não é possível adicionar arquivos desse tipo"
+
+msgid "Cannot export to IMDI while multilingual text migration is pending."
+msgstr ""
 
 msgid "Change Name To:"
 msgstr "Alterar o nome para:"
 
 msgid "Change..."
 msgstr "Alterar..."
-
-#~ msgid "Check for new version"
-#~ msgstr ""
 
 msgid "Choose File"
 msgstr "Escolha o Arquivo"
@@ -154,6 +130,9 @@ msgstr "Limpar"
 msgid "Close"
 msgstr "Fechar"
 
+msgid "Collection"
+msgstr "Coleção"
+
 msgid "Comments"
 msgstr "Comentários"
 
@@ -172,8 +151,14 @@ msgstr "Copiar"
 msgid "Copy Requested..."
 msgstr "Cópia Solicitada..."
 
+msgid "Copy to clipboard"
+msgstr ""
+
 msgid "Copying in Files..."
 msgstr "Copiando em Arquivos..."
+
+msgid "Copying {0}"
+msgstr ""
 
 msgid "Copying..."
 msgstr "Copiando..."
@@ -202,20 +187,14 @@ msgstr "Criar Projeto..."
 msgid "Credits"
 msgstr "Créditos"
 
-msgid "Custom Access Choices"
-msgstr "Opções Personalizadas de Acesso"
-
 msgid "Custom Field"
 msgstr "Campo personalizado"
 
-#~ msgid "Custom Fields"
-#~ msgstr ""
+msgid "Custom vocabulary item"
+msgstr ""
 
 msgid "Cut"
 msgstr "Recortar"
-
-#~ msgid "Date"
-#~ msgstr ""
 
 msgid "Delete"
 msgstr "Excluir"
@@ -253,6 +232,9 @@ msgstr "Não saia"
 msgid "Done"
 msgstr "Pronto"
 
+msgid "Done, with {0} warnings"
+msgstr ""
+
 msgid "Download"
 msgstr "Baixar"
 
@@ -262,20 +244,17 @@ msgstr "Duplicar Pessoa"
 msgid "Duplicate Session"
 msgstr "Duplicar Sessão"
 
-#~ msgid "ELAN"
-#~ msgstr ""
-
 msgid "Edit"
 msgstr "Editar"
+
+msgid "ElectronDropZone: preload script did not set window.electronAPI.getPathForFile; drag-and-drop will not work."
+msgstr ""
 
 msgid "Email Address"
 msgstr "Endereço de E-mail"
 
-msgid "Enter each choice, separated by commas"
-msgstr "Introduza cada escolha, separada por vírgulas"
-
-#~ msgid "Error"
-#~ msgstr ""
+msgid "Example:"
+msgstr ""
 
 msgid "Export"
 msgstr "Exportar"
@@ -286,11 +265,20 @@ msgstr "Exportar Projeto"
 msgid "Export Project..."
 msgstr "Exportar Projeto..."
 
-msgid "Exporting..."
-msgstr "Exportando..."
+msgid "Export failed"
+msgstr ""
+
+msgid "Export was cancelled. No files were exported."
+msgstr ""
+
+msgid "Exporting {0}..."
+msgstr ""
 
 msgid "Field"
 msgstr "Campo"
+
+msgid "Fields with Unknown Languages"
+msgstr ""
 
 msgid "File"
 msgstr "Arquivo"
@@ -300,6 +288,18 @@ msgstr "O travamento de arquivos pode acontecer quando um reprodutor de mídia e
 
 msgid "File to Import:"
 msgstr "Arquivo para importação:"
+
+msgid "Find"
+msgstr ""
+
+msgid "Finish Migration"
+msgstr ""
+
+msgid "Finish Migration to Multilingual Fields"
+msgstr ""
+
+msgid "Fix in Project:"
+msgstr ""
 
 msgid "Font Size"
 msgstr "Tamanho de fonte"
@@ -313,20 +313,29 @@ msgstr "Para documentar uma outra língua"
 msgid "For documenting my own language"
 msgstr "Para documentar minha própria língua"
 
-#~ msgid "Format"
-#~ msgstr ""
-
 msgid "Found file with a name containing 'Consent'"
 msgstr "Arquivo encontrado com um nome contendo \"Consent\"(imento)"
 
 msgid "Found no file with a name containing 'Consent'"
 msgstr "Nenhum arquivo encontrado com um nome contendo \"Consent\"(imento)"
 
-#~ msgid "Frame rate"
-#~ msgstr ""
-
 msgid "Full Name"
 msgstr "Nome Completo"
+
+msgid "Funding Project"
+msgstr ""
+
+msgid "Generating CSV export..."
+msgstr ""
+
+msgid "Generating PARADISEC CSV..."
+msgstr ""
+
+msgid "Generating RO-Crate metadata..."
+msgstr ""
+
+msgid "Genres"
+msgstr ""
 
 msgid "Help"
 msgstr "Ajuda"
@@ -351,15 +360,6 @@ msgstr ""
 
 msgid "ID cannot contain spaces"
 msgstr ""
-
-#~ msgid "IMDI"
-#~ msgstr ""
-
-#~ msgid "IMDI + Files"
-#~ msgstr ""
-
-#~ msgid "IMDI Mode"
-#~ msgstr ""
 
 msgid "IMDI Only"
 msgstr "Somente IMDI"
@@ -388,11 +388,14 @@ msgstr "Indica que esta é a língua principal do pai ou da mãe."
 msgid "Interface Language"
 msgstr "Idioma da Interface"
 
+msgid "Items"
+msgstr ""
+
 msgid "Language Code"
 msgstr "Código da língua"
 
-#~ msgid "Languages"
-#~ msgstr ""
+msgid "Languages"
+msgstr ""
 
 msgid "Larger"
 msgstr "Maior"
@@ -400,11 +403,14 @@ msgstr "Maior"
 msgid "Learner"
 msgstr "Aprendiz"
 
-#~ msgid "Length"
-#~ msgstr ""
-
 msgid "Linked to {p}"
 msgstr "Vinculado a {p}"
+
+msgid "Loading {phaseLabel}..."
+msgstr ""
+
+msgid "Location"
+msgstr ""
 
 msgid "Mark as a primary language of the mother."
 msgstr "Marcar como língua principal da mãe."
@@ -418,20 +424,23 @@ msgstr "Marcar como língua principal do pai."
 msgid "Mark for Deletion or Export"
 msgstr "Marcar para excluir ou exportar"
 
-#~ msgid "Mark for Export"
-#~ msgstr ""
-
 msgid "Mark for Export or Deletion"
 msgstr "Marcar para exportar ou excluir"
 
 msgid "Media Folder"
 msgstr "Pasta de Mídia"
 
-#~ msgid "Media Folder Settings"
-#~ msgstr ""
-
 msgid "Media Folder Settings..."
 msgstr "Configurações da pasta de mídia..."
+
+msgid "Migrate"
+msgstr ""
+
+msgid "Migrating: {0}"
+msgstr ""
+
+msgid "Migration complete! {0} fields were migrated. You can hide language tags from View → \"Show language tags on multilingual fields\" if you don't need them anymore."
+msgstr ""
 
 msgid "Modified"
 msgstr "Modificado"
@@ -448,11 +457,14 @@ msgstr "Nova Pessoa"
 msgid "New Session"
 msgstr "Nova Sessão"
 
-#~ msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just \"link\" to them."
-#~ msgstr ""
+msgid "No custom values found"
+msgstr ""
 
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
 msgstr "Normalmente, quando você adiciona um arquivo a um projeto, sessão ou pessoa, esse arquivo é copiado para a mesma pasta do projeto lameta. Para alguns dos arquivos, talvez prefira deixá-los onde estão e apenas criar um \"link\" para eles."
+
+msgid "Not important to the archive, but will be included"
+msgstr ""
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
 msgstr "Observe que esse é um link para um arquivo no diretório \"Arquivos de Mídia\". Aqui, você renomeia esse link, não o arquivo original para o qual ele aponta. Se você criar posteriormente uma exportação que inclua esse arquivo, a exportação usará esse nome."
@@ -478,9 +490,6 @@ msgstr "Abrir Projeto"
 msgid "Open Project..."
 msgstr "Abrir Projeto..."
 
-#~ msgid "Open SayMore Project"
-#~ msgstr ""
-
 msgid "Open in ELAN"
 msgstr "Abrir em ELAN"
 
@@ -490,11 +499,8 @@ msgstr "Abrir em programa associado a este tipo de arquivo"
 msgid "Other Documents"
 msgstr "Outros Documentos"
 
-#~ msgid "Other Languages"
-#~ msgstr ""
-
-#~ msgid "PARADISEC Mode"
-#~ msgstr ""
+msgid "PARADISEC CSV export complete"
+msgstr ""
 
 msgid "Paradisec CSV"
 msgstr "CSV Paradisec"
@@ -511,20 +517,23 @@ msgstr "Pessoa"
 msgid "Please Register"
 msgstr "Por Favor, Registre-se"
 
+msgid "Please add the metadata languages you've been using with these \"/\" fields (at least two) before migrating."
+msgstr ""
+
+msgid "Please complete the migration in the Project tab under Languages before exporting."
+msgstr ""
+
 msgid "Please remove characters that not allowed by the Archive Settings."
 msgstr "Remova os caracteres que não são permitidos pelas configurações de arquivo."
 
 msgid "Please wait until all files are finished copying into this folder"
 msgstr "Por favor, aguarde até que todos os arquivos tenham terminado de copiar para esta pasta"
 
+msgid "Preparing export..."
+msgstr ""
+
 msgid "Project"
 msgstr "Projeto"
-
-#~ msgid "Project will be created in: {folderPath}"
-#~ msgstr ""
-
-#~ msgid "Project will be created in: {path}"
-#~ msgstr ""
 
 msgid "Project will be created in: {path}."
 msgstr "O projeto será criado em: {path}."
@@ -534,6 +543,15 @@ msgstr "Propriedades"
 
 msgid "Quit"
 msgstr "Encerrar"
+
+msgid "RO-Crate"
+msgstr ""
+
+msgid "RO-Crate export complete"
+msgstr ""
+
+msgid "Ready to scan..."
+msgstr ""
 
 msgid "Redo"
 msgstr "Refazer"
@@ -565,14 +583,14 @@ msgstr "A renomeação falhou porque já existe um arquivo com esse nome."
 msgid "Report a problem"
 msgstr "Reportar um problema"
 
-#~ msgid "Resolution"
-#~ msgstr ""
-
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr "Reinicie lameta e faça a renomeação antes de reproduzir o vídeo novamente."
 
 msgid "Role"
 msgstr "Função"
+
+msgid "Roles"
+msgstr ""
 
 msgid "Save As"
 msgstr "Salvar Como"
@@ -583,8 +601,17 @@ msgstr "Salvando"
 msgid "Saving before rename..."
 msgstr "Salvando antes de renomear..."
 
-#~ msgid "SayMore/SayMore Project Files"
-#~ msgstr ""
+msgid "Scan complete"
+msgstr ""
+
+msgid "Scan failed"
+msgstr ""
+
+msgid "Scanning..."
+msgstr ""
+
+msgid "Search"
+msgstr ""
 
 msgid "Select All"
 msgstr "Selecionar Todos"
@@ -602,6 +629,12 @@ msgid "Show All"
 msgstr "Mostrar tudo"
 
 msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show Language Tags"
+msgstr ""
+
+msgid "Show Language Tags (locked during migration)"
 msgstr ""
 
 msgid "Show PARADISEC previews"
@@ -631,6 +664,9 @@ msgstr "Tamanho"
 msgid "Smaller"
 msgstr "Menor"
 
+msgid "Some fields have more language segments than there are Metadata Languages defined ({0} of {1} fields). If you proceed, these extra segments will be labeled as \"unknown\" languages."
+msgstr ""
+
 msgid "Some operating systems would not allow that name."
 msgstr "Alguns sistemas operacionais não permitem esse nome."
 
@@ -643,6 +679,9 @@ msgstr "Desculpe, mas não são permitidos travessões"
 msgid "Start Screen"
 msgstr "Tela inicial"
 
+msgid "Starting scan..."
+msgstr ""
+
 msgid "Status"
 msgstr "Status"
 
@@ -652,11 +691,11 @@ msgstr "Texto"
 msgid "That name would lead to an empty filename."
 msgstr "Esse nome resultaria em um nome de arquivo vazio."
 
-#~ msgid "That would lead to an empty filename"
-#~ msgstr ""
-
 msgid "The IMDI files were validated."
 msgstr "Os arquivos IMDI foram validados."
+
+msgid "The columns here are based on your project's metadata languages."
+msgstr ""
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "O arquivo está ausente do local esperado na pasta de mídia. A pasta de mídia está definida como {m} e esse arquivo deveria estar em {e}"
@@ -670,20 +709,11 @@ msgstr "Há mais de um arquivo do tipo \"{projectType}\" nessa pasta, e só pode
 msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
 msgstr ""
 
-#~ msgid "There is a problem with {displayName}. Click for more information."
-#~ msgstr ""
-
-#~ msgid "There is already a Person with that name or code"
-#~ msgstr ""
-
 msgid "There is already a Person with that name or code."
 msgstr "Já existe uma Pessoa com esse nome ou código."
 
 msgid "There is already a file here with the name"
 msgstr "Já existe aqui um arquivo com o nome"
-
-#~ msgid "There is already a project at: {path}"
-#~ msgstr ""
 
 msgid "There is already a project at: {path}."
 msgstr "Já existe um projeto em: {path}."
@@ -691,20 +721,14 @@ msgstr "Já existe um projeto em: {path}."
 msgid "There is already a {folderKind} \"{value}\"."
 msgstr "Já existe um {folderKind} \"{value}\"."
 
-#~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with that name or code '{value}'"
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with that name or code '{value}.'"
-#~ msgstr ""
-
-#~ msgid "There is already a {folderKind} with the name '{value}'"
-#~ msgstr ""
+msgid "There was a problem adding files."
+msgstr ""
 
 msgid "There was a problem exporting:"
 msgstr "Houve um problema na exportação:"
+
+msgid "This Personally Identifiable Information may not be exported by some formats."
+msgstr ""
 
 msgid "This XML conforms to the IMDI schema."
 msgstr "Esse XML está em conformidade com o esquema IMDI."
@@ -715,14 +739,14 @@ msgstr ""
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr "Esse é um link, mas o lameta não sabe onde encontrar a pasta de mídia para esse projeto. Consulte Arquivo: Configurações da Pasta de Mídia."
 
+msgid "This project appears to use \"/\" to store multiple languages within a single field. In this version of lameta, we have a better approach in which lameta knows which languages are used in a field. After you have selected the appropriate metadata languages above and arranged them in the correct order, all multilingual fields in Project, Sessions, and People should display with the correct language tags. Once you have confirmed that everything appears as expected, click the button below to apply these changes permanently."
+msgstr ""
+
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
 msgstr "Essa configuração é exclusiva da conta que você está usando neste computador. Um colega em outro computador precisará definir esse valor para o local correto no computador dele."
 
-#~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
-#~ msgstr ""
-
-#~ msgid "Try restarting lameta. If that doesn't do it, restart your computer."
-#~ msgstr ""
+msgid "This will not be consumed by the archive. It is only for the use of the researcher."
+msgstr ""
 
 msgid "Type"
 msgstr "Tipo"
@@ -730,8 +754,14 @@ msgstr "Tipo"
 msgid "Undo"
 msgstr "Desfazer"
 
+msgid "Unknown error while scanning vocabulary"
+msgstr ""
+
 msgid "Update available"
 msgstr "Atualização Disponível"
+
+msgid "Validating RO-Crate export..."
+msgstr ""
 
 msgid "Value"
 msgstr "Valor"
@@ -739,17 +769,17 @@ msgstr "Valor"
 msgid "Video"
 msgstr "Vídeo"
 
-#~ msgid "Video Codec"
-#~ msgstr ""
-
 msgid "View"
 msgstr "Visualizar"
 
 msgid "View Release Notes"
 msgstr "Ver notas de lançamento"
 
-#~ msgid "Warning"
-#~ msgstr ""
+msgid "Vocabulary Translations"
+msgstr ""
+
+msgid "Vocabulary scan failed"
+msgstr ""
 
 msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
@@ -761,26 +791,23 @@ msgstr "Não temos dicas específicas para esse erro. Se você não conseguir so
 msgid "What would you like to call this project?"
 msgstr "Como você gostaria de chamar este projeto?"
 
-#~ msgid "Width"
-#~ msgstr ""
+msgid "Writing corpus metadata..."
+msgstr ""
 
 msgid "You are running lameta version:"
 msgstr "Você está usando a versão lameta:"
 
-#~ msgid "You are running lameta version: {v}"
-#~ msgstr ""
-
-#~ msgid "You are running lameta {0}"
-#~ msgstr ""
-
-#~ msgid "You are running lameta {version}"
-#~ msgstr ""
+msgid "You can either add more Metadata Languages above to match all segments, or proceed with the migration and manually fix the unknown language fields later."
+msgstr ""
 
 msgid "You cannot add files of that type"
 msgstr "Você não pode adicionar arquivos desse tipo"
 
 msgid "You cannot add folders."
 msgstr "Você não pode adicionar pastas."
+
+msgid "You need at least two metadata languages defined to use vocabulary translations. Please add metadata languages in the Languages tab."
+msgstr ""
 
 msgid "ZIP Archive"
 msgstr "Arquivo ZIP"
@@ -791,17 +818,11 @@ msgstr "Zip de CSVs"
 msgid "choose..."
 msgstr "escolha..."
 
-#~ msgid "height"
-#~ msgstr ""
-
 msgid "lameta"
 msgstr "lameta"
 
 msgid "lameta  was not able to rename that file."
 msgstr "lameta não conseguiu renomear aquele arquivo."
-
-#~ msgid "lameta allows you to specify one \"Media Folder\". When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
-#~ msgstr ""
 
 msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
 msgstr "lameta permite que você especifique uma \"pasta de mídia\". Quando você adiciona arquivos que estão em algum lugar dentro dessa pasta, lameta criará um link em vez de fazer uma cópia. Essa pasta pode estar em qualquer lugar, inclusive na raiz de uma unidade externa onde você mantém gravações de vídeo grandes."
@@ -836,34 +857,28 @@ msgstr "lameta não conseguiu colocar este arquivo na lixeira"
 msgid "lameta was not able to rename one of the files in the folder."
 msgstr "lameta não conseguiu renomear um dos arquivos da pasta."
 
-#~ msgid "lameta was not able to rename that file."
-#~ msgstr ""
-
 msgid "lameta was not able to rename the folder."
 msgstr "lameta não conseguiu renomear a pasta."
 
 #. Shows in a tooltip on an info icon in the Notes tab
-msgid "lameta will not export Notes to MIDI"
-msgstr "lameta não exportará notas para MIDI"
+msgid "lameta will not export Notes to IMDI"
+msgstr ""
 
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "o lameta abrirá essa pasta no disco rígido e, em seguida, sairá. Você deve abrir esses arquivos {projectType} em um editor de texto, decidir qual deles deseja e excluir os outros. Aquele que você escolher será chamado de {name}."
 
-#~ msgid "undefined"
-#~ msgstr ""
-
-#~ msgid "{0}"
-#~ msgstr ""
+msgid "missing"
+msgstr ""
 
 msgid "{0} Marked Sessions"
 msgstr "{0} Sessões Marcadas"
 
-#~ msgid "{0} will be moved to the Trash"
-#~ msgstr ""
-
-#~ msgid "{countOfMarkedSessions} Marked Sessions"
-#~ msgstr ""
+msgid "{0} of {1} items processed"
+msgstr ""
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted} será movido para a lixeira"
+
+msgid "{totalMissing} items need translation"
+msgstr ""
 

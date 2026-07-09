@@ -1,20 +1,20 @@
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: saymorex\n"
 "X-Crowdin-Project-ID: 324607\n"
-"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-Language: fa\n"
 "X-Crowdin-File: /V3/fields.po\n"
 "X-Crowdin-File-ID: 70\n"
 "Project-Id-Version: saymorex\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Language-Team: Chinese Simplified\n"
-"Language: zh_CN\n"
-"PO-Revision-Date: 2024-01-01 22:29\n"
+"Language-Team: Persian\n"
+"Language: fa_IR\n"
+"PO-Revision-Date: 2026-07-09 19:22\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
-msgstr "出生年份"
+msgstr "سال تولد"
 
 msgctxt "lameta/person/birthYear/tipOnUsingThisField"
 msgid "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
@@ -22,11 +22,23 @@ msgstr ""
 
 msgctxt "lameta/person/code"
 msgid "Code"
-msgstr "代码"
+msgstr "کد"
+
+msgctxt "lameta/person/customFields"
+msgid "Custom Fields"
+msgstr ""
+
+msgctxt "lameta/person/customFields/description"
+msgid "A table of labels and values for a person."
+msgstr ""
+
+msgctxt "lameta/person/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr ""
 
 msgctxt "lameta/person/description"
 msgid "Description"
-msgstr "说明"
+msgstr "توصیف"
 
 msgctxt "lameta/person/description/description"
 msgid "Relevant details such as where they learned the language(s)"
@@ -34,11 +46,11 @@ msgstr ""
 
 msgctxt "lameta/person/education"
 msgid "Education"
-msgstr "学历"
+msgstr "تحصیلات"
 
 msgctxt "lameta/person/ethnicGroup"
 msgid "Ethnic Group"
-msgstr "族群"
+msgstr "قومیت"
 
 msgctxt "lameta/person/fathersLanguage"
 msgid "Father's Language"
@@ -46,23 +58,23 @@ msgstr ""
 
 msgctxt "lameta/person/gender"
 msgid "Gender"
-msgstr "性别"
+msgstr "جنسیت"
 
 msgctxt "lameta/person/gender/choices"
 msgid "Unknown"
-msgstr ""
+msgstr "ناشناس"
 
 msgctxt "lameta/person/gender/choices"
 msgid "Male"
-msgstr ""
+msgstr "مرد"
 
 msgctxt "lameta/person/gender/choices"
 msgid "Female"
-msgstr ""
+msgstr "زن"
 
 msgctxt "lameta/person/gender/choices"
 msgid "Other"
-msgstr ""
+msgstr "سایر"
 
 msgctxt "lameta/person/howToContact"
 msgid "How to Contact"
@@ -70,7 +82,7 @@ msgstr ""
 
 msgctxt "lameta/person/languages"
 msgid "Languages"
-msgstr "语言"
+msgstr "زبانها"
 
 msgctxt "lameta/person/mothersLanguage"
 msgid "Mother's Language"
@@ -78,11 +90,11 @@ msgstr ""
 
 msgctxt "lameta/person/name"
 msgid "Full Name"
-msgstr "全称"
+msgstr "نام کامل"
 
 msgctxt "lameta/person/nickname"
 msgid "Nickname"
-msgstr "昵称"
+msgstr "نام مستعار /انتخابی"
 
 msgctxt "lameta/person/otherLanguages"
 msgid "Other Languages"
@@ -90,43 +102,47 @@ msgstr ""
 
 msgctxt "lameta/person/primaryOccupation"
 msgid "Primary Occupation"
-msgstr "主要职业"
+msgstr "شغل اصلی"
 
-msgctxt "lameta/project/accessProtocol"
-msgid "Access Protocol used by this project"
-msgstr "该项目访问协议"
-
-msgctxt "lameta/project/analysisIso3CodeAndName"
-msgid "Working Language"
-msgstr "工作语言"
-
-msgctxt "lameta/project/collectionDescription"
-msgid "Collection Description"
+msgctxt "lameta/project/archiveConfigurationName"
+msgid "Archive Configuration used by this project"
 msgstr ""
 
-msgctxt "lameta/project/collectionName"
-msgid "Collection Name"
+msgctxt "lameta/project/collectionDeputySteward"
+msgid "Deputy Stewards"
+msgstr ""
+
+msgctxt "lameta/project/collectionDeputySteward/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr ""
+
+msgctxt "lameta/project/collectionDescription"
+msgid "Description"
+msgstr ""
+
+msgctxt "lameta/project/collectionKey"
+msgid "Collection Key"
 msgstr ""
 
 msgctxt "lameta/project/collectionSteward"
-msgid "Collection Steward"
+msgid "Steward"
 msgstr ""
 
-msgctxt "lameta/project/collectionTitle"
-msgid "Collection Title"
+msgctxt "lameta/project/collectionSubjectLanguages"
+msgid "Subject Languages"
+msgstr ""
+
+msgctxt "lameta/project/collectionWorkingLanguages"
+msgid "Working Languages"
 msgstr ""
 
 msgctxt "lameta/project/contactPerson"
-msgid "Contact Person"
-msgstr "联系人"
-
-msgctxt "lameta/project/contactPerson/description"
-msgid "Contact information about the person or institution responsible for the project."
+msgid "Project Lead"
 msgstr ""
 
 msgctxt "lameta/project/continent"
 msgid "Continent"
-msgstr "洲"
+msgstr "قاره"
 
 msgctxt "lameta/project/continent/choices"
 msgid "unspecified"
@@ -134,19 +150,19 @@ msgstr ""
 
 msgctxt "lameta/project/continent/choices"
 msgid "Africa"
-msgstr "非洲"
+msgstr "آفریقا"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Asia"
-msgstr "亚洲"
+msgstr "آسیا"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Australia"
-msgstr "澳洲"
+msgstr "استرالیا"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Europe"
-msgstr "欧洲"
+msgstr "اروپا"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Americas"
@@ -154,107 +170,123 @@ msgstr ""
 
 msgctxt "lameta/project/continent/choices"
 msgid "North-America"
-msgstr "北美洲"
+msgstr "آمریکای شمالی"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Middle-America"
-msgstr "中美洲"
+msgstr "آمریکای میانی"
 
 msgctxt "lameta/project/continent/choices"
 msgid "Oceania"
-msgstr "大洋洲"
+msgstr "اقیانوسیه"
 
 msgctxt "lameta/project/continent/choices"
 msgid "South-America"
-msgstr "南美洲"
+msgstr "آمریکای جنوبی"
 
 msgctxt "lameta/project/country"
 msgid "Country"
-msgstr "国家/地区"
+msgstr "کشور"
 
 msgctxt "lameta/project/customAccessChoices"
-msgid "Custom access choices"
+msgid "Custom Session Access Choices"
 msgstr ""
 
 msgctxt "lameta/project/depositor"
-msgid "Depositor"
-msgstr "上传者"
-
-msgctxt "lameta/project/depositor"
-msgid "Depositor"
-msgstr "上传者"
+msgid "Depositors"
+msgstr ""
 
 msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
 msgid "For multiple people, separate with commas"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward"
-msgid "Deputy Collection Stewards"
+msgctxt "lameta/project/fundingProjectAffiliation"
+msgid "Project Affiliation"
 msgstr ""
 
-msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions"
-msgid "For multiple people, separate with commas"
+msgctxt "lameta/project/fundingProjectFunder"
+msgid "Funder"
 msgstr ""
 
 msgctxt "lameta/project/fundingProjectTitle"
 msgid "Funding Project Title"
-msgstr "资助项目标题"
+msgstr "عنوان پروژه سرمایه گذاری شده"
 
 msgctxt "lameta/project/grantId"
-msgid "Grant ID"
-msgstr "基金ID"
+msgid "Project ID"
+msgstr ""
 
 msgctxt "lameta/project/location"
 msgid "Location/Address"
-msgstr "位置/地址"
+msgstr "موقعیت مکانی/ آدرس"
 
-msgctxt "lameta/project/projectDescription"
-msgid "Description"
-msgstr "说明"
+msgctxt "lameta/project/metadataLanguages"
+msgid "Metadata Languages"
+msgstr ""
+
+msgctxt "lameta/project/metadataLanguages/description"
+msgid "Languages used in metadata fields throughout the project (e.g., descriptions, titles). These determine the language options available for multilingual text fields."
+msgstr ""
+
+msgctxt "lameta/project/multilingualConversionPending"
+msgid "Multilingual Conversion Pending"
+msgstr ""
+
+msgctxt "lameta/project/multilingualConversionPending/description"
+msgid "Internal flag: true if slash-syntax fields need conversion to tagged format"
+msgstr ""
 
 msgctxt "lameta/project/region"
 msgid "Region"
-msgstr "地区"
+msgstr "منطقه"
 
 msgctxt "lameta/project/title"
-msgid "Project ID"
-msgstr "项目ID"
-
-msgctxt "lameta/project/vernacularIso3CodeAndName"
-msgid "Subject Language"
+msgid "Title"
 msgstr ""
 
 msgctxt "lameta/session/access"
 msgid "Access"
-msgstr "访问权限"
+msgstr "دسترسی"
 
 msgctxt "lameta/session/accessDescription"
 msgid "Access Explanation"
-msgstr "访问限制说明"
+msgstr "توضیحات دسترسی"
 
 msgctxt "lameta/session/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
+msgstr "اگر دسترسی آزاد / باز نیست، در اینجا توضیحات را وارد کنید."
+
+msgctxt "lameta/session/customFields"
+msgid "Custom Fields"
+msgstr ""
+
+msgctxt "lameta/session/customFields/description"
+msgid "A table of labels and values for a session."
+msgstr ""
+
+msgctxt "lameta/session/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
 msgstr ""
 
 msgctxt "lameta/session/date"
 msgid "Date"
-msgstr "日期"
+msgstr "تاریخ"
 
 msgctxt "lameta/session/description"
 msgid "Description"
-msgstr "说明"
+msgstr "توصیف"
 
 msgctxt "lameta/session/genre"
 msgid "Genre"
-msgstr "种类"
+msgstr "ژانر"
 
 msgctxt "lameta/session/id"
 msgid "ID"
-msgstr "ID"
+msgstr "مشخصات هویتی/ID"
 
 msgctxt "lameta/session/involvement"
 msgid "Researcher Involvement"
-msgstr "研究者参与度"
+msgstr "مشارکت پژوهشگران"
 
 msgctxt "lameta/session/involvement/choices"
 msgid "unspecified"
@@ -266,15 +298,15 @@ msgstr ""
 
 msgctxt "lameta/session/involvement/choices"
 msgid "elicited"
-msgstr ""
+msgstr "استخراج شده"
 
 msgctxt "lameta/session/involvement/choices"
 msgid "non-elicited"
-msgstr ""
+msgstr "استخراج نشده"
 
 msgctxt "lameta/session/involvement/choices"
 msgid "no-observer"
-msgstr ""
+msgstr "مشاهده نشده"
 
 msgctxt "lameta/session/keyword"
 msgid "Keywords"
@@ -282,23 +314,23 @@ msgstr ""
 
 msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual keywords cannot contain a comma."
-msgstr ""
+msgstr "با ویرگول جدا کنید. توجه داشته باشید که برای کلمات کلیدی نمیتوان از ویرگول استفاده کرد."
 
 msgctxt "lameta/session/languages"
 msgid "Subject Languages"
-msgstr "目标记录语言"
+msgstr "زبانهای موضوعی"
 
 msgctxt "lameta/session/location"
 msgid "Neighborhood/Town/Village"
-msgstr "区/城镇/村庄"
+msgstr "محله / شهر / روستا"
 
 msgctxt "lameta/session/location/description"
 msgid "A location that is relevant within the group you are studying"
-msgstr ""
+msgstr "مکانی مرتبط با گروهی که شما در حال مطالعه آن هستید"
 
 msgctxt "lameta/session/locationContinent"
 msgid "Continent"
-msgstr "洲"
+msgstr "قاره"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "unspecified"
@@ -306,7 +338,7 @@ msgstr ""
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Africa"
-msgstr "非洲"
+msgstr "آفریقا"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Americas"
@@ -314,47 +346,47 @@ msgstr ""
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Asia"
-msgstr "亚洲"
+msgstr "آسیا"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Australia"
-msgstr "澳洲"
+msgstr "استرالیا"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Europe"
-msgstr "欧洲"
+msgstr "اروپا"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "North-America"
-msgstr "北美洲"
+msgstr "آمریکای شمالی"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Middle-America"
-msgstr "中美洲"
+msgstr "آمریکای میانی"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "Oceania"
-msgstr "大洋洲"
+msgstr "اقیانوسیه"
 
 msgctxt "lameta/session/locationContinent/choices"
 msgid "South-America"
-msgstr "南美洲"
+msgstr "آمریکای جنوبی"
 
 msgctxt "lameta/session/locationCountry"
 msgid "Country"
-msgstr "国家/地区"
+msgstr "کشور"
 
 msgctxt "lameta/session/locationRegion"
 msgid "Region"
-msgstr "地区"
+msgstr "منطقه"
 
 msgctxt "lameta/session/participants"
 msgid "People"
-msgstr "人员"
+msgstr "مردم"
 
 msgctxt "lameta/session/planningType"
 msgid "Planning Type"
-msgstr "规划类型"
+msgstr "نوع برنامه ریزی"
 
 msgctxt "lameta/session/planningType/choices"
 msgid "unspecified"
@@ -366,19 +398,19 @@ msgstr ""
 
 msgctxt "lameta/session/planningType/choices"
 msgid "spontaneous"
-msgstr ""
+msgstr "خودکار"
 
 msgctxt "lameta/session/planningType/choices"
 msgid "semi-spontaneous"
-msgstr ""
+msgstr "نیمه خودکار"
 
 msgctxt "lameta/session/planningType/choices"
 msgid "planned"
-msgstr ""
+msgstr "برنامه ریزی شده"
 
 msgctxt "lameta/session/socialContext"
 msgid "Social Context"
-msgstr "社会情境"
+msgstr "بافت اجتماعی"
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "unspecified"
@@ -390,27 +422,27 @@ msgstr ""
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "family"
-msgstr ""
+msgstr "خانواده"
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "private"
-msgstr ""
+msgstr "شخصی"
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "public"
-msgstr "公开"
+msgstr "عمومی"
 
 msgctxt "lameta/session/socialContext/choices"
 msgid "controlled environment"
-msgstr ""
+msgstr "محیط کنترل شده"
 
 msgctxt "lameta/session/status"
 msgid "Status"
-msgstr "状态"
+msgstr "وضعیت"
 
 msgctxt "lameta/session/status/choices"
 msgid "Incoming"
-msgstr ""
+msgstr "ورودی"
 
 msgctxt "lameta/session/status/choices"
 msgid "In_Progress"
@@ -418,31 +450,31 @@ msgstr ""
 
 msgctxt "lameta/session/status/choices"
 msgid "Finished"
-msgstr ""
+msgstr "پایان یافته"
 
 msgctxt "lameta/session/status/choices"
 msgid "Skipped"
-msgstr ""
+msgstr "صرف نظر شده"
 
 msgctxt "lameta/session/subgenre"
 msgid "Subgenre"
-msgstr "子种类"
+msgstr "ژانر فرعی"
 
 msgctxt "lameta/session/title"
 msgid "Title"
-msgstr "标题"
+msgstr "عنوان"
 
 msgctxt "lameta/session/topic"
 msgid "Topic"
-msgstr "主题"
+msgstr "موضوع"
 
 msgctxt "lameta/session/topic/separatorWithCommaInstructions"
 msgid "Separate with commas. Note that individual topics cannot contain a comma."
-msgstr ""
+msgstr "با ویرگول جدا کنید. توجه داشته باشید که برای عنوانها نمیتوان از ویرگول استفاده کرد."
 
 msgctxt "lameta/session/workingLanguages"
 msgid "Working Languages"
-msgstr "工作语言"
+msgstr "زبان های کاری"
 
 msgctxt "ELAR/project/collectionSteward/description"
 msgid "This is usually the same person as the Depositor."

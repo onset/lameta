@@ -10,7 +10,7 @@ files: [
       "source": /en/messages.po,
       "translation": /%two_letters_code%/messages.po,
       # keep translations when source strings change
-      "update_option": "keep_translations",
+      "update_option": "update_as_unapproved",
       # %two_letters_code% would give "pt" and "zh"; our locale folders (and
       # .linguirc) use pt-BR and zh-CN, so override just those two.
       "languages_mapping":
@@ -19,14 +19,14 @@ files: [
     {
       "source": /en/fields.po,
       "translation": /%two_letters_code%/fields.po,
-      "update_option": "keep_translations",
+      "update_option": "update_as_unapproved",
       "languages_mapping":
         { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
     },
     {
       "source": /en/vocabularies.po,
       "translation": /%two_letters_code%/vocabularies.po,
-      "update_option": "keep_translations",
+      "update_option": "update_as_unapproved",
       "languages_mapping":
         { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
     },
@@ -35,7 +35,7 @@ files: [
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
       "scheme": "identifier,context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
-      "update_option": "keep_translations",
+      "update_option": "update_as_unapproved",
       # the language columns in the CSV are themselves the translations
       "import_translations": true,
     },
@@ -44,7 +44,7 @@ files: [
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
       "scheme": "context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
-      "update_option": "keep_translations",
+      "update_option": "update_as_unapproved",
       "import_translations": true,
     },
     {
@@ -52,7 +52,7 @@ files: [
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
       "scheme": "key,context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
-      "update_option": "keep_translations",
+      "update_option": "update_as_unapproved",
       "import_translations": true,
     },
   ]

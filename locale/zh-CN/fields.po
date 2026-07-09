@@ -1,14 +1,486 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2024-01-01 09:27-0700\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Generator: @lingui/cli\n"
-"Language: zh-cn\n"
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Plural-Forms: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /V3/fields.po\n"
+"X-Crowdin-File-ID: 70\n"
+"Project-Id-Version: saymorex\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2026-07-09 19:26\n"
+
+msgctxt "lameta/person/birthYear"
+msgid "Birth Year"
+msgstr "出生年份"
+
+msgctxt "lameta/person/birthYear/tipOnUsingThisField"
+msgid "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
+msgstr "如果您在估算，请在描述中说明。如果不知道，请输入\"?\"。"
+
+msgctxt "lameta/person/code"
+msgid "Code"
+msgstr "代码"
+
+msgctxt "lameta/person/customFields"
+msgid "Custom Fields"
+msgstr "自定义字段"
+
+msgctxt "lameta/person/customFields/description"
+msgid "A table of labels and values for a person."
+msgstr "包含人的标签与值的列表。"
+
+msgctxt "lameta/person/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr "如果您需要多个值，请使用逗号。如果要删除自定义字段，请清除所有使用过的值，然后重新启动 lameta。"
+
+msgctxt "lameta/person/description"
+msgid "Description"
+msgstr "描述"
+
+msgctxt "lameta/person/description/description"
+msgid "Relevant details such as where they learned the language(s)"
+msgstr "有关细节，例如他们在何处学得这（些）语言"
+
+msgctxt "lameta/person/education"
+msgid "Education"
+msgstr "学历"
+
+msgctxt "lameta/person/ethnicGroup"
+msgid "Ethnic Group"
+msgstr "民族"
+
+msgctxt "lameta/person/fathersLanguage"
+msgid "Father's Language"
+msgstr "父亲的语言"
+
+msgctxt "lameta/person/gender"
+msgid "Gender"
+msgstr "性别"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Unknown"
+msgstr "未知"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Male"
+msgstr "男"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Female"
+msgstr "女"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Other"
+msgstr "其他"
+
+msgctxt "lameta/person/howToContact"
+msgid "How to Contact"
+msgstr "联系方式"
+
+msgctxt "lameta/person/languages"
+msgid "Languages"
+msgstr "语言"
+
+msgctxt "lameta/person/mothersLanguage"
+msgid "Mother's Language"
+msgstr "母亲的语言"
+
+msgctxt "lameta/person/name"
+msgid "Full Name"
+msgstr "全称"
+
+msgctxt "lameta/person/nickname"
+msgid "Nickname"
+msgstr "昵称"
+
+msgctxt "lameta/person/otherLanguages"
+msgid "Other Languages"
+msgstr "其他语言"
+
+msgctxt "lameta/person/primaryOccupation"
+msgid "Primary Occupation"
+msgstr "主要职业"
+
+msgctxt "lameta/project/archiveConfigurationName"
+msgid "Archive Configuration used by this project"
+msgstr "本项目使用的存档配置"
+
+msgctxt "lameta/project/collectionDeputySteward"
+msgid "Deputy Stewards"
+msgstr ""
+
+msgctxt "lameta/project/collectionDeputySteward/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr ""
+
+msgctxt "lameta/project/collectionDescription"
+msgid "Description"
+msgstr "说明"
+
+msgctxt "lameta/project/collectionKey"
+msgid "Collection Key"
+msgstr ""
+
+msgctxt "lameta/project/collectionSteward"
+msgid "Steward"
+msgstr ""
+
+msgctxt "lameta/project/collectionSubjectLanguages"
+msgid "Subject Languages"
+msgstr "目标记录语言"
+
+msgctxt "lameta/project/collectionWorkingLanguages"
+msgid "Working Languages"
+msgstr "工作语言"
+
+msgctxt "lameta/project/contactPerson"
+msgid "Project Lead"
+msgstr ""
+
+msgctxt "lameta/project/continent"
+msgid "Continent"
+msgstr "洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "unspecified"
+msgstr "未指定"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Africa"
+msgstr "非洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Asia"
+msgstr "亚洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Australia"
+msgstr "澳洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Europe"
+msgstr "欧洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Americas"
+msgstr "北美洲与南美洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "North-America"
+msgstr "北美洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Middle-America"
+msgstr "中美洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Oceania"
+msgstr "大洋洲"
+
+msgctxt "lameta/project/continent/choices"
+msgid "South-America"
+msgstr "南美洲"
+
+msgctxt "lameta/project/country"
+msgid "Country"
+msgstr "国家/地区"
+
+msgctxt "lameta/project/customAccessChoices"
+msgid "Custom Session Access Choices"
+msgstr ""
+
+msgctxt "lameta/project/depositor"
+msgid "Depositors"
+msgstr ""
+
+msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr "如有多个人，请以逗号分隔"
+
+msgctxt "lameta/project/fundingProjectAffiliation"
+msgid "Project Affiliation"
+msgstr ""
+
+msgctxt "lameta/project/fundingProjectFunder"
+msgid "Funder"
+msgstr ""
+
+msgctxt "lameta/project/fundingProjectTitle"
+msgid "Funding Project Title"
+msgstr "资助项目标题"
+
+msgctxt "lameta/project/grantId"
+msgid "Project ID"
+msgstr "项目ID"
+
+msgctxt "lameta/project/location"
+msgid "Location/Address"
+msgstr "位置/地址"
+
+msgctxt "lameta/project/metadataLanguages"
+msgid "Metadata Languages"
+msgstr ""
+
+msgctxt "lameta/project/metadataLanguages/description"
+msgid "Languages used in metadata fields throughout the project (e.g., descriptions, titles). These determine the language options available for multilingual text fields."
+msgstr ""
+
+msgctxt "lameta/project/multilingualConversionPending"
+msgid "Multilingual Conversion Pending"
+msgstr ""
+
+msgctxt "lameta/project/multilingualConversionPending/description"
+msgid "Internal flag: true if slash-syntax fields need conversion to tagged format"
+msgstr ""
+
+msgctxt "lameta/project/region"
+msgid "Region"
+msgstr "地区"
+
+msgctxt "lameta/project/title"
+msgid "Title"
+msgstr "标题"
+
+msgctxt "lameta/session/access"
+msgid "Access"
+msgstr "访问权限"
+
+msgctxt "lameta/session/accessDescription"
+msgid "Access Explanation"
+msgstr "访问限制说明"
+
+msgctxt "lameta/session/accessDescription/description"
+msgid "If the access is not open/free, use this to explain why."
+msgstr "如果不是开放或免费访问，请说明原因。"
+
+msgctxt "lameta/session/customFields"
+msgid "Custom Fields"
+msgstr "自定义字段"
+
+msgctxt "lameta/session/customFields/description"
+msgid "A table of labels and values for a session."
+msgstr "含一个场次标签与值的列表。"
+
+msgctxt "lameta/session/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr "如果您需要多个值，请使用逗号。如果要删除自定义字段，请清除所有使用过的值，然后重新启动 lameta。"
+
+msgctxt "lameta/session/date"
+msgid "Date"
+msgstr "日期"
+
+msgctxt "lameta/session/description"
+msgid "Description"
+msgstr "说明"
+
+msgctxt "lameta/session/genre"
+msgid "Genre"
+msgstr "种类"
+
+msgctxt "lameta/session/id"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "lameta/session/involvement"
+msgid "Researcher Involvement"
+msgstr "研究者参与度"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "unspecified"
+msgstr "未指定"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr "//在 Windows SayMore 可处理之前暂不使用：未知"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "elicited"
+msgstr "引导式"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "non-elicited"
+msgstr "非引导式"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "no-observer"
+msgstr "无观察者"
+
+msgctxt "lameta/session/keyword"
+msgid "Keywords"
+msgstr "关键词"
+
+msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
+msgid "Separate with commas. Note that individual keywords cannot contain a comma."
+msgstr "请用逗号分隔。请注意，单个关键词不能包含逗号。"
+
+msgctxt "lameta/session/languages"
+msgid "Subject Languages"
+msgstr "目标记录语言"
+
+msgctxt "lameta/session/location"
+msgid "Neighborhood/Town/Village"
+msgstr "区/城镇/村庄"
+
+msgctxt "lameta/session/location/description"
+msgid "A location that is relevant within the group you are studying"
+msgstr "与您所研究的群体相关的地点"
+
+msgctxt "lameta/session/locationContinent"
+msgid "Continent"
+msgstr "洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "unspecified"
+msgstr "未指定"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Africa"
+msgstr "非洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Americas"
+msgstr "北美洲与南美洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Asia"
+msgstr "亚洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Australia"
+msgstr "澳洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Europe"
+msgstr "欧洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "North-America"
+msgstr "北美洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Middle-America"
+msgstr "中美洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Oceania"
+msgstr "大洋洲"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "South-America"
+msgstr "南美洲"
+
+msgctxt "lameta/session/locationCountry"
+msgid "Country"
+msgstr "国家/地区"
+
+msgctxt "lameta/session/locationRegion"
+msgid "Region"
+msgstr "地区"
+
+msgctxt "lameta/session/participants"
+msgid "People"
+msgstr "人员"
+
+msgctxt "lameta/session/planningType"
+msgid "Planning Type"
+msgstr "规划类型"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "unspecified"
+msgstr "未指定"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr "//在 Windows SayMore 可处理之前暂不使用：未知"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "spontaneous"
+msgstr "自发"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "semi-spontaneous"
+msgstr "半自发"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "planned"
+msgstr "有计划的"
+
+msgctxt "lameta/session/socialContext"
+msgid "Social Context"
+msgstr "社会背景"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "unspecified"
+msgstr "未指定"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr "//在 Windows SayMore 可处理之前暂不使用：未知"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "family"
+msgstr "家庭"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "private"
+msgstr "私密"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "public"
+msgstr "公开"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "controlled environment"
+msgstr "受控环境"
+
+msgctxt "lameta/session/status"
+msgid "Status"
+msgstr "状态"
+
+msgctxt "lameta/session/status/choices"
+msgid "Incoming"
+msgstr "即将入库"
+
+msgctxt "lameta/session/status/choices"
+msgid "In_Progress"
+msgstr "进行中"
+
+msgctxt "lameta/session/status/choices"
+msgid "Finished"
+msgstr "已完成"
+
+msgctxt "lameta/session/status/choices"
+msgid "Skipped"
+msgstr "已跳过"
+
+msgctxt "lameta/session/subgenre"
+msgid "Subgenre"
+msgstr "子类别"
+
+msgctxt "lameta/session/title"
+msgid "Title"
+msgstr "标题"
+
+msgctxt "lameta/session/topic"
+msgid "Topic"
+msgstr "主题"
+
+msgctxt "lameta/session/topic/separatorWithCommaInstructions"
+msgid "Separate with commas. Note that individual topics cannot contain a comma."
+msgstr "请用逗号分隔。请注意，单个主题不能包含逗号。"
+
+msgctxt "lameta/session/workingLanguages"
+msgid "Working Languages"
+msgstr "工作语言"
+
+msgctxt "ELAR/project/collectionSteward/description"
+msgid "This is usually the same person as the Depositor."
+msgstr "通常与存档人相同。"
+
+msgctxt "ELAR/project/depositor/description"
+msgid "This is usually the same person as the Collection Steward."
+msgstr "通常与典藏管理员相同。"
+
