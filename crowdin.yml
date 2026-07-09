@@ -2,33 +2,57 @@ project_id: "324607"
 api_token_env: LAMETA_CROWDIN_TOKEN
 preserve_hierarchy: false # we don't want to see the "en/messages.po", just "messages.po"
 base_path: "./locale"
+# NOTE: v3 syncs to the Crowdin branch "V3" (see strings:sync in package.json).
+# The project ROOT holds the v2 files and is still live for the V2 line — never
+# upload to or delete anything at the root from here.
 files: [
     {
       "source": /en/messages.po,
       "translation": /%two_letters_code%/messages.po,
+      # keep translations when source strings change
+      "update_option": "keep_translations",
+      # %two_letters_code% would give "pt" and "zh"; our locale folders (and
+      # .linguirc) use pt-BR and zh-CN, so override just those two.
+      "languages_mapping":
+        { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
     },
-    { "source": /en/fields.po, "translation": /%two_letters_code%/fields.po },
+    {
+      "source": /en/fields.po,
+      "translation": /%two_letters_code%/fields.po,
+      "update_option": "keep_translations",
+      "languages_mapping":
+        { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
+    },
     {
       "source": /en/vocabularies.po,
       "translation": /%two_letters_code%/vocabularies.po,
+      "update_option": "keep_translations",
+      "languages_mapping":
+        { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
     },
     {
       "source": /accessProtocols.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
       "scheme": "identifier,context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
+      "update_option": "keep_translations",
+      # the language columns in the CSV are themselves the translations
+      "import_translations": true,
     },
-    #"key","Context","en","es","fr","ru","zh-CN","pt-BR","id"
     {
       "source": /genres.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
       "scheme": "context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
+      "update_option": "keep_translations",
+      "import_translations": true,
     },
     {
       "source": /roles.csv,
       "translation": /%original_file_name%,
       "first_line_contains_header": true,
       "scheme": "key,context,source_phrase,es-ES,fr,ru,zh-CN,pt-BR,id,fa",
+      "update_option": "keep_translations",
+      "import_translations": true,
     },
   ]

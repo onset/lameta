@@ -53,12 +53,11 @@ export function setUILanguage(code: string, reload: boolean = true) {
   currentUILanguage = code;
   moment.locale(currentUILanguage); // this is a global change
 
-  // crowdin saves to "zh-cn" instead of "zh-CN", "pt" instead of "pt-BR"
-  const fixes = { "pt-br": "pt", "zh-CN": "zh-cn" };
-  const folder = fixes[code] || code;
-  loadOneCatalog(folder, "messages"); // these come from code
-  loadOneCatalog(folder, "fields"); // these come from the fields.json5 files
-  loadOneCatalog(folder, "vocabularies"); // these come from the vocabularies.json5 files
+  // locale folder names match the language codes exactly (crowdin.yml
+  // languages_mapping makes downloads land in pt-BR/ and zh-CN/)
+  loadOneCatalog(code, "messages"); // these come from code
+  loadOneCatalog(code, "fields"); // these come from the fields.json5 files
+  loadOneCatalog(code, "vocabularies"); // these come from the vocabularies.json5 files
   i18n.activate(code);
   userSettings.UILanguage = code;
 

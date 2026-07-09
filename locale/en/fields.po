@@ -206,6 +206,22 @@ msgctxt "lameta/project/location"
 msgid "Location/Address"
 msgstr ""
 
+msgctxt "lameta/project/metadataLanguages"
+msgid "Metadata Languages"
+msgstr ""
+
+msgctxt "lameta/project/metadataLanguages/description"
+msgid "Languages used in metadata fields throughout the project (e.g., descriptions, titles). These determine the language options available for multilingual text fields."
+msgstr ""
+
+msgctxt "lameta/project/multilingualConversionPending"
+msgid "Multilingual Conversion Pending"
+msgstr ""
+
+msgctxt "lameta/project/multilingualConversionPending/description"
+msgid "Internal flag: true if slash-syntax fields need conversion to tagged format"
+msgstr ""
+
 msgctxt "lameta/project/region"
 msgid "Region"
 msgstr ""

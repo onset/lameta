@@ -69,4 +69,4 @@ test-results/.last-run.json
 # validation reports
 rocrate-export-review-*.md
 
-Large Sample/
+Large Sample/scripts/crowdin/staging/
