@@ -22,17 +22,12 @@ describe("getCloudDisplayStatus", () => {
     );
   });
 
-  it("shows the outlined check for a hydrated file under a sync root", () => {
-    expect(getCloudDisplayStatus("local", true, true)).toBe("local");
-  });
-
-  it("shows the solid check for a pinned hydrated file under a sync root", () => {
-    expect(getCloudDisplayStatus("localPinned", true, true)).toBe(
-      "localPinned"
-    );
-  });
-
-  it("shows nothing for a local file outside any sync root", () => {
+  // Checkmarks for locally-available files are currently disabled (see the
+  // commented-out cases in getCloudDisplayStatus); if re-enabled, these
+  // should go back to expecting "local" / "localPinned" under a sync root.
+  it("shows nothing for hydrated files, even under a sync root", () => {
+    expect(getCloudDisplayStatus("local", true, true)).toBeUndefined();
+    expect(getCloudDisplayStatus("localPinned", true, true)).toBeUndefined();
     expect(getCloudDisplayStatus("local", true, false)).toBeUndefined();
     expect(getCloudDisplayStatus("localPinned", true, false)).toBeUndefined();
   });

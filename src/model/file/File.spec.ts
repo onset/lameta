@@ -562,6 +562,37 @@ describe("File cloudStatus", () => {
     expect(f.isCloudFileNotPresent).toBe(true);
   });
 
+  it("refreshes cloudStatus after readMetadataFile hydrates a dehydrated metadata file", () => {
+    // Create a file with a real .meta on disk, then reload it while the
+    // attribute reader claims everything is a cloud placeholder (as after
+    // Explorer's "Free up space"). Loading pins + sync-reads the metadata,
+    // which hydrates it; simulate OneDrive by flipping the reader to
+    // hydrated attrs once the pin lands.
+    const mediaFilePath = getPretendAudioFile();
+    const first = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    first.save(); // writes the .meta so the reload below actually reads it
+
+    let hydrated = false;
+    setPinWriterForTests(async () => {
+      hydrated = true;
+    });
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: !hydrated,
+      IS_RECALL_ON_DATA_ACCESS: !hydrated,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: hydrated
+    }));
+
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    // Without the post-read refresh this would be stuck on "cloudOnly".
+    expect(f.cloudStatus).toBe("localPinned");
+    expect(f.isCloudFileNotPresent).toBe(false);
+  });
+
   it("reports local and not-cloud-file-not-present for a normal file", () => {
     setAttributeReaderForTests(() => ({
       IS_OFFLINE: false,

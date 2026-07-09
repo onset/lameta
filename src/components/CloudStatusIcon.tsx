@@ -33,11 +33,15 @@ export function getCloudDisplayStatus(
     case "hydrating":
       // The download cannot progress without a network; show why.
       return isOnline ? "hydrating" : "cloudOnlyOffline";
-    case "local":
-    case "localPinned":
-      // Attributes cannot distinguish a hydrated OneDrive file from a plain
-      // local file, so only claim "available on this device" under a sync root.
-      return isUnderSyncRoot ? cloudStatus : undefined;
+    // Per John (2026-07): don't show checkmarks for files that are simply
+    // here on this device -- but keep the ability around in case he changes
+    // his mind. Re-enabling this gives Explorer-style green checks (outlined
+    // for "local", solid for "always keep on this device").
+    // case "local":
+    // case "localPinned":
+    //   // Attributes cannot distinguish a hydrated OneDrive file from a plain
+    //   // local file, so only claim "available on this device" under a sync root.
+    //   return isUnderSyncRoot ? cloudStatus : undefined;
     default:
       return undefined;
   }

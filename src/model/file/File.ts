@@ -913,6 +913,14 @@ export /*babel doesn't like this: abstract*/ class File {
           this.metadataFilePath
         );
 
+        // That sync read just hydrated a dehydrated metadata file. For
+        // session/person files the metadata file IS the file shown in the
+        // list, and its cloudStatus was captured (as cloudOnly) by
+        // addFieldsUsedInternally() BEFORE this read -- refresh it so the
+        // row doesn't stay grey with a cloud icon until the next
+        // focus/reselect.
+        this.updateCloudStatus();
+
         let xmlAsObject: any = {};
         xml2js.parseString(
           xml,
