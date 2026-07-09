@@ -7,7 +7,11 @@ import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
 import { describe, it, afterEach, vi } from "vitest";
-import { setAttributeReaderForTests } from "../../other/cloudFileStatus";
+import {
+  setAttributeReaderForTests,
+  setPinWriterForTests
+} from "../../other/cloudFileStatus";
+import { cloudFilePoller } from "../../other/cloudFilePoller";
 import { PatientFS } from "../../other/patientFile";
 
 function getPretendAudioFile(): string {
@@ -539,13 +543,16 @@ describe("File cached media stats", () => {
 describe("File cloudStatus", () => {
   afterEach(() => {
     setAttributeReaderForTests(undefined);
+    setPinWriterForTests(undefined);
+    cloudFilePoller.dispose();
   });
 
   it("is set from the attribute reader when the file is loaded", () => {
     setAttributeReaderForTests(() => ({
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: true,
-      IS_RECALL_ON_OPEN: false
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
     }));
 
     const mediaFilePath = getPretendAudioFile();
@@ -559,7 +566,8 @@ describe("File cloudStatus", () => {
     setAttributeReaderForTests(() => ({
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
-      IS_RECALL_ON_OPEN: false
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
     }));
 
     const mediaFilePath = getPretendAudioFile();
@@ -567,5 +575,154 @@ describe("File cloudStatus", () => {
 
     expect(f.cloudStatus).toBe("local");
     expect(f.isCloudFileNotPresent).toBe(false);
+  });
+
+  it("makeAvailableOffline() pins the file and, once disk reports pinned+recall attrs, lands on hydrating", async () => {
+    let pinned: boolean | undefined;
+    setPinWriterForTests(async (_path, isPinned) => {
+      pinned = isPinned;
+    });
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    }));
+
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+
+    await f.makeAvailableOffline();
+
+    expect(pinned).toBe(true);
+    expect(f.cloudStatus).toBe("hydrating");
+  });
+
+  it("stopWaiting() unpins the file and, once disk reports unpinned recall attrs, lands on cloudOnly", async () => {
+    let pinned: boolean | undefined;
+    setPinWriterForTests(async (_path, isPinned) => {
+      pinned = isPinned;
+    });
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.cloudStatus).toBe("hydrating");
+
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    }));
+
+    await f.stopWaiting();
+
+    expect(pinned).toBe(false);
+    expect(f.cloudStatus).toBe("cloudOnly");
+  });
+
+  it("updateCloudStatus() re-reads disk even when cloudStatus was previously hydrating or local (no clobber guard)", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    // Loading the file already calls updateCloudStatus() once.
+    expect(f.cloudStatus).toBe("hydrating");
+
+    // Disk now says the file finished downloading. A pre-pin-model
+    // updateCloudStatus() refused to leave "hydrating" once set; the new
+    // implementation must trust disk over the stale in-memory value.
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    f.updateCloudStatus();
+    expect(f.cloudStatus).toBe("localPinned");
+
+    // And it must also be willing to move a local file back to "hydrating"
+    // if disk now reports a pinned placeholder.
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    f.updateCloudStatus();
+    expect(f.cloudStatus).toBe("hydrating");
+  });
+
+  it("entering 'hydrating' sets hydratingSinceMs", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    expect(f.cloudStatus).toBe("hydrating");
+    expect(typeof f.hydratingSinceMs).toBe("number");
+  });
+
+  it("staying 'hydrating' across two updateCloudStatus() calls does not reset hydratingSinceMs", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.cloudStatus).toBe("hydrating");
+    const firstValue = f.hydratingSinceMs;
+
+    f.updateCloudStatus();
+
+    expect(f.cloudStatus).toBe("hydrating");
+    expect(f.hydratingSinceMs).toBe(firstValue);
+  });
+
+  it("leaving 'hydrating' clears hydratingSinceMs to undefined", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.cloudStatus).toBe("hydrating");
+    expect(f.hydratingSinceMs).not.toBeUndefined();
+
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    f.updateCloudStatus();
+
+    expect(f.cloudStatus).toBe("localPinned");
+    expect(f.hydratingSinceMs).toBeUndefined();
   });
 });

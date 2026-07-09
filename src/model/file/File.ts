@@ -3,7 +3,7 @@ import * as xml2js from "xml2js";
 import fs from "fs";
 import * as Path from "path";
 const filesize = require("filesize");
-import { makeObservable, observable, runInAction } from "mobx";
+import { makeObservable, observable } from "mobx";
 import * as mobx from "mobx";
 import assert from "assert";
 const camelcase = require("camelcase");
@@ -39,8 +39,10 @@ import userSettings from "../../other/UserSettings";
 import {
   CloudFileStatus,
   getCloudFileStatus,
-  hydrateFile
+  getCloudFileProvider,
+  isLocallyAvailable
 } from "../../other/cloudFileStatus";
+import { cloudFilePoller } from "../../other/cloudFilePoller";
 
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
@@ -103,8 +105,10 @@ export /*babel doesn't like this: abstract*/ class File {
 
   public cloudStatus: CloudFileStatus = "unknown";
 
-  private hydratingPromise: Promise<void> | undefined;
-  private hydratingAbortController: AbortController | undefined;
+  // Start time (ms since epoch) of the current hydration, or undefined when
+  // not hydrating. Lives on the model (not a component ref) so the elapsed
+  // timer survives unmount/remount of the panel showing it.
+  public hydratingSinceMs: number | undefined;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
@@ -407,6 +411,7 @@ export /*babel doesn't like this: abstract*/ class File {
       copyInProgress: observable,
       copyProgress: observable,
       cloudStatus: observable,
+      hydratingSinceMs: observable,
       properties: observable,
       contributions: observable
     });
@@ -487,12 +492,15 @@ export /*babel doesn't like this: abstract*/ class File {
     }
   }
   public updateCloudStatus(): void {
-    // Never clobber "hydrating" -- makeAvailableOffline() owns that transition
-    // and polls until the file is actually local.
-    if (this.cloudStatus === "hydrating") {
-      return;
-    }
     this.cloudStatus = getCloudFileStatus(this.getActualFilePath());
+    if (this.cloudStatus === "hydrating") {
+      if (this.hydratingSinceMs === undefined) {
+        this.hydratingSinceMs = Date.now();
+      }
+      cloudFilePoller.watch(this);
+    } else {
+      this.hydratingSinceMs = undefined;
+    }
   }
 
   public get isCloudFileNotPresent(): boolean {
@@ -574,49 +582,15 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   public async makeAvailableOffline(): Promise<void> {
-    if (this.cloudStatus === "hydrating" && this.hydratingPromise) {
-      return this.hydratingPromise;
-    }
-
-    runInAction(() => {
-      this.cloudStatus = "hydrating";
-    });
-
-    this.hydratingAbortController = new AbortController();
-    const signal = this.hydratingAbortController.signal;
-
-    this.hydratingPromise = (async () => {
-      try {
-        await hydrateFile(this.getActualFilePath(), { signal });
-        runInAction(() => {
-          this.cloudStatus = "local";
-        });
-      } catch (e) {
-        runInAction(() => {
-          this.cloudStatus = "cloudOnly";
-        });
-        throw e;
-      } finally {
-        this.hydratingPromise = undefined;
-        this.hydratingAbortController = undefined;
-      }
-    })();
-
-    return this.hydratingPromise;
+    await getCloudFileProvider().setPinned(this.getActualFilePath(), true);
+    this.updateCloudStatus(); // → "hydrating" (pinned placeholder), auto-enrolls in the poller
   }
 
   // Stops *waiting* for hydration to complete; OneDrive may continue fetching
   // the file in the background regardless. Safe to call even if nothing is
   // in progress.
   public async stopWaiting(): Promise<void> {
-    this.hydratingAbortController?.abort();
-    if (this.hydratingPromise) {
-      try {
-        await this.hydratingPromise;
-      } catch (e) {
-        // expected: aborting causes the pending makeAvailableOffline() to reject
-      }
-    }
+    await getCloudFileProvider().setPinned(this.getActualFilePath(), false);
     this.updateCloudStatus();
   }
 
@@ -924,6 +898,17 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
+        // Pin our own metadata sidecar so OneDrive's "free up space" can never
+        // dehydrate it; lameta must always be able to read these regardless of the
+        // user's auto-fetch threshold. (The sync read below hydrates it right now.)
+        const provider = getCloudFileProvider();
+        if (
+          provider.capabilities.canPin &&
+          !isLocallyAvailable(provider.getStatus(this.metadataFilePath))
+        ) {
+          provider.setPinned(this.metadataFilePath, true).catch(() => {});
+        }
+
         const xml: string = PatientFS.readFileSyncWithNotifyAndRethrow(
           this.metadataFilePath
         );

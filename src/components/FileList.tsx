@@ -34,6 +34,10 @@ import {
   AutoFetchCloudFiles,
   mbToBytes
 } from "../other/autoFetchCloudFiles";
+import {
+  CloudStatusIcon,
+  getCloudDisplayStatusOfFile
+} from "./CloudStatusIcon";
 const electron = require("electron");
 
 // Throttle window-focus-triggered cloud status refreshes so that rapid
@@ -134,6 +138,18 @@ export const _FileList: React.FunctionComponent<{
     return metadataMatch;
   };
 
+  // MobX tracking: deliberately touch getLinkStatusIconPath and the cloud
+  // display status (and through them cloudStatus and networkStatus) for
+  // EVERY file, with no short-circuit -- if a later file's status changes
+  // (e.g. OneDrive finishes hydrating it), this render must re-run so its
+  // row icon and cloudOnly row class update.
+  const linkStatusIconPaths = props.folder.files.map((f) =>
+    getLinkStatusIconPath(f)
+  );
+  const cloudDisplayStatuses = props.folder.files.map((f) =>
+    getCloudDisplayStatusOfFile(f)
+  );
+
   let columns: any[] = [
     {
       id: "icon",
@@ -159,12 +175,17 @@ export const _FileList: React.FunctionComponent<{
       id: "linkStatus",
       Header: "",
       width: 30,
-      show: props.folder.files.some((f) => getLinkStatusIconPath(f)),
-      accessor: (d: any) => {
-        const f: File = d;
-        return getLinkStatusIconPath(f);
-      },
-      Cell: (p) => (p.value ? <img src={p.value} /> : null)
+      show:
+        linkStatusIconPaths.some((p) => !!p) ||
+        cloudDisplayStatuses.some((s) => !!s),
+      accessor: (d: any) => d,
+      Cell: (p) => {
+        const f: File = p.value;
+        const iconPath = getLinkStatusIconPath(f);
+        // Link/missing/naming problems take precedence; otherwise show the
+        // OneDrive sync-state icon (or nothing for non-cloud files).
+        return iconPath ? <img src={iconPath} /> : <CloudStatusIcon file={f} />;
+      }
     },
     {
       id: "type",

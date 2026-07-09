@@ -21,7 +21,6 @@ import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
 import { CopyingStatus } from "./CopyingStatus";
-import { CloudFolderStatus } from "./CloudFolderStatus";
 import { ShowMessageDialog } from "./ShowMessageDialog/MessageDialog";
 import { showSpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { IFolderType } from "../model/Folder/Folder";
@@ -252,8 +251,7 @@ class Home extends React.Component<IProps> {
             }
           `}
         >
-          <CopyingStatus /> <CloudFolderStatus project={this.props.project} />{" "}
-          <RegistrationReminder />
+          <CopyingStatus /> <RegistrationReminder />
         </div>
         <SaveNotifier />
         {/* MediaFolderDialog belongs here instead of at app because it relies on there being a current project */}

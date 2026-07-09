@@ -1,22 +1,26 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import {
   getCloudFileStatus,
-  hydrateFile,
+  getCloudFileProvider,
   setAttributeReaderForTests,
-  setHydrationRunnerForTests,
-  HydrationRunner
+  setPinWriterForTests,
+  isLocallyAvailable,
+  isUnderCloudSyncRoot,
+  setCloudSyncRootsForTests
 } from "./cloudFileStatus";
 
 describe("getCloudFileStatus", () => {
   afterEach(() => {
     setAttributeReaderForTests(undefined);
+    setPinWriterForTests(undefined);
   });
 
   it("returns cloudOnly when IS_OFFLINE and IS_RECALL_ON_DATA_ACCESS are set", () => {
     setAttributeReaderForTests(() => ({
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: true,
-      IS_RECALL_ON_OPEN: false
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
     }));
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("cloudOnly");
   });
@@ -25,7 +29,8 @@ describe("getCloudFileStatus", () => {
     setAttributeReaderForTests(() => ({
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
-      IS_RECALL_ON_OPEN: true
+      IS_RECALL_ON_OPEN: true,
+      IS_PINNED: false
     }));
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("cloudOnly");
   });
@@ -50,105 +55,114 @@ describe("getCloudFileStatus", () => {
     });
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("unknown");
   });
+
+  it("returns hydrating when placeholder attrs are set and IS_PINNED is true", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("hydrating");
+  });
+
+  it("returns cloudOnly when placeholder attrs are set and IS_PINNED is false", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    }));
+    expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("cloudOnly");
+  });
+
+  it("returns localPinned when no placeholder attrs are set and IS_PINNED is true", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("localPinned");
+  });
 });
 
-describe("hydrateFile", () => {
+describe("getCloudFileProvider().setPinned", () => {
   afterEach(() => {
     setAttributeReaderForTests(undefined);
-    setHydrationRunnerForTests(undefined);
+    setPinWriterForTests(undefined);
   });
 
-  function abortError(): Error {
-    const e = new Error("Aborted");
-    e.name = "AbortError";
-    return e;
-  }
+  it("calls the writer with (path, true) when pinning", async () => {
+    const writer = vi.fn().mockResolvedValue(undefined);
+    setPinWriterForTests(writer);
 
-  // A runner that never finishes on its own -- it only settles (by rejecting)
-  // when its signal aborts. Stands in for a hydration still in progress.
-  const runnerPendingUntilAbort: HydrationRunner = (_path, { signal }) =>
-    new Promise((_resolve, reject) => {
-      if (signal?.aborted) return reject(abortError());
-      signal?.addEventListener("abort", () => reject(abortError()), {
-        once: true
-      });
-    });
+    await getCloudFileProvider().setPinned("C:\\fake\\path.mp3", true);
 
-  it("resolves when the hydration runner completes, forwarding progress", async () => {
-    const progress: Array<[number, number]> = [];
-    setHydrationRunnerForTests(async (_path, { onProgress }) => {
-      onProgress?.(50, 100);
-      onProgress?.(100, 100);
-    });
-
-    await hydrateFile("C:/fake/media.bin", {
-      onProgress: (bytes, total) => progress.push([bytes, total])
-    });
-
-    expect(progress).toEqual([
-      [50, 100],
-      [100, 100]
-    ]);
+    expect(writer).toHaveBeenCalledWith("C:\\fake\\path.mp3", true);
   });
 
-  it("throws AbortError immediately (without starting a hydration) if the signal is already aborted", async () => {
-    let started = false;
-    setHydrationRunnerForTests(async () => {
-      started = true;
-    });
-    const controller = new AbortController();
-    controller.abort();
+  it("calls the writer with (path, false) when unpinning", async () => {
+    const writer = vi.fn().mockResolvedValue(undefined);
+    setPinWriterForTests(writer);
+
+    await getCloudFileProvider().setPinned("C:\\fake\\path.mp3", false);
+
+    expect(writer).toHaveBeenCalledWith("C:\\fake\\path.mp3", false);
+  });
+
+  it("propagates a rejection from the writer", async () => {
+    setPinWriterForTests(() => Promise.reject(new Error("write failed")));
 
     await expect(
-      hydrateFile("C:/fake/media.bin", { signal: controller.signal })
-    ).rejects.toMatchObject({ name: "AbortError" });
-    expect(started).toBe(false);
+      getCloudFileProvider().setPinned("C:\\fake\\path.mp3", true)
+    ).rejects.toThrow(/write failed/);
   });
 
-  it("rejects with an AbortError when the signal is aborted mid-hydration", async () => {
-    setHydrationRunnerForTests(runnerPendingUntilAbort);
-    const controller = new AbortController();
+  it("reports canPin true when the attribute-reader seam is set", () => {
+    setAttributeReaderForTests(() => undefined);
+    expect(getCloudFileProvider().capabilities.canPin).toBe(true);
+  });
+});
 
-    const promise = hydrateFile("C:/fake/media.bin", {
-      signal: controller.signal
-    });
-    const expectation = expect(promise).rejects.toMatchObject({
-      name: "AbortError"
-    });
-    setTimeout(() => controller.abort(), 10);
+describe("isLocallyAvailable", () => {
+  it("is true only for the two hydrated states", () => {
+    expect(isLocallyAvailable("local")).toBe(true);
+    expect(isLocallyAvailable("localPinned")).toBe(true);
+    expect(isLocallyAvailable("cloudOnly")).toBe(false);
+    expect(isLocallyAvailable("hydrating")).toBe(false);
+    expect(isLocallyAvailable("unknown")).toBe(false);
+  });
+});
 
-    await expectation;
+describe("isUnderCloudSyncRoot", () => {
+  afterEach(() => {
+    setCloudSyncRootsForTests(undefined);
   });
 
-  it("rejects with a timeout error when the hydration does not finish within timeoutMs", async () => {
-    setHydrationRunnerForTests(runnerPendingUntilAbort);
-
-    await expect(
-      hydrateFile("C:/fake/media.bin", { timeoutMs: 20 })
-    ).rejects.toThrow(/timed out/);
+  it("matches files under a sync root, case- and separator-insensitively", () => {
+    setCloudSyncRootsForTests(["C:\\Users\\me\\OneDrive"]);
+    expect(isUnderCloudSyncRoot("C:\\Users\\me\\OneDrive\\proj\\a.mp3")).toBe(
+      true
+    );
+    expect(isUnderCloudSyncRoot("c:/users/me/onedrive/proj/a.mp3")).toBe(true);
   });
 
-  it("propagates a hydration failure such as the cloud recall 'UNKNOWN' error", async () => {
-    setHydrationRunnerForTests(async () => {
-      const e: any = new Error("UNKNOWN: unknown error, read");
-      e.code = "UNKNOWN";
-      throw e;
-    });
-
-    await expect(hydrateFile("C:/fake/media.bin")).rejects.toThrow(/UNKNOWN/);
+  it("does not match sibling folders that merely share the root as a name prefix", () => {
+    setCloudSyncRootsForTests(["C:\\Users\\me\\OneDrive"]);
+    expect(
+      isUnderCloudSyncRoot("C:\\Users\\me\\OneDriveBackup\\a.mp3")
+    ).toBe(false);
+    expect(isUnderCloudSyncRoot("C:\\Elsewhere\\a.mp3")).toBe(false);
   });
 
-  it("removes its abort listener from the caller's signal after resolving (no leak)", async () => {
-    setHydrationRunnerForTests(async () => {
-      /* resolves immediately */
-    });
-    const controller = new AbortController();
-    const addSpy = vi.spyOn(controller.signal, "addEventListener");
-    const removeSpy = vi.spyOn(controller.signal, "removeEventListener");
+  it("tolerates a trailing slash on the configured root", () => {
+    setCloudSyncRootsForTests(["C:\\Users\\me\\OneDrive\\"]);
+    expect(isUnderCloudSyncRoot("C:\\Users\\me\\OneDrive\\a.mp3")).toBe(true);
+  });
 
-    await hydrateFile("C:/fake/media.bin", { signal: controller.signal });
-
-    expect(addSpy).toHaveBeenCalledTimes(1);
-    expect(removeSpy).toHaveBeenCalledTimes(1);
+  it("returns false when there are no sync roots", () => {
+    setCloudSyncRootsForTests([]);
+    expect(isUnderCloudSyncRoot("C:\\Users\\me\\OneDrive\\a.mp3")).toBe(false);
   });
 });
