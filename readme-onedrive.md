@@ -23,6 +23,10 @@ Explorer uses:
   currently offline, so it cannot be downloaded right now.
 - **No icon** — the file is on your computer and ready to use.
 
+![The file list: the session file is online-only (blue cloud, dimmed), the first
+recording is being downloaded (spinning arrows), and the two files below it are
+already on this computer (no icon)](readme-images/onedrive-file-list-icons.png)
+
 Your session and person information always works, even when files are
 online-only. lameta automatically keeps its own small record-keeping files on
 your computer, so you can always see and edit titles, dates, contributors,
@@ -33,10 +37,18 @@ in the cloud.
 
 1. Click the file in the list. Instead of the usual preview, you will see a
    box titled **OneDrive Status**.
+
+   ![The OneDrive Status box for an online-only file, with the checkbox not
+   yet ticked](readme-images/onedrive-status-card.png)
+
 2. Tick **"Tell OneDrive that I want this file on my computer"**.
 3. The status changes to **Waiting**. OneDrive downloads the file in the
    background — how long this takes depends on the file size and your
    internet connection. lameta shows the file as soon as it arrives.
+
+   ![The OneDrive Status box after ticking the checkbox: the status is
+   Waiting, and lameta notes when you requested the
+   file](readme-images/onedrive-status-card-waiting.png)
 
 Changed your mind? Untick the box to cancel the request. (This never removes
 anything from your computer or from the cloud.)
@@ -57,6 +69,9 @@ If your computer has no internet connection, online-only files show a
 crossed-out cloud, and the OneDrive Status box explains that the file cannot
 be downloaded right now. You can still tick the box — OneDrive will remember
 and download the file once you are connected again.
+
+![The OneDrive Status box while offline: a crossed-out cloud and a note that
+this computer appears to be offline](readme-images/onedrive-status-card-offline.png)
 
 ## Freeing up disk space
 
