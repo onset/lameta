@@ -1,0 +1,79 @@
+[
+ {
+  "id": 2050,
+  "identifier": null,
+  "text": "Not important for IMDI.",
+  "context": "Not important for IMDI.",
+  "isHidden": false
+ },
+ {
+  "id": 2052,
+  "identifier": null,
+  "text": "Relevant details such as where they learned it",
+  "context": "Relevant details such as where they learned it",
+  "isHidden": false
+ },
+ {
+  "id": 5652,
+  "identifier": null,
+  "text": "Contact information about the person or institution responsible for the project.",
+  "context": "Project",
+  "isHidden": false
+ },
+ {
+  "id": 5654,
+  "identifier": null,
+  "text": "If you are estimating, talk about that in the Description",
+  "context": "Person birthYear.info",
+  "isHidden": false
+ },
+ {
+  "id": 5656,
+  "identifier": null,
+  "text": "Enter '?' if you don't know",
+  "context": "Person birthYear",
+  "isHidden": false
+ },
+ {
+  "id": 5658,
+  "identifier": null,
+  "text": "Separate with commas. Note that individual keywords cannot contain a comma.",
+  "context": "Keywords",
+  "isHidden": false
+ },
+ {
+  "id": 5660,
+  "identifier": null,
+  "text": "Separate with commas. Note that individual topics cannot contain a comma.",
+  "context": "Topics",
+  "isHidden": false
+ },
+ {
+  "id": 5662,
+  "identifier": null,
+  "text": "A location that is relevant within the group you are studying",
+  "context": "Neighborhood/Town/Village",
+  "isHidden": false
+ },
+ {
+  "id": 5664,
+  "identifier": null,
+  "text": "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+  "context": "Custom Fields-info",
+  "isHidden": false
+ },
+ {
+  "id": 5666,
+  "identifier": null,
+  "text": "If the access is not open/free, use this to explain why.",
+  "context": "Access Description",
+  "isHidden": false
+ },
+ {
+  "id": 5668,
+  "identifier": null,
+  "text": "This is only for the use of the researcher.",
+  "context": "Person.howToContact",
+  "isHidden": false
+ }
+]

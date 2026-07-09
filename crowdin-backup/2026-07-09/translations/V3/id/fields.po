@@ -1,0 +1,482 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
+"X-Crowdin-Language: id\n"
+"X-Crowdin-File: /V3/fields.po\n"
+"X-Crowdin-File-ID: 70\n"
+"Project-Id-Version: saymorex\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"PO-Revision-Date: 2026-07-09 18:24\n"
+
+msgctxt "lameta/person/birthYear"
+msgid "Birth Year"
+msgstr "Tahun Lahir"
+
+msgctxt "lameta/person/birthYear/tipOnUsingThisField"
+msgid "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
+msgstr "Jika Anda hanya mengira-ngira, sebutkan saja dalam kolom Keterangan. Ketikkan '?', jika Anda tidak tahu."
+
+msgctxt "lameta/person/code"
+msgid "Code"
+msgstr "Kode"
+
+msgctxt "lameta/person/customFields"
+msgid "Custom Fields"
+msgstr "Kotak-kotak Khusus"
+
+msgctxt "lameta/person/customFields/description"
+msgid "A table of labels and values for a person."
+msgstr "Tabel berisi label dan nilai untuk seseorang."
+
+msgctxt "lameta/person/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr "Gunakan koma jika Anda menginginkan banyak kata kunci atau masukan. Untuk menghapus kotak khusus, hapus masukannya di mana pun Anda menggunakannya, lalu mulai kembali lameta."
+
+msgctxt "lameta/person/description"
+msgid "Description"
+msgstr "Deskripsi"
+
+msgctxt "lameta/person/description/description"
+msgid "Relevant details such as where they learned the language(s)"
+msgstr "Rincian terkait misalnya tempat mereka belajar bahasa"
+
+msgctxt "lameta/person/education"
+msgid "Education"
+msgstr "Pendidikan"
+
+msgctxt "lameta/person/ethnicGroup"
+msgid "Ethnic Group"
+msgstr "Suku/Etnis"
+
+msgctxt "lameta/person/fathersLanguage"
+msgid "Father's Language"
+msgstr "Bahasa Ayah"
+
+msgctxt "lameta/person/gender"
+msgid "Gender"
+msgstr "Jenis Kelamin"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Unknown"
+msgstr "Tidak dikenal"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Male"
+msgstr "Lelaki"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Female"
+msgstr "Perempuan"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Other"
+msgstr "Lain"
+
+msgctxt "lameta/person/howToContact"
+msgid "How to Contact"
+msgstr "Bagaimana dihubungi"
+
+msgctxt "lameta/person/languages"
+msgid "Languages"
+msgstr "Bahasa-Bahasa"
+
+msgctxt "lameta/person/mothersLanguage"
+msgid "Mother's Language"
+msgstr "Bahasa Ibu"
+
+msgctxt "lameta/person/name"
+msgid "Full Name"
+msgstr "Nama Lengkap"
+
+msgctxt "lameta/person/nickname"
+msgid "Nickname"
+msgstr "Nama Panggilan"
+
+msgctxt "lameta/person/otherLanguages"
+msgid "Other Languages"
+msgstr "Bahasa Lain"
+
+msgctxt "lameta/person/primaryOccupation"
+msgid "Primary Occupation"
+msgstr "Pekerjaan Utama"
+
+msgctxt "lameta/project/analysisIso3CodeAndName"
+msgid "Working Language"
+msgstr "Bahasa Komunikasi"
+
+msgctxt "lameta/project/archiveConfigurationName"
+msgid "Archive Configuration used by this project"
+msgstr "Pengaturan Arsip yang dipergunakan untuk proyek ini"
+
+msgctxt "lameta/project/collectionDescription"
+msgid "Collection Description"
+msgstr "Keterangan Koleksi"
+
+msgctxt "lameta/project/collectionName"
+msgid "Collection Name"
+msgstr "Nama Koleksi"
+
+msgctxt "lameta/project/collectionSteward"
+msgid "Collection Steward"
+msgstr "Pengelola Koleksi"
+
+msgctxt "lameta/project/collectionTitle"
+msgid "Collection Title"
+msgstr "Judul Koleksi"
+
+msgctxt "lameta/project/configurationName"
+msgid "Archive Configuration used by this project"
+msgstr "Pengaturan Arsip yang dipergunakan untuk proyek ini"
+
+msgctxt "lameta/project/contactPerson"
+msgid "Contact Person"
+msgstr "Kontak Person"
+
+msgctxt "lameta/project/contactPerson/description"
+msgid "Contact information about the person or institution responsible for the project."
+msgstr "Informasi kontak tentang orang atau lembaga yang bertanggung jawab atas proyek ini."
+
+msgctxt "lameta/project/continent"
+msgid "Continent"
+msgstr "Benua"
+
+msgctxt "lameta/project/continent/choices"
+msgid "unspecified"
+msgstr "tidak ditentukan"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Africa"
+msgstr "Afrika"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Asia"
+msgstr "Asia"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Australia"
+msgstr "Australia"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Europe"
+msgstr "Eropa"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Americas"
+msgstr "Amerika"
+
+msgctxt "lameta/project/continent/choices"
+msgid "North-America"
+msgstr "Amerika Utara"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Middle-America"
+msgstr "Amerika Tengah"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Oceania"
+msgstr "Oseanica/Oceania"
+
+msgctxt "lameta/project/continent/choices"
+msgid "South-America"
+msgstr "Amerika Selatan"
+
+msgctxt "lameta/project/country"
+msgid "Country"
+msgstr "Negara"
+
+msgctxt "lameta/project/customAccessChoices"
+msgid "Custom access choices"
+msgstr "Pilihan akses khusus"
+
+msgctxt "lameta/project/depositor"
+msgid "Depositor"
+msgstr "Penabung/Depositor"
+
+msgctxt "lameta/project/depositor"
+msgid "Depositor"
+msgstr "Penabung/Depositor"
+
+msgctxt "lameta/project/depositor/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr "Untuk beberapa orang, pisahkan dengan tanda koma"
+
+msgctxt "lameta/project/deputyCollectionSteward"
+msgid "Deputy Collection Stewards"
+msgstr "Deputi Pengelolaan Koleksi"
+
+msgctxt "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions"
+msgid "For multiple people, separate with commas"
+msgstr "Untuk beberapa orang, pisahkan dengan tanda koma"
+
+msgctxt "lameta/project/fundingProjectTitle"
+msgid "Funding Project Title"
+msgstr "Judul Proyek yang Didanai"
+
+msgctxt "lameta/project/grantId"
+msgid "Grant ID"
+msgstr "ID Grant"
+
+msgctxt "lameta/project/location"
+msgid "Location/Address"
+msgstr "Lokasi/Alamat"
+
+msgctxt "lameta/project/projectDescription"
+msgid "Description"
+msgstr "Deskripsi"
+
+msgctxt "lameta/project/region"
+msgid "Region"
+msgstr "Daerah"
+
+msgctxt "lameta/project/title"
+msgid "Project ID"
+msgstr "ID Proyek"
+
+msgctxt "lameta/project/vernacularIso3CodeAndName"
+msgid "Subject Language"
+msgstr "Bahasa yang didokumentasi"
+
+msgctxt "lameta/session/access"
+msgid "Access"
+msgstr "Akses"
+
+msgctxt "lameta/session/accessDescription"
+msgid "Access Explanation"
+msgstr "Keterangan Akses"
+
+msgctxt "lameta/session/accessDescription/description"
+msgid "If the access is not open/free, use this to explain why."
+msgstr "Jika akses tidak terbuka, gunakan ini untuk menjelaskan alasannya."
+
+msgctxt "lameta/session/customFields"
+msgid "Custom Fields"
+msgstr "Kotak-kotak Khusus"
+
+msgctxt "lameta/session/customFields/description"
+msgid "A table of labels and values for a session."
+msgstr "Tabel berisi label dan nilai untuk sebuah sesi."
+
+msgctxt "lameta/session/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr "Gunakan koma jika Anda menginginkan banyak kata kunci atau masukan. Untuk menghapus kotak khusus, hapus masukannya di mana pun Anda menggunakannya, lalu mulai kembali lameta."
+
+msgctxt "lameta/session/date"
+msgid "Date"
+msgstr "Tanggal"
+
+msgctxt "lameta/session/description"
+msgid "Description"
+msgstr "Deskripsi"
+
+msgctxt "lameta/session/genre"
+msgid "Genre"
+msgstr "Genre"
+
+msgctxt "lameta/session/id"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "lameta/session/involvement"
+msgid "Researcher Involvement"
+msgstr "Keterlibatan Peneliti"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "unspecified"
+msgstr "tidak ditentukan"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr "//keluar sampai Windows SayMore dapat menanganinya: tidak diketahui"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "elicited"
+msgstr "dielisitasi"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "non-elicited"
+msgstr "tak dielisitasi"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "no-observer"
+msgstr "tak-pengamat"
+
+msgctxt "lameta/session/keyword"
+msgid "Keywords"
+msgstr "Kata kunci"
+
+msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
+msgid "Separate with commas. Note that individual keywords cannot contain a comma."
+msgstr "Pisahkan dengan koma. Perhatikanlah bahwa kata kunci tidak boleh mengandung koma."
+
+msgctxt "lameta/session/languages"
+msgid "Subject Languages"
+msgstr "Bahasa yang didokumentasi"
+
+msgctxt "lameta/session/location"
+msgid "Neighborhood/Town/Village"
+msgstr "Lingkungan/Kota/Desa"
+
+msgctxt "lameta/session/location/description"
+msgid "A location that is relevant within the group you are studying"
+msgstr "Lokasi yang relevan dalam kelompok yang Anda pelajari"
+
+msgctxt "lameta/session/locationContinent"
+msgid "Continent"
+msgstr "Benua"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "unspecified"
+msgstr "tidak ditentukan"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Africa"
+msgstr "Afrika"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Americas"
+msgstr "Amerika"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Asia"
+msgstr "Asia"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Australia"
+msgstr "Australia"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Europe"
+msgstr "Eropah"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "North-America"
+msgstr "Amerika Utara"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Middle-America"
+msgstr "Amerika Tengah"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Oceania"
+msgstr "Oseanica/Oceania"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "South-America"
+msgstr "Amerika Selatan"
+
+msgctxt "lameta/session/locationCountry"
+msgid "Country"
+msgstr "Negara"
+
+msgctxt "lameta/session/locationRegion"
+msgid "Region"
+msgstr "Daerah"
+
+msgctxt "lameta/session/participants"
+msgid "People"
+msgstr "Orang-Orang"
+
+msgctxt "lameta/session/planningType"
+msgid "Planning Type"
+msgstr "Jenis Rencana"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "unspecified"
+msgstr "tidak ditentukan"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr "//keluar sampai Windows SayMore dapat menanganinya: tidak diketahui"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "spontaneous"
+msgstr "spontan"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "semi-spontaneous"
+msgstr "semi spontan"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "planned"
+msgstr "direncanakan"
+
+msgctxt "lameta/session/socialContext"
+msgid "Social Context"
+msgstr "Konteks Sosial"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "unspecified"
+msgstr "tidak ditentukan"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "//leaving out until Windows SayMore can handle it: unknown"
+msgstr "//keluar sampai Windows SayMore dapat menanganinya: tidak diketahui"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "family"
+msgstr "keluarga"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "private"
+msgstr "pribadi"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "public"
+msgstr "publik"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "controlled environment"
+msgstr "lingkungan yang terkendali"
+
+msgctxt "lameta/session/status"
+msgid "Status"
+msgstr "Status"
+
+msgctxt "lameta/session/status/choices"
+msgid "Incoming"
+msgstr "Sedang Masuk"
+
+msgctxt "lameta/session/status/choices"
+msgid "In_Progress"
+msgstr "Dalam_Proses"
+
+msgctxt "lameta/session/status/choices"
+msgid "Finished"
+msgstr "Selesai"
+
+msgctxt "lameta/session/status/choices"
+msgid "Skipped"
+msgstr "Dilewati"
+
+msgctxt "lameta/session/subgenre"
+msgid "Subgenre"
+msgstr "Sub-Genre"
+
+msgctxt "lameta/session/title"
+msgid "Title"
+msgstr "Judul"
+
+msgctxt "lameta/session/topic"
+msgid "Topic"
+msgstr "Topik"
+
+msgctxt "lameta/session/topic/separatorWithCommaInstructions"
+msgid "Separate with commas. Note that individual topics cannot contain a comma."
+msgstr "Pisahkan dengan koma. Perhatikanlah bahwa kata kunci tidak boleh berisi koma."
+
+msgctxt "lameta/session/workingLanguages"
+msgid "Working Languages"
+msgstr "Bahasa Komunikasi"
+
+msgctxt "ELAR/project/collectionSteward/description"
+msgid "This is usually the same person as the Depositor."
+msgstr "Biasanya orang yang sama dengan Penyetor Data."
+
+msgctxt "ELAR/project/depositor/description"
+msgid "This is usually the same person as the Collection Steward."
+msgstr "Biasanya orang yang sama dengan Pengelola Koleksi."
+

@@ -132,6 +132,7 @@
     "eslint-config-mfe": "latest",
     "eslint-plugin-import": "2.31.0",
     "express": "^4.14.0",
+    "gettext-parser": "^9.1.1",
     "globals": "^15.13.0",
     "happy-dom": "^8.1.1",
     "identity-obj-proxy": "^3.0.0",

@@ -1,0 +1,408 @@
+[
+ {
+  "id": 6704,
+  "identifier": "AILCA",
+  "text": "AILCA",
+  "context": "AILCA\nAccess Protocol Name",
+  "isHidden": true
+ },
+ {
+  "id": 6706,
+  "identifier": "AILCA.F",
+  "text": "F",
+  "context": "AILCA.F\nAILCA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6708,
+  "identifier": "AILCA.F.Description",
+  "text": "access is Free to all",
+  "context": "AILCA.F.Description\nDescription of AILCA choice 'F'",
+  "isHidden": true
+ },
+ {
+  "id": 6710,
+  "identifier": "AILCA.U",
+  "text": "U",
+  "context": "AILCA.U\nAILCA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6712,
+  "identifier": "AILCA.U.Description",
+  "text": "all Users can access (requires registration)",
+  "context": "AILCA.U.Description\nDescription of AILCA choice 'U'",
+  "isHidden": true
+ },
+ {
+  "id": 6714,
+  "identifier": "AILCA.RC",
+  "text": "RC",
+  "context": "AILCA.RC\nAILCA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6716,
+  "identifier": "AILCA.RC.Description",
+  "text": "Researchers and Community members are allowed access",
+  "context": "AILCA.RC.Description\nDescription of AILCA choice 'RC'",
+  "isHidden": true
+ },
+ {
+  "id": 6718,
+  "identifier": "AILCA.C",
+  "text": "C",
+  "context": "AILCA.C\nAILCA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6720,
+  "identifier": "AILCA.C.Description",
+  "text": "only Community members are allowed access (normally requires application to Depositor)",
+  "context": "AILCA.C.Description\nDescription of AILCA choice 'C'",
+  "isHidden": true
+ },
+ {
+  "id": 6722,
+  "identifier": "AILCA.S",
+  "text": "S",
+  "context": "AILCA.S\nAILCA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6724,
+  "identifier": "AILCA.S.Description",
+  "text": "only Subscribers are allowed access (requires application to Depositor)",
+  "context": "AILCA.S.Description\nDescription of AILCA choice 'S'",
+  "isHidden": true
+ },
+ {
+  "id": 6726,
+  "identifier": "AILCA.Unspecified",
+  "text": "Unspecified",
+  "context": "AILCA.Unspecified\nAILCA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6728,
+  "identifier": "AILCA.Unspecified.Description",
+  "text": "only the Depositor and delegate can access",
+  "context": "AILCA.Unspecified.Description\nDescription of AILCA choice 'Unspecified'",
+  "isHidden": true
+ },
+ {
+  "id": 6730,
+  "identifier": "AILLA",
+  "text": "AILLA",
+  "context": "AILLA\nAccess Protocol Name",
+  "isHidden": true
+ },
+ {
+  "id": 6732,
+  "identifier": "AILLA.Level 1",
+  "text": "Level 1",
+  "context": "AILLA.Level 1\nAILLA choice",
+  "isHidden": false
+ },
+ {
+  "id": 6734,
+  "identifier": "AILLA.Level 1.Description",
+  "text": "Public Access",
+  "context": "AILLA.Level 1.Description\nDescription of AILLA choice 'Level 1'",
+  "isHidden": false
+ },
+ {
+  "id": 6736,
+  "identifier": "AILLA.Level 2",
+  "text": "Level 2",
+  "context": "AILLA.Level 2\nAILLA choice",
+  "isHidden": false
+ },
+ {
+  "id": 6738,
+  "identifier": "AILLA.Level 2.Description",
+  "text": "Password",
+  "context": "AILLA.Level 2.Description\nDescription of AILLA choice 'Level 2'",
+  "isHidden": false
+ },
+ {
+  "id": 6740,
+  "identifier": "AILLA.Level 3",
+  "text": "Level 3",
+  "context": "AILLA.Level 3\nAILLA choice",
+  "isHidden": false
+ },
+ {
+  "id": 6742,
+  "identifier": "AILLA.Level 3.Description",
+  "text": "Time limit",
+  "context": "AILLA.Level 3.Description\nDescription of AILLA choice 'Level 3'",
+  "isHidden": false
+ },
+ {
+  "id": 6744,
+  "identifier": "AILLA.Level 4",
+  "text": "Level 4",
+  "context": "AILLA.Level 4\nAILLA choice",
+  "isHidden": false
+ },
+ {
+  "id": 6746,
+  "identifier": "AILLA.Level 4.Description",
+  "text": "Depositor control",
+  "context": "AILLA.Level 4.Description\nDescription of AILLA choice 'Level 4'",
+  "isHidden": false
+ },
+ {
+  "id": 6748,
+  "identifier": "ANLA",
+  "text": "ANLA",
+  "context": "ANLA\nAccess Protocol Name",
+  "isHidden": true
+ },
+ {
+  "id": 6750,
+  "identifier": "ANLA.Unrestricted access",
+  "text": "Unrestricted access",
+  "context": "ANLA.Unrestricted access\nANLA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6752,
+  "identifier": "ANLA.Unrestricted access.Description",
+  "text": "Unrestricted access",
+  "context": "ANLA.Unrestricted access.Description\nDescription of ANLA choice 'Unrestricted access'",
+  "isHidden": true
+ },
+ {
+  "id": 6754,
+  "identifier": "ANLA.No access until specific date",
+  "text": "No access until specific date",
+  "context": "ANLA.No access until specific date\nANLA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6756,
+  "identifier": "ANLA.No access until specific date.Description",
+  "text": "No access until specific date",
+  "context": "ANLA.No access until specific date.Description\nDescription of ANLA choice 'No access until specific date'",
+  "isHidden": true
+ },
+ {
+  "id": 6758,
+  "identifier": "ANLA.Restricted access",
+  "text": "Restricted access",
+  "context": "ANLA.Restricted access\nANLA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6760,
+  "identifier": "ANLA.Restricted access.Description",
+  "text": "Restricted access",
+  "context": "ANLA.Restricted access.Description\nDescription of ANLA choice 'Restricted access'",
+  "isHidden": true
+ },
+ {
+  "id": 6762,
+  "identifier": "ELAR",
+  "text": "ELAR",
+  "context": "ELAR\nAccess Protocol Name",
+  "isHidden": true
+ },
+ {
+  "id": 6764,
+  "identifier": "ELAR.O",
+  "text": "O",
+  "context": "ELAR.O\nELAR choice",
+  "isHidden": true
+ },
+ {
+  "id": 6766,
+  "identifier": "ELAR.O.Description",
+  "text": "fully Open",
+  "context": "ELAR.O.Description\nDescription of ELAR choice 'O'",
+  "isHidden": true
+ },
+ {
+  "id": 6768,
+  "identifier": "ELAR.U",
+  "text": "U",
+  "context": "ELAR.U\nELAR choice",
+  "isHidden": true
+ },
+ {
+  "id": 6770,
+  "identifier": "ELAR.U.Description",
+  "text": "open to Users",
+  "context": "ELAR.U.Description\nDescription of ELAR choice 'U'",
+  "isHidden": true
+ },
+ {
+  "id": 6772,
+  "identifier": "ELAR.S",
+  "text": "S",
+  "context": "ELAR.S\nELAR choice",
+  "isHidden": true
+ },
+ {
+  "id": 6774,
+  "identifier": "ELAR.S.Description",
+  "text": "open to Subscribers",
+  "context": "ELAR.S.Description\nDescription of ELAR choice 'S'",
+  "isHidden": true
+ },
+ {
+  "id": 6776,
+  "identifier": "PARADISEC",
+  "text": "PARADISEC",
+  "context": "PARADISEC\nAccess Protocol Name",
+  "isHidden": true
+ },
+ {
+  "id": 6778,
+  "identifier": "PARADISEC.O",
+  "text": "O",
+  "context": "PARADISEC.O\nPARADISEC choice",
+  "isHidden": true
+ },
+ {
+  "id": 6780,
+  "identifier": "PARADISEC.O.Description",
+  "text": "Open (subject to PARADISEC access conditions)",
+  "context": "PARADISEC.O.Description\nDescription of PARADISEC choice 'O'",
+  "isHidden": true
+ },
+ {
+  "id": 6782,
+  "identifier": "PARADISEC.C",
+  "text": "C",
+  "context": "PARADISEC.C\nPARADISEC choice",
+  "isHidden": true
+ },
+ {
+  "id": 6784,
+  "identifier": "PARADISEC.C.Description",
+  "text": "Closed (subject to certain specified conditions)",
+  "context": "PARADISEC.C.Description\nDescription of PARADISEC choice 'C'",
+  "isHidden": true
+ },
+ {
+  "id": 6786,
+  "identifier": "REAP",
+  "text": "REAP",
+  "context": "REAP\nAccess Protocol Name",
+  "isHidden": true
+ },
+ {
+  "id": 6788,
+  "identifier": "REAP.Unknown.Description",
+  "text": "<unknown>",
+  "context": "REAP.Unknown.Description\nDescription of REAP choice 'Unknown'",
+  "isHidden": true
+ },
+ {
+  "id": 6790,
+  "identifier": "REAP.Entity",
+  "text": "Entity",
+  "context": "REAP.Entity\nREAP choice",
+  "isHidden": true
+ },
+ {
+  "id": 6792,
+  "identifier": "REAP.Entity.Description",
+  "text": "Restricted to Organizational Unit",
+  "context": "REAP.Entity.Description\nDescription of REAP choice 'Entity'",
+  "isHidden": true
+ },
+ {
+  "id": 6794,
+  "identifier": "REAP.REAP users",
+  "text": "REAP users",
+  "context": "REAP.REAP users\nREAP choice",
+  "isHidden": true
+ },
+ {
+  "id": 6796,
+  "identifier": "REAP.REAP users.Description",
+  "text": "Restricted to REAP users",
+  "context": "REAP.REAP users.Description\nDescription of REAP choice 'REAP users'",
+  "isHidden": true
+ },
+ {
+  "id": 6798,
+  "identifier": "REAP.Public",
+  "text": "Public",
+  "context": "REAP.Public\nREAP choice",
+  "isHidden": true
+ },
+ {
+  "id": 6800,
+  "identifier": "REAP.Public.Description",
+  "text": "Public",
+  "context": "REAP.Public.Description\nDescription of REAP choice 'Public'",
+  "isHidden": true
+ },
+ {
+  "id": 6802,
+  "identifier": "TLA",
+  "text": "TLA",
+  "context": "TLA\nAccess Protocol Name",
+  "isHidden": true
+ },
+ {
+  "id": 6804,
+  "identifier": "TLA.Open",
+  "text": "Open",
+  "context": "TLA.Open\nTLA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6806,
+  "identifier": "TLA.Open.Description",
+  "text": "Open",
+  "context": "TLA.Open.Description\nDescription of TLA choice 'Open'",
+  "isHidden": true
+ },
+ {
+  "id": 6808,
+  "identifier": "TLA.Restricted",
+  "text": "Restricted",
+  "context": "TLA.Restricted\nTLA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6810,
+  "identifier": "TLA.Restricted.Description",
+  "text": "Restricted",
+  "context": "TLA.Restricted.Description\nDescription of TLA choice 'Restricted'",
+  "isHidden": true
+ },
+ {
+  "id": 6812,
+  "identifier": "TLA.Protected",
+  "text": "Protected",
+  "context": "TLA.Protected\nTLA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6814,
+  "identifier": "TLA.Protected.Description",
+  "text": "Protected",
+  "context": "TLA.Protected.Description\nDescription of TLA choice 'Protected'",
+  "isHidden": true
+ },
+ {
+  "id": 6816,
+  "identifier": "TLA.Closed",
+  "text": "Closed",
+  "context": "TLA.Closed\nTLA choice",
+  "isHidden": true
+ },
+ {
+  "id": 6818,
+  "identifier": "TLA.Closed.Description",
+  "text": "Closed",
+  "context": "TLA.Closed.Description\nDescription of TLA choice 'Closed'",
+  "isHidden": true
+ }
+]
