@@ -34,9 +34,9 @@ describe("getStatusOfFile / getLinkStatusIconPath for cloud-only files", () => {
     expect(getStatusOfFile(f).status).not.toBe("cloudOnly");
   });
 
-  it("maps the cloudOnly status to the cloud icon asset", () => {
+  it("returns no icon path for cloudOnly: cloud states are drawn by CloudStatusIcon", () => {
     const f = getPretendFile();
     f.cloudStatus = "cloudOnly";
-    expect(getLinkStatusIconPath(f)).toBe("assets/cloud.svg");
+    expect(getLinkStatusIconPath(f)).toBe("");
   });
 });

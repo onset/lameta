@@ -75,5 +75,5 @@
   color: var(--project-color) !important;
 }
 .cloudOnly {
-  color: #5b7ca3 !important;
+  color: rgba(0, 0, 0, 0.5) !important;
 }

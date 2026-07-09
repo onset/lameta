@@ -1,59 +1,165 @@
-import { css } from "@emotion/react";
+import { css, keyframes } from "@emotion/react";
 /* removed emotion jsx declaration */
 
 import * as React from "react";
 import { observer } from "mobx-react";
-import { t, Trans } from "@lingui/macro";
-import CloudOutlinedIcon from "@mui/icons-material/CloudOutlined";
-import { Button, CircularProgress, Tooltip } from "@mui/material";
-const filesize = require("filesize");
+import { t, Trans, Plural } from "@lingui/macro";
 import { File } from "../model/file/File";
 import { NotifyError } from "./Notify";
-import { lameta_dark_blue } from "../containers/theme";
+import { getCloudFileProvider } from "../other/cloudFileStatus";
+import { networkStatus } from "../other/networkStatus";
+import {
+  CloudDisplayStatus,
+  getCloudDisplayStatusOfFile
+} from "./CloudStatusIcon";
 
-function formatElapsed(ms: number): string {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
+// Palette from the "OneDrive Status" design (claude.ai/design):
+const cardGreen = "#6a9a3a";
+const titleColor = "#1a1d1a";
+const bodyColor = "#5a615a";
+const dividerColor = "#ececec";
+const checkboxBorder = "#b8bdb6";
 
-function useElapsedWhileHydrating(file: File): number {
-  const [elapsedMs, setElapsedMs] = React.useState(0);
-  const startTimeRef = React.useRef<number | undefined>(undefined);
+function useMinutesSinceHydrationRequest(file: File): number {
+  const [minutes, setMinutes] = React.useState(0);
 
   React.useEffect(() => {
-    if (file.cloudStatus !== "hydrating") {
-      startTimeRef.current = undefined;
-      setElapsedMs(0);
+    if (file.cloudStatus !== "hydrating" || file.hydratingSinceMs === undefined) {
+      setMinutes(0);
       return;
     }
-    if (startTimeRef.current === undefined) {
-      startTimeRef.current = Date.now();
-    }
-    const start = startTimeRef.current;
-    setElapsedMs(Date.now() - start);
-    const interval = window.setInterval(() => {
-      setElapsedMs(Date.now() - start);
-    }, 1000);
+    const start = file.hydratingSinceMs;
+    const update = () => setMinutes(Math.floor((Date.now() - start) / 60000));
+    update();
+    const interval = window.setInterval(update, 30000);
     return () => window.clearInterval(interval);
-  }, [file.cloudStatus]);
+  }, [file.cloudStatus, file.hydratingSinceMs]);
 
-  return elapsedMs;
+  return minutes;
 }
 
-// The button/progress/stop-waiting control, shared between the full
-// CloudFilePanel (shown instead of a preview) and the inline
-// FileStatusBlock (shown as a status strip under the file list).
+function getStatusLabel(status: CloudDisplayStatus): string {
+  switch (status) {
+    case "hydrating":
+      return t`Waiting`;
+    case "cloudOnlyOffline":
+      return t`In cloud only, and this computer appears to be offline.`;
+    default:
+      return t`In cloud only, lameta cannot read it yet.`;
+  }
+}
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+// Stroke-style icons matching the design's outlined cloud, in the card green.
+const PanelStatusIcon: React.FunctionComponent<{
+  status: CloudDisplayStatus;
+}> = ({ status }) => {
+  const common = {
+    width: 22,
+    height: 22,
+    viewBox: "0 0 24 24",
+    fill: "none" as const,
+    css: css`
+      flex-shrink: 0;
+      color: ${cardGreen};
+    `
+  };
+  const cloudPath = (
+    <path
+      d="M18.5 15.5a3.5 3.5 0 0 0-.6-6.95A5 5 0 0 0 8.1 9.2 3.75 3.75 0 0 0 8.5 16.7h10a1.2 1.2 0 0 0 0-1.2Z"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinejoin="round"
+    />
+  );
+  switch (status) {
+    case "hydrating":
+      return (
+        <svg
+          {...common}
+          css={css`
+            ${common.css};
+            animation: ${spin} 2.5s linear infinite;
+          `}
+        >
+          <polyline
+            points="23 4 23 10 17 10"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <polyline
+            points="1 20 1 14 7 14"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    case "cloudOnlyOffline":
+      return (
+        <svg {...common}>
+          {cloudPath}
+          <path
+            d="M4.5 3.5 19.5 20.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          />
+        </svg>
+      );
+    default:
+      return <svg {...common}>{cloudPath}</svg>;
+  }
+};
+
+// The "OneDrive Status" card: title row, explanation, divider, and the
+// request checkbox. Shared by every tab that would need to read the file's
+// content (Audio/Video/Image/Text/PDF previews). Renders nothing once the
+// file is on this computer, ready to read.
 export const CloudFileFetchControl: React.FunctionComponent<{
   file: File;
 }> = observer((props) => {
   const { file } = props;
-  const elapsedMs = useElapsedWhileHydrating(file);
-  const sizeLabel = filesize(file.getSizeInBytes(), { round: 0 });
+  const minutesSinceRequest = useMinutesSinceHydrationRequest(file);
 
-  if (file.cloudStatus === "hydrating") {
-    return (
+  if (!getCloudFileProvider().capabilities.canPin) {
+    return null;
+  }
+  if (!file.isCloudFileNotPresent) {
+    return null;
+  }
+
+  const hydrating = file.cloudStatus === "hydrating";
+  const displayStatus = getCloudDisplayStatusOfFile(file) ?? "cloudOnly";
+
+  return (
+    <div
+      css={css`
+        width: 640px;
+        max-width: 100%;
+        box-sizing: border-box;
+        background: #ffffff;
+        border: 1.5px solid ${cardGreen};
+        border-radius: 14px;
+        padding: 22px 26px;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04),
+          0 6px 18px rgba(16, 24, 40, 0.06);
+      `}
+    >
       <div
         css={css`
           display: flex;
@@ -61,44 +167,116 @@ export const CloudFileFetchControl: React.FunctionComponent<{
           gap: 10px;
         `}
       >
-        <CircularProgress size={18} />
-        <span>
-          <Trans>Making available… ({formatElapsed(elapsedMs)})</Trans>
-        </span>
-        <Tooltip
-          title={t`OneDrive may continue fetching in the background.`}
+        <PanelStatusIcon status={displayStatus} />
+        <h2
+          css={css`
+            margin: 0;
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: ${titleColor};
+          `}
         >
-          <Button
-            size="small"
-            onClick={() => {
-              file.stopWaiting();
-            }}
-          >
-            <Trans>Stop waiting</Trans>
-          </Button>
-        </Tooltip>
+          <Trans>OneDrive Status</Trans>
+        </h2>
       </div>
-    );
-  }
 
-  return (
-    <Button
-      variant="contained"
-      onClick={async () => {
-        try {
-          await file.makeAvailableOffline();
-        } catch (e) {
-          if ((e as any)?.name !== "AbortError") {
-            NotifyError(
-              t`lameta was not able to make this file available on this device.`,
-              `${e}`
-            );
-          }
-        }
-      }}
-    >
-      <Trans>Make available on this device ({sizeLabel})</Trans>
-    </Button>
+      <p
+        css={css`
+          margin: 11px 0 0;
+          font-size: 15px;
+          line-height: 1.5;
+          color: ${bodyColor};
+        `}
+      >
+        {getStatusLabel(displayStatus)}
+      </p>
+
+      <div
+        css={css`
+          height: 1px;
+          background: ${dividerColor};
+          margin: 18px 0;
+        `}
+      />
+
+      <label
+        css={css`
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+          user-select: none;
+        `}
+      >
+        <input
+          type="checkbox"
+          checked={hydrating}
+          onChange={(e) => {
+            if (e.target.checked) {
+              file.makeAvailableOffline().catch((err) => {
+                NotifyError(
+                  t`lameta was not able to make this file available on this device.`,
+                  `${err}`
+                );
+              });
+            } else {
+              file.stopWaiting();
+            }
+          }}
+          css={css`
+            appearance: none;
+            margin: 0;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            border: 1.5px solid ${checkboxBorder};
+            border-radius: 5px;
+            background-color: #ffffff;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: all 0.12s ease;
+            cursor: pointer;
+            &:checked {
+              background-color: ${cardGreen};
+              background-image: url("data:image/svg+xml,%3Csvg width='13' height='13' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12.5 10 17 19 7' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            }
+          `}
+        />
+        <span
+          css={css`
+            font-size: 15px;
+            color: ${titleColor};
+          `}
+        >
+          <Trans>Tell OneDrive that I want this file on my computer</Trans>
+        </span>
+      </label>
+
+      {hydrating && networkStatus.isOnline && (
+        <p
+          css={css`
+            margin: 11px 0 0;
+            font-size: 15px;
+            line-height: 1.5;
+            color: ${bodyColor};
+          `}
+        >
+          {minutesSinceRequest < 1 ? (
+            <Trans>
+              You requested this file less than a minute ago. lameta will
+              show it when it becomes available.
+            </Trans>
+          ) : (
+            <Plural
+              value={minutesSinceRequest}
+              one="# minute since you requested this file. lameta will show it when it becomes available."
+              other="# minutes since you requested this file. lameta will show it when it becomes available."
+            />
+          )}
+        </p>
+      )}
+    </div>
   );
 });
 
@@ -106,54 +284,13 @@ export const CloudFileFetchControl: React.FunctionComponent<{
 // been fetched from the cloud. See file.isCloudFileNotPresent.
 export const CloudFilePanel: React.FunctionComponent<{ file: File }> =
   observer((props) => {
-    const { file } = props;
-    const sizeLabel = filesize(file.getSizeInBytes(), { round: 0 });
-
     return (
       <div
         css={css`
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
-          padding: 24px;
-          color: ${lameta_dark_blue};
+          padding: 0 24px 24px 0;
         `}
       >
-        <div
-          css={css`
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: bold;
-          `}
-        >
-          <CloudOutlinedIcon
-            css={css`
-              color: ${lameta_dark_blue};
-            `}
-          />
-          <span>{file.getFilenameToShowInList()}</span>
-          <span>({sizeLabel})</span>
-        </div>
-        <p
-          css={css`
-            margin: 0;
-          `}
-        >
-          <Trans>
-            This file is online-only (OneDrive). lameta has not fetched its
-            content to this computer.
-          </Trans>
-        </p>
-        <p
-          css={css`
-            margin: 0;
-          `}
-        >
-          <Trans>This may take a long time on a slow connection.</Trans>
-        </p>
-        <CloudFileFetchControl file={file} />
+        <CloudFileFetchControl file={props.file} />
       </div>
     );
   });
