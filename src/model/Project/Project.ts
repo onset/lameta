@@ -30,6 +30,7 @@ import { LanguageSlot } from "../field/TextHolder";
 // FIXED: Import safeCaptureException instead of using Sentry directly
 // CONTEXT: This prevents E2E test failures from Sentry RendererTransport errors
 import { safeCaptureException } from "../../other/errorHandling";
+import { cloudReadGuard } from "../../other/cloudReadGuard";
 
 import genres from "./Session/genres.json";
 
@@ -502,6 +503,8 @@ export class Project extends Folder {
     let sessionCount = 0;
     let personCount = 0;
     try {
+      // Start each load with a clean cloud circuit breaker (see cloudReadGuard).
+      cloudReadGuard.reset();
       const customVocabularies = new EncounteredVocabularyRegistry();
       const metadataFile = new ProjectMetadataFile(
         directory,
@@ -656,6 +659,8 @@ export class Project extends Folder {
   ): Promise<Project> {
     const startTime = performance.now();
     try {
+      // Start each load with a clean cloud circuit breaker (see cloudReadGuard).
+      cloudReadGuard.reset();
       const customVocabularies = new EncounteredVocabularyRegistry();
       const metadataFile = new ProjectMetadataFile(
         directory,
@@ -793,6 +798,33 @@ export class Project extends Folder {
       safeCaptureException(err);
       console.error(err);
       return { loadingError: err.message } as Project;
+    }
+  }
+
+  // Every Folder in the project whose metadata files we read at load time.
+  private getAllFolders(): Folder[] {
+    const folders: Folder[] = [this];
+    if (this.descriptionFolder) folders.push(this.descriptionFolder);
+    if (this.otherDocsFolder) folders.push(this.otherDocsFolder);
+    folders.push(...this.sessions.items, ...this.persons.items);
+    return folders;
+  }
+
+  // Re-attempt reading the metadata of files that a cloud provider couldn't
+  // deliver during load. Backs the "cloud unavailable" banner's Retry action.
+  // If the provider is still down, the circuit breaker simply trips again and
+  // the banner stays; otherwise the rows fill in and the banner clears.
+  public retryFailedCloudReads(): void {
+    cloudReadGuard.reset();
+    for (const folder of this.getAllFolders()) {
+      const files: File[] = [];
+      if (folder.metadataFile) files.push(folder.metadataFile);
+      files.push(...folder.files);
+      for (const file of files) {
+        if (file.cloudMetadataUnavailable) {
+          file.readMetadataFile();
+        }
+      }
     }
   }
 

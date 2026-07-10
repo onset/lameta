@@ -31,13 +31,20 @@ export class PatientFS {
   }
   public static readFileSyncWithNotifyAndRethrow(path: string): string {
     try {
-      return PatientFS.patientFileOperationSync(() =>
-        fs.readFileSync(path, "utf8")
-      );
+      return PatientFS.readFileSyncNoNotify(path);
     } catch (err) {
       NotifyFileAccessProblem(`Could not read ${path}`, err);
       throw err;
     }
+  }
+  // Same patient retry behavior, but throws the raw error without showing any
+  // notification. For callers that need to classify the error first (e.g. a
+  // cloud-provider hydration failure that should fail softly rather than pop a
+  // toast per file -- see cloudReadGuard).
+  public static readFileSyncNoNotify(path: string): string {
+    return PatientFS.patientFileOperationSync(() =>
+      fs.readFileSync(path, "utf8")
+    );
   }
   public static writeFileSyncWithNotifyThenRethrow(
     path: string,

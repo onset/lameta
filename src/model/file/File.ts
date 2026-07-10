@@ -40,8 +40,13 @@ import {
   CloudFileStatus,
   getCloudFileStatus,
   getCloudFileProvider,
+  getCloudProviderNameForPath,
   isLocallyAvailable
 } from "../../other/cloudFileStatus";
+import {
+  cloudReadGuard,
+  isCloudProviderReadFailure
+} from "../../other/cloudReadGuard";
 import { cloudFilePoller } from "../../other/cloudFilePoller";
 
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
@@ -104,6 +109,12 @@ export /*babel doesn't like this: abstract*/ class File {
   public copyProgress: string;
 
   public cloudStatus: CloudFileStatus = "unknown";
+
+  // True when we tried (or deliberately skipped trying) to read this file's
+  // metadata from the cloud during load and the provider couldn't deliver it.
+  // Drives the "cloud unavailable" affordance and lets Retry find the files
+  // that need re-reading. See cloudReadGuard.
+  public cloudMetadataUnavailable: boolean = false;
 
   // Start time (ms since epoch) of the current hydration, or undefined when
   // not hydrating. Lives on the model (not a component ref) so the elapsed
@@ -181,10 +192,8 @@ export /*babel doesn't like this: abstract*/ class File {
       return "";
     }
 
-    let date: moment.Moment;
-
     // 1) Try strict YYYY-MM-DD first
-    date = moment(dateString, "YYYY-MM-DD", true /* strict */);
+    const date = moment(dateString, "YYYY-MM-DD", true /* strict */);
     if (date.isValid()) {
       return date.format("YYYY-MM-DD");
     }
@@ -411,6 +420,7 @@ export /*babel doesn't like this: abstract*/ class File {
       copyInProgress: observable,
       copyProgress: observable,
       cloudStatus: observable,
+      cloudMetadataUnavailable: observable,
       hydratingSinceMs: observable,
       properties: observable,
       contributions: observable
@@ -888,6 +898,20 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   private haveReadMetadataFile: boolean = false;
+
+  // Record that this file's metadata could not be read from the cloud, and
+  // leave it in a state where a later Retry can re-attempt the read.
+  private markCloudMetadataUnavailable(): void {
+    this.cloudMetadataUnavailable = true;
+    // Reset so a Retry re-enters readMetadataFile for this file.
+    this.haveReadMetadataFile = false;
+    this.updateCloudStatus();
+    cloudReadGuard.recordFailure(
+      this.metadataFilePath,
+      getCloudProviderNameForPath(this.metadataFilePath)
+    );
+  }
+
   public readMetadataFile() {
     try {
       sentryBreadCrumb(`enter readMetadataFile ${this.metadataFilePath}`);
@@ -898,20 +922,58 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
-        // Pin our own metadata sidecar so OneDrive's "free up space" can never
-        // dehydrate it; lameta must always be able to read these regardless of the
-        // user's auto-fetch threshold. (The sync read below hydrates it right now.)
         const provider = getCloudFileProvider();
-        if (
+        const isCloudPlaceholder =
           provider.capabilities.canPin &&
-          !isLocallyAvailable(provider.getStatus(this.metadataFilePath))
-        ) {
+          !isLocallyAvailable(provider.getStatus(this.metadataFilePath));
+
+        if (isCloudPlaceholder) {
+          // If the cloud provider already failed to deliver a file during this
+          // load, don't touch this placeholder at all -- both pinning and
+          // reading ask the sync engine to hydrate it, and each failed attempt
+          // can make the provider's own client pop a modal error dialog. Fail
+          // softly so the project keeps loading; the row shows a "cloud
+          // unavailable" state and the user can Retry. See cloudReadGuard.
+          if (cloudReadGuard.isTripped) {
+            this.markCloudMetadataUnavailable();
+            return;
+          }
+
+          // Pin our own metadata sidecar so OneDrive's "free up space" can never
+          // dehydrate it; lameta must always be able to read these regardless of
+          // the user's auto-fetch threshold. (The sync read below hydrates it
+          // right now.)
           provider.setPinned(this.metadataFilePath, true).catch(() => {});
         }
 
-        const xml: string = PatientFS.readFileSyncWithNotifyAndRethrow(
-          this.metadataFilePath
-        );
+        let xml: string;
+        try {
+          xml = isCloudPlaceholder
+            ? PatientFS.readFileSyncNoNotify(this.metadataFilePath)
+            : PatientFS.readFileSyncWithNotifyAndRethrow(this.metadataFilePath);
+        } catch (err) {
+          if (isCloudPlaceholder && isCloudProviderReadFailure(err)) {
+            // The provider couldn't hydrate this placeholder. Trip the breaker,
+            // record it for the consolidated banner, and fail softly: no
+            // per-file toast, and no aborting the whole project load.
+            this.markCloudMetadataUnavailable();
+            return;
+          }
+          // A genuine file problem (missing, locked, corrupt). Preserve the
+          // original notify-and-rethrow behavior.
+          if (isCloudPlaceholder) {
+            NotifyFileAccessProblem(
+              `Could not read ${this.metadataFilePath}`,
+              err
+            );
+          }
+          throw err;
+        }
+
+        // The read succeeded; clear any prior cloud-unavailable state (e.g. this
+        // is a successful Retry).
+        this.cloudMetadataUnavailable = false;
+        cloudReadGuard.clearFailure(this.metadataFilePath);
 
         // That sync read just hydrated a dehydrated metadata file. For
         // session/person files the metadata file IS the file shown in the
@@ -1014,6 +1076,18 @@ export /*babel doesn't like this: abstract*/ class File {
     // DEBUG: Allow disabling saves for testing migration without affecting files
     if (userSettings.DisableSavingProjectData) {
       console.log(`[SAVE DISABLED] Would save ${this.metadataFilePath}`);
+      return;
+    }
+
+    // Never overwrite a file whose real metadata we could not read from the
+    // cloud. On that soft-fail path (see markCloudMetadataUnavailable) the
+    // in-memory properties are empty/default, so writing them would destroy the
+    // real file on disk -- and sync that empty version back to the cloud and
+    // other machines. A successful (re)read clears this flag and re-enables
+    // saving. This must run before the dirty check because that soft-fail path
+    // leaves `dirty` undefined (clearDirty() was skipped), which the
+    // `dirty === false` guard below would not catch.
+    if (this.cloudMetadataUnavailable) {
       return;
     }
 

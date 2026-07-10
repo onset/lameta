@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 
 import pkg from "package.json";
 import Workspace from "../components/Workspace";
+import { CloudUnavailableBanner } from "../components/CloudUnavailableBanner";
 import * as React from "react";
 import { observable, makeObservable } from "mobx";
 import { observer } from "mobx-react";
@@ -342,11 +343,25 @@ class HomePage extends React.Component<IProps, IState> {
     return (
       <div style={{ height: "100%" }}>
         {(this.projectHolder.project && (
-          <Workspace
-            project={this.projectHolder.project}
-            authorityLists={this.projectHolder.project.authorityLists}
-            menu={this.menu}
-            reload={() => {
+          <div
+            css={css`
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+            `}
+          >
+            <CloudUnavailableBanner project={this.projectHolder.project} />
+            <div
+              css={css`
+                flex: 1;
+                min-height: 0;
+              `}
+            >
+              <Workspace
+                project={this.projectHolder.project}
+                authorityLists={this.projectHolder.project.authorityLists}
+                menu={this.menu}
+                reload={() => {
               // currently, I'm trying to just use softReload because that is more e2e
               // friendly and having the same behavior in e2e and non-e2e is good.
 
@@ -355,7 +370,9 @@ class HomePage extends React.Component<IProps, IState> {
               //if (getTestEnvironment().E2E) this.softReload();
               //else remote.getCurrentWindow().reload();
             }}
-          />
+              />
+            </div>
+          </div>
         )) || (
           <div className={"startScreen"}>
             <div className={"core"}>
