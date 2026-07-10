@@ -100,7 +100,7 @@ msgstr ""
 msgid "Available after this file is made available on this device"
 msgstr ""
 
-msgid "Available on this device. OneDrive may free up this space if the file goes unused."
+msgid "Available on this device. {providerName} may free up this space if the file goes unused."
 msgstr ""
 
 msgid "CSV export complete"
@@ -144,6 +144,9 @@ msgstr "Borrar"
 
 msgid "Close"
 msgstr "Cerrar"
+
+msgid "Cloud"
+msgstr ""
 
 msgid "Collection"
 msgstr ""
@@ -510,16 +513,10 @@ msgstr "OPEX + Archivos"
 msgid "One or more files are still being copied into your project."
 msgstr "Uno o más archivos aún están siendo copiados a su proyecto."
 
-msgid "OneDrive Status"
+msgid "Online-only ({providerName}), and this computer appears to be offline, so the file cannot be downloaded right now."
 msgstr ""
 
-msgid "OneDrive is downloading this file to this computer."
-msgstr ""
-
-msgid "Online-only (OneDrive), and this computer appears to be offline, so the file cannot be downloaded right now."
-msgstr ""
-
-msgid "Online-only (OneDrive). The content of this file is not on this computer."
+msgid "Online-only ({providerName}). The content of this file is not on this computer."
 msgstr ""
 
 msgid "Open"
@@ -726,7 +723,7 @@ msgstr ""
 msgid "Status"
 msgstr "Estado"
 
-msgid "Tell OneDrive that I want this file on my computer"
+msgid "Tell {providerName} that I want this file on my computer"
 msgstr ""
 
 msgid "Text"
@@ -780,7 +777,7 @@ msgstr "Este archivo XML se ajusta al esquema IMDI."
 msgid "This file does not comply with the file naming rules of the current archive."
 msgstr ""
 
-msgid "This file is online-only (OneDrive). Select it to see how to make it available on this device."
+msgid "This file is online-only ({providerName}). Select it to see how to make it available on this device."
 msgstr ""
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
@@ -938,6 +935,12 @@ msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted} se enviará a la Papelera de reciclaje"
 
 msgid "{minutesSinceRequest, plural, one {# minute since you requested this file. lameta will show it when it becomes available.} other {# minutes since you requested this file. lameta will show it when it becomes available.}}"
+msgstr ""
+
+msgid "{providerName} Status"
+msgstr ""
+
+msgid "{providerName} is downloading this file to this computer."
 msgstr ""
 
 msgid "{totalMissing} items need translation"

@@ -7,6 +7,7 @@ import { t } from "@lingui/macro";
 import { File } from "../model/file/File";
 import {
   CloudFileStatus,
+  getCloudProviderNameForPath,
   isUnderCloudSyncRoot
 } from "../other/cloudFileStatus";
 import { networkStatus } from "../other/networkStatus";
@@ -57,16 +58,19 @@ export function getCloudDisplayStatusOfFile(
   );
 }
 
-function getTooltip(status: CloudDisplayStatus): string {
+function getTooltip(
+  status: CloudDisplayStatus,
+  providerName: string
+): string {
   switch (status) {
     case "cloudOnly":
-      return t`Online-only (OneDrive). The content of this file is not on this computer.`;
+      return t`Online-only (${providerName}). The content of this file is not on this computer.`;
     case "cloudOnlyOffline":
-      return t`Online-only (OneDrive), and this computer appears to be offline, so the file cannot be downloaded right now.`;
+      return t`Online-only (${providerName}), and this computer appears to be offline, so the file cannot be downloaded right now.`;
     case "hydrating":
-      return t`OneDrive is downloading this file to this computer.`;
+      return t`${providerName} is downloading this file to this computer.`;
     case "local":
-      return t`Available on this device. OneDrive may free up this space if the file goes unused.`;
+      return t`Available on this device. ${providerName} may free up this space if the file goes unused.`;
     case "localPinned":
       return t`Always available on this device.`;
   }
@@ -89,14 +93,15 @@ export const CloudStatusGlyph: React.FunctionComponent<{
   status: CloudDisplayStatus;
   size?: number;
   color?: string;
-}> = ({ status, size = 16, color }) => {
+  providerName?: string; // "OneDrive", "Dropbox", ... for the tooltip
+}> = ({ status, size = 16, color, providerName }) => {
   const common = {
     width: size,
     height: size,
     viewBox: "0 0 24 24",
     role: "img" as const
   };
-  const title = <title>{getTooltip(status)}</title>;
+  const title = <title>{getTooltip(status, providerName ?? t`Cloud`)}</title>;
   switch (status) {
     case "cloudOnly":
       return (
@@ -169,5 +174,11 @@ export const CloudStatusIcon: React.FunctionComponent<{
   if (!status) {
     return null;
   }
-  return <CloudStatusGlyph status={status} size={props.size} />;
+  return (
+    <CloudStatusGlyph
+      status={status}
+      size={props.size}
+      providerName={getCloudProviderNameForPath(props.file.getActualFilePath())}
+    />
+  );
 });

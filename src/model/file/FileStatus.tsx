@@ -11,6 +11,7 @@ import { Button } from "@mui/material"; // Update this import
 import { t, Trans } from "@lingui/macro";
 import { error_color, lameta_orange } from "../../containers/theme";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
+import { getCloudProviderNameForPath } from "../../other/cloudFileStatus";
 import { observer } from "mobx-react";
 import { Folder } from "../Folder/Folder";
 
@@ -48,10 +49,12 @@ export function getStatusOfFile(f: File): {
   // Read only the observable cloudStatus here -- this runs per row on every
   // render, so it must never call fswin/getCloudFileStatus() itself.
   if (f.isCloudFileNotPresent) {
+    const providerName =
+      getCloudProviderNameForPath(f.getActualFilePath()) ?? t`Cloud`;
     return {
       missing: false,
       status: "cloudOnly",
-      info: t`This file is online-only (OneDrive). Select it to see how to make it available on this device.`
+      info: t`This file is online-only (${providerName}). Select it to see how to make it available on this device.`
     };
   }
 
