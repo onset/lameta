@@ -13,6 +13,7 @@ import {
 } from "../../other/cloudFileStatus";
 import { cloudFilePoller } from "../../other/cloudFilePoller";
 import { PatientFS } from "../../other/patientFile";
+import { cloudReadGuard } from "../../other/cloudReadGuard";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
@@ -545,6 +546,114 @@ describe("File cloudStatus", () => {
     setAttributeReaderForTests(undefined);
     setPinWriterForTests(undefined);
     cloudFilePoller.dispose();
+    cloudReadGuard.reset();
+    vi.restoreAllMocks();
+  });
+
+  function makeCloudPlaceholderReader() {
+    return () => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: true,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    });
+  }
+
+  function throwCloudReadError(): never {
+    // How the Windows Cloud Files API surfaces a failed placeholder hydration
+    // to Node (verified against a broken Nextcloud provider).
+    const err: any = new Error("UNKNOWN: unknown error, read");
+    err.code = "UNKNOWN";
+    err.errno = -4094;
+    err.syscall = "read";
+    throw err;
+  }
+
+  it("soft-fails (no throw) and records a cloud failure when a placeholder metadata read fails", () => {
+    const mediaFilePath = getPretendAudioFile();
+    // Seed a real .meta on disk so existsSync passes during the reload.
+    const seed = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    seed.save();
+
+    cloudReadGuard.reset();
+    setPinWriterForTests(async () => {});
+    setAttributeReaderForTests(makeCloudPlaceholderReader());
+    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(
+      throwCloudReadError
+    );
+
+    let threw = false;
+    let f: OtherFile | undefined;
+    try {
+      f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    } catch {
+      threw = true;
+    }
+
+    expect(threw).toBe(false);
+    expect(f?.cloudMetadataUnavailable).toBe(true);
+    expect(cloudReadGuard.isTripped).toBe(true);
+    expect(cloudReadGuard.hasFailures).toBe(true);
+  });
+
+  it("does not read or pin further placeholders once the breaker is tripped", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const seed = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    seed.save();
+
+    cloudReadGuard.reset();
+    // Simulate an earlier failure in this same load having tripped the breaker.
+    cloudReadGuard.recordFailure("earlier/failed.session", "Nextcloud");
+
+    let pinCount = 0;
+    setPinWriterForTests(async () => {
+      pinCount++;
+    });
+    setAttributeReaderForTests(makeCloudPlaceholderReader());
+    let readCount = 0;
+    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(() => {
+      readCount++;
+      return "";
+    });
+
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    expect(readCount).toBe(0);
+    expect(pinCount).toBe(0);
+    expect(f.cloudMetadataUnavailable).toBe(true);
+  });
+
+  it("save() refuses to overwrite a file whose placeholder read soft-failed (data-loss guard)", () => {
+    // A cloud placeholder we couldn't read has empty in-memory properties;
+    // saving it would destroy the real file on disk (and sync the empty
+    // version back). save() must skip it -- even a forced save.
+    const mediaFilePath = getPretendAudioFile();
+    const seed = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    seed.save(); // real .meta exists on disk
+
+    cloudReadGuard.reset();
+    setPinWriterForTests(async () => {});
+    setAttributeReaderForTests(makeCloudPlaceholderReader());
+    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(
+      throwCloudReadError
+    );
+
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.cloudMetadataUnavailable).toBe(true);
+
+    const writeSpy = vi.spyOn(PatientFS, "writeFileSyncWithNotifyThenRethrow");
+    f.save(); // normal save
+    f.save(/*beforeRename*/ false, /*forceSave*/ true); // forced save
+    expect(writeSpy.mock.calls.length).toBe(0);
   });
 
   it("is set from the attribute reader when the file is loaded", () => {
