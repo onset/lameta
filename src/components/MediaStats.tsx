@@ -84,19 +84,32 @@ export const MediaStats: React.FunctionComponent<{ file: File }> = observer(
           break;
         case "probe":
           setMessage("Processing...");
-          getStatsFromFileAsync(props.file).then((s) => {
-            setStats(s);
-            setMessage("");
-            if (!s.error) {
-              props.file.setCachedMediaStats(s, {
-                sizeBytes: props.file.getSizeInBytes(),
-                mtimeMs: props.file.getMtimeMs()
+          getStatsFromFileAsync(props.file)
+            .then((s) => {
+              setStats(s);
+              setMessage("");
+              if (!s.error) {
+                props.file.setCachedMediaStats(s, {
+                  sizeBytes: props.file.getSizeInBytes(),
+                  mtimeMs: props.file.getMtimeMs()
+                });
+              }
+            })
+            .catch((err) => {
+              // ffprobe can reject (corrupt file, unsupported codec, or a cloud
+              // file that failed to hydrate). Without this, the panel stays stuck
+              // on "Processing..." forever with no recovery. Surface the failure
+              // instead of swallowing the rejection.
+              console.warn(
+                `getStatsFromFileAsync failed for ${props.file.getActualFilePath()}: ${err}`
+              );
+              setMessage("");
+              setStats({
+                [t`Status`]: t`Could not read media information for this file.`
               });
-            }
-          });
+            });
           break;
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.file, props.file.cloudStatus]);
 
     const columns = [
