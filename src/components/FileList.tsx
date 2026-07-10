@@ -6,7 +6,10 @@ import { ElectronDropZone } from "./ElectronDropZone";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import * as remote from "@electron/remote";
 import "./FileList.css";
-import { revealInFolder } from "../other/crossPlatformUtilities";
+import {
+  revealInFolder,
+  revealInFolderLabel
+} from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
 import { i18n, translateFileType } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
@@ -464,10 +467,7 @@ function showFileMenu(
 
   let items = [
     {
-      label:
-        process.platform === "darwin"
-          ? t`Show in Finder`
-          : t`Show in File Explorer`,
+      label: revealInFolderLabel(),
       click: () => {
         revealInFolder(file.getActualFilePath());
       },

@@ -10,6 +10,10 @@ import {
   getCloudFileProvider,
   getCloudProviderNameForPath
 } from "../other/cloudFileStatus";
+import {
+  revealInFolder,
+  revealInFolderLabel
+} from "../other/crossPlatformUtilities";
 import { networkStatus } from "../other/networkStatus";
 import {
   CloudDisplayStatus,
@@ -261,6 +265,62 @@ export const CloudFileFetchControl: React.FunctionComponent<{
           </Trans>
         </span>
       </label>
+
+      <div
+        css={css`
+          height: 1px;
+          background: ${dividerColor};
+          margin: 18px 0;
+        `}
+      />
+
+      <div
+        css={css`
+          display: flex;
+          justify-content: flex-end;
+        `}
+      >
+        <button
+          type="button"
+          onClick={() => revealInFolder(file.getActualFilePath())}
+          css={css`
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            color: ${titleColor};
+            background: #f5f6f4;
+            border: 1px solid ${checkboxBorder};
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.12s ease;
+            &:hover {
+              background: #e9ebe6;
+            }
+          `}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            css={css`
+              flex-shrink: 0;
+              color: ${cardGreen};
+            `}
+          >
+            <path
+              d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4l2 2.5h9A1.5 1.5 0 0 1 21 9v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18Z"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {revealInFolderLabel()}
+        </button>
+      </div>
 
       {hydrating && networkStatus.isOnline && (
         <p
