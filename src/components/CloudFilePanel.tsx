@@ -6,7 +6,10 @@ import { observer } from "mobx-react";
 import { t, Trans, Plural } from "@lingui/macro";
 import { File } from "../model/file/File";
 import { NotifyError } from "./Notify";
-import { getCloudFileProvider } from "../other/cloudFileStatus";
+import {
+  getCloudFileProvider,
+  getCloudProviderNameForPath
+} from "../other/cloudFileStatus";
 import { networkStatus } from "../other/networkStatus";
 import {
   CloudDisplayStatus,
@@ -126,7 +129,8 @@ const PanelStatusIcon: React.FunctionComponent<{
   }
 };
 
-// The "OneDrive Status" card: title row, explanation, divider, and the
+// The cloud status card ("OneDrive Status", "Dropbox Status", ...): title
+// row, explanation, divider, and the
 // request checkbox. Shared by every tab that would need to read the file's
 // content (Audio/Video/Image/Text/PDF previews). Renders nothing once the
 // file is on this computer, ready to read.
@@ -145,6 +149,9 @@ export const CloudFileFetchControl: React.FunctionComponent<{
 
   const hydrating = file.cloudStatus === "hydrating";
   const displayStatus = getCloudDisplayStatusOfFile(file) ?? "cloudOnly";
+  // "OneDrive", "Dropbox", ... whichever sync engine owns this folder.
+  const providerName =
+    getCloudProviderNameForPath(file.getActualFilePath()) ?? t`Cloud`;
 
   return (
     <div
@@ -177,7 +184,7 @@ export const CloudFileFetchControl: React.FunctionComponent<{
             color: ${titleColor};
           `}
         >
-          <Trans>OneDrive Status</Trans>
+          <Trans>{providerName} Status</Trans>
         </h2>
       </div>
 
@@ -249,7 +256,9 @@ export const CloudFileFetchControl: React.FunctionComponent<{
             color: ${titleColor};
           `}
         >
-          <Trans>Tell OneDrive that I want this file on my computer</Trans>
+          <Trans>
+            Tell {providerName} that I want this file on my computer
+          </Trans>
         </span>
       </label>
 

@@ -184,43 +184,147 @@ export function getCloudFileStatus(path: string): CloudFileStatus {
   return getCloudFileProvider().getStatus(path);
 }
 
-let testCloudSyncRoots: string[] | undefined;
+// A folder synced by some cloud sync engine, plus the name of that engine
+// as the user knows it ("OneDrive", "Dropbox", ...) for use in UI text.
+export interface CloudSyncRoot {
+  path: string;
+  providerName: string;
+}
 
-export function setCloudSyncRootsForTests(roots?: string[]): void {
-  testCloudSyncRoots = roots;
+let testCloudSyncRoots: CloudSyncRoot[] | undefined;
+
+export function setCloudSyncRootsForTests(
+  roots?: (string | CloudSyncRoot)[]
+): void {
+  testCloudSyncRoots = roots?.map((r) =>
+    typeof r === "string" ? { path: r, providerName: "OneDrive" } : r
+  );
   cachedSyncRoots = undefined;
 }
 
-let cachedSyncRoots: string[] | undefined;
+let cachedSyncRoots: CloudSyncRoot[] | undefined;
 
-function getCloudSyncRoots(): string[] {
+// Every sync engine built on the Windows Cloud Files API (OneDrive, Dropbox,
+// Google Drive, iCloud, ...) registers its sync roots under this key. It is
+// the same API whose placeholder attributes fswin reads above, so anything
+// that can produce a cloud-only file shows up here.
+const syncRootManagerKey =
+  "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\SyncRootManager";
+
+// Key names are program-ids like "GoogleDrive!S-1-5-...!account"; map the
+// known id prefixes to the names users see. Unknown engines fall back to
+// their id, which is usually recognizable ("MEGA", "pCloud", ...).
+const friendlyProviderNames: Record<string, string> = {
+  OneDrive: "OneDrive",
+  Dropbox: "Dropbox",
+  GoogleDrive: "Google Drive",
+  DriveFS: "Google Drive",
+  iCloudDrive: "iCloud Drive",
+  Box: "Box"
+};
+
+// Parses `reg query <syncRootManagerKey> /s` output. Each sync root is a key
+// like "...\SyncRootManager\Dropbox!<SID>!<account>" whose UserSyncRoots
+// subkey maps the user's SID to the synced folder:
+//   HKEY_LOCAL_MACHINE\...\SyncRootManager\Dropbox!S-1-5-21-...!dbid:...\UserSyncRoots
+//       S-1-5-21-...    REG_SZ    C:\Users\me\Dropbox
+export function parseSyncRootManagerOutput(output: string): CloudSyncRoot[] {
+  const roots: CloudSyncRoot[] = [];
+  let currentProviderId: string | undefined;
+  let inUserSyncRoots = false;
+  for (const line of output.split(/\r?\n/)) {
+    if (line.startsWith("HKEY_")) {
+      const key = line.trim().match(/\\SyncRootManager\\([^\\]+)(\\UserSyncRoots)?$/i);
+      currentProviderId = key?.[1].split("!")[0];
+      inUserSyncRoots = !!key?.[2];
+      continue;
+    }
+    if (!inUserSyncRoots || !currentProviderId) {
+      continue;
+    }
+    const value = line.match(/^\s+\S+\s+REG_(?:EXPAND_)?SZ\s+(.+?)\s*$/);
+    if (value) {
+      roots.push({
+        path: value[1],
+        providerName:
+          friendlyProviderNames[currentProviderId] ?? currentProviderId
+      });
+    }
+  }
+  return roots;
+}
+
+function readSyncRootsFromRegistry(): CloudSyncRoot[] {
+  if (process.platform !== "win32") {
+    return [];
+  }
+  try {
+    // Lazy require for the same reason as fswin above.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { execFileSync } = require("child_process");
+    const output: string = execFileSync(
+      "reg",
+      ["query", syncRootManagerKey, "/s"],
+      { encoding: "utf8", windowsHide: true, timeout: 3000 }
+    );
+    return parseSyncRootManagerOutput(output);
+  } catch (e) {
+    console.warn("cloudFileStatus: failed to enumerate cloud sync roots", e);
+    return [];
+  }
+}
+
+function getCloudSyncRoots(): CloudSyncRoot[] {
   if (testCloudSyncRoots) {
     return testCloudSyncRoots;
   }
   if (!cachedSyncRoots) {
-    // OneDrive publishes its sync root(s) in these env vars. This misses
-    // exotic setups (e.g. SharePoint libraries synced outside them), but for
-    // those, files still get cloud/syncing icons from their attributes --
-    // only the "available on this device" checkmarks depend on this check.
-    cachedSyncRoots = [
+    const roots = readSyncRootsFromRegistry();
+    // OneDrive also publishes its sync root(s) in env vars; keep them as a
+    // fallback in case the registry read fails or misses one.
+    for (const envRoot of [
       process.env.OneDrive,
       process.env.OneDriveConsumer,
       process.env.OneDriveCommercial
-    ].filter((r): r is string => !!r);
+    ]) {
+      if (
+        envRoot &&
+        !roots.some((r) => normalizeForCompare(r.path) === normalizeForCompare(envRoot))
+      ) {
+        roots.push({ path: envRoot, providerName: "OneDrive" });
+      }
+    }
+    cachedSyncRoots = roots;
   }
   return cachedSyncRoots;
 }
 
-// True when the path lives under a OneDrive sync root. File attributes alone
-// cannot distinguish a fully-hydrated OneDrive file from a plain local file,
-// so this is what decides whether a "local" file gets a checkmark icon.
-export function isUnderCloudSyncRoot(path: string): boolean {
-  const normalized = path.replace(/\//g, "\\").toLowerCase();
-  return getCloudSyncRoots().some((root) => {
-    const normalizedRoot = root.replace(/\//g, "\\").replace(/\\+$/, "").toLowerCase();
+function normalizeForCompare(path: string): string {
+  return path.replace(/\//g, "\\").replace(/\\+$/, "").toLowerCase();
+}
+
+// The sync root a path lives under, or undefined for a plain local path.
+// File attributes alone cannot distinguish a fully-hydrated cloud file from a
+// plain local file, so this is what decides whether a "local" file gets a
+// checkmark icon -- and it is where UI text learns which sync engine
+// ("OneDrive Status" vs "Dropbox Status") owns the file.
+export function getSyncRootForPath(path: string): CloudSyncRoot | undefined {
+  const normalized = normalizeForCompare(path);
+  return getCloudSyncRoots().find((root) => {
+    const normalizedRoot = normalizeForCompare(root.path);
     return (
       normalized === normalizedRoot ||
       normalized.startsWith(normalizedRoot + "\\")
     );
   });
+}
+
+export function isUnderCloudSyncRoot(path: string): boolean {
+  return !!getSyncRootForPath(path);
+}
+
+// "OneDrive", "Dropbox", ... or undefined when the path is not under any
+// known sync root (callers fall back to generic wording).
+export function getCloudProviderNameForPath(path: string): string | undefined {
+  return getSyncRootForPath(path)?.providerName;
 }
