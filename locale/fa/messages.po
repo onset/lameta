@@ -186,6 +186,9 @@ msgstr "در حال رونوشت گرفتن / کپی کردن فایلها"
 msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
 msgstr ""
 
+msgid "Could not read media information for this file."
+msgstr ""
+
 msgid "Create"
 msgstr ""
 
@@ -246,6 +249,9 @@ msgstr ""
 msgid "Description Documents"
 msgstr "مدارک توصیف"
 
+msgid "Dismiss"
+msgstr ""
+
 msgid "Do not quit"
 msgstr "خارج نشوید"
 
@@ -257,6 +263,9 @@ msgstr ""
 
 msgid "Download"
 msgstr "دانلود"
+
+msgid "Download this file to my computer"
+msgstr ""
 
 msgid "Duplicate Person"
 msgstr "شخص تکراری"
@@ -355,6 +364,9 @@ msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Genres"
+msgstr ""
+
+msgid "Getting project information from {0}..."
 msgstr ""
 
 msgid "Help"
@@ -624,6 +636,12 @@ msgstr "گزارش یک مشکل"
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr "لمتا را دوباره راه اندازی کنید، نام فایل را قبل از نمایش ویدئو تغییر دهید."
 
+msgid "Retry"
+msgstr ""
+
+msgid "Retrying…"
+msgstr ""
+
 msgid "Role"
 msgstr "نقش"
 
@@ -722,6 +740,9 @@ msgstr ""
 
 msgid "Status"
 msgstr "وضعیت"
+
+msgid "Stop waiting"
+msgstr ""
 
 msgid "Tell {providerName} that I want this file on my computer"
 msgstr ""
@@ -891,6 +912,12 @@ msgstr ""
 msgid "lameta could not rename the directory."
 msgstr "لمتا نمیتواند فایل مورد نظر را تغییر نام بدهد."
 
+msgid "lameta couldn't download 1 file from {providerName}. It may be offline or busy right now."
+msgstr ""
+
+msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
+msgstr ""
+
 msgid "lameta expected to find a .link file at {e}"
 msgstr ""
 
@@ -923,6 +950,9 @@ msgid "missing"
 msgstr ""
 
 msgid "recorded when the file was last on this device"
+msgstr ""
+
+msgid "the cloud"
 msgstr ""
 
 msgid "{0} Marked Sessions"

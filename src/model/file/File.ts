@@ -40,8 +40,7 @@ import {
   CloudFileStatus,
   getCloudFileStatus,
   getCloudFileProvider,
-  getCloudProviderNameForPath,
-  isLocallyAvailable
+  getCloudProviderNameForPath
 } from "../../other/cloudFileStatus";
 import {
   cloudReadGuard,
@@ -115,6 +114,14 @@ export /*babel doesn't like this: abstract*/ class File {
   // Drives the "cloud unavailable" affordance and lets Retry find the files
   // that need re-reading. See cloudReadGuard.
   public cloudMetadataUnavailable: boolean = false;
+
+  // True when readMetadataFile() failed to parse the on-disk XML (0-byte file,
+  // truncated write from an interrupted cloud sync, etc.). The in-memory
+  // properties are then empty/default, so save() must refuse to write --
+  // otherwise it would overwrite the user's real (possibly recoverable) bytes
+  // with an empty template. There is no automatic Retry for this (unlike
+  // cloudMetadataUnavailable): the file needs manual recovery.
+  public metadataReadFailed: boolean = false;
 
   // Start time (ms since epoch) of the current hydration, or undefined when
   // not hydrating. Lives on the model (not a component ref) so the elapsed
@@ -421,6 +428,7 @@ export /*babel doesn't like this: abstract*/ class File {
       copyProgress: observable,
       cloudStatus: observable,
       cloudMetadataUnavailable: observable,
+      metadataReadFailed: observable,
       hydratingSinceMs: observable,
       properties: observable,
       contributions: observable
@@ -923,9 +931,14 @@ export /*babel doesn't like this: abstract*/ class File {
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
         const provider = getCloudFileProvider();
+        // "cloudOnly"/"hydrating" are the only statuses that mean "this is a
+        // placeholder the provider needs to fetch" -- "unknown" (e.g. a file
+        // not under any sync root on macOS) is NOT a placeholder, so this must
+        // stay a positive check rather than "not locally available".
+        const status = provider.getStatus(this.metadataFilePath);
         const isCloudPlaceholder =
-          provider.capabilities.canPin &&
-          !isLocallyAvailable(provider.getStatus(this.metadataFilePath));
+          provider.capabilities.canFetch &&
+          (status === "cloudOnly" || status === "hydrating");
 
         if (isCloudPlaceholder) {
           // If the cloud provider already failed to deliver a file during this
@@ -939,10 +952,12 @@ export /*babel doesn't like this: abstract*/ class File {
             return;
           }
 
-          // Pin our own metadata sidecar so OneDrive's "free up space" can never
-          // dehydrate it; lameta must always be able to read these regardless of
-          // the user's auto-fetch threshold. (The sync read below hydrates it
-          // right now.)
+          // On Windows, this durably pins our own metadata sidecar so OneDrive's
+          // "free up space" can never dehydrate it again; lameta must always be
+          // able to read these regardless of the user's auto-fetch threshold. On
+          // macOS there is no durable pin, so this just triggers a one-shot fetch
+          // of a file the sync read below needs anyway -- still worth calling
+          // unconditionally.
           provider.setPinned(this.metadataFilePath, true).catch(() => {});
         }
 
@@ -1038,6 +1053,14 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.recomputedChangeWatcher();
     } catch (err) {
+      // The read/parse failed (0-byte or truncated file from an interrupted
+      // cloud sync, corrupt XML, unsupported version, ...). `properties` is
+      // empty/default at this point, so save() must refuse to write -- see the
+      // matching guard there. `haveReadMetadataFile` stays true (nothing below
+      // resets it, unlike the cloud-placeholder retry path), so a later call to
+      // this method just no-ops instead of re-attempting the read -- which is
+      // also why NotifyException below cannot fire more than once per file load.
+      this.metadataReadFailed = true;
       NotifyException(
         err,
         `There was a problem reading ${this.metadataFilePath}`
@@ -1088,6 +1111,19 @@ export /*babel doesn't like this: abstract*/ class File {
     // leaves `dirty` undefined (clearDirty() was skipped), which the
     // `dirty === false` guard below would not catch.
     if (this.cloudMetadataUnavailable) {
+      return;
+    }
+
+    // Never overwrite a file whose on-disk XML we failed to parse (0-byte or
+    // truncated file from an interrupted cloud sync, corrupt XML, ...). The
+    // in-memory properties are empty/default in that case (see
+    // readMetadataFile's catch), so writing them would destroy the user's real
+    // -- possibly still recoverable -- bytes on disk. There is no automatic
+    // Retry for this case, so leave the file alone for manual recovery.
+    if (this.metadataReadFailed) {
+      console.warn(
+        `Refusing to save ${this.metadataFilePath} because its metadata failed to read/parse; the file on disk was left untouched.`
+      );
       return;
     }
 

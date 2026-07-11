@@ -9,6 +9,8 @@
 // checkbox) are not subject to the dwell delay -- those go through
 // File.makeAvailableOffline() directly.
 
+import { networkStatus } from "./networkStatus";
+
 export const kDefaultAutoFetchDwellMs = 1500;
 
 export interface AutoFetchableFile {
@@ -25,7 +27,8 @@ export class AutoFetchCloudFiles {
   private dwellTimer: ReturnType<typeof setTimeout> | undefined;
 
   public constructor(
-    private readonly dwellMs: number = kDefaultAutoFetchDwellMs
+    private readonly dwellMs: number = kDefaultAutoFetchDwellMs,
+    private readonly isOnline: () => boolean = () => networkStatus.isOnline
   ) {}
 
   // Call whenever the user's selection changes. `thresholdBytes` is the
@@ -60,6 +63,11 @@ export class AutoFetchCloudFiles {
     // or it's mid-hydration) between when the dwell timer was scheduled and
     // when it fired.
     if (file.cloudStatus !== "cloudOnly") {
+      return;
+    }
+    // Offline: a fetch kicked off now can't complete (and on macOS just hangs
+    // as an in-flight materialization). Skip it; the file stays cloud-only.
+    if (!this.isOnline()) {
       return;
     }
     file.makeAvailableOffline().catch(() => {

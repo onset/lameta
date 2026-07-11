@@ -184,6 +184,9 @@ msgstr "Copiage..."
 msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
 msgstr ""
 
+msgid "Could not read media information for this file."
+msgstr ""
+
 msgid "Create"
 msgstr "Créer"
 
@@ -244,6 +247,9 @@ msgstr "Suppression en cours..."
 msgid "Description Documents"
 msgstr "Documents de description"
 
+msgid "Dismiss"
+msgstr ""
+
 msgid "Do not quit"
 msgstr "Ne quittez pas"
 
@@ -255,6 +261,9 @@ msgstr ""
 
 msgid "Download"
 msgstr "Télécharger"
+
+msgid "Download this file to my computer"
+msgstr ""
 
 msgid "Duplicate Person"
 msgstr "Dupliquer la personne"
@@ -353,6 +362,9 @@ msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Genres"
+msgstr ""
+
+msgid "Getting project information from {0}..."
 msgstr ""
 
 msgid "Help"
@@ -622,6 +634,12 @@ msgstr "Signaler un problème"
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr "Redémarrez lameta et renommez avant de rejouer la vidéo."
 
+msgid "Retry"
+msgstr ""
+
+msgid "Retrying…"
+msgstr ""
+
 msgid "Role"
 msgstr "Rôle"
 
@@ -720,6 +738,9 @@ msgstr ""
 
 msgid "Status"
 msgstr "État"
+
+msgid "Stop waiting"
+msgstr ""
 
 msgid "Tell {providerName} that I want this file on my computer"
 msgstr ""
@@ -892,6 +913,12 @@ msgstr ""
 msgid "lameta could not rename the directory."
 msgstr "lameta n'a pas pu renommer le répertoire."
 
+msgid "lameta couldn't download 1 file from {providerName}. It may be offline or busy right now."
+msgstr ""
+
+msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
+msgstr ""
+
 msgid "lameta expected to find a .link file at {e}"
 msgstr "lameta s'attendait à trouver un .lien fichier sur {e}"
 
@@ -924,6 +951,9 @@ msgid "missing"
 msgstr ""
 
 msgid "recorded when the file was last on this device"
+msgstr ""
+
+msgid "the cloud"
 msgstr ""
 
 msgid "{0} Marked Sessions"

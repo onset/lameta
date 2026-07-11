@@ -31,6 +31,7 @@ import { LanguageSlot } from "../field/TextHolder";
 // CONTEXT: This prevents E2E test failures from Sentry RendererTransport errors
 import { safeCaptureException } from "../../other/errorHandling";
 import { cloudReadGuard } from "../../other/cloudReadGuard";
+import { prefetchCloudMetadata } from "../../other/cloudMetadataPrefetch";
 
 import genres from "./Session/genres.json";
 
@@ -505,6 +506,11 @@ export class Project extends Folder {
     try {
       // Start each load with a clean cloud circuit breaker (see cloudReadGuard).
       cloudReadGuard.reset();
+
+      // Kick off hydration of all cloud-only metadata placeholders in parallel
+      // before the serial reads below, so we don't wait for them one at a time.
+      prefetchCloudMetadata(directory);
+
       const customVocabularies = new EncounteredVocabularyRegistry();
       const metadataFile = new ProjectMetadataFile(
         directory,
@@ -661,6 +667,11 @@ export class Project extends Folder {
     try {
       // Start each load with a clean cloud circuit breaker (see cloudReadGuard).
       cloudReadGuard.reset();
+
+      // Kick off hydration of all cloud-only metadata placeholders in parallel
+      // before the serial reads below, so we don't wait for them one at a time.
+      prefetchCloudMetadata(directory);
+
       const customVocabularies = new EncounteredVocabularyRegistry();
       const metadataFile = new ProjectMetadataFile(
         directory,
