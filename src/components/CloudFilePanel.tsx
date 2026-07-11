@@ -144,7 +144,8 @@ export const CloudFileFetchControl: React.FunctionComponent<{
   const { file } = props;
   const minutesSinceRequest = useMinutesSinceHydrationRequest(file);
 
-  if (!getCloudFileProvider().capabilities.canPin) {
+  const capabilities = getCloudFileProvider().capabilities;
+  if (!capabilities.canFetch) {
     return null;
   }
   if (!file.isCloudFileNotPresent) {
@@ -211,60 +212,138 @@ export const CloudFileFetchControl: React.FunctionComponent<{
         `}
       />
 
-      <label
-        css={css`
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          cursor: pointer;
-          user-select: none;
-        `}
-      >
-        <input
-          type="checkbox"
-          checked={hydrating}
-          onChange={(e) => {
-            if (e.target.checked) {
-              file.makeAvailableOffline().catch((err) => {
-                NotifyError(
-                  t`lameta was not able to make this file available on this device.`,
-                  `${err}`
-                );
-              });
-            } else {
-              file.stopWaiting();
-            }
-          }}
+      {capabilities.canPin ? (
+        <label
           css={css`
-            appearance: none;
-            margin: 0;
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-            border: 1.5px solid ${checkboxBorder};
-            border-radius: 5px;
-            background-color: #ffffff;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: all 0.12s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             cursor: pointer;
-            &:checked {
-              background-color: ${cardGreen};
-              background-image: url("data:image/svg+xml,%3Csvg width='13' height='13' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12.5 10 17 19 7' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-            }
-          `}
-        />
-        <span
-          css={css`
-            font-size: 15px;
-            color: ${titleColor};
+            user-select: none;
           `}
         >
-          <Trans>
-            Tell {providerName} that I want this file on my computer
-          </Trans>
-        </span>
-      </label>
+          <input
+            type="checkbox"
+            checked={hydrating}
+            onChange={(e) => {
+              if (e.target.checked) {
+                file.makeAvailableOffline().catch((err) => {
+                  NotifyError(
+                    t`lameta was not able to make this file available on this device.`,
+                    `${err}`
+                  );
+                });
+              } else {
+                file.stopWaiting();
+              }
+            }}
+            css={css`
+              appearance: none;
+              margin: 0;
+              width: 20px;
+              height: 20px;
+              flex-shrink: 0;
+              border: 1.5px solid ${checkboxBorder};
+              border-radius: 5px;
+              background-color: #ffffff;
+              background-position: center;
+              background-repeat: no-repeat;
+              transition: all 0.12s ease;
+              cursor: pointer;
+              &:checked {
+                background-color: ${cardGreen};
+                background-image: url("data:image/svg+xml,%3Csvg width='13' height='13' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12.5 10 17 19 7' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+              }
+            `}
+          />
+          <span
+            css={css`
+              font-size: 15px;
+              color: ${titleColor};
+            `}
+          >
+            <Trans>
+              Tell {providerName} that I want this file on my computer
+            </Trans>
+          </span>
+        </label>
+      ) : hydrating ? (
+        <div
+          css={css`
+            display: flex;
+            justify-content: flex-start;
+          `}
+        >
+          <button
+            type="button"
+            onClick={() => file.stopWaiting()}
+            css={css`
+              display: inline-flex;
+              align-items: center;
+              padding: 6px 12px;
+              font-size: 13px;
+              font-weight: 500;
+              color: ${titleColor};
+              background: #f5f6f4;
+              border: 1px solid ${checkboxBorder};
+              border-radius: 8px;
+              cursor: pointer;
+              transition: background-color 0.12s ease;
+              &:hover {
+                background: #e9ebe6;
+              }
+            `}
+          >
+            <Trans>Stop waiting</Trans>
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          disabled={!networkStatus.isOnline}
+          onClick={() => {
+            file.makeAvailableOffline().catch((err) => {
+              NotifyError(
+                t`lameta was not able to make this file available on this device.`,
+                `${err}`
+              );
+            });
+          }}
+          css={
+            networkStatus.isOnline
+              ? css`
+                  display: inline-flex;
+                  align-items: center;
+                  padding: 10px 18px;
+                  font-size: 15px;
+                  font-weight: 600;
+                  color: #ffffff;
+                  background: ${cardGreen};
+                  border: none;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  transition: filter 0.12s ease;
+                  &:hover {
+                    filter: brightness(1.08);
+                  }
+                `
+              : css`
+                  display: inline-flex;
+                  align-items: center;
+                  padding: 10px 18px;
+                  font-size: 15px;
+                  font-weight: 600;
+                  color: #ffffff;
+                  background: #b9c2b4;
+                  border: none;
+                  border-radius: 8px;
+                  cursor: default;
+                `
+          }
+        >
+          <Trans>Download this file to my computer</Trans>
+        </button>
+      )}
 
       <div
         css={css`

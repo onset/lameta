@@ -90,4 +90,20 @@ describe("AutoFetchCloudFiles", () => {
     await vi.advanceTimersByTimeAsync(1500);
     expect(file.fetchCount).toBe(0);
   });
+
+  it("does not fetch once the dwell time elapses while offline", async () => {
+    const scheduler = new AutoFetchCloudFiles(1500, () => false);
+    const file = makeFile();
+    scheduler.onSelectionChanged(file, mbToBytes(10));
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(file.fetchCount).toBe(0);
+  });
+
+  it("fetches once the dwell time elapses while online (explicit isOnline)", async () => {
+    const scheduler = new AutoFetchCloudFiles(1500, () => true);
+    const file = makeFile();
+    scheduler.onSelectionChanged(file, mbToBytes(10));
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(file.fetchCount).toBe(1);
+  });
 });

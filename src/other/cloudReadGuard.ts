@@ -8,10 +8,22 @@ import { makeAutoObservable } from "mobx";
 // cloud-only placeholder threw exactly this.) A plain missing/locked file uses
 // ENOENT/EBUSY/EPERM instead, so this signature is specific to "the provider
 // tried to hydrate and failed".
+//
+// On macOS, a read/open of a dataless (cloud-only) file whose materialization
+// fails is expected to surface as EDEADLK ("Resource deadlock avoided" -- the
+// dataless-fault errno the kernel uses when the FileProvider can't fulfil the
+// fault), and possibly ETIMEDOUT or EIO, with syscall "read" or "open". This
+// list is NOT yet empirically confirmed (unlike the Windows signature above)
+// -- it is pending verification by evicting a file, cutting the network, and
+// reading it; it may be tightened once that's done.
 export function isCloudProviderReadFailure(err: any): boolean {
   if (!err) return false;
+  if ((err.errno === -4094 || err.code === "UNKNOWN") && err.syscall === "read") {
+    return true;
+  }
   return (
-    (err.errno === -4094 || err.code === "UNKNOWN") && err.syscall === "read"
+    (err.code === "EDEADLK" || err.code === "ETIMEDOUT" || err.code === "EIO") &&
+    (err.syscall === "read" || err.syscall === "open")
   );
 }
 
