@@ -8,7 +8,6 @@ import { initializeSentry as initializeErrorReporting } from "./other/errorHandl
 import { initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
-import { PatientFS } from "./other/patientFile";
 import ReactModal from "react-modal";
 import * as mobx from "mobx";
 
@@ -26,7 +25,6 @@ mobx.configure({
 });
 
 app.whenReady().then(async () => {
-  PatientFS.init();
   initializeErrorReporting(false);
 
   initializeLocalization();

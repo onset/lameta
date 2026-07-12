@@ -116,7 +116,14 @@ export const FolderPane: React.FunctionComponent<
                 file={props.folder.selectedFile}
                 fileName={props.folder.selectedFile.getTextProperty("filename")}
               />
-              <ErrorBoundary>
+              <ErrorBoundary
+                // If rendering the detail for one file ever throws, selecting a
+                // different file must recover the pane instead of leaving it
+                // wedged on the error notice until the app is restarted.
+                resetKeys={[
+                  props.folder.selectedFile.pathInFolderToLinkFileOrLocalCopy
+                ]}
+              >
                 <FileTabs {...props} />
               </ErrorBoundary>
             </>
