@@ -261,11 +261,23 @@ class FolderList extends React.Component<IProps, any> {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
               onClick: (e: any, x: any) => {
-                // Save current selection before changing
+                // Save current selection before changing. This must never abort
+                // the selection change: if saving the outgoing folder throws
+                // (e.g. its folder vanished from disk externally), we still want
+                // the user to be able to move to another folder. save() already
+                // fails softly, but guard here too so no future throw can wedge
+                // the UI on the old, now-unusable selection.
                 if (selectedFolderIndex > -1) {
-                  this.props.folders.items[
-                    selectedFolderIndex
-                  ].saveAllFilesInFolder();
+                  try {
+                    this.props.folders.items[
+                      selectedFolderIndex
+                    ].saveAllFilesInFolder();
+                  } catch (err) {
+                    console.error(
+                      "Error saving the outgoing folder while switching selection; continuing anyway.",
+                      err
+                    );
+                  }
                 }
                 // rowInfo.index refers to the index within the currently displayed (possibly filtered) data set.
                 // We need to store the index relative to the full, unfiltered items array, because other code
