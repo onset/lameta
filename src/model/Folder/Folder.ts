@@ -15,7 +15,8 @@ import { FieldSet } from "../field/FieldSet";
 import assert from "assert";
 import {
   asyncTrash,
-  getAllFilesSync
+  getAllFilesSync,
+  isMacOSMetadataFile
 } from "../../other/crossPlatformUtilities";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
@@ -566,7 +567,12 @@ export abstract class Folder {
   }
   private findZombieMetadataFiles(directory: string, extension: string) {
     const dir = fs.readdirSync(directory);
-    return dir.filter((f) => f.match(new RegExp(`.*(${extension})$`, "ig")));
+    return dir.filter(
+      (f) =>
+        // ignore macOS AppleDouble sidecars (._*) — a binary "._Foo.session"
+        // must never be renamed into place as the real metadata file (issue #68)
+        !isMacOSMetadataFile(f) && f.match(new RegExp(`.*(${extension})$`, "ig"))
+    );
   }
   public saveAllFilesInFolder(beforeRename: boolean = false) {
     if (this.beingDeleted) {
@@ -605,14 +611,19 @@ export abstract class Folder {
     if (fs.existsSync(this.directory)) {
       // will sometimes be false for things like DescriptionDocuments
       const dir = fs.readdirSync(this.directory);
-      const x = dir.filter((elm) =>
-        // about ^(?!~)
-        //  opening a file in ms word creates a hidden file that starts with ~
-        // the fact that it's open with Word is probably going to cause problems,
-        // but this temp file is not a problem, don't want to give a misleading error message.
-        elm.match(
-          new RegExp(`^(?!~).*(${this.metadataFileExtensionWithDot})$`, "ig")
-        )
+      const x = dir.filter(
+        (elm) =>
+          // ignore macOS AppleDouble sidecars (._*) so copying a project to a
+          // non-HFS volume doesn't trigger a spurious "multiple project files"
+          // warning (issue #68)
+          !isMacOSMetadataFile(elm) &&
+          // about ^(?!~)
+          //  opening a file in ms word creates a hidden file that starts with ~
+          // the fact that it's open with Word is probably going to cause problems,
+          // but this temp file is not a problem, don't want to give a misleading error message.
+          elm.match(
+            new RegExp(`^(?!~).*(${this.metadataFileExtensionWithDot})$`, "ig")
+          )
       );
       if (x.length > 1) {
         NotifyMultipleProjectFiles(

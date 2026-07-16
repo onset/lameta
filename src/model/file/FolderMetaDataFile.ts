@@ -9,6 +9,7 @@ import {
   prepareGlobalFieldDefinitionCatalog
 } from "../field/ConfiguredFieldDefinitions";
 import { PatientFS } from "../../other/patientFile";
+import { isMacOSMetadataFile } from "../../other/crossPlatformUtilities";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -28,8 +29,9 @@ export class FolderMetadataFile extends File {
     if (!fs.existsSync(metadataPath)) {
       // does a file exist here with the right extension but the wrong name?
       const files = fs.readdirSync(directory);
-      const possibleFiles = files.filter((f) =>
-        f.endsWith(fileExtensionForMetadata)
+      const possibleFiles = files.filter(
+        (f) =>
+          f.endsWith(fileExtensionForMetadata) && !isMacOSMetadataFile(f)
       );
       if (possibleFiles.length > 0) {
         // use the first one. The next save will try to sort out the names

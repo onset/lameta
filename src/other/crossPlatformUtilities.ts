@@ -111,6 +111,20 @@ function globSyncSaferAndLimited(pattern: string): string[] {
   return globSync(p);
 }
 
+// Detects macOS filesystem junk files that must never be treated as project
+// content. When a project is copied to a non-HFS+ volume (e.g. an external
+// SSD, a FAT/exFAT drive, or a network share), macOS creates AppleDouble
+// sidecar files named "._<originalname>" to preserve resource forks and
+// extended attributes, plus ".DS_Store" for Finder view settings. These are
+// binary, not XML. If lameta scans them it can, for example, find the
+// AppleDouble companion of a "foo.jpg.meta" file ("._foo.jpg.meta") and try
+// to parse it as XML, producing "Non-whitespace before first tag." See
+// https://github.com/onset/lameta/issues/68.
+export function isMacOSMetadataFile(fileName: string): boolean {
+  const base = Path.basename(fileName);
+  return base.startsWith("._") || base === ".DS_Store";
+}
+
 // PERFORMANCE: Replaced glob-based implementation with fs.readdirSync
 // Glob was taking 5800ms for 89 directories, fs.readdirSync takes ~2ms
 // The original used "*.*" pattern which only matches files with extensions,
@@ -119,7 +133,12 @@ export function getAllFilesSync(directory: string): string[] {
   try {
     const entries = fs.readdirSync(directory, { withFileTypes: true });
     return entries
-      .filter((entry) => entry.isFile() && entry.name.includes("."))
+      .filter(
+        (entry) =>
+          entry.isFile() &&
+          entry.name.includes(".") &&
+          !isMacOSMetadataFile(entry.name)
+      )
       .map((entry) => Path.join(directory, entry.name));
   } catch (err: any) {
     // If the directory doesn't exist or can't be read, return empty array
