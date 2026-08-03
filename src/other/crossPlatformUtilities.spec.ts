@@ -26,8 +26,14 @@ describe("isMacOSMetadataFile", () => {
   });
   it("uses the basename so full paths work", () => {
     expect(isMacOSMetadataFile("/some/dir/._foo.jpg.meta")).toBe(true);
-    expect(isMacOSMetadataFile("C:\\some\\dir\\.DS_Store")).toBe(true);
-    expect(isMacOSMetadataFile("C:\\some\\dir\\foo.jpg")).toBe(false);
+    // Path.join uses the native separator, so this exercises backslashes on
+    // Windows and forward slashes elsewhere
+    expect(isMacOSMetadataFile(Path.join("some", "dir", ".DS_Store"))).toBe(
+      true
+    );
+    expect(isMacOSMetadataFile(Path.join("some", "dir", "foo.jpg"))).toBe(
+      false
+    );
   });
   it("does not flag normal files", () => {
     expect(isMacOSMetadataFile("foo.jpg")).toBe(false);
