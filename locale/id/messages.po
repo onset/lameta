@@ -45,6 +45,9 @@ msgstr "Abaikan file-file yang sedang disalin"
 msgid "About lameta"
 msgstr "Tentang lameta"
 
+msgid "Access"
+msgstr ""
+
 msgid "Add Files"
 msgstr "Tambah File-File"
 
@@ -62,6 +65,15 @@ msgstr ""
 
 msgid "All Sessions"
 msgstr "Semua Sesi"
+
+msgid "All translations complete"
+msgstr ""
+
+msgid "Always"
+msgstr ""
+
+msgid "Always available on this device."
+msgstr ""
 
 msgid "Archive"
 msgstr ""
@@ -82,6 +94,15 @@ msgstr ""
 msgid "Audio"
 msgstr "Audio"
 
+msgid "Automatically make cloud files available if smaller than"
+msgstr ""
+
+msgid "Available after this file is made available on this device"
+msgstr ""
+
+msgid "Available on this device. {providerName} may free up this space if the file goes unused."
+msgstr ""
+
 msgid "CSV export complete"
 msgstr ""
 
@@ -93,6 +114,9 @@ msgstr ""
 
 msgid "Cannot add files of that type"
 msgstr "Tidak dapat tambah file jenis itu"
+
+msgid "Cannot export to IMDI while multilingual text migration is pending."
+msgstr ""
 
 msgid "Change Name To:"
 msgstr "Ubah Nama Menjadi:"
@@ -120,6 +144,9 @@ msgstr "Hapus"
 
 msgid "Close"
 msgstr "Tutup"
+
+msgid "Cloud"
+msgstr ""
 
 msgid "Collection"
 msgstr ""
@@ -157,6 +184,9 @@ msgstr "Menyalin..."
 msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
 msgstr ""
 
+msgid "Could not read media information for this file."
+msgstr ""
+
 msgid "Create"
 msgstr "Buat"
 
@@ -180,6 +210,9 @@ msgstr "Kredit/Penghargaan"
 
 msgid "Custom Field"
 msgstr "Kotak yang disesuaikan"
+
+msgid "Custom vocabulary item"
+msgstr ""
 
 msgid "Cut"
 msgstr "Potong"
@@ -214,6 +247,9 @@ msgstr "Hapus..."
 msgid "Description Documents"
 msgstr "Dokumen-Dokumen Keterangan"
 
+msgid "Dismiss"
+msgstr ""
+
 msgid "Do not quit"
 msgstr "Jangan tutup"
 
@@ -226,6 +262,9 @@ msgstr ""
 msgid "Download"
 msgstr "Unduh"
 
+msgid "Download this file to my computer"
+msgstr ""
+
 msgid "Duplicate Person"
 msgstr "Duplikasi orang"
 
@@ -235,8 +274,14 @@ msgstr "Duplikasi Sesi"
 msgid "Edit"
 msgstr "Edit"
 
+msgid "ElectronDropZone: preload script did not set window.electronAPI.getPathForFile; drag-and-drop will not work."
+msgstr ""
+
 msgid "Email Address"
 msgstr "Alamat Email"
+
+msgid "Example:"
+msgstr ""
 
 msgid "Export"
 msgstr "Ekspor"
@@ -259,6 +304,9 @@ msgstr ""
 msgid "Field"
 msgstr "Kotak"
 
+msgid "Fields with Unknown Languages"
+msgstr ""
+
 msgid "File"
 msgstr "File"
 
@@ -269,6 +317,15 @@ msgid "File to Import:"
 msgstr "File untuk Impor:"
 
 msgid "Find"
+msgstr ""
+
+msgid "Finish Migration"
+msgstr ""
+
+msgid "Finish Migration to Multilingual Fields"
+msgstr ""
+
+msgid "Fix in Project:"
 msgstr ""
 
 msgid "Font Size"
@@ -299,6 +356,12 @@ msgid "Generating PARADISEC CSV..."
 msgstr ""
 
 msgid "Generating RO-Crate metadata..."
+msgstr ""
+
+msgid "Genres"
+msgstr ""
+
+msgid "Getting project information from {0}..."
 msgstr ""
 
 msgid "Help"
@@ -345,6 +408,12 @@ msgstr "Impor {chosenCount} Sesi"
 
 msgid "Importing..."
 msgstr "Sedang mengimpor..."
+
+msgid "In cloud only, and this computer appears to be offline."
+msgstr ""
+
+msgid "In cloud only, lameta cannot read it yet."
+msgstr ""
 
 msgid "Indicates that this is the father or mother's primary language."
 msgstr "Menunjukkan bahwa ini adalah bahasa utama ayah atau ibu."
@@ -397,6 +466,15 @@ msgstr "Folder Media"
 msgid "Media Folder Settings..."
 msgstr "Pengaturan Folder Media..."
 
+msgid "Migrate"
+msgstr ""
+
+msgid "Migrating: {0}"
+msgstr ""
+
+msgid "Migration complete! {0} fields were migrated. You can hide language tags from View → \"Show language tags on multilingual fields\" if you don't need them anymore."
+msgstr ""
+
 msgid "Modified"
 msgstr "Dimodifikasi"
 
@@ -406,16 +484,25 @@ msgstr "Kotak Lainnya"
 msgid "Name"
 msgstr "Nama"
 
+msgid "Never"
+msgstr ""
+
 msgid "New Person"
 msgstr "Orang Baru"
 
 msgid "New Session"
 msgstr "Sesi Baru"
 
+msgid "No custom values found"
+msgstr ""
+
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
 msgstr "Biasanya, ketika Anda menambahkan file ke proyek, sesi, atau orang, file tersebut disalin ke dalam folder yang sama dengan proyek lameta Anda. Untuk beberapa file, mungkin Anda lebih suka tidak menyalin file tersebut dari lokasi asalnya dan hanya membuat 'tautan' ke file tersebut."
 
 msgid "Not important to the archive, but will be included"
+msgstr ""
+
+msgid "Note"
 msgstr ""
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
@@ -432,6 +519,12 @@ msgstr "OPEX + File-File"
 
 msgid "One or more files are still being copied into your project."
 msgstr "Satu atau beberapa file masih dalam proses penyalinan ke proyek Anda."
+
+msgid "Online-only ({providerName}), and this computer appears to be offline, so the file cannot be downloaded right now."
+msgstr ""
+
+msgid "Online-only ({providerName}). The content of this file is not on this computer."
+msgstr ""
 
 msgid "Open"
 msgstr "Buka"
@@ -469,6 +562,12 @@ msgstr "Orang"
 msgid "Please Register"
 msgstr "Tolong Daftarkan"
 
+msgid "Please add the metadata languages you've been using with these \"/\" fields (at least two) before migrating."
+msgstr ""
+
+msgid "Please complete the migration in the Project tab under Languages before exporting."
+msgstr ""
+
 msgid "Please remove characters that not allowed by the Archive Settings."
 msgstr "Silakan hapus karakter yang tidak diizinkan oleh Pengaturan Arsip."
 
@@ -494,6 +593,9 @@ msgid "RO-Crate"
 msgstr ""
 
 msgid "RO-Crate export complete"
+msgstr ""
+
+msgid "Ready to scan..."
 msgstr ""
 
 msgid "Redo"
@@ -529,8 +631,17 @@ msgstr "Laporkan masalah"
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr "Restart lameta dan lakukan penggantian nama sebelum memutar video lagi."
 
+msgid "Retry"
+msgstr ""
+
+msgid "Retrying…"
+msgstr ""
+
 msgid "Role"
 msgstr "Peran"
+
+msgid "Roles"
+msgstr ""
 
 msgid "Save As"
 msgstr "Simpan Sebagai"
@@ -540,6 +651,15 @@ msgstr "Sedang menyimpan"
 
 msgid "Saving before rename..."
 msgstr "Menyimpan sebelum ubah nama..."
+
+msgid "Scan complete"
+msgstr ""
+
+msgid "Scan failed"
+msgstr ""
+
+msgid "Scanning..."
+msgstr ""
 
 msgid "Search"
 msgstr ""
@@ -560,6 +680,12 @@ msgid "Show All"
 msgstr "Tampilkan Semua"
 
 msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show Language Tags"
+msgstr ""
+
+msgid "Show Language Tags (locked during migration)"
 msgstr ""
 
 msgid "Show PARADISEC previews"
@@ -589,6 +715,9 @@ msgstr "Ukuran"
 msgid "Smaller"
 msgstr "Lebih kecil"
 
+msgid "Some fields have more language segments than there are Metadata Languages defined ({0} of {1} fields). If you proceed, these extra segments will be labeled as \"unknown\" languages."
+msgstr ""
+
 msgid "Some operating systems would not allow that name."
 msgstr "Beberapa sistem operasi mungkin tidak mengizinkan nama tersebut."
 
@@ -601,8 +730,17 @@ msgstr "Maaf, tidak diperbolehkan menggunakan tanda garis miring (\"/\")"
 msgid "Start Screen"
 msgstr "Layar Awal"
 
+msgid "Starting scan..."
+msgstr ""
+
 msgid "Status"
 msgstr "Status"
+
+msgid "Stop waiting"
+msgstr ""
+
+msgid "Tell {providerName} that I want this file on my computer"
+msgstr ""
 
 msgid "Text"
 msgstr "Teks"
@@ -612,6 +750,9 @@ msgstr "Nama itu akan menghasilkan nama file kosong."
 
 msgid "The IMDI files were validated."
 msgstr "File IMDI telah divalidasi."
+
+msgid "The columns here are based on your project's metadata languages."
+msgstr ""
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "File tersebut tidak ada di lokasi yang diharapkan di Folder Media. Folder Media diatur ke {m} dan fili ini seharusnya berada di {e}"
@@ -652,8 +793,14 @@ msgstr "."
 msgid "This file does not comply with the file naming rules of the current archive."
 msgstr ""
 
+msgid "This file is online-only ({providerName}). Select it to see how to make it available on this device."
+msgstr ""
+
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr "Ini adalah sebuah tautan, namun lameta tidak tahu di mana Folder Media untuk proyek ini. Lihat file: Pengaturan Folder Media."
+
+msgid "This project appears to use \"/\" to store multiple languages within a single field. In this version of lameta, we have a better approach in which lameta knows which languages are used in a field. After you have selected the appropriate metadata languages above and arranged them in the correct order, all multilingual fields in Project, Sessions, and People should display with the correct language tags. Once you have confirmed that everything appears as expected, click the button below to apply these changes permanently."
+msgstr ""
 
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
 msgstr "Pengaturan ini unik untuk akun yang Anda gunakan di komputer ini. Seorang rekan di komputer lain perlu mengatur nilai ini ke lokasi yang benar di komputer mereka."
@@ -666,6 +813,9 @@ msgstr "Tipe"
 
 msgid "Undo"
 msgstr "Batalkan"
+
+msgid "Unknown error while scanning vocabulary"
+msgstr ""
 
 msgid "Update available"
 msgstr "Pembaruan/Update tersedia"
@@ -685,6 +835,15 @@ msgstr "Lihat"
 msgid "View Release Notes"
 msgstr "Lihat Catatan Rilis"
 
+msgid "Vocabulary Translations"
+msgstr ""
+
+msgid "Vocabulary scan failed"
+msgstr ""
+
+msgid "Waiting"
+msgstr ""
+
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
@@ -700,11 +859,20 @@ msgstr ""
 msgid "You are running lameta version:"
 msgstr "Anda menjalankan versi lameta:"
 
+msgid "You can either add more Metadata Languages above to match all segments, or proceed with the migration and manually fix the unknown language fields later."
+msgstr ""
+
 msgid "You cannot add files of that type"
 msgstr "Tidak dapat tambah file jenis itu"
 
 msgid "You cannot add folders."
 msgstr "Anda tidak bisa menambahkan folder."
+
+msgid "You need at least two metadata languages defined to use vocabulary translations. Please add metadata languages in the Languages tab."
+msgstr ""
+
+msgid "You requested this file less than a minute ago. lameta will show it when it becomes available."
+msgstr ""
 
 msgid "ZIP Archive"
 msgstr "Arsip ZIP"
@@ -739,6 +907,12 @@ msgstr "lameta tidak dapat menemukan Orang yang sesuai dengan kontributor beriku
 msgid "lameta could not rename the directory."
 msgstr "lameta tidak bisa mengubah nama direktori tersebut."
 
+msgid "lameta couldn't download 1 file from {providerName}. It may be offline or busy right now."
+msgstr ""
+
+msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
+msgstr ""
+
 msgid "lameta expected to find a .link file at {e}"
 msgstr "lameta mengharapkan menemukan sebuah file .link di {e}"
 
@@ -747,6 +921,9 @@ msgstr "lameta mencoba mengubah nama folder \"{oldFolderName}\" menjadi \"{newFo
 
 msgid "lameta was not able to delete the file."
 msgstr "lameta tidak dapat menghapus file tersebut."
+
+msgid "lameta was not able to make this file available on this device."
+msgstr ""
 
 msgid "lameta was not able to put this file in the trash"
 msgstr "lameta tidak dapat memindahkan file ini ke tempat sampah"
@@ -764,8 +941,32 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "Sekarang, lameta akan membuka folder ini di hard disk Anda dan kemudian akan keluar. Anda sebaiknya membuka file-file {projectType} ini di editor teks dan memutuskan mana yang ingin Anda gunakan, kemudian hapus yang lainnya. File yang Anda pilih sebaiknya dinamai {name}."
 
+msgid "missing"
+msgstr ""
+
+msgid "recorded when the file was last on this device"
+msgstr ""
+
+msgid "the cloud"
+msgstr ""
+
 msgid "{0} Marked Sessions"
 msgstr "{0} Sesi yang Ditandai"
 
+msgid "{0} of {1} items processed"
+msgstr ""
+
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted} akan dipindahkan ke Tempat Sampah"
+
+msgid "{minutesSinceRequest, plural, one {# minute since you requested this file. lameta will show it when it becomes available.} other {# minutes since you requested this file. lameta will show it when it becomes available.}}"
+msgstr ""
+
+msgid "{providerName} Status"
+msgstr ""
+
+msgid "{providerName} is downloading this file to this computer."
+msgstr ""
+
+msgid "{totalMissing} items need translation"
+msgstr ""

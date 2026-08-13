@@ -2,8 +2,9 @@ import fs from "fs";
 import Path from "path";
 import { Session } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
+import { PatientFS } from "../../other/patientFile";
 import temp from "temp";
-import { describe, it, beforeEach, expect, afterEach } from "vitest";
+import { describe, it, beforeEach, expect, afterEach, vi } from "vitest";
 
 temp.track();
 describe("Duplicate Folder", () => {
@@ -125,5 +126,72 @@ describe("Duplicate Folder", () => {
     expect(fs.existsSync(Path.join(originalDir, "foo.session"))).toBeTruthy();
     expect(fs.existsSync(Path.join(originalDir, "baz.session"))).toBeFalsy();
   });
+  // Simulates something grabbing a handle mid-way through a rename: the
+  // per-file renames succeed, then the rename of the folder itself fails.
+  // Before the rollback was added, this stranded a folder with the OLD name
+  // full of files carrying the NEW name (and on the next load the .session
+  // got "repaired" back to the folder name, silently reverting the user's
+  // rename). We simulate the lock by making PatientFS fail only the directory
+  // rename, which is deterministic and doesn't spend ~10s in the retry loop
+  // the way a real lock does; the opt-in RenameContention.stress.spec.ts
+  // covers the same window with real locks.
+  it("nameMightHaveChanged(): if the final folder rename fails, file renames are rolled back", () => {
+    const originalDir = Path.join(rootDirectory, "foo");
+    fs.mkdirSync(originalDir);
+    fs.writeFileSync(Path.join(originalDir, "foo_someMedia.txt"), "hello");
+    fs.writeFileSync(Path.join(originalDir, "unrelated.txt"), "hello");
+
+    const original = Session.fromDirectory(
+      originalDir,
+      new EncounteredVocabularyRegistry()
+    );
+    original.properties.setText("id", "foo");
+    original.saveFolderMetaData();
+    original.saveAllFilesInFolder(false);
+    const filesBefore = fs.readdirSync(originalDir).sort();
+
+    const newDir = Path.join(rootDirectory, "baz");
+    const realRenameSync = PatientFS.renameSync.bind(PatientFS);
+    const spy = vi
+      .spyOn(PatientFS, "renameSync")
+      .mockImplementation((from: string, to: string) => {
+        if (from === originalDir && to === newDir) {
+          const err: NodeJS.ErrnoException = new Error(
+            "simulated lock landed after the files were renamed"
+          );
+          err.code = "EPERM";
+          throw err;
+        }
+        return realRenameSync(from, to);
+      });
+    try {
+      original.properties.setText("id", "baz");
+      expect(original.nameMightHaveChanged()).toBeFalsy();
+    } finally {
+      spy.mockRestore();
+    }
+
+    // the folder must still be fully in its OLD state: old name, old file names
+    expect(fs.existsSync(originalDir)).toBeTruthy();
+    expect(fs.existsSync(newDir)).toBeFalsy();
+    expect(fs.readdirSync(originalDir).sort()).toEqual(filesBefore);
+    // and the in-memory model must agree with the disk
+    expect(fs.existsSync(original.metadataFile!.metadataFilePath)).toBeTruthy();
+    expect(original.metadataFile!.metadataFilePath).toBe(
+      Path.join(originalDir, "foo.session")
+    );
+
+    // having recovered, a later rename (lock gone) must succeed completely
+    expect(original.nameMightHaveChanged()).toBeTruthy();
+    expect(fs.existsSync(newDir)).toBeTruthy();
+    expect(fs.existsSync(originalDir)).toBeFalsy();
+    expect(fs.existsSync(Path.join(newDir, "baz.session"))).toBeTruthy();
+    expect(fs.existsSync(Path.join(newDir, "baz_someMedia.txt"))).toBeTruthy();
+    expect(fs.existsSync(Path.join(newDir, "unrelated.txt"))).toBeTruthy();
+    expect(
+      fs.readdirSync(newDir).filter((f) => f.startsWith("foo"))
+    ).toEqual([]);
+  });
+
   // TODO: test when a folder already has two sessions? We could pick the bigger one?
 });

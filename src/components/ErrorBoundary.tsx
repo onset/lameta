@@ -8,6 +8,12 @@ import { sentryException } from "../other/errorHandling";
 interface IProps {
   children: ReactNode;
   context?: string;
+  // When any value in this array changes, a boundary that is currently showing
+  // its fallback resets and re-renders its children. Pass something that
+  // identifies the current subject (e.g. the selected file's path) so that a
+  // render error caused by one item cannot wedge the pane for every other item
+  // until the app is restarted.
+  resetKeys?: unknown[];
 }
 
 interface IState {
@@ -39,7 +45,11 @@ const handleError = (error: Error, info: any) => {
 export const ErrorBoundary = (props: IProps) => {
   return (
     // todo: there is props.context that we are not using yet
-    <ErrorBoundary_ FallbackComponent={Notice} onError={handleError}>
+    <ErrorBoundary_
+      FallbackComponent={Notice}
+      onError={handleError}
+      resetKeys={props.resetKeys}
+    >
       {props.children}
     </ErrorBoundary_>
   );

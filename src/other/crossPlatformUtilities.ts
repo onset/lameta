@@ -6,6 +6,15 @@ import { t } from "@lingui/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { globSync } from "glob";
 
+// The platform-appropriate label for the "reveal this file in the OS file
+// manager" action. Shared by the file-list context menu and the cloud status
+// card so the wording stays consistent.
+export function revealInFolderLabel(): string {
+  return process.platform === "darwin"
+    ? t`Show in Finder`
+    : t`Show in File Explorer`;
+}
+
 export function revealInFolder(path: string) {
   console.log("Revealing in folder:", path);
   if (!path) return;

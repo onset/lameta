@@ -404,20 +404,14 @@ export abstract class Folder {
       );
       return false;
     }
-    // first, we just do a trial run to see if this will work
-    console.debug(
-      `renameFilesAndFolders() at point where it test the directory name.`
-    );
-    try {
-      PatientFS.renameSync(this.directory, newDirPath);
-      PatientFS.renameSync(newDirPath, this.directory);
-    } catch (err) {
-      NotifyFileAccessProblem(
-        couldNotRenameDirectory + " [[STEP:Precheck]]",
-        err
-      );
-      return false;
-    }
+    // NB: we used to do a "trial run" here (rename the directory to the new
+    // name and immediately back). That precheck could itself strand the
+    // folder under the NEW name: a handle opened on a file inside during the
+    // instant the folder had the new name survives the rename and blocks the
+    // rename-back, and there was no recovery from that. Now that a failure of
+    // the real rename below rolls the file renames back, the precheck is
+    // redundant as well as risky, so it is gone; the directory is renamed
+    // exactly once, at the end.
     try {
       this.files.forEach((f) => {
         f.throwIfFilesMissing();
@@ -434,7 +428,14 @@ export abstract class Folder {
       `renameFilesAndFolders() at point where checks for files that have the basename as part of their name.`
     );
 
-    // ok, that worked, so now have all the files rename themselves if their name depends on the folder name
+    // ok, that worked, so now have all the files rename themselves if their name depends on the folder name.
+    // Keep a snapshot per file so that if the folder rename below fails, we can
+    // rename the files back instead of stranding a folder with the old name
+    // full of files carrying the new name.
+    const rollbackSnapshots = this.files.map((f) => ({
+      file: f,
+      snapshot: f.getRenameRollbackSnapshot()
+    }));
     this.files.forEach((f) => {
       try {
         f.updateNameBasedOnNewFolderName(newFolderName);
@@ -458,6 +459,18 @@ export abstract class Folder {
       //   `** Renamed Folder from ${oldFolderName} to ${newFolderName}.`
       // );
     } catch (err) {
+      // Roll the per-file renames back; each rollback gets its own PatientFS
+      // retry budget. Reverse order to unwind in the opposite order we renamed.
+      for (const { file, snapshot } of [...rollbackSnapshots].reverse()) {
+        try {
+          file.rollbackRename(snapshot);
+        } catch (rollbackErr) {
+          console.error(
+            `renameFilesAndFolders(): rollback failed for ${snapshot.describedFileOrLinkFilePath}`,
+            rollbackErr
+          );
+        }
+      }
       const msg = t`lameta was not able to rename the folder.`;
       NotifyFileAccessProblem(
         `${msg} (${this.displayName}).` + " [[STEP:Actual folder]]",
@@ -551,14 +564,21 @@ export abstract class Folder {
         directory,
         metadataFileExtensionWithDot
       );
-      if (matchingPaths.length > 1) {
+      // If the file we intend to save to doesn't exist but a file with the
+      // right extension and the wrong name does, rename it to what we expect;
+      // otherwise the save below would create a second metadata file and leave
+      // the old one behind as a zombie. (This was `> 1` for years, which
+      // skipped the common single-zombie case.)
+      if (matchingPaths.length >= 1) {
+        // findZombieMetadataFiles returns bare file names from readdirSync
+        const zombiePath = Path.join(directory, matchingPaths[0]);
         try {
-          PatientFS.renameSync(matchingPaths[0], expectedMetadataFilePath);
+          PatientFS.renameSync(zombiePath, expectedMetadataFilePath);
           return;
         } catch (err) {
           NotifyException(
             err,
-            `lameta was not able to fix the name of ${matchingPaths[0]} to fit the folder name.` // intentionally not adding the translation list
+            `lameta was not able to fix the name of ${zombiePath} to fit the folder name.` // intentionally not adding the translation list
           );
           // not sure what to do now....
         }
@@ -566,6 +586,12 @@ export abstract class Folder {
     }
   }
   private findZombieMetadataFiles(directory: string, extension: string) {
+    // The directory can be gone if the folder vanished from disk externally
+    // (e.g. a sync service removed it while the project was open). readdirSync
+    // would throw ENOENT; there are simply no zombies to find in that case.
+    if (!fs.existsSync(directory)) {
+      return [];
+    }
     const dir = fs.readdirSync(directory);
     return dir.filter(
       (f) =>

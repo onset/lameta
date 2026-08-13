@@ -6,7 +6,10 @@ import { ElectronDropZone } from "./ElectronDropZone";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import * as remote from "@electron/remote";
 import "./FileList.css";
-import { revealInFolder } from "../other/crossPlatformUtilities";
+import {
+  revealInFolder,
+  revealInFolderLabel
+} from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
 import { translateFileType } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
@@ -30,7 +33,19 @@ import HighlightSearchTerm from "./HighlightSearchTerm";
 import { lameta_orange } from "../containers/theme";
 import SearchIcon from "@mui/icons-material/Search";
 import { getTestEnvironment } from "../getTestEnvironment";
+import {
+  AutoFetchCloudFiles,
+  mbToBytes
+} from "../other/autoFetchCloudFiles";
+import {
+  CloudStatusIcon,
+  getCloudDisplayStatusOfFile
+} from "./CloudStatusIcon";
 const electron = require("electron");
+
+// Throttle window-focus-triggered cloud status refreshes so that rapid
+// alt-tabbing doesn't hammer the filesystem for every file in the folder.
+const kWindowFocusRefreshThrottleMs = 5000;
 export const _FileList: React.FunctionComponent<{
   folder: Folder;
   extraButtons?: object[];
@@ -64,6 +79,33 @@ export const _FileList: React.FunctionComponent<{
 
   const { searchTerm } = React.useContext(SearchContext);
   const highlight = (text: string) => <HighlightSearchTerm text={text} />;
+
+  // Debounced/capped auto-fetch of small cloud-only files as the selection
+  // rests on them. One scheduler per mounted FileList (i.e. per folder).
+  const autoFetchSchedulerRef = React.useRef<AutoFetchCloudFiles>();
+  if (!autoFetchSchedulerRef.current) {
+    autoFetchSchedulerRef.current = new AutoFetchCloudFiles();
+  }
+  React.useEffect(() => {
+    return () => autoFetchSchedulerRef.current?.dispose();
+  }, []);
+
+  // Refresh cloud status of this folder's files when the window regains
+  // focus (e.g. after OneDrive finishes syncing in the background), but no
+  // more often than every few seconds.
+  const lastFocusRefreshRef = React.useRef(0);
+  React.useEffect(() => {
+    const onFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusRefreshRef.current < kWindowFocusRefreshThrottleMs) {
+        return;
+      }
+      lastFocusRefreshRef.current = now;
+      props.folder.files.forEach((f) => f.updateCloudStatus());
+    };
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [props.folder]);
 
   const fileHasMetadataMatch = (file: any, trimmed: string): boolean => {
     if (!trimmed || !file) return false;
@@ -99,6 +141,18 @@ export const _FileList: React.FunctionComponent<{
     return metadataMatch;
   };
 
+  // MobX tracking: deliberately touch getLinkStatusIconPath and the cloud
+  // display status (and through them cloudStatus and networkStatus) for
+  // EVERY file, with no short-circuit -- if a later file's status changes
+  // (e.g. OneDrive finishes hydrating it), this render must re-run so its
+  // row icon and cloudOnly row class update.
+  const linkStatusIconPaths = props.folder.files.map((f) =>
+    getLinkStatusIconPath(f)
+  );
+  const cloudDisplayStatuses = props.folder.files.map((f) =>
+    getCloudDisplayStatusOfFile(f)
+  );
+
   let columns: any[] = [
     {
       id: "icon",
@@ -124,12 +178,17 @@ export const _FileList: React.FunctionComponent<{
       id: "linkStatus",
       Header: "",
       width: 30,
-      show: props.folder.files.some((f) => getLinkStatusIconPath(f)),
-      accessor: (d: any) => {
-        const f: File = d;
-        return getLinkStatusIconPath(f);
-      },
-      Cell: (p) => (p.value ? <img src={p.value} /> : null)
+      show:
+        linkStatusIconPaths.some((p) => !!p) ||
+        cloudDisplayStatuses.some((s) => !!s),
+      accessor: (d: any) => d,
+      Cell: (p) => {
+        const f: File = p.value;
+        const iconPath = getLinkStatusIconPath(f);
+        // Link/missing/naming problems take precedence; otherwise show the
+        // OneDrive sync-state icon (or nothing for non-cloud files).
+        return iconPath ? <img src={iconPath} /> : <CloudStatusIcon file={f} />;
+      }
     },
     {
       id: "type",
@@ -361,6 +420,11 @@ export const _FileList: React.FunctionComponent<{
                   }
                   props.folder.selectedFile = rowInfo.original;
                   setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
+                  file.updateCloudStatus();
+                  autoFetchSchedulerRef.current?.onSelectionChanged(
+                    file,
+                    mbToBytes(userSettings.AutoFetchCloudFilesUnderMB)
+                  );
                 }
               },
               className:
@@ -403,10 +467,7 @@ function showFileMenu(
 
   let items = [
     {
-      label:
-        process.platform === "darwin"
-          ? t`Show in Finder`
-          : t`Show in File Explorer`,
+      label: revealInFolderLabel(),
       click: () => {
         revealInFolder(file.getActualFilePath());
       },

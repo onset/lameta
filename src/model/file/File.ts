@@ -37,6 +37,17 @@ import { PatientFS } from "../../other/patientFile";
 import { t } from "@lingui/macro";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import userSettings from "../../other/UserSettings";
+import {
+  CloudFileStatus,
+  getCloudFileStatus,
+  getCloudFileProvider,
+  getCloudProviderNameForPath
+} from "../../other/cloudFileStatus";
+import {
+  cloudReadGuard,
+  isCloudProviderReadFailure
+} from "../../other/cloudReadGuard";
+import { cloudFilePoller } from "../../other/cloudFilePoller";
 
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
@@ -45,6 +56,18 @@ function getCannotRenameFileMsg() {
 }
 
 export const kLinkExtensionWithFullStop = ".link";
+
+// Property key under which probed media stats (ffprobe/ExifReader results)
+// are cached into the .meta file, alongside the file identity (size + mtime)
+// they were probed from. Exported so exporters (IMDI, RO-Crate, CSV, ...) can
+// blacklist it -- it's internal bookkeeping, not metadata to archive.
+export const kMediaStatsCacheKey = "mediaStatsCache";
+
+interface IMediaStatsCachePayload {
+  stats: Record<string, string>;
+  sizeBytes: number;
+  mtimeMs: number;
+}
 
 export class Contribution {
   //review this @observable
@@ -84,6 +107,58 @@ export /*babel doesn't like this: abstract*/ class File {
   public copyInProgress: boolean;
 
   public copyProgress: string;
+
+  public cloudStatus: CloudFileStatus = "unknown";
+
+  // True when we tried (or deliberately skipped trying) to read this file's
+  // metadata from the cloud during load and the provider couldn't deliver it.
+  // Drives the "cloud unavailable" affordance and lets Retry find the files
+  // that need re-reading. See cloudReadGuard.
+  public cloudMetadataUnavailable: boolean = false;
+
+  // True when readMetadataFile() failed to parse the on-disk XML (0-byte file,
+  // truncated write from an interrupted cloud sync, etc.). The in-memory
+  // properties are then empty/default, so save() must refuse to write --
+  // otherwise it would overwrite the user's real (possibly recoverable) bytes
+  // with an empty template. There is no automatic Retry for this (unlike
+  // cloudMetadataUnavailable): the file needs manual recovery.
+  public metadataReadFailed: boolean = false;
+
+  // True when the folder that should contain this file has vanished from disk
+  // while the project was open -- e.g. a collaborator deleted/renamed the
+  // session on another machine and a sync service (OneDrive/Dropbox) applied
+  // that locally, or someone removed it in Explorer. Every save trigger (window
+  // blur, selection change, rename) would otherwise re-attempt the write, hit
+  // ENOENT, and pop a fresh error toast. Instead save() fails softly: it warns
+  // ONCE (gated on this flag) and then silently skips, leaving the in-memory
+  // data intact. The flag clears itself if the folder reappears and a save
+  // succeeds. We deliberately do NOT try to reload/reconcile here -- that is a
+  // separate planned workstream.
+  public fileMissing: boolean = false;
+
+  // True once save() has found the metadata file changed on disk underneath us
+  // (a cloud sync service delivering another machine's edit, or an external
+  // editor) and moved that version aside so our write wouldn't silently revert
+  // it. Purely informational; the once-per-change notification is driven by the
+  // disk-identity tracking below, not by this flag. Siblings: fileMissing,
+  // metadataReadFailed, cloudMetadataUnavailable.
+  public metadataChangedExternally: boolean = false;
+
+  // On-disk identity (mtimeMs + size) of the metadata file as of the last time
+  // lameta itself read or wrote it, plus the exact bytes involved. save() uses
+  // these to notice that the file was changed underneath us so it never
+  // silently overwrites (and thereby reverts) another machine's synced-down
+  // edit. The bytes let us tell a real external edit from mere mtime churn (a
+  // sync engine can rewrite byte-identical content and bump the mtime). Both
+  // are undefined until the first successful read or write. See save()'s
+  // freshness check and setAsideExternallyChangedFile().
+  private lastKnownDiskIdentity: { mtimeMs: number; size: number } | undefined;
+  private lastKnownDiskContent: string | undefined;
+
+  // Start time (ms since epoch) of the current hydration, or undefined when
+  // not hydrating. Lives on the model (not a component ref) so the elapsed
+  // timer survives unmount/remount of the panel showing it.
+  public hydratingSinceMs: number | undefined;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
@@ -156,10 +231,8 @@ export /*babel doesn't like this: abstract*/ class File {
       return "";
     }
 
-    let date: moment.Moment;
-
     // 1) Try strict YYYY-MM-DD first
-    date = moment(dateString, "YYYY-MM-DD", true /* strict */);
+    const date = moment(dateString, "YYYY-MM-DD", true /* strict */);
     if (date.isValid()) {
       return date.format("YYYY-MM-DD");
     }
@@ -385,6 +458,12 @@ export /*babel doesn't like this: abstract*/ class File {
       describedFileOrLinkFilePath: observable,
       copyInProgress: observable,
       copyProgress: observable,
+      cloudStatus: observable,
+      cloudMetadataUnavailable: observable,
+      metadataReadFailed: observable,
+      fileMissing: observable,
+      metadataChangedExternally: observable,
+      hydratingSinceMs: observable,
       properties: observable,
       contributions: observable
     });
@@ -464,6 +543,109 @@ export /*babel doesn't like this: abstract*/ class File {
       return this.describedFileOrLinkFilePath;
     }
   }
+  public updateCloudStatus(): void {
+    this.cloudStatus = getCloudFileStatus(this.getActualFilePath());
+    if (this.cloudStatus === "hydrating") {
+      if (this.hydratingSinceMs === undefined) {
+        this.hydratingSinceMs = Date.now();
+      }
+      cloudFilePoller.watch(this);
+    } else {
+      this.hydratingSinceMs = undefined;
+    }
+  }
+
+  public get isCloudFileNotPresent(): boolean {
+    return this.cloudStatus === "cloudOnly" || this.cloudStatus === "hydrating";
+  }
+
+  // Size in bytes of the actual file on disk. For a cloud-only placeholder,
+  // fs.statSync() reports the eventual full size without triggering hydration
+  // (unlike opening/reading the file, which downloads it).
+  public getSizeInBytes(): number {
+    try {
+      return fs.statSync(this.getActualFilePath()).size;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // Modification time (ms since epoch) of the actual file on disk. Like
+  // getSizeInBytes(), this is safe to call on a cloud-only placeholder.
+  public getMtimeMs(): number {
+    try {
+      return fs.statSync(this.getActualFilePath()).mtimeMs;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // Returns media stats (e.g. from ffprobe/ExifReader) previously cached via
+  // setCachedMediaStats(), or undefined if there is none, or if the file's
+  // size/mtime no longer match what was recorded (i.e. the file has changed).
+  public getCachedMediaStats(): Record<string, string> | undefined {
+    const raw = this.getTextProperty(kMediaStatsCacheKey, "");
+    if (!raw) {
+      return undefined;
+    }
+    let parsed: IMediaStatsCachePayload | undefined;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      return undefined;
+    }
+    if (!parsed || !parsed.stats) {
+      return undefined;
+    }
+    if (
+      parsed.sizeBytes !== this.getSizeInBytes() ||
+      parsed.mtimeMs !== this.getMtimeMs()
+    ) {
+      return undefined;
+    }
+    return parsed.stats;
+  }
+
+  // Persist probed media stats into this file's .meta, along with the file
+  // identity (size + mtime) they were probed from, so future loads can serve
+  // them without re-probing (which, for a cloud-only file, would force a full
+  // download of its content). A no-op (and does not dirty the file) if the
+  // incoming value is identical to what's already cached.
+  public setCachedMediaStats(
+    stats: Record<string, string>,
+    identity: { sizeBytes: number; mtimeMs: number }
+  ): void {
+    const payload: IMediaStatsCachePayload = {
+      stats,
+      sizeBytes: identity.sizeBytes,
+      mtimeMs: identity.mtimeMs
+    };
+    const json = JSON.stringify(payload);
+    const isNewField = !this.properties.getValue(kMediaStatsCacheKey);
+    this.addTextProperty(kMediaStatsCacheKey, json, true, false, false);
+    // Creating a brand-new property on `properties` isn't itself observed by
+    // the mobx reaction that watches for changes to save (see
+    // recomputedChangeWatcher()); and setting an unchanged value on an
+    // existing field is already a no-op for mobx. So we only need to
+    // explicitly mark the file dirty when the field didn't exist before.
+    if (isNewField) {
+      this.wasChangeThatMobxDoesNotNotice();
+    }
+  }
+
+  public async makeAvailableOffline(): Promise<void> {
+    await getCloudFileProvider().setPinned(this.getActualFilePath(), true);
+    this.updateCloudStatus(); // → "hydrating" (pinned placeholder), auto-enrolls in the poller
+  }
+
+  // Stops *waiting* for hydration to complete; OneDrive may continue fetching
+  // the file in the background regardless. Safe to call even if nothing is
+  // in progress.
+  public async stopWaiting(): Promise<void> {
+    await getCloudFileProvider().setPinned(this.getActualFilePath(), false);
+    this.updateCloudStatus();
+  }
+
   public getModifiedDate(): Date | undefined {
     // when you drag a file into the filelist, it doesn't have a modifiedDate
     if (this.properties.getHasValue("modifiedDate"))
@@ -478,6 +660,7 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     const stats = fs.statSync(this.getActualFilePath());
+    this.updateCloudStatus();
 
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);
@@ -757,6 +940,20 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   private haveReadMetadataFile: boolean = false;
+
+  // Record that this file's metadata could not be read from the cloud, and
+  // leave it in a state where a later Retry can re-attempt the read.
+  private markCloudMetadataUnavailable(): void {
+    this.cloudMetadataUnavailable = true;
+    // Reset so a Retry re-enters readMetadataFile for this file.
+    this.haveReadMetadataFile = false;
+    this.updateCloudStatus();
+    cloudReadGuard.recordFailure(
+      this.metadataFilePath,
+      getCloudProviderNameForPath(this.metadataFilePath)
+    );
+  }
+
   public readMetadataFile() {
     try {
       sentryBreadCrumb(`enter readMetadataFile ${this.metadataFilePath}`);
@@ -767,9 +964,78 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
-        const xml: string = PatientFS.readFileSyncWithNotifyAndRethrow(
-          this.metadataFilePath
-        );
+        const provider = getCloudFileProvider();
+        // "cloudOnly"/"hydrating" are the only statuses that mean "this is a
+        // placeholder the provider needs to fetch" -- "unknown" (e.g. a file
+        // not under any sync root on macOS) is NOT a placeholder, so this must
+        // stay a positive check rather than "not locally available".
+        const status = provider.getStatus(this.metadataFilePath);
+        const isCloudPlaceholder =
+          provider.capabilities.canFetch &&
+          (status === "cloudOnly" || status === "hydrating");
+
+        if (isCloudPlaceholder) {
+          // If the cloud provider already failed to deliver a file during this
+          // load, don't touch this placeholder at all -- both pinning and
+          // reading ask the sync engine to hydrate it, and each failed attempt
+          // can make the provider's own client pop a modal error dialog. Fail
+          // softly so the project keeps loading; the row shows a "cloud
+          // unavailable" state and the user can Retry. See cloudReadGuard.
+          if (cloudReadGuard.isTripped) {
+            this.markCloudMetadataUnavailable();
+            return;
+          }
+
+          // On Windows, this durably pins our own metadata sidecar so OneDrive's
+          // "free up space" can never dehydrate it again; lameta must always be
+          // able to read these regardless of the user's auto-fetch threshold. On
+          // macOS there is no durable pin, so this just triggers a one-shot fetch
+          // of a file the sync read below needs anyway -- still worth calling
+          // unconditionally.
+          provider.setPinned(this.metadataFilePath, true).catch(() => {});
+        }
+
+        let xml: string;
+        try {
+          xml = isCloudPlaceholder
+            ? PatientFS.readFileSyncNoNotify(this.metadataFilePath)
+            : PatientFS.readFileSyncWithNotifyAndRethrow(this.metadataFilePath);
+        } catch (err) {
+          if (isCloudPlaceholder && isCloudProviderReadFailure(err)) {
+            // The provider couldn't hydrate this placeholder. Trip the breaker,
+            // record it for the consolidated banner, and fail softly: no
+            // per-file toast, and no aborting the whole project load.
+            this.markCloudMetadataUnavailable();
+            return;
+          }
+          // A genuine file problem (missing, locked, corrupt). Preserve the
+          // original notify-and-rethrow behavior.
+          if (isCloudPlaceholder) {
+            NotifyFileAccessProblem(
+              `Could not read ${this.metadataFilePath}`,
+              err
+            );
+          }
+          throw err;
+        }
+
+        // The read succeeded; clear any prior cloud-unavailable state (e.g. this
+        // is a successful Retry).
+        this.cloudMetadataUnavailable = false;
+        cloudReadGuard.clearFailure(this.metadataFilePath);
+
+        // Remember what we just read (bytes + on-disk identity) so a later
+        // save() can tell whether the file was changed underneath us before it
+        // overwrites. See save()'s freshness check.
+        this.recordDiskIdentity(xml);
+
+        // That sync read just hydrated a dehydrated metadata file. For
+        // session/person files the metadata file IS the file shown in the
+        // list, and its cloudStatus was captured (as cloudOnly) by
+        // addFieldsUsedInternally() BEFORE this read -- refresh it so the
+        // row doesn't stay grey with a cloud icon until the next
+        // focus/reselect.
+        this.updateCloudStatus();
 
         let xmlAsObject: any = {};
         xml2js.parseString(
@@ -826,6 +1092,14 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.recomputedChangeWatcher();
     } catch (err) {
+      // The read/parse failed (0-byte or truncated file from an interrupted
+      // cloud sync, corrupt XML, unsupported version, ...). `properties` is
+      // empty/default at this point, so save() must refuse to write -- see the
+      // matching guard there. `haveReadMetadataFile` stays true (nothing below
+      // resets it, unlike the cloud-placeholder retry path), so a later call to
+      // this method just no-ops instead of re-attempting the read -- which is
+      // also why NotifyException below cannot fire more than once per file load.
+      this.metadataReadFailed = true;
       NotifyException(
         err,
         `There was a problem reading ${this.metadataFilePath}`
@@ -867,6 +1141,53 @@ export /*babel doesn't like this: abstract*/ class File {
       return;
     }
 
+    // Never overwrite a file whose real metadata we could not read from the
+    // cloud. On that soft-fail path (see markCloudMetadataUnavailable) the
+    // in-memory properties are empty/default, so writing them would destroy the
+    // real file on disk -- and sync that empty version back to the cloud and
+    // other machines. A successful (re)read clears this flag and re-enables
+    // saving. This must run before the dirty check because that soft-fail path
+    // leaves `dirty` undefined (clearDirty() was skipped), which the
+    // `dirty === false` guard below would not catch.
+    if (this.cloudMetadataUnavailable) {
+      return;
+    }
+
+    // Never overwrite a file whose on-disk XML we failed to parse (0-byte or
+    // truncated file from an interrupted cloud sync, corrupt XML, ...). The
+    // in-memory properties are empty/default in that case (see
+    // readMetadataFile's catch), so writing them would destroy the user's real
+    // -- possibly still recoverable -- bytes on disk. There is no automatic
+    // Retry for this case, so leave the file alone for manual recovery.
+    if (this.metadataReadFailed) {
+      console.warn(
+        `Refusing to save ${this.metadataFilePath} because its metadata failed to read/parse; the file on disk was left untouched.`
+      );
+      return;
+    }
+
+    // If the folder that should contain this file has vanished from disk (a
+    // collaborator deleted/renamed the session on another machine and a sync
+    // service applied that locally, or someone removed it in Explorer), we
+    // cannot write it: the open() would throw ENOENT. Fail softly instead of
+    // re-throwing (and re-toasting) on every save trigger. Warn exactly once
+    // -- gated on fileMissing -- then skip silently, leaving the in-memory data
+    // intact. This must run before the dirty check below because a dirty file
+    // would otherwise fall through to the write and hit ENOENT anyway.
+    if (!fs.existsSync(Path.dirname(this.metadataFilePath))) {
+      if (!this.fileMissing) {
+        this.fileMissing = true;
+        NotifyWarning(
+          `lameta could not save "${Path.basename(
+            this.metadataFilePath
+          )}" because its folder is no longer on your hard drive. It looks like it was moved or deleted outside of lameta (for example by a file-synchronization service such as OneDrive or Dropbox). lameta will stop trying to save it. Restart lameta to bring it up to date with what is actually on disk.`
+        );
+      }
+      return;
+    }
+    // The folder is present (again); allow saving and future warnings.
+    this.fileMissing = false;
+
     // console.log(
     //   `dirty of ${this.metadataFilePath} is ${
     //     this.dirty === undefined ? "undefined" : this.dirty
@@ -900,18 +1221,41 @@ export /*babel doesn't like this: abstract*/ class File {
             this.metadataFilePath
           } `
         );
+        // Never silently clobber a version of this file that was changed on
+        // disk underneath us (a cloud sync service delivering another machine's
+        // edit, or an external editor). If we detect that, the real version is
+        // moved aside to a sibling BEFORE we write ours; if it could not be
+        // moved aside, we must not overwrite it, so skip the write entirely.
+        if (!this.setAsideExternallyChangedFile(xml)) {
+          return;
+        }
         ShowSavingNotifier(Path.basename(this.metadataFilePath), beforeRename);
         PatientFS.writeFileSyncWithNotifyThenRethrow(
           this.metadataFilePath,
           xml
         );
         this.clearDirty();
+        // Record the identity of what we just wrote so the next save() can
+        // recognize our own write and not mistake it for an external change.
+        this.recordDiskIdentity(xml);
       } catch (error) {
         if (error.code === "EPERM") {
           NotifyFileAccessProblem(
             `Cannot save because lameta was denied write access to ${this.metadataFilePath}.`,
             error
           );
+        } else if (error.code === "ENOENT") {
+          // The file/folder vanished between the existence check above and the
+          // write (a sync service or another process removed it). Same soft
+          // fail as the pre-check: warn once, then stay quiet.
+          if (!this.fileMissing) {
+            this.fileMissing = true;
+            NotifyWarning(
+              `lameta could not save "${Path.basename(
+                this.metadataFilePath
+              )}" because it is no longer on your hard drive. It looks like it was moved or deleted outside of lameta (for example by a file-synchronization service such as OneDrive or Dropbox). lameta will stop trying to save it. Restart lameta to bring it up to date with what is actually on disk.`
+            );
+          }
         } else {
           NotifyError(
             `While saving ${this.metadataFilePath}, got ${error} (file.save)`
@@ -920,6 +1264,124 @@ export /*babel doesn't like this: abstract*/ class File {
         //console.log(`File readonly, skipping save: ${this.metadataFilePath}`);
       }
     }
+  }
+
+  // Capture the on-disk identity (mtime + size) and exact bytes of the
+  // metadata file as it is right now, tagged as "what lameta last read/wrote".
+  // Called after every successful read (readMetadataFile) and write (save) so
+  // the freshness check has an accurate baseline. If the file can't be stat'd
+  // (e.g. it isn't there), the baseline is cleared -- with no baseline the
+  // freshness check does nothing, which is the safe default.
+  private recordDiskIdentity(content: string): void {
+    try {
+      const stat = fs.statSync(this.metadataFilePath);
+      this.lastKnownDiskIdentity = { mtimeMs: stat.mtimeMs, size: stat.size };
+      this.lastKnownDiskContent = content;
+    } catch (e) {
+      this.lastKnownDiskIdentity = undefined;
+      this.lastKnownDiskContent = undefined;
+    }
+  }
+
+  // Guard against silently overwriting a version of the metadata file that was
+  // changed on disk underneath us. Returns true if save() should proceed to
+  // write the canonical file, false if it must not (the on-disk version could
+  // not be moved to safety, so overwriting it would lose it).
+  //
+  // If the file's on-disk identity differs from what we last read/wrote, we
+  // read it back: identical bytes (or bytes already equal to what we're about
+  // to write) mean nothing would be lost -- just mtime churn from a sync
+  // engine -- so we refresh the baseline and proceed. Otherwise it's a genuine
+  // external edit: move it aside to a uniquely-named sibling, warn once, then
+  // let save() write our version to the canonical name.
+  private setAsideExternallyChangedFile(xmlAboutToWrite: string): boolean {
+    // No baseline -> no evidence of an external change; nothing to do.
+    if (!this.lastKnownDiskIdentity) {
+      return true;
+    }
+
+    let stat: fs.Stats;
+    try {
+      stat = fs.statSync(this.metadataFilePath);
+    } catch (e) {
+      // The file isn't there right now (the missing-folder/ENOENT handling in
+      // save() and its catch cover that). Nothing to set aside.
+      return true;
+    }
+
+    const unchanged =
+      stat.mtimeMs === this.lastKnownDiskIdentity.mtimeMs &&
+      stat.size === this.lastKnownDiskIdentity.size;
+    if (unchanged) {
+      return true;
+    }
+
+    // Identity differs. Read what's actually there to tell a real edit from
+    // mere mtime churn.
+    let onDisk: string;
+    try {
+      onDisk = PatientFS.readFileSyncNoNotify(this.metadataFilePath);
+    } catch (e) {
+      // Couldn't read it (locked, etc.). We can neither confirm a change nor
+      // safely move it; don't risk clobbering -- skip this write and try again
+      // on the next save trigger.
+      return false;
+    }
+
+    if (onDisk === this.lastKnownDiskContent || onDisk === xmlAboutToWrite) {
+      // No real change (identical bytes) -- refresh the baseline so we stop
+      // re-checking, and let the normal write proceed.
+      this.lastKnownDiskIdentity = { mtimeMs: stat.mtimeMs, size: stat.size };
+      this.lastKnownDiskContent = onDisk;
+      return true;
+    }
+
+    // A genuine external change. Move it aside so our write can't erase it.
+    const setAsidePath = this.makeSetAsidePath();
+    try {
+      PatientFS.renameSyncWithNotifyAndRethrow(
+        this.metadataFilePath,
+        setAsidePath
+      );
+    } catch (e) {
+      // renameSyncWithNotifyAndRethrow already told the user it couldn't move
+      // the file. Do NOT overwrite it -- preserving it is the whole point.
+      return false;
+    }
+
+    this.metadataChangedExternally = true;
+    const originalName = Path.basename(this.metadataFilePath);
+    const keptName = Path.basename(setAsidePath);
+    NotifyWarning(
+      t`The file "${originalName}" was changed outside of lameta, perhaps by a file-synchronization service such as OneDrive or Dropbox, or on another computer. To avoid losing that change, lameta kept it next to the original with the name "${keptName}".`
+    );
+    return true;
+  }
+
+  // Build a unique sibling path to preserve an externally-changed metadata
+  // file, e.g. "ETR009.session" -> "ETR009 (changed on another computer
+  // 2026-07-12).session" and "foo.jpg.meta" -> "foo.jpg (changed on another
+  // computer 2026-07-12).meta". The date disambiguates day-to-day; a numeric
+  // counter guarantees uniqueness if several land on the same day. The final
+  // extension is preserved so the sibling loads as an ordinary attached file
+  // (never re-parsed as the folder's canonical metadata -- the zombie-repair
+  // in Folder only fires when the canonical file is MISSING, and save() always
+  // rewrites it here).
+  private makeSetAsidePath(): string {
+    const dir = Path.dirname(this.metadataFilePath);
+    const base = Path.basename(this.metadataFilePath);
+    const ext = Path.extname(base); // ".session"/".person"/".sprj"/".meta"
+    const stem = base.substring(0, base.length - ext.length);
+    const label = `changed on another computer ${moment().format(
+      "YYYY-MM-DD"
+    )}`;
+    let candidate = Path.join(dir, `${stem} (${label})${ext}`);
+    let counter = 2;
+    while (fs.existsSync(candidate)) {
+      candidate = Path.join(dir, `${stem} (${label} ${counter})${ext}`);
+      counter++;
+    }
+    return candidate;
   }
 
   private getUniqueFilePath(intendedPath: string): string {
@@ -1046,6 +1508,51 @@ export /*babel doesn't like this: abstract*/ class File {
     }
     this.setFileNameProperty();
   }
+
+  // Capture the paths before updateNameBasedOnNewFolderName() so that if the
+  // folder rename that follows the per-file renames fails, Folder can undo
+  // our on-disk renames instead of leaving a folder with the old name full of
+  // files carrying the new name.
+  public getRenameRollbackSnapshot(): {
+    metadataFilePath: string;
+    describedFileOrLinkFilePath: string;
+  } {
+    return {
+      metadataFilePath: this.metadataFilePath,
+      describedFileOrLinkFilePath: this.describedFileOrLinkFilePath
+    };
+  }
+  public rollbackRename(snapshot: {
+    metadataFilePath: string;
+    describedFileOrLinkFilePath: string;
+  }) {
+    const hasSeparateMetaDataFile =
+      this.metadataFilePath !== this.describedFileOrLinkFilePath;
+    if (
+      this.describedFileOrLinkFilePath !==
+        snapshot.describedFileOrLinkFilePath &&
+      fs.existsSync(this.describedFileOrLinkFilePath)
+    ) {
+      PatientFS.renameSync(
+        this.describedFileOrLinkFilePath,
+        snapshot.describedFileOrLinkFilePath
+      );
+    }
+    this.describedFileOrLinkFilePath = snapshot.describedFileOrLinkFilePath;
+    if (hasSeparateMetaDataFile) {
+      if (
+        this.metadataFilePath !== snapshot.metadataFilePath &&
+        fs.existsSync(this.metadataFilePath)
+      ) {
+        PatientFS.renameSync(this.metadataFilePath, snapshot.metadataFilePath);
+      }
+      this.metadataFilePath = snapshot.metadataFilePath;
+    } else {
+      this.metadataFilePath = this.describedFileOrLinkFilePath;
+    }
+    this.setFileNameProperty();
+  }
+
   public updateRecordOfWhatFolderThisIsLocatedIn(newFolderName: string) {
     console.debug(
       `this.getFilenameToShowInList updateRecordOfWhatFolderThisIsLocatedIn(${newFolderName})`
@@ -1243,14 +1750,14 @@ export /*babel doesn't like this: abstract*/ class File {
           try {
             PatientFS.copyFileSync(
               newMetadataFilePath,
-              Path.join(this.metadataFilePath, ".maybeLostInfoHere")
+              this.metadataFilePath + ".maybeLostInfoHere"
             );
           } catch (e) {
             // ok this is getting stupid. just fall through.
           }
           ShowMessageDialog({
             title: `Error`,
-            text: `During the failed rename, the meta file got renamed and lameta can't seem to get it back to its original name. The `
+            text: `During the failed rename, the meta file got renamed and lameta can't seem to get it back to its original name. The metadata is currently in "${newMetadataFilePath}".`
           });
         }
       }

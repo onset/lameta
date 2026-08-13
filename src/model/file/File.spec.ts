@@ -6,7 +6,14 @@ import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
-import { describe, it } from "vitest";
+import { describe, it, afterEach, vi } from "vitest";
+import {
+  setAttributeReaderForTests,
+  setPinWriterForTests
+} from "../../other/cloudFileStatus";
+import { cloudFilePoller } from "../../other/cloudFilePoller";
+import { PatientFS } from "../../other/patientFile";
+import { cloudReadGuard } from "../../other/cloudReadGuard";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;
@@ -446,5 +453,416 @@ describe("Genre normalization during reading", () => {
     } catch (e) {
       console.error("could not remove test folder " + tmpFolder);
     }
+  });
+});
+
+describe("File cached media stats", () => {
+  it("roundtrips cached stats through save/load", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    const identity = {
+      sizeBytes: f.getSizeInBytes(),
+      mtimeMs: f.getMtimeMs()
+    };
+    f.setCachedMediaStats({ Length: "1:02", Format: "MPEG Audio" }, identity);
+    f.save();
+
+    const f2 = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    expect(f2.getCachedMediaStats()).toEqual({
+      Length: "1:02",
+      Format: "MPEG Audio"
+    });
+  });
+
+  it("returns undefined when there is no cache yet", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.getCachedMediaStats()).toBeUndefined();
+  });
+
+  it("is stale (undefined) when the file's size has changed since caching", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    f.setCachedMediaStats(
+      { Length: "1:02" },
+      { sizeBytes: f.getSizeInBytes(), mtimeMs: f.getMtimeMs() }
+    );
+    f.save();
+
+    fs.appendFileSync(mediaFilePath, "more bytes, changing the size");
+
+    const f2 = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    expect(f2.getCachedMediaStats()).toBeUndefined();
+  });
+
+  it("is stale (undefined) when the file's mtime has changed since caching, even with the same size", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    f.setCachedMediaStats(
+      { Length: "1:02" },
+      { sizeBytes: f.getSizeInBytes(), mtimeMs: f.getMtimeMs() }
+    );
+    f.save();
+
+    const future = new Date(Date.now() + 60_000);
+    fs.utimesSync(mediaFilePath, future, future);
+
+    const f2 = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    expect(f2.getCachedMediaStats()).toBeUndefined();
+  });
+
+  it("does not rewrite the .meta file when setting identical cached stats again", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    const identity = {
+      sizeBytes: f.getSizeInBytes(),
+      mtimeMs: f.getMtimeMs()
+    };
+    f.setCachedMediaStats({ Length: "1:02" }, identity);
+    f.save();
+
+    const writeSpy = vi.spyOn(PatientFS, "writeFileSyncWithNotifyThenRethrow");
+    try {
+      f.setCachedMediaStats({ Length: "1:02" }, identity);
+      f.save();
+      expect(writeSpy).not.toHaveBeenCalled();
+    } finally {
+      writeSpy.mockRestore();
+    }
+  });
+});
+
+describe("File cloudStatus", () => {
+  afterEach(() => {
+    setAttributeReaderForTests(undefined);
+    setPinWriterForTests(undefined);
+    cloudFilePoller.dispose();
+    cloudReadGuard.reset();
+    vi.restoreAllMocks();
+  });
+
+  function makeCloudPlaceholderReader() {
+    return () => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: true,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    });
+  }
+
+  function throwCloudReadError(): never {
+    // How the Windows Cloud Files API surfaces a failed placeholder hydration
+    // to Node (verified against a broken Nextcloud provider).
+    const err: any = new Error("UNKNOWN: unknown error, read");
+    err.code = "UNKNOWN";
+    err.errno = -4094;
+    err.syscall = "read";
+    throw err;
+  }
+
+  it("soft-fails (no throw) and records a cloud failure when a placeholder metadata read fails", () => {
+    const mediaFilePath = getPretendAudioFile();
+    // Seed a real .meta on disk so existsSync passes during the reload.
+    const seed = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    seed.save();
+
+    cloudReadGuard.reset();
+    setPinWriterForTests(async () => {});
+    setAttributeReaderForTests(makeCloudPlaceholderReader());
+    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(
+      throwCloudReadError
+    );
+
+    let threw = false;
+    let f: OtherFile | undefined;
+    try {
+      f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    } catch {
+      threw = true;
+    }
+
+    expect(threw).toBe(false);
+    expect(f?.cloudMetadataUnavailable).toBe(true);
+    expect(cloudReadGuard.isTripped).toBe(true);
+    expect(cloudReadGuard.hasFailures).toBe(true);
+  });
+
+  it("does not read or pin further placeholders once the breaker is tripped", () => {
+    const mediaFilePath = getPretendAudioFile();
+    const seed = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    seed.save();
+
+    cloudReadGuard.reset();
+    // Simulate an earlier failure in this same load having tripped the breaker.
+    cloudReadGuard.recordFailure("earlier/failed.session", "Nextcloud");
+
+    let pinCount = 0;
+    setPinWriterForTests(async () => {
+      pinCount++;
+    });
+    setAttributeReaderForTests(makeCloudPlaceholderReader());
+    let readCount = 0;
+    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(() => {
+      readCount++;
+      return "";
+    });
+
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    expect(readCount).toBe(0);
+    expect(pinCount).toBe(0);
+    expect(f.cloudMetadataUnavailable).toBe(true);
+  });
+
+  it("save() refuses to overwrite a file whose placeholder read soft-failed (data-loss guard)", () => {
+    // A cloud placeholder we couldn't read has empty in-memory properties;
+    // saving it would destroy the real file on disk (and sync the empty
+    // version back). save() must skip it -- even a forced save.
+    const mediaFilePath = getPretendAudioFile();
+    const seed = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    seed.save(); // real .meta exists on disk
+
+    cloudReadGuard.reset();
+    setPinWriterForTests(async () => {});
+    setAttributeReaderForTests(makeCloudPlaceholderReader());
+    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(
+      throwCloudReadError
+    );
+
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.cloudMetadataUnavailable).toBe(true);
+
+    const writeSpy = vi.spyOn(PatientFS, "writeFileSyncWithNotifyThenRethrow");
+    f.save(); // normal save
+    f.save(/*beforeRename*/ false, /*forceSave*/ true); // forced save
+    expect(writeSpy.mock.calls.length).toBe(0);
+  });
+
+  it("is set from the attribute reader when the file is loaded", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: true,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    }));
+
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    expect(f.cloudStatus).toBe("cloudOnly");
+    expect(f.isCloudFileNotPresent).toBe(true);
+  });
+
+  it("refreshes cloudStatus after readMetadataFile hydrates a dehydrated metadata file", () => {
+    // Create a file with a real .meta on disk, then reload it while the
+    // attribute reader claims everything is a cloud placeholder (as after
+    // Explorer's "Free up space"). Loading pins + sync-reads the metadata,
+    // which hydrates it; simulate OneDrive by flipping the reader to
+    // hydrated attrs once the pin lands.
+    const mediaFilePath = getPretendAudioFile();
+    const first = new OtherFile(
+      mediaFilePath,
+      new EncounteredVocabularyRegistry()
+    );
+    first.save(); // writes the .meta so the reload below actually reads it
+
+    let hydrated = false;
+    setPinWriterForTests(async () => {
+      hydrated = true;
+    });
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: !hydrated,
+      IS_RECALL_ON_DATA_ACCESS: !hydrated,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: hydrated
+    }));
+
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    // Without the post-read refresh this would be stuck on "cloudOnly".
+    expect(f.cloudStatus).toBe("localPinned");
+    expect(f.isCloudFileNotPresent).toBe(false);
+  });
+
+  it("reports local and not-cloud-file-not-present for a normal file", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    }));
+
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    expect(f.cloudStatus).toBe("local");
+    expect(f.isCloudFileNotPresent).toBe(false);
+  });
+
+  it("makeAvailableOffline() pins the file and, once disk reports pinned+recall attrs, lands on hydrating", async () => {
+    let pinned: boolean | undefined;
+    setPinWriterForTests(async (_path, isPinned) => {
+      pinned = isPinned;
+    });
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    }));
+
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+
+    await f.makeAvailableOffline();
+
+    expect(pinned).toBe(true);
+    expect(f.cloudStatus).toBe("hydrating");
+  });
+
+  it("stopWaiting() unpins the file and, once disk reports unpinned recall attrs, lands on cloudOnly", async () => {
+    let pinned: boolean | undefined;
+    setPinWriterForTests(async (_path, isPinned) => {
+      pinned = isPinned;
+    });
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.cloudStatus).toBe("hydrating");
+
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: false
+    }));
+
+    await f.stopWaiting();
+
+    expect(pinned).toBe(false);
+    expect(f.cloudStatus).toBe("cloudOnly");
+  });
+
+  it("updateCloudStatus() re-reads disk even when cloudStatus was previously hydrating or local (no clobber guard)", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    // Loading the file already calls updateCloudStatus() once.
+    expect(f.cloudStatus).toBe("hydrating");
+
+    // Disk now says the file finished downloading. A pre-pin-model
+    // updateCloudStatus() refused to leave "hydrating" once set; the new
+    // implementation must trust disk over the stale in-memory value.
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    f.updateCloudStatus();
+    expect(f.cloudStatus).toBe("localPinned");
+
+    // And it must also be willing to move a local file back to "hydrating"
+    // if disk now reports a pinned placeholder.
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    f.updateCloudStatus();
+    expect(f.cloudStatus).toBe("hydrating");
+  });
+
+  it("entering 'hydrating' sets hydratingSinceMs", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+
+    expect(f.cloudStatus).toBe("hydrating");
+    expect(typeof f.hydratingSinceMs).toBe("number");
+  });
+
+  it("staying 'hydrating' across two updateCloudStatus() calls does not reset hydratingSinceMs", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.cloudStatus).toBe("hydrating");
+    const firstValue = f.hydratingSinceMs;
+
+    f.updateCloudStatus();
+
+    expect(f.cloudStatus).toBe("hydrating");
+    expect(f.hydratingSinceMs).toBe(firstValue);
+  });
+
+  it("leaving 'hydrating' clears hydratingSinceMs to undefined", () => {
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: true,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    const mediaFilePath = getPretendAudioFile();
+    const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
+    expect(f.cloudStatus).toBe("hydrating");
+    expect(f.hydratingSinceMs).not.toBeUndefined();
+
+    setAttributeReaderForTests(() => ({
+      IS_OFFLINE: false,
+      IS_RECALL_ON_DATA_ACCESS: false,
+      IS_RECALL_ON_OPEN: false,
+      IS_PINNED: true
+    }));
+    f.updateCloudStatus();
+
+    expect(f.cloudStatus).toBe("localPinned");
+    expect(f.hydratingSinceMs).toBeUndefined();
   });
 });

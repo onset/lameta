@@ -10,34 +10,38 @@ import {
 } from "../components/Notify";
 import { t } from "@lingui/macro";
 
-/* Do what we can to co-exist with things like Dropbox that can temporarily lock files.
-    To torture test this stuff, use https://github.com/hatton/filemeddler
+/* Do what we can to co-exist with things like antivirus scanners and file-sync
+    services that can temporarily lock files. On Windows (only), a process
+    holding a file open without delete-sharing makes renaming that file fail
+    with EBUSY and renaming any ancestor directory fail with EPERM; we retry
+    those two codes for ~10 seconds. (On POSIX, open handles don't block
+    renames, so this class of contention doesn't exist there.)
 
-    Note, I wrote this before discovering graceful-fs. I've added that, as it's more
-    extensive. Keeping this around for now because there is some question about some 
-    windows corner-cases in the graceful-fs system.
+    To torture test this, run the RenameContention.stress.spec.ts suite
+    (LAMETA_STRESS=1), or use https://github.com/hatton/filemeddler
 
-    UPDATE: It turns out that graceful-fs is only prevents contention between threads,
-    not with other processes.
-
+    Note: we used to also monkey-patch fs with graceful-fs here, but its
+    Windows rename retry only wraps the *async* fs.rename, and everything in
+    this file is synchronous — it contributed nothing.
  */
 
 export class PatientFS {
-  public static init() {
-    // monkey-patch fs
-    const realFs = require("fs");
-    const gracefulFs = require("graceful-fs");
-    gracefulFs.gracefulify(realFs);
-  }
   public static readFileSyncWithNotifyAndRethrow(path: string): string {
     try {
-      return PatientFS.patientFileOperationSync(() =>
-        fs.readFileSync(path, "utf8")
-      );
+      return PatientFS.readFileSyncNoNotify(path);
     } catch (err) {
       NotifyFileAccessProblem(`Could not read ${path}`, err);
       throw err;
     }
+  }
+  // Same patient retry behavior, but throws the raw error without showing any
+  // notification. For callers that need to classify the error first (e.g. a
+  // cloud-provider hydration failure that should fail softly rather than pop a
+  // toast per file -- see cloudReadGuard).
+  public static readFileSyncNoNotify(path: string): string {
+    return PatientFS.patientFileOperationSync(() =>
+      fs.readFileSync(path, "utf8")
+    );
   }
   public static writeFileSyncWithNotifyThenRethrow(
     path: string,
@@ -99,7 +103,6 @@ export class PatientFS {
     }
   }
   private static patientFileOperationSync(operation: () => any): any {
-    // note, graceful-fs is already pausing up to 60 seconds on each attempt.
     const kretryAttempts = 10; // I wish i could visibly show something if we're going to wait...
     let attempt = 1;
     for (; attempt <= kretryAttempts; attempt++) {

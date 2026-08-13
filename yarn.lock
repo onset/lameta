@@ -10471,6 +10471,11 @@ fstream@^1.0.12:
     mkdirp ">=0.5 0"
     rimraf "2"
 
+fswin@^3.25.1108:
+  version "3.25.1108"
+  resolved "https://registry.npmjs.org/fswin/-/fswin-3.25.1108.tgz#dd20c3e5d0de4af9a4024d842317ac9dc82b5871"
+  integrity sha512-GyWixip07xo7+8oWheDynqdTn96h7W9Nlv6mHTK/jfDXAD+sSucWuqrk5mipLJKxe7vOsM22bisJPyGgLjdoIw==
+
 function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz#2c02d864d97f3ea6c8830c464cbd11ab6eab7a1c"

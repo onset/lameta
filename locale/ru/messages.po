@@ -45,6 +45,9 @@ msgstr ""
 msgid "About lameta"
 msgstr ""
 
+msgid "Access"
+msgstr ""
+
 msgid "Add Files"
 msgstr "Добавление файлов"
 
@@ -61,6 +64,15 @@ msgid "Add to Dictionary"
 msgstr ""
 
 msgid "All Sessions"
+msgstr ""
+
+msgid "All translations complete"
+msgstr ""
+
+msgid "Always"
+msgstr ""
+
+msgid "Always available on this device."
 msgstr ""
 
 msgid "Archive"
@@ -82,6 +94,15 @@ msgstr ""
 msgid "Audio"
 msgstr "Аудио"
 
+msgid "Automatically make cloud files available if smaller than"
+msgstr ""
+
+msgid "Available after this file is made available on this device"
+msgstr ""
+
+msgid "Available on this device. {providerName} may free up this space if the file goes unused."
+msgstr ""
+
 msgid "CSV export complete"
 msgstr ""
 
@@ -92,6 +113,9 @@ msgid "Cancelling..."
 msgstr ""
 
 msgid "Cannot add files of that type"
+msgstr ""
+
+msgid "Cannot export to IMDI while multilingual text migration is pending."
 msgstr ""
 
 msgid "Change Name To:"
@@ -120,6 +144,9 @@ msgstr ""
 
 msgid "Close"
 msgstr "Закрыть"
+
+msgid "Cloud"
+msgstr ""
 
 msgid "Collection"
 msgstr ""
@@ -157,6 +184,9 @@ msgstr ""
 msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
 msgstr ""
 
+msgid "Could not read media information for this file."
+msgstr ""
+
 msgid "Create"
 msgstr ""
 
@@ -179,6 +209,9 @@ msgid "Credits"
 msgstr ""
 
 msgid "Custom Field"
+msgstr ""
+
+msgid "Custom vocabulary item"
 msgstr ""
 
 msgid "Cut"
@@ -214,6 +247,9 @@ msgstr ""
 msgid "Description Documents"
 msgstr "Документы описания"
 
+msgid "Dismiss"
+msgstr ""
+
 msgid "Do not quit"
 msgstr ""
 
@@ -226,6 +262,9 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
+msgid "Download this file to my computer"
+msgstr ""
+
 msgid "Duplicate Person"
 msgstr ""
 
@@ -235,7 +274,13 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "ElectronDropZone: preload script did not set window.electronAPI.getPathForFile; drag-and-drop will not work."
+msgstr ""
+
 msgid "Email Address"
+msgstr ""
+
+msgid "Example:"
 msgstr ""
 
 msgid "Export"
@@ -259,6 +304,9 @@ msgstr ""
 msgid "Field"
 msgstr "Поле"
 
+msgid "Fields with Unknown Languages"
+msgstr ""
+
 msgid "File"
 msgstr ""
 
@@ -269,6 +317,15 @@ msgid "File to Import:"
 msgstr ""
 
 msgid "Find"
+msgstr ""
+
+msgid "Finish Migration"
+msgstr ""
+
+msgid "Finish Migration to Multilingual Fields"
+msgstr ""
+
+msgid "Fix in Project:"
 msgstr ""
 
 msgid "Font Size"
@@ -300,6 +357,12 @@ msgid "Generating PARADISEC CSV..."
 msgstr ""
 
 msgid "Generating RO-Crate metadata..."
+msgstr ""
+
+msgid "Genres"
+msgstr ""
+
+msgid "Getting project information from {0}..."
 msgstr ""
 
 msgid "Help"
@@ -345,6 +408,12 @@ msgid "Import {chosenCount} Sessions"
 msgstr ""
 
 msgid "Importing..."
+msgstr ""
+
+msgid "In cloud only, and this computer appears to be offline."
+msgstr ""
+
+msgid "In cloud only, lameta cannot read it yet."
 msgstr ""
 
 msgid "Indicates that this is the father or mother's primary language."
@@ -398,6 +467,15 @@ msgstr ""
 msgid "Media Folder Settings..."
 msgstr ""
 
+msgid "Migrate"
+msgstr ""
+
+msgid "Migrating: {0}"
+msgstr ""
+
+msgid "Migration complete! {0} fields were migrated. You can hide language tags from View → \"Show language tags on multilingual fields\" if you don't need them anymore."
+msgstr ""
+
 msgid "Modified"
 msgstr ""
 
@@ -407,16 +485,25 @@ msgstr ""
 msgid "Name"
 msgstr "Имя"
 
+msgid "Never"
+msgstr ""
+
 msgid "New Person"
 msgstr "Новое лицо"
 
 msgid "New Session"
 msgstr "Новое событие"
 
+msgid "No custom values found"
+msgstr ""
+
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
 msgstr ""
 
 msgid "Not important to the archive, but will be included"
+msgstr ""
+
+msgid "Note"
 msgstr ""
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
@@ -432,6 +519,12 @@ msgid "OPEX + Files"
 msgstr ""
 
 msgid "One or more files are still being copied into your project."
+msgstr ""
+
+msgid "Online-only ({providerName}), and this computer appears to be offline, so the file cannot be downloaded right now."
+msgstr ""
+
+msgid "Online-only ({providerName}). The content of this file is not on this computer."
 msgstr ""
 
 msgid "Open"
@@ -470,6 +563,12 @@ msgstr "Лицо"
 msgid "Please Register"
 msgstr ""
 
+msgid "Please add the metadata languages you've been using with these \"/\" fields (at least two) before migrating."
+msgstr ""
+
+msgid "Please complete the migration in the Project tab under Languages before exporting."
+msgstr ""
+
 msgid "Please remove characters that not allowed by the Archive Settings."
 msgstr ""
 
@@ -495,6 +594,9 @@ msgid "RO-Crate"
 msgstr ""
 
 msgid "RO-Crate export complete"
+msgstr ""
+
+msgid "Ready to scan..."
 msgstr ""
 
 msgid "Redo"
@@ -530,8 +632,17 @@ msgstr ""
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr ""
 
+msgid "Retry"
+msgstr ""
+
+msgid "Retrying…"
+msgstr ""
+
 msgid "Role"
 msgstr "Роль"
+
+msgid "Roles"
+msgstr ""
 
 msgid "Save As"
 msgstr ""
@@ -540,6 +651,15 @@ msgid "Saving"
 msgstr ""
 
 msgid "Saving before rename..."
+msgstr ""
+
+msgid "Scan complete"
+msgstr ""
+
+msgid "Scan failed"
+msgstr ""
+
+msgid "Scanning..."
 msgstr ""
 
 msgid "Search"
@@ -561,6 +681,12 @@ msgid "Show All"
 msgstr ""
 
 msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show Language Tags"
+msgstr ""
+
+msgid "Show Language Tags (locked during migration)"
 msgstr ""
 
 msgid "Show PARADISEC previews"
@@ -590,6 +716,9 @@ msgstr "Размер"
 msgid "Smaller"
 msgstr ""
 
+msgid "Some fields have more language segments than there are Metadata Languages defined ({0} of {1} fields). If you proceed, these extra segments will be labeled as \"unknown\" languages."
+msgstr ""
+
 msgid "Some operating systems would not allow that name."
 msgstr ""
 
@@ -602,8 +731,17 @@ msgstr ""
 msgid "Start Screen"
 msgstr ""
 
+msgid "Starting scan..."
+msgstr ""
+
 msgid "Status"
 msgstr "Статус"
+
+msgid "Stop waiting"
+msgstr ""
+
+msgid "Tell {providerName} that I want this file on my computer"
+msgstr ""
 
 msgid "Text"
 msgstr ""
@@ -612,6 +750,9 @@ msgid "That name would lead to an empty filename."
 msgstr ""
 
 msgid "The IMDI files were validated."
+msgstr ""
+
+msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
@@ -653,7 +794,13 @@ msgstr ""
 msgid "This file does not comply with the file naming rules of the current archive."
 msgstr ""
 
+msgid "This file is online-only ({providerName}). Select it to see how to make it available on this device."
+msgstr ""
+
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
+msgstr ""
+
+msgid "This project appears to use \"/\" to store multiple languages within a single field. In this version of lameta, we have a better approach in which lameta knows which languages are used in a field. After you have selected the appropriate metadata languages above and arranged them in the correct order, all multilingual fields in Project, Sessions, and People should display with the correct language tags. Once you have confirmed that everything appears as expected, click the button below to apply these changes permanently."
 msgstr ""
 
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
@@ -667,6 +814,9 @@ msgstr "Тип"
 
 msgid "Undo"
 msgstr "Отменить"
+
+msgid "Unknown error while scanning vocabulary"
+msgstr ""
 
 msgid "Update available"
 msgstr ""
@@ -686,6 +836,15 @@ msgstr "Вид"
 msgid "View Release Notes"
 msgstr ""
 
+msgid "Vocabulary Translations"
+msgstr ""
+
+msgid "Vocabulary scan failed"
+msgstr ""
+
+msgid "Waiting"
+msgstr ""
+
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
@@ -701,10 +860,19 @@ msgstr ""
 msgid "You are running lameta version:"
 msgstr ""
 
+msgid "You can either add more Metadata Languages above to match all segments, or proceed with the migration and manually fix the unknown language fields later."
+msgstr ""
+
 msgid "You cannot add files of that type"
 msgstr ""
 
 msgid "You cannot add folders."
+msgstr ""
+
+msgid "You need at least two metadata languages defined to use vocabulary translations. Please add metadata languages in the Languages tab."
+msgstr ""
+
+msgid "You requested this file less than a minute ago. lameta will show it when it becomes available."
 msgstr ""
 
 msgid "ZIP Archive"
@@ -740,6 +908,12 @@ msgstr ""
 msgid "lameta could not rename the directory."
 msgstr ""
 
+msgid "lameta couldn't download 1 file from {providerName}. It may be offline or busy right now."
+msgstr ""
+
+msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
+msgstr ""
+
 msgid "lameta expected to find a .link file at {e}"
 msgstr ""
 
@@ -747,6 +921,9 @@ msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName
 msgstr ""
 
 msgid "lameta was not able to delete the file."
+msgstr ""
+
+msgid "lameta was not able to make this file available on this device."
 msgstr ""
 
 msgid "lameta was not able to put this file in the trash"
@@ -765,8 +942,32 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr ""
 
+msgid "missing"
+msgstr ""
+
+msgid "recorded when the file was last on this device"
+msgstr ""
+
+msgid "the cloud"
+msgstr ""
+
 msgid "{0} Marked Sessions"
 msgstr ""
 
+msgid "{0} of {1} items processed"
+msgstr ""
+
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
+msgstr ""
+
+msgid "{minutesSinceRequest, plural, one {# minute since you requested this file. lameta will show it when it becomes available.} other {# minutes since you requested this file. lameta will show it when it becomes available.}}"
+msgstr ""
+
+msgid "{providerName} Status"
+msgstr ""
+
+msgid "{providerName} is downloading this file to this computer."
+msgstr ""
+
+msgid "{totalMissing} items need translation"
 msgstr ""

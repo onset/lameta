@@ -42,6 +42,7 @@ import { TiffViewer } from "./TiffViewer";
 import AccessChooser from "./session/AccessChooser";
 import { TextFieldEdit } from "./TextFieldEdit";
 import { getSessionFormClass } from "./session/SessionFormVariant";
+import { CloudFilePanel } from "./CloudFilePanel";
 
 export interface IProps {
   folder: Folder;
@@ -115,7 +116,14 @@ export const FolderPane: React.FunctionComponent<
                 file={props.folder.selectedFile}
                 fileName={props.folder.selectedFile.getTextProperty("filename")}
               />
-              <ErrorBoundary>
+              <ErrorBoundary
+                // If rendering the detail for one file ever throws, selecting a
+                // different file must recover the pane instead of leaving it
+                // wedged on the error notice until the app is restarted.
+                resetKeys={[
+                  props.folder.selectedFile.pathInFolderToLinkFileOrLocalCopy
+                ]}
+              >
                 <FileTabs {...props} />
               </ErrorBoundary>
             </>
@@ -162,6 +170,10 @@ const FileTabs: React.FunctionComponent<
   }
   const notesField = file.properties.getTextField("notes");
   const filename = file.getTextProperty("filename");
+  // Reading media/text/pdf content would hydrate (fully download) a
+  // cloud-only OneDrive placeholder file, which can be huge and slow. Show
+  // CloudFilePanel instead until the user explicitly fetches it.
+  const previewBlocked = file.isCloudFileNotPresent;
 
   const notesPanel = directoryObject.properties.getValue("notes") ? (
     <TabPanel>
@@ -527,9 +539,13 @@ const FileTabs: React.FunctionComponent<
             {projectDocsTabs}
           </TabList>
           <TabPanel>
-            <audio controls>
-              <source src={`file://${path}`} />
-            </audio>
+            {previewBlocked ? (
+              <CloudFilePanel file={file} />
+            ) : (
+              <audio controls>
+                <source src={`file://${path}`} />
+              </audio>
+            )}
           </TabPanel>
           {standardMetaPanels}
           {projectDocsPanels}
@@ -546,17 +562,21 @@ const FileTabs: React.FunctionComponent<
             {projectDocsTabs}
           </TabList>
           <TabPanel>
-            <ReactPlayer
-              //config={{ file: { forceHLS: true } }}
-              // don't show the actual video, as that tends to lock the file and mess up file and folder renaming
-              light={dummyPreviewImage}
-              playing={true} // start playing when the "light" play button is clicked
-              url={`file://${path}`}
-              controls
-              onError={(e) => {
-                NotifyError("video error:" + e);
-              }}
-            />
+            {previewBlocked ? (
+              <CloudFilePanel file={file} />
+            ) : (
+              <ReactPlayer
+                //config={{ file: { forceHLS: true } }}
+                // don't show the actual video, as that tends to lock the file and mess up file and folder renaming
+                light={dummyPreviewImage}
+                playing={true} // start playing when the "light" play button is clicked
+                url={`file://${path}`}
+                controls
+                onError={(e) => {
+                  NotifyError("video error:" + e);
+                }}
+              />
+            )}
           </TabPanel>
           {standardMetaPanels}
           {projectDocsPanels}
@@ -574,7 +594,9 @@ const FileTabs: React.FunctionComponent<
             {projectDocsTabs}
           </TabList>
           <TabPanel>
-            {isTiff ? (
+            {previewBlocked ? (
+              <CloudFilePanel file={file} />
+            ) : isTiff ? (
               <TiffViewer path={path} className="imageViewer" />
             ) : (
               <img
@@ -599,8 +621,12 @@ const FileTabs: React.FunctionComponent<
             {projectDocsTabs}
           </TabList>
           <TabPanel>
-            {/* NB: not a url, just a file here path */}
-            <TextFileView path={path} />
+            {previewBlocked ? (
+              <CloudFilePanel file={file} />
+            ) : (
+              /* NB: not a url, just a file here path */
+              <TextFileView path={path} />
+            )}
           </TabPanel>
           {standardMetaPanels}
           {projectDocsPanels}
@@ -615,31 +641,35 @@ const FileTabs: React.FunctionComponent<
             {projectDocsTabs}
           </TabList>
           <TabPanel>
-            <object
-              data={`file:///${path.replace(
-                /#/g,
-                "%23"
-              )}#toolbar=0&navpanes=0&scrollbar=1`}
-              type="application/pdf"
-              css={css`
-                width: 100%;
-                height: 100%;
-                min-height: 400px;
-              `}
-            >
-              <p>
-                Unable to display PDF.{" "}
-                <a
-                  href=""
-                  onClick={(e) => {
-                    e.preventDefault();
-                    electron.shell.openPath(file.getActualFilePath());
-                  }}
-                >
-                  Open externally
-                </a>
-              </p>
-            </object>
+            {previewBlocked ? (
+              <CloudFilePanel file={file} />
+            ) : (
+              <object
+                data={`file:///${path.replace(
+                  /#/g,
+                  "%23"
+                )}#toolbar=0&navpanes=0&scrollbar=1`}
+                type="application/pdf"
+                css={css`
+                  width: 100%;
+                  height: 100%;
+                  min-height: 400px;
+                `}
+              >
+                <p>
+                  Unable to display PDF.{" "}
+                  <a
+                    href=""
+                    onClick={(e) => {
+                      e.preventDefault();
+                      electron.shell.openPath(file.getActualFilePath());
+                    }}
+                  >
+                    Open externally
+                  </a>
+                </p>
+              </object>
+            )}
           </TabPanel>
           {standardMetaPanels}
           {projectDocsPanels}
