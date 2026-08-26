@@ -8,6 +8,7 @@ import {
 } from "react-select";
 import { SearchContext } from "./SearchContext";
 import HighlightSearchTerm from "./HighlightSearchTerm";
+import { lameta_dark_blue, textSecondary } from "../containers/theme";
 
 const saymore_orange = "#e69664";
 
@@ -18,7 +19,7 @@ interface LanguageData {
 
 export const languagePillHoverStyle = css`
   :hover .isoCode {
-    color: grey;
+    color: ${textSecondary};
   }
 `;
 
@@ -77,16 +78,23 @@ export const LanguageOption = (props) => {
       css={css`
         padding-left: 5px;
         color: ${props.isFocused ? "white" : "black"};
-        background-color: ${props.isFocused ? "#257598" : "white"};
+        background-color: ${props.isFocused ? lameta_dark_blue : "white"};
         .isoCode {
           margin-left: 5px;
-          color: gray;
+          /* The code needs enough contrast on both grounds. Grey on the dark row of the
+             highlighted choice was almost unreadable. White at 80% over lameta_dark_blue
+             gives 4.9:1, which passes WCAG AA; lameta_blue itself gives only 4.07:1. */
+          color: ${props.isFocused ? "rgba(255, 255, 255, 0.8)" : textSecondary};
         }
       `}
     >
       <div>
         <HighlightSearchTerm text={props.data.label} />
-        <span className="isoCode">{props.data.value}</span>
+        {/* The "Add ... as qac-x-foobar" row carries the tag in its own label, so the
+            grey code here would only repeat what the user typed. */}
+        {!props.data.__isNew__ && (
+          <span className="isoCode">{props.data.value}</span>
+        )}
       </div>
     </div>
   );

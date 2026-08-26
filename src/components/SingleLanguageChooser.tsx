@@ -73,6 +73,13 @@ export const SingleLanguageChooser: React.FunctionComponent<
       )
     );
   };
+  // One debounced loader for the life of the control. A new one on each render defeats the
+  // debounce, because each has its own timer.
+  const debouncedLoadMatchingOptions = React.useMemo(
+    () => _.debounce(loadMatchingOptions, 100),
+    []
+  );
+
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <AsyncSelect
@@ -89,7 +96,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
         className="select"
         placeholder="Type a language name or code..."
         isClearable={true}
-        loadOptions={_.debounce(loadMatchingOptions, 100)}
+        loadOptions={debouncedLoadMatchingOptions}
         value={currentValue}
         styles={customStyles}
         menuPortalTarget={document.body}

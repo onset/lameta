@@ -23,9 +23,11 @@ import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
 import userSettings from "../../other/UserSettings";
 import {
+  ILangIndexEntry,
   LanguageFinder,
   staticLanguageFinder
 } from "../../languageFinder/LanguageFinder";
+import { splitLanguageFieldValue } from "../../languageFinder/languageTagFieldValue";
 import { LanguageSlot } from "../field/TextHolder";
 // FIXED: Import safeCaptureException instead of using Sentry directly
 // CONTEXT: This prevents E2E test failures from Sentry RendererTransport errors
@@ -477,7 +479,8 @@ export class Project extends Folder {
     this.knownFields = fieldDefinitionsOfCurrentConfig.project; // for csv export
 
     this.languageFinder = new LanguageFinder(
-      () => this.getFirstSubjectLanguageCodeAndName() // REVIEW now that we have multiple languages
+      () => this.getFirstSubjectLanguageCodeAndName(), // used for sort priority
+      () => this.getAllProjectLanguages()
     );
     this.loadSettingsFromConfiguration();
 
@@ -1381,29 +1384,44 @@ export class Project extends Folder {
     this.properties.setText("SubjectLanguages", content);
   }
 
+  private getLanguagesOfField(fieldName: string): ILangIndexEntry[] {
+    return splitLanguageFieldValue(
+      this.properties.getTextStringOrEmpty(fieldName)
+    ).map((entry) => ({
+      iso639_3: entry.code.toLowerCase(),
+      // In the degenerate case in which there was no ":" in the incoming xml element,
+      // use the code as the name.
+      englishName: entry.name ?? entry.code
+    }));
+  }
+
+  /**
+   * Every language named anywhere in the project's own language fields. The language finder
+   * needs all of them, not just the first subject language, or a language the user invented
+   * cannot be found by name outside the field that created it.
+   */
+  public getAllProjectLanguages(): ILangIndexEntry[] {
+    const seen = new Set<string>();
+    return [
+      "SubjectLanguages",
+      "WorkingLanguages",
+      "metadataLanguages"
+    ].flatMap((key) =>
+      this.getLanguagesOfField(key).filter((l) => {
+        if (l.iso639_3.length === 0 || seen.has(l.iso639_3)) return false;
+        seen.add(l.iso639_3);
+        return true;
+      })
+    );
+  }
+
   private getFirstLanguageCodeAndName(fieldName: string):
     | {
         iso639_3: string;
         englishName: string;
       }
     | undefined {
-    const languages: string = this.properties.getTextStringOrEmpty(fieldName);
-
-    if (languages.trim().length === 0) {
-      return undefined; // hasn't been defined yet, e.g. a new project
-    }
-    const firstCodeLangPair = languages.split(";")[0].trim();
-    if (!firstCodeLangPair) {
-      return undefined;
-    }
-    const parts = firstCodeLangPair.split(":");
-    // In the degenerate case in which there was no ":" in the incoming xml element,
-    // use the code as the name.
-    const langName = parts.length > 1 ? parts[1] : parts[0];
-    return {
-      iso639_3: parts[0].trim().toLowerCase(),
-      englishName: langName.trim()
-    };
+    return this.getLanguagesOfField(fieldName)[0]; // undefined for a new project
   }
   public getFirstSubjectLanguageCodeAndName():
     | {

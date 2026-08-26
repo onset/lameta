@@ -312,7 +312,10 @@ describe("session imdi export", () => {
       expect("//Languages/Language[3]/Name").toHaveText("English");
     });
 
-    it("should handle custom language codes (qaa-x-*) correctly", () => {
+    // "ISO639-3:" promises an ISO 639-3 code, so only the primary subtag may follow it. An
+    // archive rejected "ISO639-3:qaa-x-Kürbinian" for exactly this reason. The IMDI schema
+    // pattern is (ISO639(-1|-2|-3)?:.*)?, so xmllint will not catch a mistake here.
+    it("should reduce a custom language tag (qaa-x-*) to its 3-letter code", () => {
       // Custom language with private-use code
       session.properties.setText("languages", "qaa-x-MyLanguage:My Custom Language");
 
@@ -325,8 +328,94 @@ describe("session imdi export", () => {
         )
       );
 
-      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qaa-x-MyLanguage");
+      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qaa");
       expect("//Languages/Language[1]/Name").toHaveText("My Custom Language");
+    });
+
+    it("should give each custom language of a 3.0.x project a different code", () => {
+      // lameta 3.0.x minted every invented language as "qaa-x-...", so a project from that
+      // version can hold several that all claim qaa. They are sorted alphabetically and given
+      // the next free codes, which needs no rewriting of the user's files.
+      project.properties.setText(
+        "SubjectLanguages",
+        "qaa-x-zebra:Zebra;qaa-x-tolo:Tolo"
+      );
+      session.properties.setText(
+        "languages",
+        "qaa-x-zebra:Zebra;qaa-x-tolo:Tolo"
+      );
+
+      const xml = ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/
+      );
+      setResultXml(xml);
+
+      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qab");
+      expect("//Languages/Language[1]/Name").toHaveText("Zebra");
+      expect("//Languages/Language[2]/Id").toHaveText("ISO639-3:qaa");
+      expect("//Languages/Language[2]/Name").toHaveText("Tolo");
+
+      // No Id may carry subtags. The schema would let them through, so we check ourselves.
+      const ids = xml.match(/<Id[^>]*>[^<]*<\/Id>/g) || [];
+      expect(ids.length).toBeGreaterThan(0);
+      ids.forEach((id) => expect(id).not.toContain("-x-"));
+
+      project.properties.setText("SubjectLanguages", "");
+    });
+
+    it("should match the project's tag to the session's whatever the case", () => {
+      // The project file is from 3.0.x and holds a capital letter. The session was edited by
+      // this version, which writes the tag in lower case. They are one language, so they must
+      // export as one code.
+      project.properties.setText(
+        "SubjectLanguages",
+        "qaa-x-Zebra:Zebra;qaa-x-Tolo:Tolo"
+      );
+      session.properties.setText("languages", "qaa-x-zebra:Zebra");
+
+      setResultXml(
+        ImdiGenerator.generateSession(
+          IMDIMode.RAW_IMDI,
+          session,
+          project,
+          true /*omit namespace*/
+        )
+      );
+
+      // Tolo sorts first, so it keeps qaa and Zebra gets qab.
+      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qab");
+      expect("//Languages/Language[1]/Name").toHaveText("Zebra");
+
+      project.properties.setText("SubjectLanguages", "");
+    });
+
+    it("should give a working language and a metadata language their own codes", () => {
+      // The collision map has to read all three of the project's language fields. If it read
+      // only SubjectLanguages, these two would both export as qaa.
+      project.properties.setText("SubjectLanguages", "");
+      project.properties.setText("WorkingLanguages", "qaa-x-alpha:Alpha");
+      project.properties.setText("metadataLanguages", "qaa-x-beta:Beta");
+      session.properties.setText("languages", "qaa-x-alpha:Alpha;qaa-x-beta:Beta");
+
+      setResultXml(
+        ImdiGenerator.generateSession(
+          IMDIMode.RAW_IMDI,
+          session,
+          project,
+          true /*omit namespace*/
+        )
+      );
+
+      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qaa");
+      expect("//Languages/Language[1]/Name").toHaveText("Alpha");
+      expect("//Languages/Language[2]/Id").toHaveText("ISO639-3:qab");
+      expect("//Languages/Language[2]/Name").toHaveText("Beta");
+
+      project.properties.setText("WorkingLanguages", "");
+      project.properties.setText("metadataLanguages", "");
     });
 
     it("should fall back to project languages when session has no languages", () => {
