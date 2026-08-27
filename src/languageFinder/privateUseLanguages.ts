@@ -104,7 +104,7 @@ export function resolvePrivateUseCodes(tags: string[]): Map<string, string> {
     const sorted = [...members].sort((a, b) => a.localeCompare(b));
     // The alphabetically first member keeps the shared code; the rest get new ones.
     result.set(sorted[0], code);
-    let next = privateUseCodesInOrder();
+    const next = privateUseCodesInOrder();
     for (const tag of sorted.slice(1)) {
       let assigned: string | undefined;
       for (let item = next.next(); !item.done; item = next.next()) {
