@@ -239,7 +239,7 @@ msgid "Title"
 msgstr ""
 
 msgctxt "lameta/project/title/description"
-msgid "The funded project title, e.g. "New speakers of Edolo""
+msgid "The funded project title, e.g. \"New speakers of Edolo\""
 msgstr ""
 
 msgctxt "lameta/project/title/tipOnUsingThisField"
@@ -499,7 +499,7 @@ msgid "Working Languages"
 msgstr ""
 
 msgctxt "ELAR/person/birthYear/tipOnUsingThisField"
-msgid "Enter an approximation or "?" if unsure, and describe in the Description field below."
+msgid "Enter an approximation or \"?\" if unsure, and describe in the Description field below."
 msgstr ""
 
 msgctxt "ELAR/person/code/tipOnUsingThisField"

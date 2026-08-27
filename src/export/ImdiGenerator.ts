@@ -537,12 +537,10 @@ export default class ImdiGenerator {
           languages.forEach((langString) => {
             // Parse "code : Name" or "code:Name" format, or plain code
             const { code, name } = parseLanguageCodeAndName(langString);
-            // If name was provided in the string, use it; otherwise look it up
-            const langName =
-              name ||
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            // If name was provided in the string, use it; otherwise look it up. Use
+            // nameForExport, not the finder alone: for a tag that nothing knows, the finder
+            // returns the tag itself, which would put a raw tag in a Name element.
+            const langName = name || this.nameForExport(code);
             this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
@@ -557,12 +555,10 @@ export default class ImdiGenerator {
           workingLanguages.forEach((langString) => {
             // Parse "code : Name" or "code:Name" format, or plain code
             const { code, name } = parseLanguageCodeAndName(langString);
-            // If name was provided in the string, use it; otherwise look it up
-            const langName =
-              name ||
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            // If name was provided in the string, use it; otherwise look it up. Use
+            // nameForExport, not the finder alone: for a tag that nothing knows, the finder
+            // returns the tag itself, which would put a raw tag in a Name element.
+            const langName = name || this.nameForExport(code);
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
