@@ -1,6 +1,7 @@
 import TrieSearch from "trie-search";
 // this was before vite, I don't know if it's still true: NOTE: this sometimes seems to give incomplete (or empty?) json during the GeneriCsvEporter.Spect.ts run... maybe some timing bug with the webpack loader?
 import langIndex from "./langindex.json";
+import { getPrimarySubtag, isPrivateUseTag } from "./privateUseLanguages";
 
 export class Language {
   public englishName: string;
@@ -51,9 +52,17 @@ export function setupLanguageFinderForTests() {
 export class LanguageFinder {
   private index: TrieSearch;
   private getDefaultLanguage: () => ILangIndexEntry | undefined;
+  // All of the project's languages, not just the first one. Without this, a language the user
+  // invented (e.g. "qab-x-tolo") could not be found by name anywhere except the project field
+  // that created it. Optional because many unit tests construct a finder with no project.
+  private getProjectLanguages: () => ILangIndexEntry[];
 
-  constructor(getDefaultLanguage: () => ILangIndexEntry | undefined) {
+  constructor(
+    getDefaultLanguage: () => ILangIndexEntry | undefined,
+    getProjectLanguages?: () => ILangIndexEntry[]
+  ) {
     this.getDefaultLanguage = getDefaultLanguage;
+    this.getProjectLanguages = getProjectLanguages ?? (() => []);
 
     // currently this uses a trie, which is overkill for this number of items,
     // but I'm using it because I do need prefix matching and this library does that.
@@ -156,20 +165,52 @@ export class LanguageFinder {
   public makeMatchesAndLabelsForSelect(
     prefix: string
   ): { languageInfo: Language; nameMatchingWhatTheyTyped: string }[] {
-    const projectContentLanguage = this.getDefaultLanguage();
     const pfx = prefix.toLocaleLowerCase();
-    const sortedListOfMatches = this.findMatchesForSelect(prefix);
+    const unfiltered = this.findMatchesForSelect(prefix);
+    // Never offer a code from the qaa..qtz range with no name of its own, whatever the user
+    // typed. The index carries one such row, qaa, named "Unlisted Language", which the trie
+    // also finds from "qa" and from "unlisted". A language with a code and no name is of no
+    // use to an archive. To add one, the user goes through the dialog, which asks for the
+    // name. See UnlistedLanguageDialog.
+    const tagsTheProjectHas = new Set(
+      this.getProjectLanguages().map((l) => (l.iso639_3 || "").toLowerCase())
+    );
+    const sortedListOfMatches = unfiltered.filter((l) => {
+      const code = (l.iso639_3 || "").toLowerCase();
+      return !(
+        isPrivateUseTag(code) &&
+        code.length === 3 &&
+        !tagsTheProjectHas.has(code)
+      );
+    });
     // see https://tools.ietf.org/html/bcp47 note these are language tags, not subtags, so are qaa-qtz, not qaaa-qabx, which are script subtags
-    if (pfx >= "qaa" && pfx <= "qtz") {
-      const l = new Language({
-        iso639_3: prefix,
-        englishName:
-          // if they have given us the name for this custom language in the Project settings, use it
-          projectContentLanguage?.iso639_3 === prefix
-            ? projectContentLanguage?.englishName
-            : `${prefix} [Unlisted]`
-      });
-      sortedListOfMatches.push(l);
+    if (isPrivateUseTag(pfx) && pfx.length === 3) {
+      // The project may already have given this code to a language, as "qac-x-foobar". Then
+      // typing "qac" must give that same language. A second entry holding the code alone
+      // would be a different language to an archive.
+      const owner = this.getProjectLanguages().find(
+        (l) => getPrimarySubtag(l.iso639_3) === pfx
+      );
+      const removeFirst = (test: (l: Language) => boolean) => {
+        const at = sortedListOfMatches.findIndex(test);
+        return at >= 0 ? sortedListOfMatches.splice(at, 1)[0] : undefined;
+      };
+      if (owner) {
+        const fromIndex = removeFirst((m) => m.iso639_3 === owner.iso639_3);
+        // The project's own name wins. The index calls qaa "Unlisted Language", but a project
+        // holding "qaa:Foo Bar" has named that language itself. A project entry with no name
+        // of its own carries the code as its name, and then the index reads better.
+        const ownerHasItsOwnName =
+          !!owner.englishName &&
+          owner.englishName.toLowerCase() !==
+            (owner.iso639_3 || "").toLowerCase();
+        // unshift, not push: the sort above has already run, so a pushed entry lands at the
+        // bottom. Typing "qac" used to select laq (Qabiao), whose English name starts with
+        // those same three letters. The real language stays in the list, one row down.
+        sortedListOfMatches.unshift(
+          ownerHasItsOwnName || !fromIndex ? new Language(owner) : fromIndex
+        );
+      }
     }
     return sortedListOfMatches.map((l) => ({
       languageInfo: l,
@@ -207,8 +248,9 @@ export class LanguageFinder {
           // (e.g., "qaa" -> "My Indigenous Language" instead of "Unlisted Language").
           // For standard ISO codes like "por", we should NEVER override - the index
           // has the correct name ("Portuguese").
-          const code = projectContentLanguage.iso639_3.toLowerCase();
-          const isPrivateUseCode = code >= "qaa" && code <= "qtz";
+          const isPrivateUseCode = isPrivateUseTag(
+            projectContentLanguage.iso639_3
+          );
           if (
             isPrivateUseCode &&
             projectContentLanguage.englishName &&
@@ -228,6 +270,21 @@ export class LanguageFinder {
           langs.unshift(projectContentLanguage); //sticks at front
         }
       }
+    }
+
+    // The languages the user invented in this project are not in the index, and only the first
+    // subject language arrives via getDefaultLanguage. Without this, typing "Tolo" on a Person
+    // form finds nothing, even though the project defined a language called Tolo.
+    const typed = s.toLowerCase().trim();
+    if (typed.length > 0) {
+      this.getProjectLanguages().forEach((projectLanguage) => {
+        if (langs.some((l) => l.iso639_3 === projectLanguage.iso639_3)) return;
+        const name = (projectLanguage.englishName || "").toLowerCase().trim();
+        const code = (projectLanguage.iso639_3 || "").toLowerCase().trim();
+        if (name.startsWith(typed) || code.startsWith(typed)) {
+          langs.push(projectLanguage);
+        }
+      });
     }
     return langs;
   }
@@ -351,7 +408,7 @@ export class LanguageFinder {
     // if we got something other than the code back, that means we did recognize it as a known code.
     if (c.length > 0 && c.toLowerCase() !== codeOrLanguageName.toLowerCase())
       return codeOrLanguageName;
-    else if (c >= "qaa" && c <= "qtz") return c;
+    else if (isPrivateUseTag(c)) return c;
     else return this.convertNameToCode(codeOrLanguageName);
   }
 
@@ -494,13 +551,15 @@ export class LanguageFinder {
   }
 
   /**
-   * Convert a language code to its ISO 639-3 (3-letter) form.
-   * If already 3 letters, returns as-is. If 2-letter ISO 639-1 code,
-   * looks up the corresponding 3-letter code.
-   * E.g., "en" -> "eng", "es" -> "spa", "etr" -> "etr"
+   * Convert a language tag to its ISO 639-3 (3-letter) form.
+   *
+   * Only the primary subtag survives, because "ISO639-3:" promises an ISO 639-3 code and
+   * nothing else. An archive rejected "ISO639-3:qaa-x-Kürbinian" for exactly this reason.
+   * E.g., "en" -> "eng", "etr" -> "etr", "qaa-x-Foo" -> "qaa", "en-US" -> "eng",
+   * "zh-Hans" -> "zh", because our index has no iso639_1 on the "zho" entry
    */
   public getIso639_3Code(code: string): string {
-    const lowered = code.toLowerCase().trim();
+    const lowered = getPrimarySubtag(code);
     if (lowered.length === 0) return lowered;
 
     // Already a 3-letter code? Return as-is

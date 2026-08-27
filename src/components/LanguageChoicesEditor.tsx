@@ -1,9 +1,18 @@
 import { Field } from "../model/field/Field";
+import { t } from "@lingui/macro";
 // tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import CreatableAsyncSelect from "react-select/async-creatable";
 import { default as React, useCallback } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
+import {
+  allocateNextPrivateUseTag,
+  isPrivateUseTag
+} from "../languageFinder/privateUseLanguages";
+// TODO: move this serialization logic into the Field class.
+import { serializeLanguageFieldValue as serializeChoices } from "../languageFinder/languageTagFieldValue";
+import { ShowUnlistedLanguageDialog } from "./UnlistedLanguageDialog/UnlistedLanguageDialog";
+import { Project } from "../model/Project/Project";
 //import colors from "../colors.scss"; // this will fail if you've touched the scss since last full webpack build
 import _ from "lodash";
 import { LanguagePill, LanguageOption } from "./LanguagePill";
@@ -179,6 +188,11 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     input: (styles) => ({
       ...styles,
       fontSize: 13
+    }),
+    // The menu has to sit above the panes and the form, which clip it. See menuPortalTarget.
+    menuPortal: (styles) => ({
+      ...styles,
+      zIndex: 10000
     })
   };
 
@@ -187,25 +201,32 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     .filter((c) => c.length > 0)
     .map((c) => c.trim())
     .map((code) => {
-      // Handle "eng:English" format (code:name)
-      if (code.indexOf(":") > 0) {
-        const parts = code.split(":");
+      // Handle "eng:English" format (code:name). Split on the first colon only, so that a
+      // name may itself contain one.
+      const colon = code.indexOf(":");
+      if (colon > 0) {
+        const name = code.slice(colon + 1).trim();
         return {
-          value: parts[0],
-          label: parts[1] || getName(props.languageFinder, parts[0])
+          value: code.slice(0, colon).trim(),
+          label: name || getName(props.languageFinder, code.slice(0, colon)),
+          // Remember that the file gave us the name, so that we write it back. See
+          // serializeChoices.
+          hadName: name.length > 0
         };
       }
       // Handle legacy "eng|English" format
-      if (code.indexOf("|") > 0) {
-        const parts = code.split("|");
+      const bar = code.indexOf("|");
+      if (bar > 0) {
         return {
-          value: parts[0],
-          label: parts[1]
+          value: code.slice(0, bar).trim(),
+          label: code.slice(bar + 1).trim(),
+          hadName: true
         };
       }
       return {
         value: code,
-        label: getName(props.languageFinder, code)
+        label: getName(props.languageFinder, code),
+        hadName: false
       };
     });
 
@@ -230,8 +251,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
       if (oldIndex === newIndex) return;
       const reordered = arrayMove(currentValueArray, oldIndex, newIndex);
-      const s = reordered.map((o) => o.value).join(";");
-      props.field.setValueFromString(s);
+      props.field.setValueFromString(serializeChoices(reordered));
     },
     [currentValueArray, props.field]
   );
@@ -330,6 +350,13 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     [onSortEnd]
   );
 
+  // One debounced loader for the life of the control. A new one on each render defeats the
+  // debounce, because each has its own timer.
+  const debouncedLoadMatchingOptions = React.useMemo(
+    () => _.debounce(loadMatchingOptions, 100),
+    []
+  );
+
   const selectProps = {
     inputId: inputId.current,
     tabIndex: props.tabIndex ? props.tabIndex : undefined,
@@ -347,56 +374,91 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     noOptionsMessage: ({ inputValue }) =>
       inputValue ? "No matches" : "Type language name or code",
     isClearable: false, // don't need the extra "x"
-    loadOptions: _.debounce(loadMatchingOptions, 100),
+    loadOptions: debouncedLoadMatchingOptions,
+    // Put the menu in document.body. Several ancestors have overflow hidden, and in a short
+    // field, such as the ones on the Session and Person forms, they cut off the whole menu.
+    menuPortalTarget: typeof document === "undefined" ? undefined : document.body,
+    menuPosition: "fixed" as const,
     value: currentValueArray,
     styles: customStyles,
     onChange: (
       v: Array<{ value: string; label: string; __isNew__: boolean }>
     ) => {
-      console.log("onChange: " + JSON.stringify(v));
-      // if any are new, change the value to "new"
-      const newChoices = v
-        ? v.map((o) =>
-            o.__isNew__ ? { label: o.label, value: `qaa-x-${o.label}` } : o
-          )
-        : []; // if you delete the last member, you get null instead of []
-
-      // TODO: move this serialization logic into the Field class
-      const s: string = newChoices
-        .map((o) => {
-          return o.value;
-        })
-        .join(";"); // why semicolong instead of comma? The particpants field as used semicolon for years.
-      console.log("saving: " + s);
-      props.field.setValueFromString(s);
+      // A brand new language arrives through onCreateOption, not here, so that it can be given
+      // its own code from the qaa..qtz range. If you delete the last member, you get null
+      // instead of [].
+      props.field.setValueFromString(serializeChoices(v || []));
     },
     isMulti: true
   };
 
-  // Handle creating a new custom language (user-defined)
+  // Handle creating a language that ISO 639-3 does not list. Each one gets its own code from
+  // the qaa..qtz range that ISO 639-3 sets aside for local use, because an archive has to be
+  // able to tell two such languages apart.
+  const getTagsInUse = useCallback(
+    () =>
+      [
+        ...currentValueArray.map((o) => o.value),
+        ...Project.getDefaultSubjectLanguages().split(";"),
+        ...Project.getDefaultWorkingLanguages().split(";"),
+        ...Project.getDefaultMetadataLanguages().split(";")
+      ]
+        .map((t) => t.split(":")[0].trim())
+        .filter((t) => t.length > 0),
+    [currentValueArray]
+  );
+
+  const getCodesInUse = useCallback(
+    () => getTagsInUse().map((t) => t.split("-")[0].toLowerCase()),
+    [getTagsInUse]
+  );
+
+  // True when the user typed a bare code from the qaa..qtz range that no language in this
+  // project has taken yet. Then the user is asking for a language that ISO 639-3 does not
+  // list, and has told us the code but not the name.
+  const isFreePrivateUseCode = useCallback(
+    (typed: string) => {
+      const code = typed.trim().toLowerCase();
+      if (!isPrivateUseTag(code) || code.length !== 3) return false;
+      return !getCodesInUse().includes(code);
+    },
+    [getCodesInUse]
+  );
+
   const handleCreateOption = useCallback(
     (inputValue: string) => {
-      // Create a private-use code following BCP-47 for user-defined languages
-      const newCode = `qaa-x-${inputValue}`;
+      const tagsInUse = getTagsInUse();
+      // The user typed a code, such as "qax", so keep that code and ask for the name.
+      const typedCode = isFreePrivateUseCode(inputValue)
+        ? inputValue.trim().toLowerCase()
+        : undefined;
+      const suggestedTag = allocateNextPrivateUseTag(inputValue, tagsInUse);
 
-      // Add the new language to the current values
-      const newValues = [...currentValueArray, { value: newCode, label: inputValue }];
-
-      // Serialize and save - use "code:name" format for custom languages so we can display the name
-      const s = newValues
-        .map((o) => {
-          // For custom languages (qaa-x-*), save as code:name so display name is preserved
-          if (o.value.startsWith("qaa-x-")) {
-            return `${o.value}:${o.label}`;
-          }
-          return o.value;
-        })
-        .join(";");
-      props.field.setValueFromString(s);
-
-      window.alert("You created " + inputValue);
+      ShowUnlistedLanguageDialog({
+        typedName: typedCode ? "" : inputValue,
+        suggestedCode:
+          typedCode ??
+          (suggestedTag
+            ? suggestedTag.split("-")[0]
+            : /* all 520 codes are in use */ undefined),
+        codesInUse: getCodesInUse(),
+        onAccept: (tag: string, name: string) => {
+          props.field.setValueFromString(
+            serializeChoices([
+              ...currentValueArray,
+              { value: tag, label: name, hadName: true }
+            ])
+          );
+        }
+      });
     },
-    [currentValueArray, props.field]
+    [
+      currentValueArray,
+      getCodesInUse,
+      getTagsInUse,
+      isFreePrivateUseCode,
+      props.field
+    ]
   );
 
   return (
@@ -418,6 +480,30 @@ export const LanguageChoicesEditor: React.FunctionComponent<
           <CreatableAsyncSelect
             {...selectProps}
             onCreateOption={handleCreateOption}
+            // Put this row first, so that the Enter key opens the dialog instead of taking
+            // the bare code row that the language finder also offers.
+            createOptionPosition="first"
+            // Typing "qac", where the project already has a language with that code, is a
+            // search for that language, not a request to add one called "qac".
+            isValidNewOption={(inputValue: string, selectValue, selectOptions) => {
+              const typed = inputValue.trim();
+              if (typed.length === 0) return false;
+              if (isPrivateUseTag(typed) && typed.length === 3)
+                return isFreePrivateUseCode(typed);
+              return !(selectOptions as Array<{ label?: string }>).some(
+                (o) => o.label?.toLowerCase() === typed.toLowerCase()
+              );
+            }}
+            formatCreateLabel={(inputValue: string) => {
+              const typed = inputValue.trim();
+              // The user typed the code, so the dialog will ask for the name.
+              if (isFreePrivateUseCode(typed)) {
+                const code = typed.toLowerCase();
+                return t`Add an unlisted language using ${code}`;
+              }
+              // The user typed the name. The dialog shows the code, and lets them change it.
+              return t`Add "${inputValue}" as an unlisted language`;
+            }}
           ></CreatableAsyncSelect>
         ) : (
           <AsyncSelect {...selectProps} />

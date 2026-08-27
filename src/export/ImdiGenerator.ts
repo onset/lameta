@@ -31,6 +31,14 @@ import { fieldElement } from "./Imdi-static-fns";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import { ImdiVocabularyTranslator } from "./ImdiVocabularyTranslator";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
+import {
+  parseLanguageCodeAndName,
+  splitLanguageFieldValue
+} from "../languageFinder/languageTagFieldValue";
+import {
+  getPrimarySubtag,
+  resolvePrivateUseCodes
+} from "../languageFinder/privateUseLanguages";
 
 // IMDI Date_Value_Type pattern from IMDI_3.0.xsd
 // Valid: YYYY, YYYY-MM, YYYY-MM-DD, date ranges with /, "Unknown", "Unspecified", or empty
@@ -102,32 +110,8 @@ export function emitTildeBirthYearWarningOnce(): boolean {
   return false;
 }
 
-/**
- * Parse a language string that may be in various formats:
- * - "code : Name" (legacy format, e.g., "pta : Guarani")
- * - "code:Name" (no spaces, e.g., "qaa-x-MyLang:My Language")
- * - "code" (plain code, e.g., "fra")
- *
- * Returns { code, name } where name is undefined if not present in the string.
- */
-export function parseLanguageCodeAndName(languageString: string): {
-  code: string;
-  name: string | undefined;
-} {
-  const trimmed = languageString.trim();
-
-  // Check for "code : Name" or "code:Name" format
-  // Use first colon to split, in case the name contains colons
-  const colonIndex = trimmed.indexOf(":");
-  if (colonIndex > 0) {
-    const code = trimmed.substring(0, colonIndex).trim();
-    const name = trimmed.substring(colonIndex + 1).trim();
-    return { code, name: name.length > 0 ? name : undefined };
-  }
-
-  // Plain code format
-  return { code: trimmed, name: undefined };
-}
+// Re-exported here because callers and tests have long imported it from this module.
+export { parseLanguageCodeAndName };
 
 export enum IMDIMode {
   OPEX, // wrap in OPEX elements, name .opex
@@ -150,6 +134,10 @@ export default class ImdiGenerator {
   private keysThatHaveBeenOutput = new Set<string>();
   private mode: IMDIMode;
   private vocabularyTranslator: ImdiVocabularyTranslator;
+  // Which 3-letter code each of the project's private-use language tags exports as. See
+  // resolvePrivateUseCodes: this only does work for projects written by lameta 3.0.x, where
+  // every invented language was minted as "qaa-x-...", so they would all export as "qaa".
+  private privateUseCodes: Map<string, string> = new Map();
   // note, folder wil equal project if we're generating at the project level
   // otherwise, folder will be a session or person
   public constructor(mode: IMDIMode, folder?: Folder, project?: Project) {
@@ -158,6 +146,53 @@ export default class ImdiGenerator {
     if (folder) this.folderInFocus = folder;
     if (project) this.project = project;
     this.vocabularyTranslator = new ImdiVocabularyTranslator(project);
+    if (project) {
+      this.privateUseCodes = resolvePrivateUseCodes(
+        ["SubjectLanguages", "WorkingLanguages", "metadataLanguages"].flatMap(
+          (key) =>
+            splitLanguageFieldValue(
+              project.properties.getTextStringOrEmpty(key)
+            ).map((entry) => entry.code)
+        )
+      );
+    }
+  }
+
+  /**
+   * The ISO 639-3 code to write for one of the project's languages. A tag absent from the
+   * collision map, such as one hand-edited into a session file, falls back to its own primary
+   * subtag, so nothing ever reaches IMDI with subtags still attached.
+   */
+  private iso639_3ForExport(tag: string): string {
+    // Lowercase, because a project written by 3.0.x holds "qaa-x-MyLanguage" while a session
+    // that used the picker holds the same tag in lower case. A hand-edited file can hold a
+    // language element with no tag at all, so guard against undefined.
+    const key = (tag || "").trim().toLowerCase();
+    const resolved = this.privateUseCodes.get(key);
+    if (resolved) return resolved;
+    const finder = staticLanguageFinder || this.project?.languageFinder;
+    return finder ? finder.getIso639_3Code(key) : getPrimarySubtag(key);
+  }
+
+  /**
+   * The name to write for a language. IMDI must never carry a tag such as "qaa-x-Tolo" as a
+   * name. The project's own fields are the only place that holds the name of a language that
+   * ISO 639-3 does not list, so look there first, ignoring case.
+   */
+  private nameForExport(tag: string): string {
+    const key = (tag || "").trim().toLowerCase();
+    if (key.length === 0) return "";
+    const fromProject = this.project
+      ?.getAllProjectLanguages()
+      .find((l) => (l.iso639_3 || "").toLowerCase() === key);
+    if (fromProject?.englishName && fromProject.englishName !== key)
+      return fromProject.englishName;
+    const finder = this.project?.languageFinder || staticLanguageFinder;
+    const name = finder?.findOneLanguageNameFromCode_Or_ReturnCode(key) ?? key;
+    if (name.toLowerCase() !== key) return name;
+    // Nothing knows this language. Its own tag carries the name after "-x-".
+    const afterX = (tag || "").trim().split(/-x-/i)[1];
+    return afterX || name;
   }
 
   public static generateCorpus(
@@ -502,12 +537,10 @@ export default class ImdiGenerator {
           languages.forEach((langString) => {
             // Parse "code : Name" or "code:Name" format, or plain code
             const { code, name } = parseLanguageCodeAndName(langString);
-            // If name was provided in the string, use it; otherwise look it up
-            const langName =
-              name ||
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            // If name was provided in the string, use it; otherwise look it up. Use
+            // nameForExport, not the finder alone: for a tag that nothing knows, the finder
+            // returns the tag itself, which would put a raw tag in a Name element.
+            const langName = name || this.nameForExport(code);
             this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
@@ -522,12 +555,10 @@ export default class ImdiGenerator {
           workingLanguages.forEach((langString) => {
             // Parse "code : Name" or "code:Name" format, or plain code
             const { code, name } = parseLanguageCodeAndName(langString);
-            // If name was provided in the string, use it; otherwise look it up
-            const langName =
-              name ||
-              this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                code
-              );
+            // If name was provided in the string, use it; otherwise look it up. Use
+            // nameForExport, not the finder alone: for a tag that nothing knows, the finder
+            // returns the tag itself, which would put a raw tag in a Name element.
+            const langName = name || this.nameForExport(code);
             this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
@@ -565,17 +596,13 @@ export default class ImdiGenerator {
     languages.forEach((langString) => {
       const { code, name } = parseLanguageCodeAndName(langString);
       // If name was provided in the string, use it; otherwise look it up
-      const langName =
-        name ||
-        this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-          code
-        );
+      const langName = name || this.nameForExport(code);
       this.addSessionLanguage(code, langName, description);
     });
   }
   private addSessionLanguage(code: string, name: string, description: string) {
     this.group("Language", () => {
-      this.element("Id", "ISO639-3:" + code);
+      this.element("Id", "ISO639-3:" + this.iso639_3ForExport(code));
       this.element(
         "Name",
         name,
@@ -607,15 +634,10 @@ export default class ImdiGenerator {
     // } else {
     //   this.element("Id", "ISO639-3:" + lang);
     // }
-    this.element("Id", "ISO639-3:" + lang.code);
+    this.element("Id", "ISO639-3:" + this.iso639_3ForExport(lang.code));
 
     //this.fieldLiteral("Id", lang);
-    this.element(
-      "Name",
-      this.project.languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-        lang.code
-      )
-    );
+    this.element("Name", this.nameForExport(lang.code));
     this.attributeLiteral(
       "Link",
       "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml"
@@ -696,9 +718,7 @@ export default class ImdiGenerator {
     this.group("Keys", () => {
       for (const slot of metadataSlots) {
         // Always use ISO639-3 (3-letter) codes - ELAR, at least, can't handle 2-letter ISO639-1 codes
-        const iso639_3 = staticLanguageFinder
-          ? staticLanguageFinder.getIso639_3Code(slot.tag)
-          : slot.tag;
+        const iso639_3 = this.iso639_3ForExport(slot.tag);
         const value = `ISO639-3:${iso639_3}: ${slot.name}`;
         this.keyElement("MetadataLanguage", value);
       }
@@ -849,11 +869,7 @@ export default class ImdiGenerator {
           this.attributeLiteral("Name", capitalCase(key));
 
           // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
-          const languageFinder =
-            staticLanguageFinder || this.project.languageFinder;
-          const iso639_3 = languageFinder
-            ? languageFinder.getIso639_3Code(lang)
-            : lang;
+          const iso639_3 = this.iso639_3ForExport(lang);
           this.attributeLiteral("LanguageId", "ISO639-3:" + iso639_3);
 
           // Add index (1-based) to tie together translations of the same concept
@@ -1681,9 +1697,7 @@ export default class ImdiGenerator {
           normalizedTranslation
         );
         // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
-        const iso639_3 = staticLanguageFinder
-          ? staticLanguageFinder.getIso639_3Code(slot.tag)
-          : slot.tag;
+        const iso639_3 = this.iso639_3ForExport(slot.tag);
         newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
         newElement.attribute("Link", vocabularyUrl);
         newElement.attribute("Type", "OpenVocabulary");
@@ -1752,9 +1766,7 @@ export default class ImdiGenerator {
       if (translation) {
         const newElement = this.tail.element(elementName, translation);
         // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
-        const iso639_3 = staticLanguageFinder
-          ? staticLanguageFinder.getIso639_3Code(slot.tag)
-          : slot.tag;
+        const iso639_3 = this.iso639_3ForExport(slot.tag);
         newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
         this.mostRecentElement = newElement;
         this.tail = newElement.up();

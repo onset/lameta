@@ -94,9 +94,16 @@ function createPoFilesFromOneSetOfJsons(set: string) {
   console.log(
     `extractFromJSON: Gathered ${messages.length} strings from ${set}.`
   );
+  // A PO string ends at the first unescaped quote, so a description holding a quote, e.g.
+  // `New speakers of Edolo`, truncates the entry and leaves stray tokens after it. Escape the
+  // backslash first, then the quote, or the escape gets escaped a second time.
+  const escapeForPo = (text: string) =>
+    text.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
   const content = messages
     .map((m) => {
-      return `msgctxt "${m.context}"\nmsgid "${m.message}"\nmsgstr ""\n`;
+      return `msgctxt "${escapeForPo(m.context)}"\nmsgid "${escapeForPo(
+        m.message
+      )}"\nmsgstr ""\n`;
     })
     .join("\n");
   //console.log(content);

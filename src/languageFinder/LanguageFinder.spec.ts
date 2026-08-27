@@ -220,5 +220,137 @@ describe("LanguageFinder", () => {
       expect(languageFinder.getIso639_3Code("")).toBe("");
       expect(languageFinder.getIso639_3Code("  ")).toBe("");
     });
+
+    // "ISO639-3:" promises an ISO 639-3 code, so nothing but the primary subtag may follow it.
+    it("should drop the private-use subtag of a custom language", () => {
+      expect(languageFinder.getIso639_3Code("qaa-x-foo")).toBe("qaa");
+      expect(languageFinder.getIso639_3Code("qab-x-tolo")).toBe("qab");
+      expect(languageFinder.getIso639_3Code("QAB-x-Tolo")).toBe("qab");
+    });
+
+    it("should drop region and script subtags", () => {
+      expect(languageFinder.getIso639_3Code("en-US")).toBe("eng");
+      expect(languageFinder.getIso639_3Code("pt-BR")).toBe("por");
+      expect(languageFinder.getIso639_3Code("tpi-PG")).toBe("tpi");
+      // The subtag is dropped, but "zh" stays 2 letters: our index has no iso639_1 on the
+      // "zho" entry, so the 2-to-3-letter lookup finds nothing. That gap is older than this.
+      expect(languageFinder.getIso639_3Code("zh-Hans")).toBe("zh");
+    });
+  });
+
+  describe("private-use codes in the qaa..qtz range", () => {
+    // A code with no name is of no use to an archive, so no row offers one. The user adds a
+    // language that ISO 639-3 does not list through the dialog, which asks for the name.
+    it("does not offer the typed code by itself", () => {
+      const matches = languageFinder.makeMatchesAndLabelsForSelect("qab");
+      expect(matches.some((m) => m.languageInfo.iso639_3 === "qab")).toBe(false);
+      // Qabiao, whose English name starts with those same three letters, is still there.
+      expect(matches.some((m) => m.languageInfo.iso639_3 === "laq")).toBe(true);
+    });
+
+    it("still finds a real language once enough letters are typed", () => {
+      const matches = languageFinder.makeMatchesAndLabelsForSelect("qabi");
+      expect(matches[0].languageInfo.iso639_3).toBe("laq");
+    });
+
+    it("does not invent a language for a code outside the range", () => {
+      // "u" is past "t", so qua is not private-use. It is Quapaw, a real ISO 639-3 code,
+      // and the finder must give the real language, not an "[Unlisted]" row.
+      const matches = languageFinder.makeMatchesAndLabelsForSelect("qua");
+      const qua = matches.filter((m) => m.languageInfo.iso639_3 === "qua");
+      // Exactly one: a synthesized row would make a second.
+      expect(qua.length).toBe(1);
+      expect(qua[0].languageInfo.englishName).toBe("Quapaw");
+    });
+
+    it("gives the project's own language when its code is typed", () => {
+      // If the project holds qac-x-foobar, typing "qac" and typing "foobar" must both give
+      // that one entry. A second row holding the code alone would be a different language.
+      const finder = new LanguageFinder(
+        () => undefined,
+        () => [{ iso639_3: "qac-x-foobar", englishName: "Foobar" }]
+      );
+      for (const typed of ["qac", "foobar"]) {
+        const matches = finder.makeMatchesAndLabelsForSelect(typed);
+        expect(matches[0].languageInfo.iso639_3).toBe("qac-x-foobar");
+        expect(matches[0].languageInfo.englishName).toBe("Foobar");
+        expect(
+          matches.filter((m) => m.languageInfo.iso639_3 === "qac").length
+        ).toBe(0);
+      }
+    });
+
+    it("drops the index's own row for a code the project has taken", () => {
+      // The index carries a "qaa" row named "Unlisted Language". Once the project has given
+      // qaa to a language of its own, that row is only a way to make a duplicate.
+      const finder = new LanguageFinder(
+        () => undefined,
+        () => [{ iso639_3: "qaa-x-alpha", englishName: "Alpha" }]
+      );
+      const matches = finder.makeMatchesAndLabelsForSelect("qaa");
+      expect(matches[0].languageInfo.iso639_3).toBe("qaa-x-alpha");
+      expect(matches.some((m) => m.languageInfo.iso639_3 === "qaa")).toBe(false);
+    });
+
+    it("offers no nameless code however few letters are typed", () => {
+      // The index carries one row in the range, qaa, named "Unlisted Language". The trie finds
+      // it from "qa" and from "unlisted" as well as from "qaa".
+      for (const typed of ["qa", "qaa", "unlisted"]) {
+        const matches = languageFinder.makeMatchesAndLabelsForSelect(typed);
+        expect(
+          matches.filter((m) => m.languageInfo.iso639_3?.toLowerCase() === "qaa")
+        ).toEqual([]);
+      }
+    });
+
+    it("keeps a bare code that the project itself uses", () => {
+      // An older project holds "qaa:Foo Bar", with the name in the field. That language is
+      // real, so the field must still offer it.
+      const finder = new LanguageFinder(
+        () => undefined,
+        () => [{ iso639_3: "qaa", englishName: "Foo Bar" }]
+      );
+      for (const typed of ["qaa", "Foo"]) {
+        const matches = finder.makeMatchesAndLabelsForSelect(typed);
+        const qaa = matches.filter((m) => m.languageInfo.iso639_3 === "qaa");
+        expect(qaa.length).toBe(1);
+        expect(qaa[0].languageInfo.englishName).toBe("Foo Bar");
+      }
+    });
+
+    it("offers nothing for a free private-use code", () => {
+      // The field itself offers to add one, and the dialog asks for the name. The finder has
+      // no language to give.
+      const finder = new LanguageFinder(
+        () => undefined,
+        () => [{ iso639_3: "qac-x-foobar", englishName: "Foobar" }]
+      );
+      const matches = finder.makeMatchesAndLabelsForSelect("qad");
+      expect(matches.some((m) => m.languageInfo.iso639_3 === "qad")).toBe(false);
+    });
+
+    it("finds any of the project's languages by name, not just the first", () => {
+      const finder = new LanguageFinder(
+        () => ({ iso639_3: "qaa-x-kurbinia", englishName: "Kürbinian" }),
+        () => [
+          { iso639_3: "qaa-x-kurbinia", englishName: "Kürbinian" },
+          { iso639_3: "qab-x-tolo", englishName: "Tolo" }
+        ]
+      );
+      const matches = finder.makeMatchesAndLabelsForSelect("Tolo");
+      expect(matches.some((m) => m.languageInfo.iso639_3 === "qab-x-tolo")).toBe(
+        true
+      );
+    });
+
+    it("labels a typed code with the project's name for it", () => {
+      const finder = new LanguageFinder(
+        () => undefined,
+        () => [{ iso639_3: "qab", englishName: "Tolo" }]
+      );
+      const matches = finder.makeMatchesAndLabelsForSelect("qab");
+      expect(matches[0].languageInfo.iso639_3).toBe("qab");
+      expect(matches[0].nameMatchingWhatTheyTyped).toBe("Tolo");
+    });
   });
 });

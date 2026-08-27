@@ -16,9 +16,6 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr ""
 
-msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
-msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
@@ -40,10 +37,22 @@ msgstr ""
 msgid "About lameta"
 msgstr ""
 
+msgid "Access"
+msgstr ""
+
+msgid "Add \"{inputValue}\" as an unlisted language"
+msgstr ""
+
 msgid "Add Files"
 msgstr ""
 
 msgid "Add Language"
+msgstr ""
+
+msgid "Add an Unlisted Language"
+msgstr ""
+
+msgid "Add an unlisted language using {code}"
 msgstr ""
 
 msgid "Add documents here that describe the projects and corpus."
@@ -56,6 +65,12 @@ msgid "Add to Dictionary"
 msgstr ""
 
 msgid "All Sessions"
+msgstr ""
+
+msgid "All translations complete"
+msgstr ""
+
+msgid "Another language in this project already uses that code."
 msgstr ""
 
 msgid "Archive"
@@ -89,6 +104,9 @@ msgstr ""
 msgid "Cannot add files of that type"
 msgstr ""
 
+msgid "Cannot export to IMDI while multilingual text migration is pending."
+msgstr ""
+
 msgid "Change Name To:"
 msgstr ""
 
@@ -114,9 +132,6 @@ msgid "Clear"
 msgstr ""
 
 msgid "Close"
-msgstr ""
-
-msgid "Collection"
 msgstr ""
 
 msgid "Comments"
@@ -176,6 +191,9 @@ msgstr ""
 msgid "Custom Field"
 msgstr ""
 
+msgid "Custom vocabulary item"
+msgstr ""
+
 msgid "Cut"
 msgstr ""
 
@@ -192,9 +210,6 @@ msgid "Delete File..."
 msgstr ""
 
 msgid "Delete Person..."
-msgstr ""
-
-msgid "Delete Session"
 msgstr ""
 
 msgid "Delete Session..."
@@ -230,7 +245,13 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "ElectronDropZone: preload script did not set window.electronAPI.getPathForFile; drag-and-drop will not work."
+msgstr ""
+
 msgid "Email Address"
+msgstr ""
+
+msgid "Example:"
 msgstr ""
 
 msgid "Export"
@@ -254,6 +275,9 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
+msgid "Fields with Unknown Languages"
+msgstr ""
+
 msgid "File"
 msgstr ""
 
@@ -264,6 +288,15 @@ msgid "File to Import:"
 msgstr ""
 
 msgid "Find"
+msgstr ""
+
+msgid "Finish Migration"
+msgstr ""
+
+msgid "Finish Migration to Multilingual Fields"
+msgstr ""
+
+msgid "Fix in Project:"
 msgstr ""
 
 msgid "Font Size"
@@ -287,8 +320,6 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-
-
 msgid "Generating CSV export..."
 msgstr ""
 
@@ -296,6 +327,12 @@ msgid "Generating PARADISEC CSV..."
 msgstr ""
 
 msgid "Generating RO-Crate metadata..."
+msgstr ""
+
+msgid "Genres"
+msgstr ""
+
+msgid "Grant"
 msgstr ""
 
 msgid "Help"
@@ -314,12 +351,6 @@ msgid "How are you using lameta?"
 msgstr ""
 
 msgid "ID"
-msgstr ""
-
-msgid "ID cannot be empty"
-msgstr ""
-
-msgid "ID cannot contain spaces"
 msgstr ""
 
 msgid "IMDI Only"
@@ -394,6 +425,15 @@ msgstr ""
 msgid "Media Folder Settings..."
 msgstr ""
 
+msgid "Migrate"
+msgstr ""
+
+msgid "Migrating: {0}"
+msgstr ""
+
+msgid "Migration complete! {0} fields were migrated. You can hide language tags from View → \"Show language tags on multilingual fields\" if you don't need them anymore."
+msgstr ""
+
 msgid "Modified"
 msgstr ""
 
@@ -407,6 +447,9 @@ msgid "New Person"
 msgstr ""
 
 msgid "New Session"
+msgstr ""
+
+msgid "No custom values found"
 msgstr ""
 
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
@@ -448,6 +491,9 @@ msgstr ""
 msgid "Other Documents"
 msgstr ""
 
+msgid "Other Strings Used During Export"
+msgstr ""
+
 msgid "PARADISEC CSV export complete"
 msgstr ""
 
@@ -464,6 +510,18 @@ msgid "Person"
 msgstr ""
 
 msgid "Please Register"
+msgstr ""
+
+msgid "Please add the metadata languages you've been using with these \"/\" fields (at least two) before migrating."
+msgstr ""
+
+msgid "Please complete the migration in the Project tab under Languages before exporting."
+msgstr ""
+
+msgid "Please give the language a code."
+msgstr ""
+
+msgid "Please give the language a name."
 msgstr ""
 
 msgid "Please remove characters that not allowed by the Archive Settings."
@@ -491,6 +549,9 @@ msgid "RO-Crate"
 msgstr ""
 
 msgid "RO-Crate export complete"
+msgstr ""
+
+msgid "Ready to scan..."
 msgstr ""
 
 msgid "Redo"
@@ -529,6 +590,9 @@ msgstr ""
 msgid "Role"
 msgstr ""
 
+msgid "Roles"
+msgstr ""
+
 msgid "Save As"
 msgstr ""
 
@@ -536,6 +600,15 @@ msgid "Saving"
 msgstr ""
 
 msgid "Saving before rename..."
+msgstr ""
+
+msgid "Scan complete"
+msgstr ""
+
+msgid "Scan failed"
+msgstr ""
+
+msgid "Scanning..."
 msgstr ""
 
 msgid "Search"
@@ -557,6 +630,12 @@ msgid "Show All"
 msgstr ""
 
 msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show Language Tags"
+msgstr ""
+
+msgid "Show Language Tags (locked during migration)"
 msgstr ""
 
 msgid "Show PARADISEC previews"
@@ -586,6 +665,9 @@ msgstr ""
 msgid "Smaller"
 msgstr ""
 
+msgid "Some fields have more language segments than there are Metadata Languages defined ({0} of {1} fields). If you proceed, these extra segments will be labeled as \"unknown\" languages."
+msgstr ""
+
 msgid "Some operating systems would not allow that name."
 msgstr ""
 
@@ -596,6 +678,9 @@ msgid "Sorry, no slashes are allowed"
 msgstr ""
 
 msgid "Start Screen"
+msgstr ""
+
+msgid "Starting scan..."
 msgstr ""
 
 msgid "Status"
@@ -610,7 +695,16 @@ msgstr ""
 msgid "The IMDI files were validated."
 msgstr ""
 
+msgid "The code must be between qaa and qtz."
+msgstr ""
+
+msgid "The columns here are based on your project's metadata languages."
+msgstr ""
+
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
+msgstr ""
+
+msgid "The name cannot contain a semicolon."
 msgstr ""
 
 msgid "The {fieldNameInUiLanguage} cannot be empty"
@@ -652,10 +746,16 @@ msgstr ""
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr ""
 
+msgid "This project appears to use \"/\" to store multiple languages within a single field. In this version of lameta, we have a better approach in which lameta knows which languages are used in a field. After you have selected the appropriate metadata languages above and arranged them in the correct order, all multilingual fields in Project, Sessions, and People should display with the correct language tags. Once you have confirmed that everything appears as expected, click the button below to apply these changes permanently."
+msgstr ""
+
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
 msgstr ""
 
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
+msgstr ""
+
+msgid "Translations"
 msgstr ""
 
 msgid "Type"
@@ -664,7 +764,16 @@ msgstr ""
 msgid "Undo"
 msgstr ""
 
+msgid "Unknown error while scanning vocabulary"
+msgstr ""
+
 msgid "Update available"
+msgstr ""
+
+msgid "Use this for a language that has no ISO 639-3 code. Give the language a name, and a code between qaa and qtz."
+msgstr ""
+
+msgid "Used during IMDI export"
 msgstr ""
 
 msgid "Validating RO-Crate export..."
@@ -682,6 +791,9 @@ msgstr ""
 msgid "View Release Notes"
 msgstr ""
 
+msgid "Vocabulary scan failed"
+msgstr ""
+
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
@@ -697,10 +809,16 @@ msgstr ""
 msgid "You are running lameta version:"
 msgstr ""
 
+msgid "You can either add more Metadata Languages above to match all segments, or proceed with the migration and manually fix the unknown language fields later."
+msgstr ""
+
 msgid "You cannot add files of that type"
 msgstr ""
 
 msgid "You cannot add folders."
+msgstr ""
+
+msgid "You need at least two metadata languages defined to use vocabulary translations. Please add metadata languages in the Languages tab."
 msgstr ""
 
 msgid "ZIP Archive"
@@ -761,8 +879,17 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr ""
 
+msgid "missing"
+msgstr ""
+
 msgid "{0} Marked Sessions"
 msgstr ""
 
+msgid "{0} of {1} items processed"
+msgstr ""
+
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
+msgstr ""
+
+msgid "{totalMissing} items need translation"
 msgstr ""

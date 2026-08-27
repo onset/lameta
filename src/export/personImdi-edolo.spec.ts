@@ -125,6 +125,62 @@ describe("actor imdi export", () => {
     expect("Actor/Languages/Language[1]/Name").toHaveText("Blah blah");
   });
 
+  it("should reduce a person's custom language tag to its 3-letter code", () => {
+    // An archive's ingest rejects "ISO639-3:qab-x-tolo". IMDI must get the code alone,
+    // with the name the user typed in the Name element.
+    project.setSubjectLanguages("qab-x-tolo:Tolo");
+    person.languages.splice(0, 10);
+    person.languages.push({ code: "qab-x-tolo", mother: true, primary: true });
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:qab");
+    expect("Actor/Languages/Language[1]/Name").toHaveText("Tolo");
+    expect(xml.indexOf("-x-")).toBe(-1);
+  });
+
+  it("should match a person's tag to the project's whatever the case", () => {
+    // A .person file written by 3.0.x holds the tag with the capital letter the user typed.
+    project.setSubjectLanguages("qab-x-tolo:Tolo");
+    person.languages.splice(0, 10);
+    person.languages.push({ code: "qab-x-Tolo", mother: true, primary: true });
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:qab");
+    expect("Actor/Languages/Language[1]/Name").toHaveText("Tolo");
+    expect(xml.indexOf("-x-")).toBe(-1);
+  });
+
+  it("should never write a tag as a language name", () => {
+    // The project does not know this language, so nothing can give its real name. The name
+    // after "-x-" is the only thing left, and a tag must not reach the file as a name.
+    project.setSubjectLanguages("eng:English");
+    person.languages.splice(0, 10);
+    person.languages.push({ code: "qac-x-Wobbly", mother: true, primary: true });
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
+    const xml = gen.actor(person, "pretend-role", pretendSessionDate) as string;
+    setResultXml(xml);
+    expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:qac");
+    expect("Actor/Languages/Language[1]/Name").toHaveText("Wobbly");
+    expect(xml.indexOf("-x-")).toBe(-1);
+  });
+
+  it("should not throw when a language element has no tag", () => {
+    // A hand-edited .person file can hold <language primary="true"/>.
+    project.setSubjectLanguages("eng:English");
+    person.languages.splice(0, 10);
+    person.languages.push({
+      code: undefined as unknown as string,
+      mother: false,
+      primary: true
+    });
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
+    expect(() =>
+      gen.actor(person, "pretend-role", pretendSessionDate)
+    ).not.toThrow();
+  });
+
   /* we now remove that field, so we cannot test it this way
   it("should not output migrated language fields", () => {
     person.languages.splice(0, 10);

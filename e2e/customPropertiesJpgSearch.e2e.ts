@@ -84,9 +84,12 @@ test.describe(
       await page.getByRole("tab", { name: /Properties/i }).click();
       await expect(page.getByTestId("inline-highlight").first()).toBeVisible();
 
-      // Capture a screenshot to document the behavior for the issue
+      // Capture a screenshot to document the behavior for the issue. Write it under the
+      // Playwright output directory, which playwright.config.ts sets to tmp/playwright-output
+      // and .gitignore already covers. The repository root does not, so a screenshot there
+      // came back as an untracked file after every run.
       await page.screenshot({
-        path: "playwright-screenshot-LAM-25.png",
+        path: "tmp/playwright-output/customPropertiesJpgSearch-highlight.png",
         fullPage: true
       });
     });
