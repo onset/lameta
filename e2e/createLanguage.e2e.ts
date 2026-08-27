@@ -326,6 +326,50 @@ test.describe("Finding a language the project invented", () => {
     }
   });
 
+  // An unlisted language may be created only on the Project tab, in Subject Languages. That
+  // field alone carries canCreateNew in fields.json5. If a session or a person could create
+  // one, two sessions would each be given qaa, because the allocator reads only the project's
+  // own language fields, and both languages would then export as ISO639-3:qaa.
+  async function expectNoCreateRow(input: Locator, typed: string) {
+    // Force the click. The placeholder covers the input while another field's menu is open,
+    // and this test is about what the menu offers, not about reaching it. The test above,
+    // "a session finds it by code and by name", is the one that proves the menu is reachable.
+    await input.click({ force: true });
+    await page2.waitForTimeout(300);
+    await input.pressSequentially(typed, { delay: 60 });
+    await page2.waitForTimeout(700);
+    // Require the menu. Without this the test would also pass on a field that never opened
+    // one, and then it would prove nothing.
+    const menu = page2.locator("div[class*='-menu']:visible").first();
+    await menu.waitFor({ state: "visible", timeout: 5000 });
+    const text = await menu.innerText();
+    expect(text).not.toMatch(/as an unlisted language/i);
+    expect(text).not.toMatch(/Add an unlisted language using/i);
+    await page2.keyboard.press("Escape");
+    await page2.waitForTimeout(200);
+  }
+
+  test("a session cannot create an unlisted language", async () => {
+    await project2.goToSessions();
+    await page2.waitForTimeout(600);
+    for (const label of ["Subject Languages", "Working Languages"]) {
+      const field = page2
+        .locator(`div.field:has(label:has-text("${label}")):visible`)
+        .first();
+      const input = field.locator('.select input[role="combobox"]').first();
+      await expectNoCreateRow(input, "Zzyzxqaa");
+    }
+  });
+
+  test("a person cannot create an unlisted language", async () => {
+    await project2.goToPeople();
+    await project2.addPerson("Create Prober");
+    await page2.waitForTimeout(1200);
+    const field = page2.locator(".language-name:visible").first();
+    const input = field.locator('input[role="combobox"]').first();
+    await expectNoCreateRow(input, "Zzyzxqaa");
+  });
+
   test("a person finds it by code and by name", async () => {
     await project2.goToPeople();
     await project2.addPerson("Language Prober");
