@@ -16,10 +16,7 @@ test.describe("Hybrid Export Progress UI", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
     const timestamp = Date.now();
-    project = await launchWithProject(
-      lameta,
-      `HybridExportProgressTest_${timestamp}`
-    );
+    project = await launchWithProject(lameta, `HybridExportProgressTest_${timestamp}`);
   });
 
   test.afterAll(async () => {
@@ -38,9 +35,7 @@ test.describe("Hybrid Export Progress UI", () => {
     console.log("✓ Added 3 sessions");
 
     // Wait for sessions to be visible
-    await expect(
-      page.locator('[data-testid="new-session-button"]')
-    ).toBeVisible();
+    await expect(page.locator('[data-testid="new-session-button"]')).toBeVisible();
 
     // 2. Open export dialog
     await lameta.clickMenu("File", "Export Project...");
@@ -79,9 +74,7 @@ test.describe("Hybrid Export Progress UI", () => {
       console.log("✓ Progress bar appeared");
     } catch {
       // Export may have been too fast - that's OK
-      console.log(
-        "Progress bar not visible - export may have completed quickly"
-      );
+      console.log("Progress bar not visible - export may have completed quickly");
     }
 
     // 7. Wait for export to complete
@@ -90,18 +83,14 @@ test.describe("Hybrid Export Progress UI", () => {
       // Wait for successful completion indicator - "Done" text (may have warnings)
       // Use a more specific selector that matches the h3 heading
       await expect(page.locator("h3:has-text('Done')")).toBeVisible({
-        timeout: 30000
+        timeout: 30000,
       });
       console.log("✓ Export completed successfully");
     } catch {
       // Check if still in progress or error - but handle page being closed
       try {
-        const dialogText = await page
-          .locator('dialog, [role="dialog"]')
-          .textContent();
-        console.log(
-          `Dialog content after timeout: ${dialogText?.substring(0, 500)}`
-        );
+        const dialogText = await page.locator('dialog, [role="dialog"]').textContent();
+        console.log(`Dialog content after timeout: ${dialogText?.substring(0, 500)}`);
         // If we see "Done" in the dialog, the export succeeded even if we missed the visibility check
         if (dialogText?.includes("Done")) {
           console.log("✓ Export completed (detected via dialog content)");
@@ -113,9 +102,7 @@ test.describe("Hybrid Export Progress UI", () => {
           throw e;
         }
         // Page might be closed - just throw a descriptive error
-        throw new Error(
-          "Export timed out - page may have closed or export failed"
-        );
+        throw new Error("Export timed out - page may have closed or export failed");
       }
     }
 
@@ -137,9 +124,7 @@ test.describe("Hybrid Export Progress UI", () => {
           const fullPath = Path.join(prefix, entry.name);
           if (entry.isDirectory()) {
             files.push(fullPath + "/");
-            files.push(
-              ...listFilesRecursive(Path.join(dir, entry.name), fullPath)
-            );
+            files.push(...listFilesRecursive(Path.join(dir, entry.name), fullPath));
           } else {
             files.push(fullPath);
           }
@@ -198,11 +183,7 @@ test.describe("Hybrid Export Progress UI", () => {
     await imdiRadio.check();
 
     // 4. Set up export directory mock (uses showSaveDialog)
-    const exportDir = Path.join(
-      project.projectDirectory,
-      "..",
-      "export-cancel-test"
-    );
+    const exportDir = Path.join(project.projectDirectory, "..", "export-cancel-test");
     fs.mkdirSync(exportDir, { recursive: true });
 
     await lameta.electronApp.evaluate(async ({ dialog }, exportPath) => {
@@ -214,6 +195,9 @@ test.describe("Hybrid Export Progress UI", () => {
     // 5. Start export
     const exportButton = page.getByRole("button", { name: "Export" });
     await exportButton.click();
+    // Until the export starts, the dialog's own Cancel (which closes the
+    // dialog) is still showing; wait for the choosing state to end.
+    await expect(exportButton).toBeHidden();
 
     // 6. Try to click Cancel quickly
     // The Cancel button should be visible during export
@@ -226,26 +210,19 @@ test.describe("Hybrid Export Progress UI", () => {
       console.log("✓ Cancel button was clickable during export");
     } catch {
       // Export completed before we could cancel - that's OK for this test
-      console.log(
-        "Export completed before cancel could be clicked - this is acceptable"
-      );
+      console.log("Export completed before cancel could be clicked - this is acceptable");
     }
 
-    // Wait a moment for any cleanup
-    await page.waitForTimeout(1000);
+    // A Cancel that lands after the last session (corpus write or validation)
+    // does not stop the export, so the dialog can end in either "cancelled" or
+    // "Done". Both show a Close button; the next test needs the dialog gone.
+    const closeButton = page.getByRole("button", { name: "Close" });
+    await closeButton.waitFor({ state: "visible", timeout: 30000 });
+    await closeButton.click();
+    await expect(imdiRadio).toBeHidden();
 
     // Clean up
     fs.rmSync(exportDir, { recursive: true, force: true });
-
-    // Close the dialog if still open
-    try {
-      const closeButton = page.getByRole("button", { name: /Cancel|Close/i });
-      if (await closeButton.isVisible({ timeout: 500 })) {
-        await closeButton.click();
-      }
-    } catch {
-      // Dialog already closed
-    }
   });
 
   test("should show export warnings in log area", async () => {
@@ -261,11 +238,7 @@ test.describe("Hybrid Export Progress UI", () => {
     await imdiRadio.check();
 
     // 3. Set up export directory mock (uses showSaveDialog)
-    const exportDir = Path.join(
-      project.projectDirectory,
-      "..",
-      "export-log-test"
-    );
+    const exportDir = Path.join(project.projectDirectory, "..", "export-log-test");
     fs.mkdirSync(exportDir, { recursive: true });
 
     await lameta.electronApp.evaluate(async ({ dialog }, exportPath) => {
@@ -281,7 +254,7 @@ test.describe("Hybrid Export Progress UI", () => {
     // 5. Wait for export to complete
     try {
       await expect(page.locator("text=Export Completed")).toBeVisible({
-        timeout: 10000
+        timeout: 10000,
       });
       console.log("✓ Export completed");
     } catch {
