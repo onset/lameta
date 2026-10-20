@@ -8,9 +8,9 @@
           "@id": "#language_[code]",
           "@type": "Language",
           code: "[code]",
-          name: "[languageName]"
-        }
-      }
+          name: "[languageName]",
+        },
+      },
     },
     {
       key: "person",
@@ -19,9 +19,9 @@
         template: {
           "@id": "[v]",
           "@type": "Person",
-          name: "[v]"
-        }
-      }
+          name: "[v]",
+        },
+      },
     },
     {
       key: "role",
@@ -30,10 +30,10 @@
         template: {
           "@id": "#role_[v]",
           "@type": "Role",
-          name: "[v]"
-        }
-      }
-    }
+          name: "[v]",
+        },
+      },
+    },
   ],
   project: [
     {
@@ -42,14 +42,14 @@
       default: "default",
       xmlTag: "ArchiveConfigurationName",
       englishLabel: "Archive Configuration used by this project",
-      vocabulary: "ArchiveConfigurationName"
+      vocabulary: "ArchiveConfigurationName",
     },
     {
       key: "customAccessChoices",
       form: "ArchiveConfiguration",
       "//": "Older Windows SM actually didn't store this in the sprj at all",
       xmlTag: "CustomAccessProtocol",
-      englishLabel: "Custom Session Access Choices"
+      englishLabel: "Custom Session Access Choices",
     },
     {
       key: "multilingualConversionPending",
@@ -58,7 +58,7 @@
       visibility: "never",
       omitFromImdi: true,
       omitExport: true,
-      description: "Internal flag: true if slash-syntax fields need conversion to tagged format"
+      description: "Internal flag: true if slash-syntax fields need conversion to tagged format",
     },
 
     /* ------ Funding Project --------- */
@@ -69,7 +69,7 @@
       englishLabel: "Grant ID",
       form: "fundingProject",
       tabIndex: 0,
-      imdiComment: "Corpus/MDGroup/Project/Id"
+      imdiComment: "Corpus/MDGroup/Project/Id",
     },
 
     {
@@ -79,7 +79,7 @@
       englishLabel: "Funding Project Title",
       xmlTag: "FundingProjectTitle",
       form: "fundingProject",
-      deprecated: "Retired in lameta V3 per ELAR request"
+      deprecated: "Retired in lameta V3 per ELAR request",
     },
     {
       key: "fundingProjectFunder",
@@ -88,7 +88,7 @@
       xmlTag: "FundingProjectFunder",
       form: "fundingProject",
       // ELAR would like to put this under MDGroup/Project/Funder but that will need a new schema
-      imdiComment: "Corpus/MDGroup/Keys/Key[@Name='Funding Body']"
+      imdiComment: "Corpus/MDGroup/Keys/Key[@Name='Funding Body']",
     },
     {
       key: "fundingProjectAffiliation",
@@ -96,7 +96,7 @@
       englishLabel: "Project Affiliation",
       xmlTag: "FundingProjectAffiliation",
       form: "fundingProject",
-      imdiComment: "Corpus/MDGroup/Project/Contact/Organisation"
+      imdiComment: "Corpus/MDGroup/Project/Contact/Organisation",
     },
     {
       key: "contactPerson",
@@ -104,7 +104,7 @@
       englishLabel: "Project Lead",
       xmlTag: "ContactPerson",
       form: "fundingProject",
-      imdiComment: "Corpus/MDGroup/Project/Contact/Name"
+      imdiComment: "Corpus/MDGroup/Project/Contact/Name",
     },
     // {
     //   key: "contactPerson",
@@ -123,7 +123,7 @@
       form: "project",
       tabIndex: 0,
       description: "The formal name of the project.",
-      imdiComment: "Project/Name, Corpus/Name" // ELAR doesn't actually use the Corpus/Title field from lameta, they make their own corpus for imdi. But we put this in there for completeness.
+      imdiComment: "Project/Name, Corpus/Name", // ELAR doesn't actually use the Corpus/Title field from lameta, they make their own corpus for imdi. But we put this in there for completeness.
     },
     {
       key: "title",
@@ -131,8 +131,9 @@
       englishLabel: "Title",
       form: "project",
       tabIndex: 0,
+      tipOnUsingThisField: "This is the funded project title.",
       description: 'The funded project title, e.g. "New speakers of Edolo"',
-      imdiComment: "Corpus/Title, Project/Title" // ELAR doesn't actually use the Corpus/Title field from lameta, they make their own corpus for imdi. But we put this in there for completeness.
+      imdiComment: "Corpus/Title, Project/Title", // ELAR doesn't actually use the Corpus/Title field from lameta, they make their own corpus for imdi. But we put this in there for completeness.
     },
     {
       key: "projectDescription",
@@ -142,8 +143,9 @@
       multipleLines: true,
       form: "project",
       visibility: "always",
+      tipOnUsingThisField: "This is a brief summary of your project",
       imdiComment: "Corpus/Description[@Name='short_description']",
-      tabIndex: 2
+      tabIndex: 2,
     },
     {
       key: "collectionSteward",
@@ -153,7 +155,7 @@
       form: "project",
       cssClass: "field__newSection",
       imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Collection Steward']",
-      tabIndex: 4
+      tabIndex: 4,
     },
     {
       key: "collectionDeputySteward",
@@ -163,7 +165,7 @@
       visibility: "never",
       form: "project",
       imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Deputy Collection Steward'] - can be repeated",
-      tabIndex: 5
+      tabIndex: 5,
     },
     {
       key: "depositor",
@@ -173,7 +175,7 @@
       visibility: "always",
       form: "project",
       imdiComment: "Corpus/MDGroup/Actors/Actor[Role='Depositor'] - can be repeated",
-      tabIndex: 6
+      tabIndex: 6,
     },
     /* Removed at ELAR request Dec 2019, because there is also "contact" and putting your name in 3 times
       is a drag.
@@ -210,7 +212,7 @@
       englishLabel: "Location/Address",
       xmlTag: "Location",
       multipleLines: true,
-      tabIndex: 18
+      tabIndex: 18,
     },
     {
       key: "region",
@@ -218,7 +220,7 @@
       form: "projectLocation",
       englishLabel: "Region",
       xmlTag: "Region",
-      tabIndex: 19
+      tabIndex: 19,
     },
     {
       key: "country",
@@ -227,7 +229,7 @@
       xmlTag: "Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       imdiIsClosedVocabulary: false,
-      tabIndex: 20
+      tabIndex: 20,
       //choices are filled in by KnownFieldDefinitions.ts
     },
     {
@@ -247,9 +249,9 @@
         "North-America",
         "Middle-America",
         "Oceania",
-        "South-America"
+        "South-America",
       ],
-      tabIndex: 21
+      tabIndex: 21,
     },
 
     {
@@ -260,14 +262,14 @@
       form: "languages",
       type: "languageChoices",
       controlProps: {
-        canCreateNew: true
+        canCreateNew: true,
       },
       rocrate: {
         key: "ldac:subjectLanguage",
         handler: "languages",
-        array: true
+        array: true,
       },
-      tabIndex: 1
+      tabIndex: 1,
     },
     {
       key: "WorkingLanguages",
@@ -283,9 +285,9 @@
       rocrate: {
         key: "inLanguage",
         handler: "languages",
-        array: true
+        array: true,
       },
-      tabIndex: 2
+      tabIndex: 2,
     },
     {
       key: "metadataLanguages",
@@ -295,11 +297,11 @@
       form: "languages",
       type: "languageChoices",
       controlProps: {
-        ordered: true
+        ordered: true,
       },
       tabIndex: 3,
-      visibility: "never"
-    }
+      visibility: "never",
+    },
   ],
   session: [
     {
@@ -309,13 +311,13 @@
          However, we can't santize names to archive expectations while preserving the actual unicode name unless
          we do persist it 
       "persist": false, */
-      tabIndex: 0
+      tabIndex: 0,
     },
     {
       key: "title",
       xmlTag: "Title",
       englishLabel: "Title",
-      tabIndex: 4
+      tabIndex: 4,
     },
     {
       key: "description",
@@ -323,7 +325,7 @@
       englishLabel: "Description",
       xmlTag: "synopsis",
       multipleLines: true,
-      tabIndex: 5
+      tabIndex: 5,
     },
     {
       key: "languages",
@@ -333,9 +335,9 @@
       rocrate: {
         key: "ldac:subjectLanguage", // LDAC extension: array of languages that are the subject of study
         handler: "languages",
-        array: true // Multiple languages can be studied in a session
+        array: true, // Multiple languages can be studied in a session
       },
-      tabIndex: 12
+      tabIndex: 12,
     },
     {
       key: "workingLanguages",
@@ -346,9 +348,9 @@
         key: "inLanguage", // Schema.org property: single language the session was conducted in
         handler: "languages",
         array: false, // Only one primary working language per session (per Schema.org spec)
-        template: { "@id": "#language_[v]" }
+        template: { "@id": "#language_[v]" },
       },
-      tabIndex: 14
+      tabIndex: 14,
     },
     {
       key: "participants",
@@ -357,9 +359,9 @@
       rocrate: {
         key: "contributors",
         handler: "person",
-        array: true
+        array: true,
       },
-      tabIndex: 3
+      tabIndex: 3,
     },
     {
       key: "genre",
@@ -373,9 +375,9 @@
         array: true,
         template: {
           "@id": "[v]",
-          "@type": "DefinedTerm"
-        }
-      }
+          "@type": "DefinedTerm",
+        },
+      },
     },
     {
       key: "subgenre",
@@ -384,7 +386,7 @@
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
       // moved from additional/more Dec 2019 at ELAR request
       // Ro-Crate note: this is not a controlled vocabulary; we will omit it from ro-crate for now
-      tabIndex: 7
+      tabIndex: 7,
     },
     /* removed Dec 2019. If found these are appended to the description by Session.ts migrateDeprecatedFields()
     {
@@ -408,21 +410,21 @@
       tabIndex: 12,
       rocrate: {
         key: "contentLocation",
-        template: { "@id": "#[v]", "@type": "Place", name: "[v]" }
-      }
+        template: { "@id": "#[v]", "@type": "Place", name: "[v]" },
+      },
     },
     {
       key: "access",
       xmlTag: "Access",
       englishLabel: "Access",
-      tabIndex: 8
+      tabIndex: 8,
     },
     {
       key: "accessDescription", // this was the inherited key... but really it's an explanation
       xmlTag: "AccessExplanation",
       englishLabel: "Access Explanation",
       description: "If the access is not open/free, use this to explain why.",
-      tabIndex: 9
+      tabIndex: 9,
     },
 
     {
@@ -432,14 +434,14 @@
       choices: ["Incoming", "In_Progress", "Finished", "Skipped"],
       default: "Incoming",
       "//": "don't show on main form",
-      form: "status"
+      form: "status",
     },
     {
       key: "date",
       xmlTag: "Date",
       englishLabel: "Date",
       type: "Date",
-      tabIndex: 1
+      tabIndex: 1,
     },
     {
       key: "involvement",
@@ -454,16 +456,16 @@
 
         "elicited",
         "non-elicited",
-        "no-observer"
+        "no-observer",
       ],
-      default: "unspecified"
+      default: "unspecified",
     },
 
     {
       key: "locationRegion",
       englishLabel: "Region",
       xmlTag: "Location_Region",
-      additional: true
+      additional: true,
     },
     {
       key: "locationCountry",
@@ -471,7 +473,7 @@
       xmlTag: "Location_Country",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
       imdiIsClosedVocabulary: false,
-      additional: true
+      additional: true,
       //choices are filled in by KnownFieldDefinitions.ts
     },
     {
@@ -490,10 +492,10 @@
         "North-America",
         "Middle-America",
         "Oceania",
-        "South-America"
+        "South-America",
       ],
 
-      additional: true
+      additional: true,
     },
     // Removed Dec 2019 at ELAR request
     //{
@@ -514,9 +516,9 @@
 
         "spontaneous",
         "semi-spontaneous",
-        "planned"
+        "planned",
       ],
-      default: "unspecified"
+      default: "unspecified",
     },
     {
       key: "socialContext",
@@ -531,10 +533,10 @@
         "family",
         "private",
         "public",
-        "controlled environment"
+        "controlled environment",
       ],
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-SocialContext.xml",
-      default: "unspecified"
+      default: "unspecified",
     },
     {
       // added at ELAR request Dec 2019
@@ -545,8 +547,8 @@
       separatorWithCommaInstructions: "Separate with commas. Note that individual keywords cannot contain a comma.",
       tabIndex: 10,
       rocrate: {
-        key: "keywords"
-      }
+        key: "keywords",
+      },
     },
     {
       // added at ELAR request Dec 2019
@@ -555,21 +557,21 @@
       englishLabel: "Topics",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual topics cannot contain a comma.",
-      tabIndex: 11
+      tabIndex: 11,
     },
     {
       key: "customFields",
       xmlTag: "CustomFields",
       englishLabel: "Custom Fields",
       description: "A table of labels and values for a session.",
-      tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
-    }
+      tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+    },
   ],
   person: [
     {
       key: "name",
       xmlTag: "FullName",
-      englishLabel: "Full Name"
+      englishLabel: "Full Name",
       /* SayMore Windows doesn't persist this in xml, it just uses the file name. Adding it would mess up files opened by that version.
          However, we can't santize names to archive expectations while preserving the actual unicode name unless
          we do persist it */
@@ -578,125 +580,125 @@
     {
       key: "nickname",
       xmlTag: "NickName",
-      englishLabel: "Nickname"
+      englishLabel: "Nickname",
     },
     {
       key: "code",
       xmlTag: "Code",
-      englishLabel: "Code"
+      englishLabel: "Code",
     },
     {
       // new for lameta (starting with 0.9)... will become a complex object with code, if a primary, if parents speak it, etc.
       key: "languages",
       xmlTag: "Languages",
       englishLabel: "Languages",
-      type: "personLanguageList"
+      type: "personLanguageList",
     },
     {
       key: "primaryLanguage",
       // Leave this out because it is deprecated. englishLabel: "Primary Language",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "primaryLanguageLearnedIn", // in original saymore, this field was labeled: "learned in"
       // we're retaining that key to allow migration, but
       // Leave this out because it is deprecated. englishLabel: "Details", // in lameta we extend this to be more general
       omitExport: "true",
-      deprecated: "migrated to description by lameta"
+      deprecated: "migrated to description by lameta",
     },
     {
       key: "otherLanguage0",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage1",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage2",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage3",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage4",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage5",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage6",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage7",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage8",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguage9",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "fathersLanguage",
       englishLabel: "Father's Language",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "mothersLanguage",
       englishLabel: "Mother's Language",
       omitExport: "true",
       deprecated: "migrated to languages by lameta",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "otherLanguages",
       englishLabel: "Other Languages",
       omitExport: "true",
       omitSave: "true",
-      importType: "languageCodeOrName"
+      importType: "languageCodeOrName",
     },
     {
       key: "education",
       xmlTag: "Education",
-      englishLabel: "Education"
+      englishLabel: "Education",
     },
     {
       key: "birthYear",
       xmlTag: "BirthYear",
       englishLabel: "Birth Year",
-      tipOnUsingThisField: "If you are estimating, talk about that in the Description. Enter '?' if you don't know."
+      tipOnUsingThisField: "If you are estimating, talk about that in the Description. Enter '?' if you don't know.",
     },
     {
       key: "gender",
@@ -706,7 +708,7 @@
       // Lameta exports "Other" as OpenVocabulary (rather than coercing it to Unspecified).
       choices: ["Unknown", "Male", "Female", "Other"],
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Actor-Sex.xml",
-      imdiIsClosedVocabulary: true
+      imdiIsClosedVocabulary: true,
     },
     {
       key: "howToContact",
@@ -714,17 +716,17 @@
       englishLabel: "How to Contact",
       multipleLines: true,
       personallyIdentifiableInformation: true,
-      omitFromImdi: true
+      omitFromImdi: true,
     },
     {
       key: "ethnicGroup",
       xmlTag: "EthnicGroup",
-      englishLabel: "Ethnic Group"
+      englishLabel: "Ethnic Group",
     },
     {
       key: "primaryOccupation",
       xmlTag: "PrimaryOccupation",
-      englishLabel: "Primary Occupation"
+      englishLabel: "Primary Occupation",
     },
     {
       key: "description",
@@ -732,28 +734,28 @@
       englishLabel: "Description",
       multipleLines: true,
       multilingual: true,
-      description: "Relevant details such as where they learned the language(s)"
+      description: "Relevant details such as where they learned the language(s)",
     },
     {
       key: "customFields",
       xmlTag: "CustomFields",
       englishLabel: "Custom Fields",
       description: "A table of labels and values for a person.",
-      tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
-    }
+      tipOnUsingThisField: "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+    },
   ],
   projectDocuments: [
     {
       key: "access",
       englishLabel: "Access",
-      type: "Text"
+      type: "Text",
     },
     {
       key: "accessDescription",
       englishLabel: "Access Explanation",
       description: "If the access is not open/free, use this to explain why.",
-      type: "Text"
+      type: "Text",
     },
-    { key: "genre", multingual: false }
-  ]
+    { key: "genre", multingual: false },
+  ],
 }

@@ -38,15 +38,13 @@ Last name
 export function makeGenericCsvZipFile(
   path: string,
   project: Project,
-  folderFilter: (f: Folder) => boolean
+  folderFilter: (f: Folder) => boolean,
 ): Promise<string> {
-  return asyncMakeZipFile(path, (archiver) =>
-    exportGenericCsv(project, archiver, folderFilter)
-  );
+  return asyncMakeZipFile(path, (archiver) => exportGenericCsv(project, archiver, folderFilter));
 }
 export async function asyncMakeZipFile(
   path: string,
-  synchronousExportFunction: (archive: nodeArchiver.Archiver) => void
+  synchronousExportFunction: (archive: nodeArchiver.Archiver) => void,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const archive = nodeArchiver.create("zip");
@@ -86,11 +84,11 @@ export async function asyncMakeZipFile(
 export function exportGenericCsv(
   project: Project,
   archive: nodeArchiver.Archiver,
-  folderFilter: (f: Folder) => boolean
+  folderFilter: (f: Folder) => boolean,
 ) {
   archive.append(makeCsvForProject(project), { name: "project.csv" });
   archive.append(makeCsvForSessions(project, folderFilter), {
-    name: "sessions.csv"
+    name: "sessions.csv",
   });
   archive.append(makeCsvForPeople(project), { name: "people.csv" });
 }
@@ -115,14 +113,7 @@ function getGenericCsv(folders: Folder[]): string {
     return "";
   }
   currentKnownFields = folders[0].knownFields;
-  const blacklist = [
-    "modifiedDate",
-    "size",
-    "type",
-    "hasConsent",
-    "displayName",
-    "filename"
-  ];
+  const blacklist = ["modifiedDate", "size", "type", "hasConsent", "displayName", "filename"];
   const foundFields = getKeys(folders)
     .filter((k) => {
       if (blacklist.indexOf(k) > -1) return false;
@@ -191,7 +182,7 @@ function addContributionsIfSession(folder: Folder): string[] {
     session
       .getAllContributionsToAllFiles()
       .map((c) => [c.role, c.personReference].join(":"))
-      .join("|")
+      .join("|"),
   ];
 }
 
@@ -226,9 +217,12 @@ export function csvEncode(value: string): string {
   let needsQuotes = false;
   needsQuotes = value.indexOf(",") > -1;
 
-  // mac,linux, windows all have an \r, so that's
-  // enough, even though windows also has \n.
+  // A field containing any line break must be quoted, or the embedded
+  // newline splits the record. Check both \r and \n: a pasted value can
+  // contain a bare \n with no \r, and the row delimiter is os.EOL, which
+  // is a bare \n on mac/linux (so an unquoted \n would break the row there).
   needsQuotes = needsQuotes || value.indexOf("\r") > -1;
+  needsQuotes = needsQuotes || value.indexOf("\n") > -1;
 
   // LAM-115: https://linear.app/lameta/issue/LAM-115
   // If the value contains quotes, we must wrap the entire value in quotes.
@@ -255,9 +249,6 @@ export function makeCsvForPeople(project: Project): string {
   return getGenericCsv(project.persons.items);
 }
 
-export function makeCsvForSessions(
-  project: Project,
-  folderFilter: (f: Folder) => boolean
-): string {
+export function makeCsvForSessions(project: Project, folderFilter: (f: Folder) => boolean): string {
   return getGenericCsv(project.sessions.items.filter(folderFilter));
 }

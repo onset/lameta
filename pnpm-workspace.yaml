@@ -6,28 +6,28 @@ allowBuilds:
   core-js-pure@3.49.0: true
   electron@37.3.0: true
   esbuild@0.21.5: true
-  exifreader@3.11.2: true
+  exifreader@3.16.0: true
   ffmpeg-ffprobe-static@6.1.2-rc.1: true
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@latest
   vitest: npm:@voidzero-dev/vite-plus-test@latest
   vite-plus: latest
 overrides:
-  vite: 'catalog:'
-  vitest: 'catalog:'
+  vite: "catalog:"
+  vitest: "catalog:"
 peerDependencyRules:
   allowAny:
     - vite
     - vitest
   allowedVersions:
-    vite: '*'
-    vitest: '*'
+    vite: "*"
+    vitest: "*"
 minimumReleaseAgeExclude:
   - vite-plus
-  - '@voidzero-dev/*'
+  - "@voidzero-dev/*"
   - oxlint
-  - '@oxlint/*'
+  - "@oxlint/*"
   - oxlint-tsgolint
-  - '@oxlint-tsgolint/*'
+  - "@oxlint-tsgolint/*"
   - oxfmt
-  - '@oxfmt/*'
+  - "@oxfmt/*"

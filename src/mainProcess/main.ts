@@ -37,9 +37,7 @@ if (process.env.E2E) {
 } else {
   // Allow multiple instances for developers
   const isDeveloper =
-    is.dev ||
-    process.env.VITE_DEV_SERVER_URL ||
-    process.env.NODE_ENV === "development";
+    is.dev || process.env.VITE_DEV_SERVER_URL || process.env.NODE_ENV === "development";
 
   if (!isDeveloper && !app.requestSingleInstanceLock()) {
     app.quit();
@@ -52,6 +50,15 @@ Store.initRenderer();
 let win: BrowserWindow | null = null;
 
 export { win as mainWindow };
+
+function isExternalUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ["http:", "https:", "mailto:"].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+}
 
 const preload = join(__dirname, "../mainProcess/preload/index.js");
 const url = process.env.VITE_DEV_SERVER_URL;
@@ -109,8 +116,8 @@ async function createWindow() {
       preload: getTestEnvironment().E2E ? undefined : preload,
       nodeIntegration: true,
       contextIsolation: false,
-      webSecurity: false // this is safe, so long as we have no way of showing external web content
-    }
+      webSecurity: false, // this is safe, so long as we have no way of showing external web content
+    },
   });
 
   require("@electron/remote/main").enable(win.webContents);
@@ -140,7 +147,7 @@ async function createWindow() {
     //fillLastMonitor();
     if (process.env.NODE_ENV === "development") {
       console.log(
-        "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
+        "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable.",
       );
 
       win!.webContents.openDevTools();
@@ -156,10 +163,19 @@ async function createWindow() {
     win?.maximize();
   }
 
-  // Make all links open with the browser, not with the application
+  // Make all external links open with the browser, not inside the application.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("https:")) shell.openExternal(url);
+    if (isExternalUrl(url)) {
+      shell.openExternal(url);
+    }
     return { action: "deny" };
+  });
+
+  win.webContents.on("will-navigate", (event, navigationUrl) => {
+    if (isExternalUrl(navigationUrl)) {
+      event.preventDefault();
+      shell.openExternal(navigationUrl);
+    }
   });
 }
 
@@ -193,8 +209,8 @@ ipcMain.handle("open-win", (event, arg) => {
     webPreferences: {
       preload,
       nodeIntegration: true,
-      contextIsolation: false
-    }
+      contextIsolation: false,
+    },
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
@@ -213,9 +229,7 @@ ipcMain.handle("getAppPath", () => {
 // with the file path as a command line argument. We need to capture this and set
 // global.arguments so the renderer process can access it.
 {
-  const sprjArg = process.argv.find(
-    (arg) => arg.endsWith(".sprj") && !arg.startsWith("-")
-  );
+  const sprjArg = process.argv.find((arg) => arg.endsWith(".sprj") && !arg.startsWith("-"));
   if (sprjArg) {
     console.log(`Found .sprj file in command line args: ${sprjArg}`);
     (global as any).arguments = ["ignore", sprjArg];
@@ -247,7 +261,7 @@ ipcMain.on("copyStopped", () => {
 ipcMain.handle("confirm-quit", async (event, ...args) => {
   const result = await dialog.showMessageBox(win!, {
     message: args[0],
-    buttons: [args[1], args[2]]
+    buttons: [args[1], args[2]],
   });
   return result;
 });

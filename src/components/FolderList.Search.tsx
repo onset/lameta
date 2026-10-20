@@ -7,7 +7,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { t } from "@lingui/macro";
 import { i18n as appI18n } from "../other/localization";
-import { FolderGroup } from "src/model/Folder/FolderGroup";
+import { FolderGroup } from "../model/Folder/FolderGroup";
 import { observer } from "mobx-react";
 import { lameta_orange } from "../containers/theme";
 
@@ -20,13 +20,7 @@ interface ISearchBarProps {
 }
 
 export const SearchBar: React.FC<ISearchBarProps> = observer(
-  ({
-    folders,
-    lastSearch,
-    searchCount,
-    currentSearchResetCounter,
-    onCommitted
-  }) => {
+  ({ folders, lastSearch, searchCount, currentSearchResetCounter, onCommitted }) => {
     // Use folders.searchTerm only for persisted normalized match logic; UI adornments should reflect what user has typed (rawValue)
     const value = folders.searchTerm || ""; // legacy persisted value (may lag while typing in empty list state)
     // Track raw user input; initialize from lastSearch prop (state persisted in parent) so tab switches retain visual input
@@ -45,7 +39,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
           folders.filter(v);
         }
       },
-      [folders, onCommitted]
+      [folders, onCommitted],
     );
 
     const handleChange = (v: string) => {
@@ -133,7 +127,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
                   <CloseIcon fontSize="small" />
                 </IconButton>
               </InputAdornment>
-            ) : undefined
+            ) : undefined,
           }}
           css={css`
             flex: 1;
@@ -148,5 +142,5 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
         />
       </div>
     );
-  }
+  },
 );
