@@ -2,8 +2,8 @@ import { execFile } from "child_process";
 
 // Alpha, beta and release can be installed side by side, and double-clicking a .sprj file
 // should open it in whichever of them the user ran last. Every channel's installer registers
-// .sprj under the same file class (the "name" in electron-builder.json5's fileAssociations), so
-// each launch points that class's open command at the running exe.
+// .sprj under the same file class (build/installer.nsh), so each launch points that class's
+// open command at the running exe.
 //
 // Writing to HKCU needs no admin rights, and HKCU wins over an HKLM registration from a
 // per-machine install. This does not override a user who picked a different program with

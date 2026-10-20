@@ -136,24 +136,6 @@ jobs:
           security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
           rm "$RUNNER_TEMP/certificate.p12"
 
-      - name: Give electron-builder the signing certificate (Windows)
-        # Only Windows: electron-builder reads even an empty CSC_LINK as a path, so macOS must not
-        # have it at all.
-        if: startsWith(matrix.os, 'windows')
-        shell: bash
-        env:
-          CERTIFICATE: ${{ secrets.PROD_MACOS_CERTIFICATE }}
-          CERTIFICATE_PASSWORD: ${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}
-        run: |
-          {
-            echo "CSC_LINK<<END_OF_CSC_LINK"
-            echo "$CERTIFICATE"
-            echo "END_OF_CSC_LINK"
-            echo "CSC_KEY_PASSWORD<<END_OF_CSC_KEY_PASSWORD"
-            echo "$CERTIFICATE_PASSWORD"
-            echo "END_OF_CSC_KEY_PASSWORD"
-          } >> "$GITHUB_ENV"
-
       - name: Run full build (includes locale compilation)
         run: yarn fullbuild
 

@@ -96,8 +96,10 @@ Each channel installs under its own name and app id, so one computer can have al
 once. Each keeps its own settings folder, which means each has its own recent-projects list,
 and they can all run at the same time.
 
-On Windows, double-clicking a `.sprj` file opens it in whichever channel you ran last: each
-time lameta starts, it registers itself as the program for `.sprj` files. On macOS, the system
+On Windows, double-clicking a `.sprj` file opens it in whichever channel you installed or ran
+last: installing lameta, and each time lameta starts, registers it as the program for `.sprj`
+files. Uninstalling the channel that `.sprj` files open hands them to another installed
+channel. On macOS, the system
 chooses which installed channel opens a `.sprj` file; to change it, use Get Info on a `.sprj`
 file, pick the app under "Open with", and click Change All.
 
