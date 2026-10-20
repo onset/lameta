@@ -32,6 +32,7 @@
     "test:launch-after-package": "tsx ./scripts/test-launch.ts --exe=./release/win-unpacked/lameta.exe --runs=10 --timeout=30000 --app-arg=--launch-test-delay=1500",
     "fullbuild": "pnpm run strings:extract && pnpm run strings:compile && tsc && vp build",
     "e2ebuildwatch": "vp build --config vite.config.nonminified.js --watch",
+    "preinstall": "node scripts/refuse-yarn-node-modules.js",
     "postinstall": "patch-package && install-electron && electron-builder install-app-deps",
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render",
     "dev": "pnpm run check-node && vp dev",
