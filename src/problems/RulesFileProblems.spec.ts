@@ -1,0 +1,209 @@
+import { describe, it, expect, vi, afterEach } from "vitest";
+import * as fs from "fs-extra";
+import * as Path from "path";
+import temp from "temp";
+import * as mobx from "mobx";
+import { Project } from "../model/Project/Project";
+import { Session } from "../model/Project/Session/Session";
+import userSettings from "../other/UserSettings";
+import { makeLametaSourceReader } from "../export/lametaSourceComment";
+import { RulesFileProblems } from "./RulesFileProblems";
+import { rulesSandboxMain } from "./rulesSandboxMain";
+
+mobx.configure({ enforceActions: "never" });
+temp.track();
+
+// vitest cannot import a data: URL, which is how the sandbox loads a rules file
+async function loadWithoutImport(source: string) {
+  const names = [
+    ...source.matchAll(/export\s+(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/g),
+  ].map((m) => m[1]);
+  return new Function(
+    source.replace(/export\s+(?=const|let|var|function|class)/g, "") +
+      `\nreturn { ${names.join(", ")} };`,
+  )();
+}
+
+function loadEdoloUnderElarWithTwoSessions(): Project {
+  const dir = Path.join(temp.mkdirSync("rules runner"), "Edolo sample");
+  fs.copySync("sample data/Edolo sample", dir);
+  fs.mkdirSync(Path.join(dir, "Sessions", "ETR010"));
+  fs.copyFileSync(
+    Path.join(dir, "Sessions", "ETR009", "ETR009.session"),
+    Path.join(dir, "Sessions", "ETR010", "ETR010.session"),
+  );
+  const sprj = Path.join(dir, "Edolo sample.sprj");
+  fs.writeFileSync(
+    sprj,
+    fs
+      .readFileSync(sprj, "utf8")
+      .replace(
+        "<ArchiveConfigurationName>custom</ArchiveConfigurationName>",
+        "<ArchiveConfigurationName>ELAR</ArchiveConfigurationName>",
+      ),
+  );
+  return Project.fromDirectory(dir);
+}
+
+describe("RulesFileProblems", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+    userSettings.setProblemRulesFile("ELAR", undefined);
+  });
+
+  it("checks generated IMDI and generates again only the session that changed", async () => {
+    vi.useFakeTimers();
+    const project = loadEdoloUnderElarWithTwoSessions();
+    const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
+    fs.writeFileSync(
+      rulesPath,
+      `export const interfaceVersion = 1;
+       export const format = "imdi";
+       export function checkSession(doc, report) {
+         const title = doc.querySelector("Session > Title");
+         report({ id: "title", message: "Title is " + title.textContent, node: title });
+       }`,
+    );
+    userSettings.setProblemRulesFile("ELAR", rulesPath);
+    const runner = new RulesFileProblems(async (input) => ({
+      value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
+    }));
+    const stop = runner.watch(project);
+    await vi.advanceTimersByTimeAsync(10);
+
+    expect(runner.errors).toEqual([]);
+    expect(runner.timing.sessionsGenerated).toBe(2);
+    expect(runner.problems.map((p) => [p.sessionId, p.message])).toEqual([
+      ["ETR009", "Title is The story behind how we catch fish with poison bark"],
+      ["ETR010", "Title is The story behind how we catch fish with poison bark"],
+    ]);
+    expect(runner.problems[1].target).toEqual({
+      folderType: "session",
+      folderId: "ETR010",
+      fieldKey: "title",
+    });
+
+    const etr010 = project.sessions.items[1] as Session;
+    etr010.properties.setText("title", "Changed");
+    // nothing runs until the user pauses
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(runner.problems[1].message).not.toBe("Title is Changed");
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(runner.problems[1].message).toBe("Title is Changed");
+    expect(runner.timing.sessionsGenerated).toBe(1);
+
+    stop();
+  });
+
+  it("generates again only the session whose language changed, unless an unlisted language's code changes", async () => {
+    vi.useFakeTimers();
+    const project = loadEdoloUnderElarWithTwoSessions();
+    const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
+    fs.writeFileSync(rulesPath, "export const interfaceVersion = 1;");
+    userSettings.setProblemRulesFile("ELAR", rulesPath);
+    const runner = new RulesFileProblems(async () => ({
+      value: { problems: [], errors: [], milliseconds: 0 },
+    }));
+    const stop = runner.watch(project);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(runner.timing.sessionsGenerated).toBe(2);
+
+    const [etr009, etr010] = project.sessions.items as Session[];
+    etr010.properties.setText("languages", "etr;tpi");
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(runner.timing.sessionsGenerated).toBe(1);
+
+    // the first unlisted language takes qaa
+    etr010.properties.setText("languages", "qaa-x-zebra:Zebra");
+    await vi.advanceTimersByTimeAsync(2000);
+    // Tolo sorts before Zebra, so Zebra's code changes, and ETR010 is generated again
+    etr009.properties.setText("languages", "qaa-x-tolo:Tolo");
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(runner.timing.sessionsGenerated).toBe(2);
+    stop();
+  });
+
+  it("reports a rules file it cannot read", async () => {
+    vi.useFakeTimers();
+    const project = loadEdoloUnderElarWithTwoSessions();
+    userSettings.setProblemRulesFile("ELAR", "c:/no/such/rules.js");
+    const runner = new RulesFileProblems(async () => ({ value: undefined }));
+    const stop = runner.watch(project);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(runner.errors.map((e) => e.kind)).toEqual(["load"]);
+    stop();
+  });
+
+  it("reports a timeout", async () => {
+    vi.useFakeTimers();
+    const project = loadEdoloUnderElarWithTwoSessions();
+    const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
+    fs.writeFileSync(rulesPath, "export const interfaceVersion = 1;");
+    userSettings.setProblemRulesFile("ELAR", rulesPath);
+    const runner = new RulesFileProblems(async () => ({ timedOut: true }));
+    const stop = runner.watch(project);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(runner.errors.map((e) => e.kind)).toEqual(["timeout"]);
+    stop();
+  });
+
+  it("drops the last run's problems when a run fails", async () => {
+    vi.useFakeTimers();
+    const project = loadEdoloUnderElarWithTwoSessions();
+    const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
+    fs.writeFileSync(
+      rulesPath,
+      `export const interfaceVersion = 1;
+       export const format = "imdi";
+       export function checkCorpus(doc, report) { report({ id: "a", message: "a" }); }`,
+    );
+    userSettings.setProblemRulesFile("ELAR", rulesPath);
+    let fail = false;
+    const runner = new RulesFileProblems(async (input) => {
+      if (fail) throw new Error("the sandbox is gone");
+      return {
+        value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
+      };
+    });
+    const stop = runner.watch(project);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(runner.problems.map((p) => p.checkId)).toEqual(["a"]);
+
+    fail = true;
+    (project.sessions.items[0] as Session).properties.setText("title", "x");
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(runner.problems).toEqual([]);
+    expect(runner.errors.map((e) => e.kind)).toEqual(["load"]);
+    // and the export's check reports it too
+    expect((await runner.checkNow(project)).errors.map((e) => e.kind)).toEqual(["load"]);
+    stop();
+  });
+
+  it("runs again soon after the local rules file is saved", async () => {
+    const project = loadEdoloUnderElarWithTwoSessions();
+    const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
+    const rules = (message: string) =>
+      `export const interfaceVersion = 1;
+       export const format = "imdi";
+       export function checkCorpus(doc, report) { report({ id: "a", message: "${message}" }); }`;
+    fs.writeFileSync(rulesPath, rules("before"));
+    userSettings.setProblemRulesFile("ELAR", rulesPath);
+    const runner = new RulesFileProblems(async (input) => ({
+      value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
+    }));
+    const stop = runner.watch(project);
+    const waitFor = async (message: string) => {
+      const start = Date.now();
+      while (runner.problems[0]?.message !== message) {
+        if (Date.now() - start > 3000) throw new Error("no re-run");
+        await new Promise((r) => setTimeout(r, 20));
+      }
+      return Date.now() - start;
+    };
+    await waitFor("before");
+    fs.writeFileSync(rulesPath, rules("after"));
+    // well under the 1.5 s that a change to the project waits
+    expect(await waitFor("after")).toBeLessThan(1000);
+    stop();
+  });
+});

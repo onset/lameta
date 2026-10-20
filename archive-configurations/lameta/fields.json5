@@ -311,13 +311,13 @@
          However, we can't santize names to archive expectations while preserving the actual unicode name unless
          we do persist it 
       "persist": false, */
-      tabIndex: 0,
+      tabIndex: 1,
     },
     {
       key: "title",
       xmlTag: "Title",
       englishLabel: "Title",
-      tabIndex: 4,
+      tabIndex: 3,
     },
     {
       key: "description",
@@ -325,7 +325,7 @@
       englishLabel: "Description",
       xmlTag: "synopsis",
       multipleLines: true,
-      tabIndex: 5,
+      tabIndex: 11,
     },
     {
       key: "languages",
@@ -337,7 +337,7 @@
         handler: "languages",
         array: true, // Multiple languages can be studied in a session
       },
-      tabIndex: 12,
+      tabIndex: 8,
     },
     {
       key: "workingLanguages",
@@ -350,7 +350,7 @@
         array: false, // Only one primary working language per session (per Schema.org spec)
         template: { "@id": "#language_[v]" },
       },
-      tabIndex: 14,
+      tabIndex: 9,
     },
     {
       key: "participants",
@@ -361,7 +361,7 @@
         handler: "person",
         array: true,
       },
-      tabIndex: 3,
+      tabIndex: 15,
     },
     {
       key: "genre",
@@ -369,7 +369,7 @@
       xmlTag: "Genre",
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
       vocabularyFile: "genres.json",
-      tabIndex: 6,
+      tabIndex: 4,
       rocrate: {
         key: "ldac:linguisticGenre",
         array: true,
@@ -386,7 +386,7 @@
       imdiRange: "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
       // moved from additional/more Dec 2019 at ELAR request
       // Ro-Crate note: this is not a controlled vocabulary; we will omit it from ro-crate for now
-      tabIndex: 7,
+      tabIndex: 5,
     },
     /* removed Dec 2019. If found these are appended to the description by Session.ts migrateDeprecatedFields()
     {
@@ -407,7 +407,7 @@
       xmlTag: "Location",
       englishLabel: "Neighborhood/Town/Village",
       description: "A location that is relevant within the group you are studying",
-      tabIndex: 12,
+      tabIndex: 14,
       rocrate: {
         key: "contentLocation",
         template: { "@id": "#[v]", "@type": "Place", name: "[v]" },
@@ -417,14 +417,14 @@
       key: "access",
       xmlTag: "Access",
       englishLabel: "Access",
-      tabIndex: 8,
+      tabIndex: 6,
     },
     {
       key: "accessDescription", // this was the inherited key... but really it's an explanation
       xmlTag: "AccessExplanation",
       englishLabel: "Access Explanation",
       description: "If the access is not open/free, use this to explain why.",
-      tabIndex: 9,
+      tabIndex: 7,
     },
 
     {
@@ -441,7 +441,7 @@
       xmlTag: "Date",
       englishLabel: "Date",
       type: "Date",
-      tabIndex: 1,
+      tabIndex: 2,
     },
     {
       key: "involvement",
@@ -545,7 +545,7 @@
       englishLabel: "Keywords",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual keywords cannot contain a comma.",
-      tabIndex: 10,
+      tabIndex: 13,
       rocrate: {
         key: "keywords",
       },
@@ -557,10 +557,11 @@
       englishLabel: "Topics",
       additional: false,
       separatorWithCommaInstructions: "Separate with commas. Note that individual topics cannot contain a comma.",
-      tabIndex: 11,
+      tabIndex: 12,
     },
     {
       key: "customFields",
+      tabIndex: 10,
       xmlTag: "CustomFields",
       englishLabel: "Custom Fields",
       description: "A table of labels and values for a session.",

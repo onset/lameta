@@ -46,15 +46,51 @@ export class FieldDefinition {
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization
   public xmlTag?: string = "";
   public personallyIdentifiableInformation?: boolean;
+
+  // Rules that an archive configuration can set on a field. src/problems/fieldRules.ts
+  // checks them and writes the messages, which use the field's label.
+  // the field must not be empty
+  public required?: boolean;
+  // the key of a project field whose value also satisfies `required`, for a session
+  // field that the export fills from the project when the session has none
+  public projectFallback?: string;
+  // the field must not be empty when another field of the same file has this value,
+  // e.g. { field: "access", value: "S" }
+  public requiredWhen?: { field: string; value: string };
+  // a regular expression that the whole value must match
+  public pattern?: string;
+  // what `pattern` allows, in words, e.g. "letters a-z, numbers 0-9, dashes and underscores only"
+  public patternDescription?: string;
+  public maxLength?: number;
+  // for comma-separated fields such as topic and keyword
+  public minItems?: number;
+  // a multilingual field must have an English value
+  public englishRequired?: boolean;
+  // a multilingual field must have a value in a language other than English
+  public translationRequired?: boolean;
+  // How serious it is when this field breaks one of the rules above: one severity for
+  // all of them, or one per rule, e.g. { pattern: "warning" }. If not set,
+  // "warning" for translationRequired and "error" for the others.
+  public severity?: FieldRuleSeverity | Partial<Record<FieldRule, FieldRuleSeverity>>;
   // this constructor lets us take something read in from json and
   // get a definition with any default values set above
   public constructor(rawObject) {
     Object.assign(this, rawObject);
-    this.isAdditional =
-      rawObject.additional === true || rawObject.additional === "true";
+    this.isAdditional = rawObject.additional === true || rawObject.additional === "true";
     /// if englishLabel wasn't specified, derive it from the key
     if (!this.englishLabel) {
       this.englishLabel = this.key;
     }
   }
 }
+
+export type FieldRuleSeverity = "error" | "warning";
+// the names of the rule properties of FieldDefinition
+export type FieldRule =
+  | "required"
+  | "requiredWhen"
+  | "pattern"
+  | "maxLength"
+  | "minItems"
+  | "englishRequired"
+  | "translationRequired";

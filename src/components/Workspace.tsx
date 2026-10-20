@@ -27,6 +27,14 @@ import { IFolderType } from "../model/Folder/Folder";
 import { MediaFolderDialog } from "./MediaFolderDialog";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { lameta_blue, lameta_green, lameta_orange } from "../containers/theme";
+import { navigationState, TopTab } from "../navigation/NavigationState";
+import { projectProblems } from "../problems/ProjectProblems";
+import { rulesFileProblems } from "../problems/RulesFileProblems";
+import {
+  ProblemsSidebar,
+  ProblemsIndicator,
+  kProblemsSidebarWidth,
+} from "./problems/ProblemsSidebar";
 export interface IProps {
   project: Project;
   authorityLists: AuthorityLists;
@@ -34,7 +42,21 @@ export interface IProps {
   reload: () => void;
 }
 
+// in the order of the tabs
+const kTopTabs: TopTab[] = ["project", "sessions", "people"];
+
+// how long the Problems sidebar takes to open or close
+const kSlideMilliseconds = 200;
+// the height of the row of Project, Sessions and People tabs, including its bottom
+// border; the Problems sidebar starts below it
+const kTabRowHeight = 38;
+
 class Home extends React.Component<IProps> {
+  private disposeTopTabReaction: mobx.IReactionDisposer;
+  private disposeShowProblemsReaction: mobx.IReactionDisposer;
+  private stopWatchingProblems: () => void;
+  private stopRunningRulesFile: () => void;
+
   // If multilingualConversionPending is true, open to Project tab (0) to show Languages sub-tab
   // Otherwise, default to Project tab (index 0 regardless of DeveloperMode now)
   private get kFirstTabToOpen() {
@@ -65,6 +87,41 @@ class Home extends React.Component<IProps> {
     mobx.observe(this.props.project.persons, (change) => {
       this.UpdateMenus(2); // assume we are in the people tab at the moment
     });
+
+    navigationState.setTopTab(kTopTabs[this.kFirstTabToOpen]);
+    // the tab can change from a click or from navigateTo()
+    this.disposeTopTabReaction = mobx.reaction(
+      () => navigationState.topTab,
+      (tab) => {
+        const index = kTopTabs.indexOf(tab);
+        this.props.project.saveAllFilesInFolder();
+        this.UpdateMenus(index);
+        analyticsLocation(["Project", "Sessions", "People"][index]);
+      },
+    );
+    // the sidebar can be shown or hidden from the View menu or from its own buttons,
+    // and the menu's tick only changes when the menu is rebuilt
+    this.disposeShowProblemsReaction = mobx.reaction(
+      () => userSettings.ShowProblems,
+      () => this.UpdateMenus(kTopTabs.indexOf(navigationState.topTab)),
+    );
+  }
+
+  public componentDidUpdate(prevProps: IProps) {
+    if (prevProps.project !== this.props.project) {
+      navigationState.setTopTab(kTopTabs[this.kFirstTabToOpen]);
+      this.stopWatchingProblems();
+      this.stopWatchingProblems = projectProblems.watch(this.props.project);
+      this.stopRunningRulesFile();
+      this.stopRunningRulesFile = rulesFileProblems.watch(this.props.project);
+    }
+  }
+
+  public componentWillUnmount() {
+    this.disposeTopTabReaction();
+    this.disposeShowProblemsReaction();
+    this.stopWatchingProblems();
+    this.stopRunningRulesFile();
   }
 
   // NB: we have to actually reload menus because (as of this writing) electron menus
@@ -84,7 +141,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.addSession();
             }
-          }
+          },
         },
         {
           label: t`Duplicate Session`,
@@ -94,7 +151,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.duplicateCurrentSession();
             }
-          }
+          },
         },
         { type: "separator" },
         {
@@ -104,7 +161,7 @@ class Home extends React.Component<IProps> {
           enabled: enableMenu,
           click: () => {
             showSpreadsheetImportDialog("session");
-          }
+          },
         },
         { type: "separator" },
         {
@@ -115,15 +172,11 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.deleteCurrentSession();
             }
-          }
+          },
         },
 
-        this.getDeleteMarkedMenuItem(
-          "session",
-          t`Delete All Marked Sessions...`,
-          enableMenu
-        )
-      ]
+        this.getDeleteMarkedMenuItem("session", t`Delete All Marked Sessions...`, enableMenu),
+      ],
     };
     enableMenu = currentTabIndex === 2;
     const peopleMenu = {
@@ -136,7 +189,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.addPerson();
             }
-          }
+          },
         },
         {
           label: t`Duplicate Person`,
@@ -145,7 +198,7 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.duplicateCurrentPerson();
             }
-          }
+          },
         },
         { type: "separator" },
         {
@@ -154,7 +207,7 @@ class Home extends React.Component<IProps> {
           enabled: enableMenu,
           click: () => {
             showSpreadsheetImportDialog("person");
-          }
+          },
         },
         { type: "separator" },
         {
@@ -164,21 +217,17 @@ class Home extends React.Component<IProps> {
             if (this.props.project) {
               this.props.project.deleteCurrentPerson();
             }
-          }
+          },
         },
-        this.getDeleteMarkedMenuItem(
-          "person",
-          t`Delete All Marked People...`,
-          enableMenu
-        )
-      ]
+        this.getDeleteMarkedMenuItem("person", t`Delete All Marked People...`, enableMenu),
+      ],
     };
     this.props.menu.updateMainMenu(sessionMenu, peopleMenu);
   }
   private getDeleteMarkedMenuItem(
     folderType: IFolderType,
     label: string,
-    enabled: boolean
+    enabled: boolean,
   ): object {
     return {
       // this doesn't work because the count falls out of date (these menus cannot be updated on the fly)
@@ -195,11 +244,11 @@ class Home extends React.Component<IProps> {
             ShowMessageDialog({
               title: ``,
               text: `To select the items that you want to delete, first tick one or more boxes.`,
-              buttonText: "Close"
+              buttonText: "Close",
             });
           } else this.props.project.deleteMarkedFolders(folderType);
         }
-      }
+      },
     };
   }
 
@@ -207,10 +256,12 @@ class Home extends React.Component<IProps> {
   // starting with them. Otherwise they will be disabled until you click
   // on another tab and come back
   public componentDidMount() {
+    this.stopWatchingProblems = projectProblems.watch(this.props.project);
+    this.stopRunningRulesFile = rulesFileProblems.watch(this.props.project);
     this.UpdateMenus(this.kFirstTabToOpen);
   }
   public render() {
-    // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the project changes
+    // a new project gets a fresh Tabs element; componentDidUpdate() resets which tab is selected
     const tabsKey = this.props.project.directory;
 
     return (
@@ -229,13 +280,38 @@ class Home extends React.Component<IProps> {
             position: absolute;
             top: 0;
             right: 0;
+            // #tabContainer comes later and is positioned, so without this it covers
+            // this strip and takes its clicks
+            z-index: 1;
+            // its margins make it reach below the row of tabs; only what is in it
+            // should take clicks there
+            pointer-events: none;
+            & > * {
+              pointer-events: auto;
+            }
             display: flex;
+            align-items: center;
             * {
               margin: 10px;
             }
           `}
         >
           <CopyingStatus /> <RegistrationReminder />
+          <div
+            css={css`
+              // #registrationReminder has 10px less margin above than below, so its
+              // text is 5px above the middle; this puts the indicator's middle there
+              // too, without changing the height of the strip
+              && {
+                margin: 5px 10px 15px;
+              }
+              && * {
+                margin: 0;
+              }
+            `}
+          >
+            <ProblemsIndicator />
+          </div>
         </div>
         <SaveNotifier />
         {/* MediaFolderDialog belongs here instead of at app because it relies on there being a current project */}
@@ -245,15 +321,15 @@ class Home extends React.Component<IProps> {
           css={css`
             flex: 1; //grow to fill as much as is can (up to edge of notification bar)
             width: 100%; // else it goes beyond its parent
+            // for the Problems sidebar
+            position: relative;
           `}
         >
           <Tabs
             key={tabsKey}
-            defaultIndex={this.kFirstTabToOpen}
+            selectedIndex={kTopTabs.indexOf(navigationState.topTab)}
             onSelect={(index: number) => {
-              this.props.project.saveAllFilesInFolder();
-              this.UpdateMenus(index);
-              analyticsLocation(["Project", "Sessions", "People"][index]);
+              navigationState.setTopTab(kTopTabs[index]);
             }}
             css={css`
               overflow: auto; // if scroll bars show, something is wrong, this is should size to the window
@@ -263,6 +339,12 @@ class Home extends React.Component<IProps> {
               flex-direction: column;
 
               & > .react-tabs__tab-panel--selected {
+                // room for the Problems sidebar, which is not inside the tabs
+                margin-right: ${userSettings.ShowProblems ? kProblemsSidebarWidth : 0}px;
+                transition: margin-right ${kSlideMilliseconds}ms ease-in-out;
+                @media (prefers-reduced-motion: reduce) {
+                  transition: none;
+                }
                 padding: 8px;
                 height: 100%;
                 display: flex;
@@ -290,28 +372,19 @@ class Home extends React.Component<IProps> {
             `}
           >
             <TabList style={{ margin: 0 }}>
-              <Tab
-                className={"react-tabs__tab tab-project"}
-                data-testid="project-tab"
-              >
+              <Tab className={"react-tabs__tab tab-project"} data-testid="project-tab">
                 <div className={"icon-and-label"}>
                   <ProjectIcon />
                   <Trans>Project</Trans>
                 </div>
               </Tab>
-              <Tab
-                className={"react-tabs__tab tab-sessions"}
-                data-testid="sessions-tab"
-              >
+              <Tab className={"react-tabs__tab tab-sessions"} data-testid="sessions-tab">
                 <div className={"icon-and-label"}>
                   <SessionIcon />
                   <Trans>Sessions</Trans>
                 </div>
               </Tab>
-              <Tab
-                className={"react-tabs__tab tab-people"}
-                data-testid="people-tab"
-              >
+              <Tab className={"react-tabs__tab tab-people"} data-testid="people-tab">
                 <div className={"icon-and-label"}>
                   <PeopleIcon />
                   <Trans>People</Trans>
@@ -334,12 +407,36 @@ class Home extends React.Component<IProps> {
               </ErrorBoundary>
             </TabPanel>
             <TabPanel className={"tab-panel-people"}>
-              <PeopleTab
-                project={this.props.project}
-                authorityLists={this.props.authorityLists}
-              />
+              <PeopleTab project={this.props.project} authorityLists={this.props.authorityLists} />
             </TabPanel>
           </Tabs>
+          {/* Below the row of tabs, which runs the full width over it. It slides open
+          and closed; while closed it keeps the sidebar rendered, hidden, so that the
+          slide has something to show. */}
+          <div
+            data-testid="problems-sidebar-slider"
+            css={css`
+              position: absolute;
+              top: ${kTabRowHeight}px;
+              right: 0;
+              bottom: 0;
+              display: flex;
+              overflow: hidden;
+              width: ${userSettings.ShowProblems ? kProblemsSidebarWidth : 0}px;
+              visibility: ${userSettings.ShowProblems ? "visible" : "hidden"};
+              transition: ${
+                userSettings.ShowProblems
+                  ? `width ${kSlideMilliseconds}ms ease-in-out`
+                  : // stay visible until the slide has finished
+                    `width ${kSlideMilliseconds}ms ease-in-out, visibility 0s ${kSlideMilliseconds}ms`
+              };
+              @media (prefers-reduced-motion: reduce) {
+                transition: none;
+              }
+            `}
+          >
+            <ProblemsSidebar project={this.props.project} />
+          </div>
           {/* gets placed on top right of the tabs */}
           {/* <NotificationIndicator
             onClick={() => {

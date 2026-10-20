@@ -45,11 +45,23 @@ msgstr "Tentang lameta"
 msgid "Access"
 msgstr "Akses"
 
+msgid "Across sessions"
+msgstr ""
+
+msgid "Add \"{inputValue}\" as an unlisted language"
+msgstr ""
+
 msgid "Add Files"
 msgstr "Tambah File-File"
 
 msgid "Add Language"
 msgstr "Tambah Bahasa"
+
+msgid "Add an Unlisted Language"
+msgstr ""
+
+msgid "Add an unlisted language using {code}"
+msgstr ""
 
 msgid "Add documents here that describe the projects and corpus."
 msgstr "Tambahkan dokumen di sini yang menjelaskan proyek dan korpus."
@@ -70,6 +82,9 @@ msgid "Always"
 msgstr ""
 
 msgid "Always available on this device."
+msgstr ""
+
+msgid "Another language in this project already uses that code."
 msgstr ""
 
 msgid "Archive"
@@ -120,6 +135,12 @@ msgstr "Ubah Nama Menjadi:"
 
 msgid "Change..."
 msgstr "Ubah..."
+
+msgid "Checking the project…"
+msgstr ""
+
+msgid "Checking…"
+msgstr ""
 
 msgid "Choose File"
 msgstr "Pilih File"
@@ -286,6 +307,9 @@ msgstr "Ekspor proyek..."
 msgid "Export failed"
 msgstr ""
 
+msgid "Export renames it to \"{exportedName}\"."
+msgstr ""
+
 msgid "Export was cancelled. No files were exported."
 msgstr ""
 
@@ -303,6 +327,9 @@ msgstr "File"
 
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr "File locking dapat terjadi ketika pemutar media memegang file video. Ini juga bisa disebabkan oleh program anti-virus atau file sinkronisasi. Jika masalah terus berlanjut, mohon restart lameta dan coba lagi."
+
+msgid "File name"
+msgstr ""
 
 msgid "File to Import:"
 msgstr "File untuk Impor:"
@@ -366,6 +393,12 @@ msgstr "Bantu menerjemahkan"
 
 msgid "Hide Others"
 msgstr "Sembunyikan Yang Lain"
+
+msgid "Hide Problems"
+msgstr ""
+
+msgid "Hide XML"
+msgstr ""
 
 msgid "Hide lameta"
 msgstr "Sembunyikan lameta"
@@ -433,6 +466,9 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
+msgid "Looks good"
+msgstr ""
+
 msgid "Mark as a primary language of the mother."
 msgstr "Tandai sebagai bahasa utama ibu."
 
@@ -482,6 +518,9 @@ msgid "New Session"
 msgstr "Sesi Baru"
 
 msgid "No custom values found"
+msgstr ""
+
+msgid "No problems found."
 msgstr ""
 
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
@@ -550,6 +589,9 @@ msgstr "Orang-Orang"
 msgid "Person"
 msgstr "Orang"
 
+msgid "Person {0}"
+msgstr ""
+
 msgid "Please Register"
 msgstr "Tolong Daftarkan"
 
@@ -559,6 +601,12 @@ msgstr ""
 msgid "Please complete the migration in the Project tab under Languages before exporting."
 msgstr ""
 
+msgid "Please give the language a code."
+msgstr ""
+
+msgid "Please give the language a name."
+msgstr ""
+
 msgid "Please remove characters that not allowed by the Archive Settings."
 msgstr "Silakan hapus karakter yang tidak diizinkan oleh Pengaturan Arsip."
 
@@ -566,6 +614,15 @@ msgid "Please wait until all files are finished copying into this folder"
 msgstr "Tunggu sampai semua file-file selesai disalin ke dalam folder ini"
 
 msgid "Preparing export..."
+msgstr ""
+
+msgid "Problem"
+msgstr ""
+
+msgid "Problems"
+msgstr ""
+
+msgid "Problems must be fixed before {archiveName} will accept this export."
 msgstr ""
 
 msgid "Project"
@@ -634,6 +691,9 @@ msgstr "Peran"
 msgid "Roles"
 msgstr ""
 
+msgid "Rules file:"
+msgstr ""
+
 msgid "Save As"
 msgstr "Simpan Sebagai"
 
@@ -664,6 +724,9 @@ msgstr "Layanan"
 msgid "Session"
 msgstr "Sesi"
 
+msgid "Session {0}"
+msgstr ""
+
 msgid "Sessions"
 msgstr "Sesi"
 
@@ -679,11 +742,20 @@ msgstr ""
 msgid "Show Language Tags (locked during migration)"
 msgstr ""
 
+msgid "Show Log File"
+msgstr ""
+
 msgid "Show PARADISEC previews"
+msgstr ""
+
+msgid "Show Problems"
 msgstr ""
 
 msgid "Show Release Notes"
 msgstr "Lihat Catatan Rilis"
+
+msgid "Show XML"
+msgstr ""
 
 msgid "Show export"
 msgstr "Tampilkan Ekspor"
@@ -727,6 +799,9 @@ msgstr ""
 msgid "Status"
 msgstr "Status"
 
+msgid "Stop using this file"
+msgstr ""
+
 msgid "Stop waiting"
 msgstr ""
 
@@ -742,6 +817,12 @@ msgstr "Nama itu akan menghasilkan nama file kosong."
 msgid "The IMDI files were validated."
 msgstr "File IMDI telah divalidasi."
 
+msgid "The archive's rules file could not check everything:"
+msgstr ""
+
+msgid "The code must be between qaa and qtz."
+msgstr ""
+
 msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
@@ -750,6 +831,9 @@ msgstr ""
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "File tersebut tidak ada di lokasi yang diharapkan di Folder Media. Folder Media diatur ke {m} dan fili ini seharusnya berada di {e}"
+
+msgid "The name cannot contain a semicolon."
+msgstr ""
 
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr "{fieldNameInUiLanguage} tidak boleh kosong"
@@ -784,16 +868,31 @@ msgstr "Informasi Penanda Pribadi mungkin tidak bisa diekspor ke dalam beberapa 
 msgid "This XML conforms to the IMDI schema."
 msgstr "."
 
+msgid "This field no longer exists."
+msgstr ""
+
 msgid "This file does not comply with the file naming rules of the current archive."
 msgstr ""
 
 msgid "This file is online-only ({providerName}). Select it to see how to make it available on this device."
 msgstr ""
 
+msgid "This file no longer exists."
+msgstr ""
+
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr "Ini adalah sebuah tautan, namun lameta tidak tahu di mana Folder Media untuk proyek ini. Lihat file: Pengaturan Folder Media."
 
+msgid "This no longer exists."
+msgstr ""
+
 msgid "This project appears to use \"/\" to store multiple languages within a single field. In this version of lameta, we have a better approach in which lameta knows which languages are used in a field. After you have selected the appropriate metadata languages above and arranged them in the correct order, all multilingual fields in Project, Sessions, and People should display with the correct language tags. Once you have confirmed that everything appears as expected, click the button below to apply these changes permanently."
+msgstr ""
+
+msgid "This rules file checks \"{0}\", which lameta does not support yet."
+msgstr ""
+
+msgid "This rules file was written for a different version of lameta (interface version {0})."
 msgstr ""
 
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
@@ -817,6 +916,15 @@ msgstr ""
 msgid "Update available"
 msgstr "Pembaruan/Update tersedia"
 
+msgid "Use a different file…"
+msgstr ""
+
+msgid "Use the built-in file"
+msgstr ""
+
+msgid "Use this for a language that has no ISO 639-3 code. Give the language a name, and a code between qaa and qtz."
+msgstr ""
+
 msgid "Used during IMDI export"
 msgstr ""
 
@@ -839,6 +947,9 @@ msgid "Vocabulary scan failed"
 msgstr ""
 
 msgid "Waiting"
+msgstr ""
+
+msgid "Warning"
 msgstr ""
 
 msgid ""
@@ -877,8 +988,39 @@ msgstr "Arsip ZIP"
 msgid "Zip of CSVs"
 msgstr "Arsip ZIP dengan semua CSV"
 
+#. Follows a field's name, as in "Keywords: add at least one."
+msgid "add at least one."
+msgstr ""
+
+#. Follows a field's name, as in "Keywords: add at least 2."
+msgid "add at least {minItems}."
+msgstr ""
+
+msgid "built in"
+msgstr ""
+
 msgid "choose..."
 msgstr "pilih..."
+
+#. Follows "File name", as in "File name has characters…"
+msgid "has characters that the archive doesn't allow."
+msgstr ""
+
+#. Follows a contributor's name, as in "Awi Heole has no matching Person."
+msgid "has no matching Person."
+msgstr ""
+
+#. Follows a field's name, as in "ID is not in the expected form."
+msgid "is not in the expected form."
+msgstr ""
+
+#. Follows a field's name, as in "Access Explanation is required when Access is S."
+msgid "is required when {otherLabel} is {otherValue}."
+msgstr ""
+
+#. Follows a field's name, as in "Access is required."
+msgid "is required."
+msgstr ""
 
 msgid "lameta"
 msgstr "lameta"
@@ -891,6 +1033,9 @@ msgstr "lameta memungkinkan Anda untuk menentukan satu 'Folder Media'. Ketika An
 
 msgid "lameta and SayMore Project Files"
 msgstr "file Proyek lameta dan SayMore"
+
+msgid "lameta can only check IMDI so far, and the {configurationLabel} archive configuration does not use IMDI."
+msgstr ""
 
 msgid "lameta cannot export files while files are still being copied in."
 msgstr "lameta tidak dapat mengekspor file-file ketika masih dalam proses penyalinan masuk."
@@ -912,6 +1057,9 @@ msgstr ""
 
 msgid "lameta expected to find a .link file at {e}"
 msgstr "lameta mengharapkan menemukan sebuah file .link di {e}"
+
+msgid "lameta found no problems."
+msgstr ""
 
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."
 msgstr "lameta mencoba mengubah nama folder \"{oldFolderName}\" menjadi \"{newFolderName}\", namun sudah ada sebuah folder dengan nama tersebut."
@@ -938,7 +1086,32 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "Sekarang, lameta akan membuka folder ini di hard disk Anda dan kemudian akan keluar. Anda sebaiknya membuka file-file {projectType} ini di editor teks dan memutuskan mana yang ingin Anda gunakan, kemudian hapus yang lainnya. File yang Anda pilih sebaiknya dinamai {name}."
 
+msgid "local file"
+msgstr ""
+
 msgid "missing"
+msgstr ""
+
+#. Follows a field's name, as in "Title must be at most 100 characters."
+msgid "must be at most {maxLength} characters."
+msgstr ""
+
+#. Follows a field's name, as in "Title must be capitalised." The description comes from the archive configuration.
+msgid "must be {description}."
+msgstr ""
+
+#. Follows a field's name, as in "Title needs English."
+msgid "needs English."
+msgstr ""
+
+#. Follows a field's name, as in "Title needs a Spanish or Tok Pisin translation."
+msgid "needs a {languages} translation."
+msgstr ""
+
+msgid "none"
+msgstr ""
+
+msgid "or"
 msgstr ""
 
 msgid "recorded when the file was last on this device"
@@ -956,6 +1129,13 @@ msgstr ""
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted} akan dipindahkan ke Tempat Sampah"
 
+msgid "{errors} problems"
+msgstr ""
+
+#. A field's name before an instruction, as in "Keywords: add at least one."
+msgid "{label}:"
+msgstr ""
+
 msgid "{minutesSinceRequest, plural, one {# minute since you requested this file. lameta will show it when it becomes available.} other {# minutes since you requested this file. lameta will show it when it becomes available.}}"
 msgstr ""
 
@@ -966,4 +1146,7 @@ msgid "{providerName} is downloading this file to this computer."
 msgstr ""
 
 msgid "{totalMissing} items need translation"
+msgstr ""
+
+msgid "{warnings} warnings"
 msgstr ""

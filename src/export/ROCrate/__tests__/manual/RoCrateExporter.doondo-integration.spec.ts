@@ -6,8 +6,7 @@ import fs from "fs-extra";
 
 describe("RoCrateExporter Doondo Project Integration", () => {
   let project: Project;
-  const doondoProjectPath =
-    "c:\\dev\\lameta projects\\SayMore Data from Brian Parker\\Doondo";
+  const doondoProjectPath = "c:\\dev\\lameta projects\\SayMore Data from Brian Parker\\Doondo";
 
   beforeAll(() => {
     // Check if the Doondo project exists
@@ -32,8 +31,7 @@ describe("RoCrateExporter Doondo Project Integration", () => {
     const roCrateData = await getRoCrate(project, project);
 
     // Parse the JSON if it's a string
-    const metadata =
-      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+    const metadata = typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
     // Find all license references in the @graph
     const allLicenseReferences: any[] = [];
@@ -43,7 +41,7 @@ describe("RoCrateExporter Doondo Project Integration", () => {
         allLicenseReferences.push({
           entityId: item["@id"],
           licenseId: item.license["@id"],
-          entityType: item["@type"]
+          entityType: item["@type"],
         });
       }
     });
@@ -58,15 +56,13 @@ describe("RoCrateExporter Doondo Project Integration", () => {
       (ref) =>
         !ref.licenseId.startsWith("#") &&
         !ref.licenseId.startsWith("http") &&
-        ref.licenseId !== "CC0" // CC0 is also valid
+        ref.licenseId !== "CC0", // CC0 is also valid
     );
 
     if (rawLicenseReferences.length > 0) {
       console.error("Found raw license values that should be normalized:");
       rawLicenseReferences.forEach((ref) => {
-        console.error(
-          `  PROBLEM: Entity ${ref.entityId} has raw license: "${ref.licenseId}"`
-        );
+        console.error(`  PROBLEM: Entity ${ref.entityId} has raw license: "${ref.licenseId}"`);
       });
     }
 
@@ -75,7 +71,7 @@ describe("RoCrateExporter Doondo Project Integration", () => {
 
     // Also check specifically for the "Strategic partners" issue
     const strategicPartnersRefs = allLicenseReferences.filter(
-      (ref) => ref.licenseId === "Strategic partners"
+      (ref) => ref.licenseId === "Strategic partners",
     );
 
     expect(strategicPartnersRefs).toHaveLength(0);
@@ -85,28 +81,24 @@ describe("RoCrateExporter Doondo Project Integration", () => {
       expect(
         ref.licenseId.startsWith("#") ||
           ref.licenseId.startsWith("http") ||
-          ref.licenseId === "CC0"
+          ref.licenseId === "CC0",
       ).toBe(true);
     });
   });
 
   it("should have normalized license IDs for all entities", async () => {
     const roCrateData = await getRoCrate(project, project);
-    const metadata =
-      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+    const metadata = typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
     // Find any session files specifically
     const sessionFiles = metadata["@graph"].filter(
-      (item: any) =>
-        item["@id"] && item["@id"].includes(".session") && item.license
+      (item: any) => item["@id"] && item["@id"].includes(".session") && item.license,
     );
 
     console.log(`Found ${sessionFiles.length} session files with licenses`);
 
     sessionFiles.forEach((sessionFile: any) => {
-      console.log(
-        `Session file: ${sessionFile["@id"]} -> License: ${sessionFile.license["@id"]}`
-      );
+      console.log(`Session file: ${sessionFile["@id"]} -> License: ${sessionFile.license["@id"]}`);
 
       // Each session file should have a normalized license ID
       expect(sessionFile.license["@id"]).toMatch(/^#license-/);
@@ -115,29 +107,23 @@ describe("RoCrateExporter Doondo Project Integration", () => {
 
   it("should have consistently URI-encoded @id values", async () => {
     const roCrateData = await getRoCrate(project, project);
-    const metadata =
-      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+    const metadata = typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
-    // we have a path to a file, "dde-bakala(BZV)1-ori\dde-bakala(BZV)1-ori.session".
+    // we have a path to a file, "dde-bakala(Mf)1-ori\dde-bakala(Mf)1-ori.session".
     // ensure that the @id for this has been encoded properly so that we get
-    // dde-bakala%28BZV%291-ori/dde-bakala%28BZV%291-ori.session
-
-    // Find the specific dde-bakala(BZV)1-ori.session file
+    // dde-bakala%28Mf%291-ori/dde-bakala%28Mf%291-ori.session
     const ddeBakalaFile = metadata["@graph"].find(
       (item: any) =>
         item["@id"] &&
         item["@id"].includes("dde-bakala") &&
-        item["@id"].includes("BZV") &&
-        item["@id"].includes(".session")
+        item["@id"].includes("Mf") &&
+        item["@id"].includes("1-ori.session"),
     );
 
     expect(ddeBakalaFile).toBeTruthy();
 
-    console.log(`Found dde-bakala file with @id: ${ddeBakalaFile["@id"]}`);
-
-    // Check that the @id is exactly: Sessions/dde-bakala%28BZV%291-ori/dde-bakala%28BZV%291-ori.session
     expect(ddeBakalaFile["@id"]).toBe(
-      "Sessions/dde-bakala%28BZV%291-ori/dde-bakala%28BZV%291-ori.session"
+      "Sessions/dde-bakala%28Mf%291-ori/dde-bakala%28Mf%291-ori.session",
     );
   });
 });

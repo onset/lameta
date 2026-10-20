@@ -1,4 +1,5 @@
 import { css } from "@emotion/react";
+import { FieldProblemLine } from "./problems/FieldProblemLine";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
 import Tooltip from "react-tooltip-lite";
@@ -7,16 +8,13 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { LanguageSlot } from "../model/field/TextHolder";
 import { SearchContext } from "./SearchContext";
 import { buildHighlightedHTML } from "./highlighting";
-import {
-  tooltipBackground,
-  unknownLanguageBackground
-} from "../containers/theme";
+import { tooltipBackground, unknownLanguageBackground } from "../containers/theme";
 import {
   AddTranslationControl,
   useMultilingualField,
   isUnknownLanguage,
   ColorBarWithMenu,
-  LanguageTagWithKebab
+  LanguageTagWithKebab,
 } from "./MultilingualTextFieldControls";
 import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
 
@@ -37,144 +35,140 @@ export interface IProps {
   borderless?: boolean;
 }
 
-export const TextFieldEdit: React.FunctionComponent<
-  IProps & React.HTMLAttributes<HTMLDivElement>
-> = mobx.observer((props) => {
-  const { current: fieldId } = useRef(
-    "textfield-" +
-      (Math.random().toString(36) + "00000000000000000").slice(2, 7)
-  );
+export const TextFieldEdit: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivElement>> =
+  mobx.observer((props) => {
+    const { current: fieldId } = useRef(
+      "textfield-" + (Math.random().toString(36) + "00000000000000000").slice(2, 7),
+    );
 
-  const isMultilingual = props.field.definition.multilingual;
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFocusWithin, setIsFocusWithin] = useState(false);
-  const [triggerAddLanguage, setTriggerAddLanguage] = useState(false);
-  const {
-    languageTags,
-    slots,
-    newlyAddedTag,
-    handleAddLanguage,
-    handleRemoveLanguage,
-    handleChangeLanguage,
-    clearNewlyAddedTag,
-    isProtectedSlot,
-    hasMultipleMetadataSlots
-  } = useMultilingualField(props.field, isMultilingual);
+    const isMultilingual = props.field.definition.multilingual;
+    const [isHovered, setIsHovered] = useState(false);
+    const [isFocusWithin, setIsFocusWithin] = useState(false);
+    const [triggerAddLanguage, setTriggerAddLanguage] = useState(false);
+    const {
+      languageTags,
+      slots,
+      newlyAddedTag,
+      handleAddLanguage,
+      handleRemoveLanguage,
+      handleChangeLanguage,
+      clearNewlyAddedTag,
+      isProtectedSlot,
+      hasMultipleMetadataSlots,
+    } = useMultilingualField(props.field, isMultilingual);
 
-  // Only show multilingual UI if the field is marked multilingual AND
-  // there are multiple metadata language slots configured.
-  // With only 1 slot, there's no meaningful multilingual interpretation.
-  const showMultilingualUI = isMultilingual && hasMultipleMetadataSlots;
+    // Only show multilingual UI if the field is marked multilingual AND
+    // there are multiple metadata language slots configured.
+    // With only 1 slot, there's no meaningful multilingual interpretation.
+    const showMultilingualUI = isMultilingual && hasMultipleMetadataSlots;
 
-  return (
-    <div
-      className={
-        "field " +
-        props.className +
-        (props.field.definition.multipleLines ? " multiline" : "")
-      }
-      title={props.tooltip}
-    >
-      {props.hideLabel ? (
-        ""
-      ) : (
-        <FieldLabel
-          htmlFor={fieldId}
-          fieldDef={props.field.definition}
-          omitInfoAffordances={props.showAffordancesAfter}
-        />
-      )}
+    return (
       <div
-        css={css`
-          flex-grow: 1;
-          // we have one or more children that will scroll as needed
-          overflow-y: hidden;
-          display: flex;
-          flex-direction: column;
-        `}
+        className={
+          "field " + props.className + (props.field.definition.multipleLines ? " multiline" : "")
+        }
+        title={props.tooltip}
+        data-field-key={props.field.key}
       >
-        {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
+        {props.hideLabel ? (
+          ""
+        ) : (
+          <FieldLabel
+            htmlFor={fieldId}
+            fieldDef={props.field.definition}
+            omitInfoAffordances={props.showAffordancesAfter}
+          />
+        )}
         <div
-          className="field-value-border"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onFocus={() => setIsFocusWithin(true)}
-          onBlur={(e) => {
-            // Only set false if focus is leaving the container entirely
-            if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-              setIsFocusWithin(false);
-            }
-          }}
           css={css`
-            background-color: white;
-            border: ${props.borderless ? "none !important" : ""};
-            position: relative;
-            ${props.field.definition.multipleLines
-              ? `min-height: 4em; display: flex; flex-direction: column; flex-grow: 1;
-                 ${showMultilingualUI ? "overflow-y: auto;" : ""}`
-              : showMultilingualUI
-              ? "overflow-y: auto;"
-              : "max-height: 24px; overflow: hidden;"}
-          `}
-        >
-          {showMultilingualUI ? (
-            <>
-              {slots.map((slot, index) => (
-                <SingleLanguageTextFieldEdit
-                  key={slot.tag}
-                  {...props}
-                  languageSlot={slot}
-                  isProtected={isProtectedSlot(slot.tag)}
-                  canRemoveSlot={slots.length > 1}
-                  onRemoveSlot={handleRemoveLanguage}
-                  onChangeLanguage={handleChangeLanguage}
-                  onAddLanguage={handleAddLanguage}
-                  shouldFocusOnMount={slot.tag === newlyAddedTag}
-                  onFocused={clearNewlyAddedTag}
-                  allLanguageTags={languageTags}
-                  existingLanguageTags={languageTags}
-                  isLastSlot={index === slots.length - 1}
-                  showAddButton={isHovered || isFocusWithin}
-                  onTriggerAddLanguage={() => setTriggerAddLanguage(true)}
-                />
-              ))}
-              {/* Language chooser on its own row when adding */}
-              <AddTranslationControl
-                existingTags={languageTags}
-                onAddLanguage={handleAddLanguage}
-                showButton={false}
-                triggerAdd={triggerAddLanguage}
-                onTriggerAddHandled={() => setTriggerAddLanguage(false)}
-              />
-            </>
-          ) : (
-            <SingleLanguageTextFieldEdit
-              {...props}
-              languageSlot={undefined}
-              editorId={fieldId}
-            />
-          )}
-        </div>
-      </div>
-      {props.showAffordancesAfter && (
-        <div
-          className="field-affordances-after"
-          css={css`
+            flex-grow: 1;
+            // we have one or more children that will scroll as needed
+            overflow-y: hidden;
             display: flex;
-            align-self: flex-start;
-            margin-top: 4px;
-            margin-left: 6px;
-            flex-shrink: 0;
-            width: ${rowStyleAffordanceWidth};
-            min-width: ${rowStyleAffordanceWidth};
+            flex-direction: column;
           `}
         >
-          <FieldInfoAffordances fieldDef={props.field.definition} />
+          {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
+          <div
+            className="field-value-border"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onFocus={() => setIsFocusWithin(true)}
+            onBlur={(e) => {
+              // Only set false if focus is leaving the container entirely
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                setIsFocusWithin(false);
+              }
+            }}
+            css={css`
+              background-color: white;
+              border: ${props.borderless ? "none !important" : ""};
+              position: relative;
+              ${
+                props.field.definition.multipleLines
+                  ? `min-height: 4em; display: flex; flex-direction: column; flex-grow: 1;
+                 ${showMultilingualUI ? "overflow-y: auto;" : ""}`
+                  : showMultilingualUI
+                    ? "overflow-y: auto;"
+                    : "max-height: 24px; overflow: hidden;"
+              }
+            `}
+          >
+            {showMultilingualUI ? (
+              <>
+                {slots.map((slot, index) => (
+                  <SingleLanguageTextFieldEdit
+                    key={slot.tag}
+                    {...props}
+                    languageSlot={slot}
+                    isProtected={isProtectedSlot(slot.tag)}
+                    canRemoveSlot={slots.length > 1}
+                    onRemoveSlot={handleRemoveLanguage}
+                    onChangeLanguage={handleChangeLanguage}
+                    onAddLanguage={handleAddLanguage}
+                    shouldFocusOnMount={slot.tag === newlyAddedTag}
+                    onFocused={clearNewlyAddedTag}
+                    allLanguageTags={languageTags}
+                    existingLanguageTags={languageTags}
+                    isLastSlot={index === slots.length - 1}
+                    showAddButton={isHovered || isFocusWithin}
+                    onTriggerAddLanguage={() => setTriggerAddLanguage(true)}
+                  />
+                ))}
+                {/* Language chooser on its own row when adding */}
+                <AddTranslationControl
+                  existingTags={languageTags}
+                  onAddLanguage={handleAddLanguage}
+                  showButton={false}
+                  triggerAdd={triggerAddLanguage}
+                  onTriggerAddHandled={() => setTriggerAddLanguage(false)}
+                />
+              </>
+            ) : (
+              <SingleLanguageTextFieldEdit {...props} languageSlot={undefined} editorId={fieldId} />
+            )}
+          </div>
+          <FieldProblemLine field={props.field} />
         </div>
-      )}
-    </div>
-  );
-});
+        {props.showAffordancesAfter && (
+          <div
+            className="field-affordances-after"
+            css={css`
+              display: flex;
+              align-self: flex-start;
+              margin-top: 4px;
+              margin-left: 6px;
+              flex-shrink: 0;
+              width: ${rowStyleAffordanceWidth};
+              min-width: ${rowStyleAffordanceWidth};
+            `}
+          >
+            <FieldInfoAffordances fieldDef={props.field.definition} />
+          </div>
+        )}
+      </div>
+    );
+  });
 
 const SingleLanguageTextFieldEdit: React.FunctionComponent<
   IProps &
@@ -221,7 +215,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     if (props.shouldFocusOnMount && contentRef.current) {
       containerRef.current?.scrollIntoView({
         behavior: "smooth",
-        block: "nearest"
+        block: "nearest",
       });
       contentRef.current.focus();
       props.onFocused?.();
@@ -282,8 +276,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     // type a space.
     const value = event.currentTarget.innerText || "";
     if (props.languageSlot === undefined) field.setValueFromString(value);
-    else
-      field.setTextAxis(props.languageSlot.tag, value, props.allLanguageTags);
+    else field.setTextAxis(props.languageSlot.tag, value, props.allLanguageTags);
     validateValue(value);
   }
 
@@ -299,11 +292,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       }
     } else {
       if (newValue !== props.field.getTextAxis(props.languageSlot.tag)) {
-        props.field.setTextAxis(
-          props.languageSlot.tag,
-          newValue,
-          props.allLanguageTags
-        );
+        props.field.setTextAxis(props.languageSlot.tag, newValue, props.allLanguageTags);
       }
     }
 
@@ -315,11 +304,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       if (props.languageSlot === undefined) {
         props.field.setValueFromString(previous);
       } else {
-        props.field.setTextAxis(
-          props.languageSlot.tag,
-          previous,
-          props.allLanguageTags
-        );
+        props.field.setTextAxis(props.languageSlot.tag, previous, props.allLanguageTags);
       }
       el.textContent = previous;
     } else {
@@ -330,11 +315,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
       if (props.languageSlot === undefined) {
         props.field.setValueFromString(previous);
       } else {
-        props.field.setTextAxis(
-          props.languageSlot.tag,
-          previous,
-          props.allLanguageTags
-        );
+        props.field.setTextAxis(props.languageSlot.tag, previous, props.allLanguageTags);
       }
       el.textContent = previous;
     }
@@ -352,10 +333,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
     // If we have all language tags and the field looks like slash syntax,
     // use virtual interpretation to show the correct segment for this slot
     if (props.allLanguageTags && props.allLanguageTags.length > 0) {
-      return field.getTextAxisVirtual(
-        props.languageSlot.tag,
-        props.allLanguageTags
-      );
+      return field.getTextAxisVirtual(props.languageSlot.tag, props.allLanguageTags);
     }
     // Fallback to regular axis retrieval
     return field.getTextAxis(props.languageSlot.tag);
@@ -383,14 +361,16 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         padding-right: 2px; /* buttons are now inline flex items */
         padding-bottom: ${props.languageSlot ? "2px" : "0"};
         padding-left: ${props.languageSlot ? "5px" : "0"};
-        background: ${props.languageSlot &&
-        isUnknownLanguage(props.languageSlot.tag)
-          ? unknownLanguageBackground
-          : "transparent"};
-        ${props.showAffordancesAfter &&
-        props.field.definition.separatorWithCommaInstructions
-          ? "padding-right: 2px;" // leave a little space after the icon
-          : ""};
+        background: ${
+          props.languageSlot && isUnknownLanguage(props.languageSlot.tag)
+            ? unknownLanguageBackground
+            : "transparent"
+        };
+        ${
+          props.showAffordancesAfter && props.field.definition.separatorWithCommaInstructions
+            ? "padding-right: 2px;" // leave a little space after the icon
+            : ""
+        };
         position: relative;
         /* Show kebab menu on hover */
         .kebab-menu-icon {
@@ -441,10 +421,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
             tabIndex={props.tabIndex}
             autoFocus={props.autoFocus}
             lang={props.languageSlot?.tag}
-            spellCheck={
-              !props.languageSlot ||
-              hasSpellCheckSupport(props.languageSlot.tag)
-            }
+            spellCheck={!props.languageSlot || hasSpellCheckSupport(props.languageSlot.tag)}
             data-testid={`field-${props.field.key}-edit`}
             data-placeholder={
               props.languageSlot && isEmpty
@@ -455,16 +432,11 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
             contentEditable
             suppressContentEditableWarning
             role="textbox"
-            aria-multiline={
-              props.field.definition.multipleLines ? "true" : "false"
-            }
+            aria-multiline={props.field.definition.multipleLines ? "true" : "false"}
             onFocus={beginEditing}
             onInput={(event) => onChange(event, props.field)}
             onKeyDown={(event) => {
-              if (
-                !props.field.definition.multipleLines &&
-                event.key === "Enter"
-              ) {
+              if (!props.field.definition.multipleLines && event.key === "Enter") {
                 event.preventDefault();
                 (event.currentTarget as HTMLDivElement).blur();
               }
@@ -488,9 +460,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
               border: none;
               display: block;
               cursor: text;
-              height: ${props.field.definition.multipleLines
-                ? "-webkit-fill-available"
-                : "auto"};
+              height: ${props.field.definition.multipleLines ? "-webkit-fill-available" : "auto"};
               /* Placeholder text for empty slots */
               &:empty::before {
                 content: attr(data-placeholder);

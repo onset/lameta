@@ -45,11 +45,23 @@ msgstr "Sobre Lameta"
 msgid "Access"
 msgstr "Acceso"
 
+msgid "Across sessions"
+msgstr ""
+
+msgid "Add \"{inputValue}\" as an unlisted language"
+msgstr ""
+
 msgid "Add Files"
 msgstr "Agregar archivos"
 
 msgid "Add Language"
 msgstr "Agregar idioma"
+
+msgid "Add an Unlisted Language"
+msgstr ""
+
+msgid "Add an unlisted language using {code}"
+msgstr ""
 
 msgid "Add documents here that describe the projects and corpus."
 msgstr "Agregar aquí los documentos que describen el proyecto y el corpus."
@@ -70,6 +82,9 @@ msgid "Always"
 msgstr ""
 
 msgid "Always available on this device."
+msgstr ""
+
+msgid "Another language in this project already uses that code."
 msgstr ""
 
 msgid "Archive"
@@ -120,6 +135,12 @@ msgstr "Cambiar el nombre a:"
 
 msgid "Change..."
 msgstr "Modificar..."
+
+msgid "Checking the project…"
+msgstr ""
+
+msgid "Checking…"
+msgstr ""
 
 msgid "Choose File"
 msgstr "Seleccionar Archivo"
@@ -286,6 +307,9 @@ msgstr "Exportar proyecto..."
 msgid "Export failed"
 msgstr ""
 
+msgid "Export renames it to \"{exportedName}\"."
+msgstr ""
+
 msgid "Export was cancelled. No files were exported."
 msgstr ""
 
@@ -303,6 +327,9 @@ msgstr "Archivo"
 
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr "El bloqueo de archivos puede ocurrir cuando un reproductor de medios está usando un archivo de video. También puede ser causado por un antivirus o una sincronización de archivos. Si el problema persiste, por favor reinicie Lameta e intente nuevamente."
+
+msgid "File name"
+msgstr ""
 
 msgid "File to Import:"
 msgstr "Archivo a importar:"
@@ -366,6 +393,12 @@ msgstr "Ayudar a traducir"
 
 msgid "Hide Others"
 msgstr "Ocultar Otros"
+
+msgid "Hide Problems"
+msgstr ""
+
+msgid "Hide XML"
+msgstr ""
 
 msgid "Hide lameta"
 msgstr "Ocultar Lameta"
@@ -433,6 +466,9 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
+msgid "Looks good"
+msgstr ""
+
 msgid "Mark as a primary language of the mother."
 msgstr "Marcar como idioma principal de la madre."
 
@@ -482,6 +518,9 @@ msgid "New Session"
 msgstr "Nueva Sesión"
 
 msgid "No custom values found"
+msgstr ""
+
+msgid "No problems found."
 msgstr ""
 
 msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
@@ -552,6 +591,9 @@ msgstr "Personas"
 msgid "Person"
 msgstr "Persona"
 
+msgid "Person {0}"
+msgstr ""
+
 msgid "Please Register"
 msgstr "Registrarse"
 
@@ -561,6 +603,12 @@ msgstr ""
 msgid "Please complete the migration in the Project tab under Languages before exporting."
 msgstr ""
 
+msgid "Please give the language a code."
+msgstr ""
+
+msgid "Please give the language a name."
+msgstr ""
+
 msgid "Please remove characters that not allowed by the Archive Settings."
 msgstr "Elimine caracteres que no estén permitidos por la configuración del archivado."
 
@@ -568,6 +616,15 @@ msgid "Please wait until all files are finished copying into this folder"
 msgstr "Espere hasta que se terminen de copiar todos los archivos en esta carpeta"
 
 msgid "Preparing export..."
+msgstr ""
+
+msgid "Problem"
+msgstr ""
+
+msgid "Problems"
+msgstr ""
+
+msgid "Problems must be fixed before {archiveName} will accept this export."
 msgstr ""
 
 msgid "Project"
@@ -636,6 +693,9 @@ msgstr "Rol"
 msgid "Roles"
 msgstr ""
 
+msgid "Rules file:"
+msgstr ""
+
 msgid "Save As"
 msgstr "Guardar como"
 
@@ -666,6 +726,9 @@ msgstr "Servicios"
 msgid "Session"
 msgstr "Sesión"
 
+msgid "Session {0}"
+msgstr ""
+
 msgid "Sessions"
 msgstr "Sesiones"
 
@@ -681,11 +744,20 @@ msgstr ""
 msgid "Show Language Tags (locked during migration)"
 msgstr ""
 
+msgid "Show Log File"
+msgstr ""
+
 msgid "Show PARADISEC previews"
 msgstr "Modo PARADISEC"
 
+msgid "Show Problems"
+msgstr ""
+
 msgid "Show Release Notes"
 msgstr "Mostrar Notas de la Versión"
+
+msgid "Show XML"
+msgstr ""
 
 msgid "Show export"
 msgstr "Mostrar exportar"
@@ -729,6 +801,9 @@ msgstr ""
 msgid "Status"
 msgstr "Estado"
 
+msgid "Stop using this file"
+msgstr ""
+
 msgid "Stop waiting"
 msgstr ""
 
@@ -744,6 +819,12 @@ msgstr "Ese nombre hará que el nombre del archivo esté vacío."
 msgid "The IMDI files were validated."
 msgstr "Los archivos IMDI han sido validados."
 
+msgid "The archive's rules file could not check everything:"
+msgstr ""
+
+msgid "The code must be between qaa and qtz."
+msgstr ""
+
 msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
@@ -752,6 +833,9 @@ msgstr ""
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "El archivo no aparece en la ubicación esperada en la carpeta de medios. La carpeta de medios está configurada para {m} y el archivo debería estar en {e}"
+
+msgid "The name cannot contain a semicolon."
+msgstr ""
 
 msgid "The {fieldNameInUiLanguage} cannot be empty"
 msgstr "El campo '{fieldNameInUiLanguage}' no puede estar vacío"
@@ -786,16 +870,31 @@ msgstr ""
 msgid "This XML conforms to the IMDI schema."
 msgstr "Este archivo XML se ajusta al esquema IMDI."
 
+msgid "This field no longer exists."
+msgstr ""
+
 msgid "This file does not comply with the file naming rules of the current archive."
 msgstr ""
 
 msgid "This file is online-only ({providerName}). Select it to see how to make it available on this device."
 msgstr ""
 
+msgid "This file no longer exists."
+msgstr ""
+
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr "Este es un enlace, pero Lameta no logra encontrar la carpeta de medios para este proyecto. Vea Archivo: Configuración de carpeta de medios."
 
+msgid "This no longer exists."
+msgstr ""
+
 msgid "This project appears to use \"/\" to store multiple languages within a single field. In this version of lameta, we have a better approach in which lameta knows which languages are used in a field. After you have selected the appropriate metadata languages above and arranged them in the correct order, all multilingual fields in Project, Sessions, and People should display with the correct language tags. Once you have confirmed that everything appears as expected, click the button below to apply these changes permanently."
+msgstr ""
+
+msgid "This rules file checks \"{0}\", which lameta does not support yet."
+msgstr ""
+
+msgid "This rules file was written for a different version of lameta (interface version {0})."
 msgstr ""
 
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
@@ -819,6 +918,15 @@ msgstr ""
 msgid "Update available"
 msgstr "Actualización disponible"
 
+msgid "Use a different file…"
+msgstr ""
+
+msgid "Use the built-in file"
+msgstr ""
+
+msgid "Use this for a language that has no ISO 639-3 code. Give the language a name, and a code between qaa and qtz."
+msgstr ""
+
 msgid "Used during IMDI export"
 msgstr ""
 
@@ -841,6 +949,9 @@ msgid "Vocabulary scan failed"
 msgstr ""
 
 msgid "Waiting"
+msgstr ""
+
+msgid "Warning"
 msgstr ""
 
 msgid ""
@@ -879,8 +990,39 @@ msgstr "Archivo ZIP"
 msgid "Zip of CSVs"
 msgstr "Archivos CSV comprimidos en Zip"
 
+#. Follows a field's name, as in "Keywords: add at least one."
+msgid "add at least one."
+msgstr ""
+
+#. Follows a field's name, as in "Keywords: add at least 2."
+msgid "add at least {minItems}."
+msgstr ""
+
+msgid "built in"
+msgstr ""
+
 msgid "choose..."
 msgstr "elegir..."
+
+#. Follows "File name", as in "File name has characters…"
+msgid "has characters that the archive doesn't allow."
+msgstr ""
+
+#. Follows a contributor's name, as in "Awi Heole has no matching Person."
+msgid "has no matching Person."
+msgstr ""
+
+#. Follows a field's name, as in "ID is not in the expected form."
+msgid "is not in the expected form."
+msgstr ""
+
+#. Follows a field's name, as in "Access Explanation is required when Access is S."
+msgid "is required when {otherLabel} is {otherValue}."
+msgstr ""
+
+#. Follows a field's name, as in "Access is required."
+msgid "is required."
+msgstr ""
 
 msgid "lameta"
 msgstr "Lameta"
@@ -893,6 +1035,9 @@ msgstr "Lameta le permite especificar una \"carpeta de medios\". Cuando agregue 
 
 msgid "lameta and SayMore Project Files"
 msgstr "Archivos de Proyecto de Lameta y SayMore"
+
+msgid "lameta can only check IMDI so far, and the {configurationLabel} archive configuration does not use IMDI."
+msgstr ""
 
 msgid "lameta cannot export files while files are still being copied in."
 msgstr "Lameta no puede exportar archivos mientras otros archivos aún están siendo copiados."
@@ -914,6 +1059,9 @@ msgstr ""
 
 msgid "lameta expected to find a .link file at {e}"
 msgstr "Lameta esperaba encontrar un archivo .link en {e}"
+
+msgid "lameta found no problems."
+msgstr ""
 
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."
 msgstr "Lameta intentó renombrar la carpeta \"{oldFolderName}\" a \"{newFolderName}\" pero ya existe una carpeta con ese nombre."
@@ -940,7 +1088,32 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "Lameta abrirá esta carpeta en su disco duro externo y luego se cerrará. Deberá abrir estos archivos {projectType} en un editor de texto y debe decidir cuáles desea mantener y borrar el resto. El archivo que elija deberá llamarse {name}."
 
+msgid "local file"
+msgstr ""
+
 msgid "missing"
+msgstr ""
+
+#. Follows a field's name, as in "Title must be at most 100 characters."
+msgid "must be at most {maxLength} characters."
+msgstr ""
+
+#. Follows a field's name, as in "Title must be capitalised." The description comes from the archive configuration.
+msgid "must be {description}."
+msgstr ""
+
+#. Follows a field's name, as in "Title needs English."
+msgid "needs English."
+msgstr ""
+
+#. Follows a field's name, as in "Title needs a Spanish or Tok Pisin translation."
+msgid "needs a {languages} translation."
+msgstr ""
+
+msgid "none"
+msgstr ""
+
+msgid "or"
 msgstr ""
 
 msgid "recorded when the file was last on this device"
@@ -958,6 +1131,13 @@ msgstr ""
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted} se enviará a la Papelera de reciclaje"
 
+msgid "{errors} problems"
+msgstr ""
+
+#. A field's name before an instruction, as in "Keywords: add at least one."
+msgid "{label}:"
+msgstr ""
+
 msgid "{minutesSinceRequest, plural, one {# minute since you requested this file. lameta will show it when it becomes available.} other {# minutes since you requested this file. lameta will show it when it becomes available.}}"
 msgstr ""
 
@@ -968,4 +1148,7 @@ msgid "{providerName} is downloading this file to this computer."
 msgstr ""
 
 msgid "{totalMissing} items need translation"
+msgstr ""
+
+msgid "{warnings} warnings"
 msgstr ""

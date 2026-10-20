@@ -43,6 +43,8 @@ import AccessChooser from "./session/AccessChooser";
 import { TextFieldEdit } from "./TextFieldEdit";
 import { getSessionFormClass } from "./session/SessionFormVariant";
 import { CloudFilePanel } from "./CloudFilePanel";
+import { File } from "../model/file/File";
+import { navigationState, FileTabId } from "../navigation/NavigationState";
 
 export interface IProps {
   folder: Folder;
@@ -136,6 +138,29 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
     const [selectedContribution, setSelectedContribution] = React.useState<
       Contribution | undefined
     >(undefined);
+
+    // The Session tabs stay on the same tab when the user goes to another session.
+    // The tabs of every other kind of file start on the first tab for each file.
+    const [perFileTab, setPerFileTab] = React.useState<{
+      file: File | null;
+      index: number;
+    }>({ file: null, index: 0 });
+
+    // Reading this makes us re-render when navigateTo() asks for a tab
+    const fileTabRequest = navigationState.fileTabRequest;
+    React.useEffect(() => {
+      const requestedFile = props.folder.selectedFile;
+      if (!requestedFile) return;
+      const requestedTab = navigationState.takeFileTabRequest(props.folder, requestedFile);
+      if (!requestedTab) return;
+      const kind = getKindOfFile(requestedFile);
+      const index = getFileTabIds(kind, props).indexOf(requestedTab);
+      if (index < 0) return;
+      if (kind === "Session") {
+        setTabIndex(index);
+        if (requestedTab !== "contributors") setSelectedContribution(undefined);
+      } else setPerFileTab({ file: requestedFile, index });
+    }, [fileTabRequest, props.folder.selectedFile]);
 
     // search context (for highlighting the Notes tab label when a match is inside notes)
     const { searchTerm } = React.useContext(SearchContext);
@@ -319,12 +344,13 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
     // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file changes
     const tabsKey = props.folder.selectedFile!.getTextProperty("filename");
 
-    let t = file.type;
+    const perFileTabSelection = {
+      selectedIndex: perFileTab.file === file ? perFileTab.index : 0,
+      onSelect: (index: number) => setPerFileTab({ file, index }),
+    };
     const ext = Path.extname(file.getActualFilePath()).toLowerCase();
-    if ([".txt", ".md"].includes(ext)) t = "Text";
-    if (ext === ".pdf") t = "PDF";
 
-    switch (t) {
+    switch (getKindOfFile(file)) {
       case "Session":
         return (
           <Tabs
@@ -417,9 +443,8 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
           </Tabs>
         );
       case "Person": {
-        const kFirstPersonTabToOpen = userSettingsSingleton.DeveloperMode ? 0 : 0;
         return (
-          <Tabs key={tabsKey} defaultIndex={kFirstPersonTabToOpen}>
+          <Tabs key={tabsKey} {...perFileTabSelection}>
             <TabList>
               <HighlightableTab
                 getSearchStrings={() =>
@@ -489,7 +514,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
       }
       case "Audio":
         return (
-          <Tabs key={tabsKey}>
+          <Tabs key={tabsKey} {...perFileTabSelection}>
             <TabList>
               <Tab>
                 <Trans>Audio</Trans>
@@ -512,7 +537,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
         );
       case "Video":
         return (
-          <Tabs key={tabsKey}>
+          <Tabs key={tabsKey} {...perFileTabSelection}>
             <TabList>
               <Tab>
                 <Trans>Video</Trans>
@@ -544,7 +569,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
       case "Image":
         const isTiff = [".tif", ".tiff"].includes(ext.toLowerCase());
         return (
-          <Tabs key={tabsKey}>
+          <Tabs key={tabsKey} {...perFileTabSelection}>
             <TabList>
               <Tab>
                 <Trans>Image</Trans>
@@ -571,7 +596,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
         );
       case "Text":
         return (
-          <Tabs key={tabsKey}>
+          <Tabs key={tabsKey} {...perFileTabSelection}>
             <TabList>
               <Tab>
                 <Trans>Text</Trans>
@@ -593,7 +618,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
         );
       case "PDF":
         return (
-          <Tabs key={tabsKey}>
+          <Tabs key={tabsKey} {...perFileTabSelection}>
             <TabList>
               <Tab>PDF</Tab>
               {standardMetaTabs}
@@ -633,7 +658,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
         );
       case "ELAN":
         return (
-          <Tabs key={tabsKey}>
+          <Tabs key={tabsKey} {...perFileTabSelection}>
             <TabList>
               <Tab>
                 <>ELAN {/* should not be translated */}</>
@@ -657,7 +682,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
         );
       default:
         return (
-          <Tabs key={tabsKey}>
+          <Tabs key={tabsKey} {...perFileTabSelection}>
             <TabList>
               <Tab>
                 <Trans>File</Trans>
@@ -684,3 +709,40 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
     }
   },
 );
+
+function getKindOfFile(file: File): string {
+  const ext = Path.extname(file.getActualFilePath()).toLowerCase();
+  if ([".txt", ".md"].includes(ext)) return "Text";
+  if (ext === ".pdf") return "PDF";
+  return file.type;
+}
+
+// in the order that FileTabs shows them for this kind of file
+function getFileTabIds(kind: string, props: IProps): FileTabId[] {
+  const imdi = userSettings.ShowIMDI && "imdi";
+  const paradisec = GetOtherConfigurationSettings().archiveUsesParadisec && "paradisec";
+  const roCrate =
+    (userSettingsSingleton.DeveloperMode || GetOtherConfigurationSettings().showRoCrate) &&
+    "rocrate";
+  const isProjectDocuments =
+    props.folder.folderType === "project documents" ||
+    props.folderTypeStyleClass === "project-documents";
+  let ids: Array<FileTabId | false>;
+  switch (kind) {
+    case "Session":
+      ids = ["session", "contributors", "status", "notes", imdi, paradisec, roCrate];
+      break;
+    case "Person":
+      ids = ["person", "contributions", "notes", imdi, roCrate];
+      break;
+    default:
+      ids = [
+        "main",
+        ...(props.showStandardMetaTabs
+          ? (["properties", "contributors", "notes", imdi] as const)
+          : []),
+        isProjectDocuments && "access",
+      ];
+  }
+  return ids.filter((id): id is FileTabId => !!id);
+}

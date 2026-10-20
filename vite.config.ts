@@ -92,6 +92,7 @@ export default defineConfig({
         "src/mainProcess/MainProcessImdiExport.ts",
         "src/mainProcess/preload/index.ts",
         "src/mainProcess/validateImdi.ts",
+        "src/mainProcess/rulesSandbox.ts",
         "src/getTestEnvironment.ts",
       ],
       transformOptions: {

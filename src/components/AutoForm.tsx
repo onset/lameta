@@ -55,7 +55,6 @@ class AutoForm extends React.Component<IProps> {
               field={f}
               key={field.key}
               className={field.cssClass}
-              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (f.definition && f.definition.key === "access") {
@@ -64,7 +63,6 @@ class AutoForm extends React.Component<IProps> {
               key={f.key} // for some reason we get a key error without this
               field={f}
               authorityLists={this.props.authorityLists}
-              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (f.definition.key === "participants") {
@@ -75,20 +73,15 @@ class AutoForm extends React.Component<IProps> {
               className={field.cssClass}
               getPeopleNames={this.props.authorityLists.getPeopleNames}
               onShowContributorsTab={this.props.onShowContributorsTab!}
-              tabIndex={field.definition.tabIndex}
             />
           );
         } else if (f.definition && f.definition.key === "genre") {
-          console.assert(
-            f.definition!.complexChoices &&
-              f.definition!.complexChoices!.length > 0
-          );
+          console.assert(f.definition!.complexChoices && f.definition!.complexChoices!.length > 0);
           return (
             <FieldOpenChoiceChooser
               field={f}
               key={field.key}
               className={field.cssClass}
-              tabIndex={field.definition.tabIndex}
               translateChoice={translateGenre}
             />
           );
@@ -102,11 +95,10 @@ class AutoForm extends React.Component<IProps> {
               className={field.cssClass}
               key={field.key}
               field={field as Field}
-              tabIndex={field.definition.tabIndex}
               attemptFileChanges={() => {
                 if (
                   !this.props.fieldThatControlsFileNamesMightHaveChanged!(
-                    this.props.fieldThatControlsFileNames || ""
+                    this.props.fieldThatControlsFileNames || "",
                   )
                 ) {
                   return false;
@@ -123,7 +115,6 @@ class AutoForm extends React.Component<IProps> {
         } else {
           return (
             <TextFieldEdit
-              tabIndex={field.definition.tabIndex}
               className={field.cssClass}
               key={field.key}
               field={field as Field}
@@ -133,22 +124,9 @@ class AutoForm extends React.Component<IProps> {
         }
 
       case FieldType.Date:
-        return (
-          <DateFieldEdit
-            tabIndex={field.definition.tabIndex}
-            className={field.cssClass}
-            key={field.key}
-            field={field as Field}
-          />
-        );
+        return <DateFieldEdit className={field.cssClass} key={field.key} field={field as Field} />;
       case FieldType.Language:
-        return (
-          <IsoLanguageEdit
-            key={field.key}
-            className={field.cssClass}
-            field={field}
-          />
-        );
+        return <IsoLanguageEdit key={field.key} className={field.cssClass} field={field} />;
       case FieldType.LanguageChoices:
         return (
           <LanguageChoicesEditor
@@ -156,7 +134,6 @@ class AutoForm extends React.Component<IProps> {
             key={field.key}
             field={field as Field}
             languageFinder={props.languageFinder}
-            tabIndex={field.definition.tabIndex}
             showAffordancesAfter={props.rowStyle}
             {...field.definition.controlProps}
           />
@@ -177,16 +154,12 @@ class AutoForm extends React.Component<IProps> {
           f.definition.showOnAutoForm &&
           !f.definition.isCustom &&
           !f.definition.isAdditional &&
-          f.definition.key !== "customFields" // this is handled special, below
+          f.definition.key !== "customFields", // this is handled special, below
       )
       .sort((a, b) => {
         const x =
-          (a.definition && a.definition.tabIndex !== undefined
-            ? a.definition.tabIndex
-            : 1000) -
-          (b.definition && b.definition.tabIndex !== undefined
-            ? b.definition.tabIndex
-            : 1000);
+          (a.definition && a.definition.tabIndex !== undefined ? a.definition.tabIndex : 1000) -
+          (b.definition && b.definition.tabIndex !== undefined ? b.definition.tabIndex : 1000);
 
         return x;
       })
@@ -195,13 +168,23 @@ class AutoForm extends React.Component<IProps> {
     const fieldsToRender = this.sortedKeys
       .map((k) => this.props.folder.properties.getValueOrThrow(k))
       .filter((field) => field.form === this.props.form);
+    // The table of custom fields goes where its tabIndex puts it among the fields,
+    // or after everything else if it has none.
+    const customFieldsIndex =
+      this.props.folder.properties.getValue("customFields")?.definition?.tabIndex;
+    const showCustomFields = this.props.folder.properties.shouldShow("customFields");
+    const customFieldsTable = <CustomFieldsTable file={this.props.folder.metadataFile!} />;
+    // the field that the table goes before; undefined puts it at the end
+    const customFieldsGoesBefore =
+      showCustomFields && customFieldsIndex !== undefined
+        ? fieldsToRender.find((f) => (f.definition?.tabIndex ?? 1000) > customFieldsIndex)?.key
+        : undefined;
 
     return (
-      <form
-        className={"autoForm " + this.props.form + " " + this.props.formClass}
-      >
+      <form className={"autoForm " + this.props.form + " " + this.props.formClass}>
         {fieldsToRender.map((field) => (
           <React.Fragment key={field.key}>
+            {showCustomFields && customFieldsGoesBefore === field.key && customFieldsTable}
             {this.makeEdit(field, this.props)}
             {this.props.insertAfterField?.fieldKey === field.key &&
               this.props.insertAfterField.content}
@@ -212,11 +195,7 @@ class AutoForm extends React.Component<IProps> {
         ) : (
           ""
         )}
-        {this.props.folder.properties.shouldShow("customFields") ? (
-          <CustomFieldsTable file={this.props.folder.metadataFile!} />
-        ) : (
-          ""
-        )}
+        {showCustomFields && !customFieldsGoesBefore && customFieldsTable}
       </form>
     );
   }

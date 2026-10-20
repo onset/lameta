@@ -81,7 +81,11 @@ export class LametaE2ERunner {
     Object.assign(env, options?.env);
 
     const launchOptions: any = {
-      args: [...(exePath ? [] : ["."]), ...(options?.extraArgs ?? [])],
+      // E2E_LAMETA_APP_DIR runs a build that is somewhere other than this folder's dist/
+      args: [
+        ...(exePath ? [] : [process.env.E2E_LAMETA_APP_DIR || "."]),
+        ...(options?.extraArgs ?? []),
+      ],
       executablePath: exePath,
       env,
     };

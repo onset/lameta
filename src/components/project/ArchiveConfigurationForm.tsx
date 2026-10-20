@@ -14,7 +14,7 @@ import {
   lameta_dark_green,
   lameta_blue,
   lameta_dark_blue,
-  textPrimary
+  textPrimary,
 } from "../../containers/theme";
 
 import { TextFieldEdit } from "../TextFieldEdit";
@@ -37,16 +37,16 @@ const ArchiveConfigurationForm: React.FunctionComponent<
       props.authorityLists.archiveConfigurationChoices.map((choice) => ({
         value: choice.id,
         label: choice.label,
-        configurationFullName: choice.description
-      }))
+        configurationFullName: choice.description,
+      })),
     );
   }, []);
-  const [archiveConfigurationKey, setArchiveConfigurationKey] =
-    React.useState<string>(props.archiveConfigurationField.text);
-  const archiveConfigurationChoice =
-    props.authorityLists.archiveConfigurationChoices.find(
-      (choice) => choice.id === archiveConfigurationKey
-    );
+  const [archiveConfigurationKey, setArchiveConfigurationKey] = React.useState<string>(
+    props.archiveConfigurationField.text,
+  );
+  const archiveConfigurationChoice = props.authorityLists.archiveConfigurationChoices.find(
+    (choice) => choice.id === archiveConfigurationKey,
+  );
   return (
     <div
       css={css`
@@ -75,13 +75,13 @@ const ArchiveConfigurationForm: React.FunctionComponent<
             }
           `}
         >
-          Lameta projects are normally set up to work with the requirements of a
-          single archiving institution. If yours is not listed, you can use
-          "Other". This will give you the default fields and vocabularies, and
-          you can enter your own session access choices.
+          Lameta projects are normally set up to work with the requirements of a single archiving
+          institution. If yours is not listed, you can use "Other". This will give you the default
+          fields and vocabularies, and you can enter your own session access choices.
         </Alert>
       </Collapse>
       <div
+        data-field-key="archiveConfigurationName"
         css={css`
           display: flex;
           flex-direction: row;
@@ -96,7 +96,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           name={archiveConfigurationKey} //what does this do? Maybe accessibility?
           value={{
             value: archiveConfigurationKey,
-            label: archiveConfigurationChoice?.label
+            label: archiveConfigurationChoice?.label,
           }}
           onChange={(event) => {
             setArchiveConfigurationKey(event!.value);
@@ -108,10 +108,11 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           css={css`
             font-weight: bold;
             // show when we have a new choice read to be made permanent
-            visibility: ${archiveConfigurationKey ===
-            props.archiveConfigurationField.text
-              ? "hidden"
-              : "visible"};
+            visibility: ${
+              archiveConfigurationKey === props.archiveConfigurationField.text
+                ? "hidden"
+                : "visible"
+            };
             && {
               background-color: ${lameta_dark_blue};
               color: white;
@@ -156,12 +157,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           Change
         </Button>
       </div>
-      <h2>
-        {
-          choices.find((c) => c.value === archiveConfigurationKey)
-            ?.configurationFullName
-        }
-      </h2>
+      <h2>{choices.find((c) => c.value === archiveConfigurationKey)?.configurationFullName}</h2>
       <div
         css={css`
           h2,
@@ -179,9 +175,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
         `}
       >
         {archiveConfigurationKey === "default" ? (
-          <CustomArchiveConfiguration
-            customChoicesField={props.customChoicesField}
-          />
+          <CustomArchiveConfiguration customChoicesField={props.customChoicesField} />
         ) : (
           <ArchiveConfigurationSummary
             authorityLists={props.authorityLists}

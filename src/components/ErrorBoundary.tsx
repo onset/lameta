@@ -1,6 +1,7 @@
 import { ErrorBoundary as ErrorBoundary_, FallbackProps } from "react-error-boundary";
 import React, { ReactNode } from "react";
 import { sentryException } from "../other/errorHandling";
+import log from "../other/log";
 
 interface IProps {
   children: ReactNode;
@@ -36,6 +37,13 @@ const Notice = (props: FallbackProps) => {
   );
 };
 const handleError = (error: Error, info: any) => {
+  try {
+    log.error(
+      `There was an error: ${error.stack ?? error.message}${
+        info?.componentStack ? "\n" + info.componentStack : ""
+      }`,
+    );
+  } catch {}
   sentryException(error);
 };
 // react functional component

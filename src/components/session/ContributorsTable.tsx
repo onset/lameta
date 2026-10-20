@@ -88,8 +88,7 @@ class ContributorsTable extends React.Component<IProps> {
     const contribution = this.props.file.contributions[cellInfo.index];
     const highlight: boolean =
       this.props.selectContribution !== undefined &&
-      contribution.personReference ===
-        this.props.selectContribution.personReference;
+      contribution.personReference === this.props.selectContribution.personReference;
 
     return (
       <PersonChooser
@@ -97,10 +96,7 @@ class ContributorsTable extends React.Component<IProps> {
         name={contribution.personReference}
         onChange={(name) => {
           contribution.personReference = name;
-          this.props.file.encounteredVocabularyRegistry.encountered(
-            "contributor",
-            name
-          );
+          this.props.file.encounteredVocabularyRegistry.encountered("contributor", name);
           this.ensureOneBlankRow(this.props);
           this.setState({}); // update to show the change
         }}
@@ -126,10 +122,7 @@ class ContributorsTable extends React.Component<IProps> {
   private renderRole(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
     return (
-      <RoleChooser
-        contribution={contribution}
-        choices={this.props.authorityLists.roleChoices}
-      />
+      <RoleChooser contribution={contribution} choices={this.props.authorityLists.roleChoices} />
     );
   }
   private renderDeleteButton(cellInfo: any) {
@@ -157,12 +150,12 @@ class ContributorsTable extends React.Component<IProps> {
       {
         Header: t`Name`,
         accessor: "name",
-        Cell: (cellInfo: any) => this.renderPerson(cellInfo)
+        Cell: (cellInfo: any) => this.renderPerson(cellInfo),
       },
       {
         Header: t`Role`,
         accessor: "role",
-        Cell: (cellInfo: any) => this.renderRole(cellInfo)
+        Cell: (cellInfo: any) => this.renderRole(cellInfo),
       },
       /* the most recent SayMore Classic doesn't include a date, and I agree with that
       {
@@ -173,19 +166,21 @@ class ContributorsTable extends React.Component<IProps> {
       {
         Header: t`Comments`,
         accessor: "comments",
-        Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
+        Cell: (cellInfo: any) => this.renderEditableText(cellInfo),
       },
       {
         //Header: appI18n._(t`Comments`),
         maxWidth: 40,
         accessor: "delete",
-        Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo)
-      }
+        Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo),
+      },
     ];
 
     return (
       <ReactTable
         className={"contributors"}
+        // lets navigateTo() find the list of contributions
+        getProps={() => ({ "data-field-key": "contributions" })}
         showPagination={false}
         data={contributors}
         columns={columns}

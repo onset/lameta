@@ -1,12 +1,15 @@
-import { describe, it, beforeAll, afterAll, beforeEach, expect as vitestExpect } from "vite-plus/test";
+import {
+  describe,
+  it,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  expect as vitestExpect,
+} from "vite-plus/test";
 import ImdiGenerator, { IMDIMode, parseLanguageCodeAndName } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
-import {
-  setResultXml,
-  xexpect as expect,
-  count
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect, count } from "../other/xmlUnitTestUtils";
 import temp from "temp";
 import { Contribution } from "../model/file/File";
 
@@ -34,12 +37,7 @@ describe("session imdi export", () => {
     // Given a date that includes the time
     session.properties.setText("date", "2010-01-01T07:00:00.000Z");
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     // we need to strip out the time
     expect("//Date").toHaveText("2010-01-01");
@@ -48,12 +46,7 @@ describe("session imdi export", () => {
   it("genres should show title case version instead of underscored", () => {
     session.properties.setText("genre", "academic_output");
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     expect(count("//Genre")).toBe(1);
     expect("//Genre").toHaveText("Academic output");
@@ -63,12 +56,7 @@ describe("session imdi export", () => {
   it("keyword case handling", () => {
     session.properties.setText("keyword", "foo, one two UN, FLEx, XYZ");
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("one two UN");
     expect(`//Keys/Key[@Name="Keyword"]`).toHaveSomeMatch("FLEx");
@@ -78,16 +66,9 @@ describe("session imdi export", () => {
 
   it("should  output an Actor for a contributor with a matching person", () => {
     session.removeAllContributionsForUnitTest();
-    session.addContribution(
-      new Contribution("Mary", "careful_speech_speaker", "")
-    );
+    session.addContribution(new Contribution("Mary", "careful_speech_speaker", ""));
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     expect("//Actor").toHaveCount(1);
     expect("//Actor/Name").toHaveText("Mary");
@@ -98,16 +79,9 @@ describe("session imdi export", () => {
   // Regression Test
   it("A contribution from a person with a missing Person should still be output correct role", () => {
     session.removeAllContributionsForUnitTest();
-    session.addContribution(
-      new Contribution("I am made up", "careful_speech_speaker", "")
-    );
+    session.addContribution(new Contribution("I am made up", "careful_speech_speaker", ""));
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     expect("//Actor").toHaveCount(1);
     expect("//Actor/Role").toHaveText("Careful speech speaker"); // this is ELAR's prefered case and spacing
@@ -132,9 +106,7 @@ describe("session imdi export", () => {
   it("should output an Actor for a contributor without a matching person", () => {
     session.removeAllContributionsForUnitTest();
     session.addContribution(new Contribution("Joe", "Speaker", ""));
-    setResultXml(
-      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true)
-    );
+    setResultXml(ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true));
     expect("//Actor").toHaveCount(1);
     expect("//Actor/Age").toHaveText("Unspecified");
   });
@@ -144,12 +116,7 @@ describe("session imdi export", () => {
     session.properties.setText("access", "open");
 
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     expect(`//Resources/WrittenResource/Access/Availability`).toMatch("open");
   });
@@ -157,12 +124,7 @@ describe("session imdi export", () => {
   it("missing access should still emit access nodes", () => {
     session.properties.removeProperty("access");
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     expect(count(`//Resources/WrittenResource/Access`)).toBe(1);
     expect(`//Resources/WrittenResource/Access/Availability`).toMatch("");
@@ -183,42 +145,31 @@ describe("session imdi export", () => {
     }
 
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
 
     // Should have two Description elements with LanguageId attributes in the WrittenResource Access section
     expect(count(`//Resources/WrittenResource/Access/Description[@LanguageId]`)).toBeGreaterThan(0);
     // Check the descriptions have proper LanguageId attributes
-    expect(`//Resources/WrittenResource/Access/Description[@LanguageId='ISO639-3:eng']`).toHaveText("my access explanation");
-    expect(`//Resources/WrittenResource/Access/Description[@LanguageId='ISO639-3:spa']`).toHaveText("explicación de acceso");
+    expect(`//Resources/WrittenResource/Access/Description[@LanguageId='ISO639-3:eng']`).toHaveText(
+      "my access explanation",
+    );
+    expect(`//Resources/WrittenResource/Access/Description[@LanguageId='ISO639-3:spa']`).toHaveText(
+      "explicación de acceso",
+    );
   });
 
   it("should not include Notes in the Keys", () => {
     session.properties.setText("notes", "We shared red hots.");
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     expect("//Content/Keys/Key[@Name='Notes']").toNotExist();
   });
 
   it("replaces spaces with underscores in IDs", () => {
     session.properties.setText("id", "my session id");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      project,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true);
 
     // should find <Name>my_session_id</Name> in the IMDI output
     expect(imdi).toContain("<Name>my_session_id</Name>");
@@ -238,12 +189,7 @@ describe("session imdi export", () => {
       session.properties.setText("workingLanguages", "eng : English");
 
       setResultXml(
-        ImdiGenerator.generateSession(
-          IMDIMode.RAW_IMDI,
-          session,
-          project,
-          true /*omit namespace*/
-        )
+        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
       );
 
       // The Id should only contain the code, not the full "code : name" string
@@ -257,12 +203,7 @@ describe("session imdi export", () => {
       session.properties.setText("workingLanguages", "eng : English");
 
       setResultXml(
-        ImdiGenerator.generateSession(
-          IMDIMode.RAW_IMDI,
-          session,
-          project,
-          true /*omit namespace*/
-        )
+        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
       );
 
       // The Name should only contain the language name, not "code : name"
@@ -276,12 +217,7 @@ describe("session imdi export", () => {
       session.properties.setText("workingLanguages", "spa");
 
       setResultXml(
-        ImdiGenerator.generateSession(
-          IMDIMode.RAW_IMDI,
-          session,
-          project,
-          true /*omit namespace*/
-        )
+        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
       );
 
       expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:fra");
@@ -296,12 +232,7 @@ describe("session imdi export", () => {
       session.properties.setText("workingLanguages", "eng : English");
 
       setResultXml(
-        ImdiGenerator.generateSession(
-          IMDIMode.RAW_IMDI,
-          session,
-          project,
-          true /*omit namespace*/
-        )
+        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
       );
 
       expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:pta");
@@ -312,21 +243,101 @@ describe("session imdi export", () => {
       expect("//Languages/Language[3]/Name").toHaveText("English");
     });
 
-    it("should handle custom language codes (qaa-x-*) correctly", () => {
+    // "ISO639-3:" promises an ISO 639-3 code, so only the primary subtag may follow it. An
+    // archive rejected "ISO639-3:qaa-x-Kürbinian" for exactly this reason. The IMDI schema
+    // pattern is (ISO639(-1|-2|-3)?:.*)?, so xmllint will not catch a mistake here.
+    it("should reduce a custom language tag (qaa-x-*) to its 3-letter code", () => {
       // Custom language with private-use code
       session.properties.setText("languages", "qaa-x-MyLanguage:My Custom Language");
 
       setResultXml(
-        ImdiGenerator.generateSession(
-          IMDIMode.RAW_IMDI,
-          session,
-          project,
-          true /*omit namespace*/
-        )
+        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
       );
 
-      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qaa-x-MyLanguage");
+      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qaa");
       expect("//Languages/Language[1]/Name").toHaveText("My Custom Language");
+    });
+
+    it("should give each custom language of a 3.0.x project a different code", () => {
+      // lameta 3.0.x minted every invented language as "qaa-x-...", so a project from that
+      // version can hold several that all claim qaa. They are sorted alphabetically and given
+      // the next free codes, which needs no rewriting of the user's files.
+      project.properties.setText("SubjectLanguages", "qaa-x-zebra:Zebra;qaa-x-tolo:Tolo");
+      session.properties.setText("languages", "qaa-x-zebra:Zebra;qaa-x-tolo:Tolo");
+
+      const xml = ImdiGenerator.generateSession(
+        IMDIMode.RAW_IMDI,
+        session,
+        project,
+        true /*omit namespace*/,
+      );
+      setResultXml(xml);
+
+      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qab");
+      expect("//Languages/Language[1]/Name").toHaveText("Zebra");
+      expect("//Languages/Language[2]/Id").toHaveText("ISO639-3:qaa");
+      expect("//Languages/Language[2]/Name").toHaveText("Tolo");
+
+      // No Id may carry subtags. The schema would let them through, so we check ourselves.
+      const ids = xml.match(/<Id[^>]*>[^<]*<\/Id>/g) || [];
+      expect(ids.length).toBeGreaterThan(0);
+      ids.forEach((id) => expect(id).not.toContain("-x-"));
+
+      project.properties.setText("SubjectLanguages", "");
+    });
+
+    it("should match the project's tag to the session's whatever the case", () => {
+      // The project file is from 3.0.x and holds a capital letter. The session was edited by
+      // this version, which writes the tag in lower case. They are one language, so they must
+      // export as one code.
+      project.properties.setText("SubjectLanguages", "qaa-x-Zebra:Zebra;qaa-x-Tolo:Tolo");
+      session.properties.setText("languages", "qaa-x-zebra:Zebra");
+
+      setResultXml(
+        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
+      );
+
+      // Tolo sorts first, so it keeps qaa and Zebra gets qab.
+      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qab");
+      expect("//Languages/Language[1]/Name").toHaveText("Zebra");
+
+      project.properties.setText("SubjectLanguages", "");
+    });
+
+    it("should give a working language and a metadata language their own codes", () => {
+      // The collision map has to read all three of the project's language fields. If it read
+      // only SubjectLanguages, these two would both export as qaa.
+      project.properties.setText("SubjectLanguages", "");
+      project.properties.setText("WorkingLanguages", "qaa-x-alpha:Alpha");
+      project.properties.setText("metadataLanguages", "qaa-x-beta:Beta");
+      session.properties.setText("languages", "qaa-x-alpha:Alpha;qaa-x-beta:Beta");
+
+      setResultXml(
+        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
+      );
+
+      expect("//Languages/Language[1]/Id").toHaveText("ISO639-3:qaa");
+      expect("//Languages/Language[1]/Name").toHaveText("Alpha");
+      expect("//Languages/Language[2]/Id").toHaveText("ISO639-3:qab");
+      expect("//Languages/Language[2]/Name").toHaveText("Beta");
+
+      project.properties.setText("WorkingLanguages", "");
+      project.properties.setText("metadataLanguages", "");
+    });
+
+    it("should give custom languages of two different sessions their own codes", () => {
+      project.properties.setText("SubjectLanguages", "");
+      session.properties.setText("languages", "qaa-x-zebra:Zebra");
+      const other = project.addSession();
+      other.properties.setText("languages", "qaa-x-tolo:Tolo");
+      const exportedId = (s: Session) => {
+        setResultXml(ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, s, project, true));
+        return expect("//Languages/Language[1]/Id");
+      };
+      // Tolo sorts first, so it keeps qaa and Zebra gets qab
+      exportedId(session).toHaveText("ISO639-3:qab");
+      exportedId(other).toHaveText("ISO639-3:qaa");
+      other.properties.setText("languages", "");
     });
 
     it("should fall back to project languages when session has no languages", () => {
@@ -339,12 +350,7 @@ describe("session imdi export", () => {
       session.properties.setText("workingLanguages", "");
 
       setResultXml(
-        ImdiGenerator.generateSession(
-          IMDIMode.RAW_IMDI,
-          session,
-          project,
-          true /*omit namespace*/
-        )
+        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
       );
 
       // Should use project-level languages with correct parsing

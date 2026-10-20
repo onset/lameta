@@ -1,0 +1,8 @@
+/* revealField() puts this on a field after taking the user to it, and takes it off
+   when the user leaves the field's screen or the problem is gone. It is a background
+   only, because a containing element that hides overflow would cut off a border or
+   an outer shadow. */
+.navigation-highlight {
+  background-color: #fff3c4;
+  border-radius: 3px;
+}
