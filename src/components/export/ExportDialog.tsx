@@ -40,7 +40,6 @@ import { IMDIMode } from "../../export/ImdiGenerator";
 import { writeROCrateFile } from "../../export/ROCrate/WriteROCrateFile";
 import { ExportProgress } from "../../export/ExportBundleTypes";
 import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
-import { clipboard } from "electron";
 import { Session } from "../../model/Project/Session/Session";
 import { lameta_green, lameta_dark_green } from "../../containers/theme";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
@@ -585,7 +584,7 @@ export const ExportDialog: React.FunctionComponent<{
                   .replace(/&amp;/g, "&");
 
               const copyEntriesToClipboard = () => {
-                clipboard.writeText(allEntries.map(decodeForClipboard).join("\n"));
+                navigator.clipboard.writeText(allEntries.map(decodeForClipboard).join("\n"));
               };
 
               // Find index of first error for scrolling
@@ -810,7 +809,7 @@ export const ExportDialog: React.FunctionComponent<{
                   .replace(/&amp;/g, "&");
 
               const copyWarningsToClipboard = () => {
-                clipboard.writeText(allWarnings.map(decodeForClipboard).join("\n"));
+                navigator.clipboard.writeText(allWarnings.map(decodeForClipboard).join("\n"));
               };
 
               return (
