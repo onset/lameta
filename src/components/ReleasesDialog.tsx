@@ -53,7 +53,11 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
   checkForUpdates = () => {
     axios
-      .get("https://api.github.com/repos/onset/lameta/releases")
+      .get(
+        `https://api.github.com/repos/${
+          getTestEnvironment().LAMETA_RELEASES_REPO
+        }/releases`
+      )
       .then((result) => {
         // Newest first by date: each channel numbers its versions separately, so the
         // numbers cannot order releases from different channels.
