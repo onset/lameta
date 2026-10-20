@@ -1,10 +1,10 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 import { Project } from "../model/Project/Project";
 import * as temp from "temp";
 import {
   makeParadisecSessionCsv,
   makeParadisecProjectFieldsCsv,
-  parseNameIntoFirstAndLast
+  parseNameIntoFirstAndLast,
 } from "./ParadisecCsvExporter";
 // tslint:disable-next-line:no-submodule-imports
 //const parseSync = require("csv-parse/lib/sync");
@@ -32,15 +32,15 @@ describe("Paradisec project csv export", () => {
   it("should parse depositor name", () => {
     expect(parseNameIntoFirstAndLast("jill smith")).toStrictEqual({
       first: "jill",
-      last: "smith"
+      last: "smith",
     });
     expect(parseNameIntoFirstAndLast("smith, jill")).toStrictEqual({
       first: "jill",
-      last: "smith"
+      last: "smith",
     });
     expect(parseNameIntoFirstAndLast("jill jane smith")).toStrictEqual({
       first: "jill jane",
-      last: "smith"
+      last: "smith",
     });
   });
 });
@@ -53,9 +53,7 @@ describe("Paradisec session csv export", () => {
     sessionMatrix = parseSync(sessionCsv, { relax_column_count: true });
   });
   it("should contain right number of rows", () => {
-    expect(sessionMatrix.length).toBe(
-      1 /* for header */ + project.sessions.items.length
-    );
+    expect(sessionMatrix.length).toBe(1 /* for header */ + project.sessions.items.length);
   });
 
   it("should contain contributions", () => {
@@ -63,9 +61,7 @@ describe("Paradisec session csv export", () => {
     const baseColumnsPerSession = 14;
     const contributions = 4;
     const columnsPerContribution = 3;
-    expect(first.length).toBe(
-      baseColumnsPerSession + contributions * columnsPerContribution
-    );
+    expect(first.length).toBe(baseColumnsPerSession + contributions * columnsPerContribution);
     expect(first).toContain("Heole");
   });
 
@@ -84,7 +80,7 @@ describe("Paradisec session csv export", () => {
 
     expect(descriptionColumn).toBeGreaterThan(-1);
     expect(itemDescription).toContain(
-      "On spine: Mon intervent 1/12/77 On back cover: Solomon Is. On reel: N 1"
+      "On spine: Mon intervent 1/12/77 On back cover: Solomon Is. On reel: N 1",
     );
     expect(itemDescription).not.toContain("| description:");
     expect(itemDescription).not.toMatch(/[\r\n\u0085\u2028\u2029]/);
@@ -94,10 +90,7 @@ describe("Paradisec session csv export", () => {
     const projectWithDescription = Project.fromDirectory("sample data/Edolo sample");
     const sessionWithDescription = projectWithDescription.sessions.items[0];
 
-    sessionWithDescription.properties.setText(
-      "description",
-      "Sticker on cover: 3-2/59"
-    );
+    sessionWithDescription.properties.setText("description", "Sticker on cover: 3-2/59");
 
     const csv = makeParadisecSessionCsv(projectWithDescription, (f) => true);
     const parsed = parseSync(csv, { relax_column_count: true });

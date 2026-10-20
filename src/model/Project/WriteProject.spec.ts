@@ -3,7 +3,7 @@ import * as temp from "temp";
 import fs from "fs";
 import Path from "path";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
-import { describe, expect, it, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vite-plus/test";
 import {
   setResultXml,
   xexpect,

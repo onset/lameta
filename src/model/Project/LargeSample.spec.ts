@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import fs from "fs";
 import { Project } from "./Project";
 import { Session } from "./Session/Session";

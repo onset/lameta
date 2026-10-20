@@ -15,7 +15,7 @@ import {
   RowImportStatus,
   MappedColumnInfo,
   MappedRow,
-  IMappedCell
+  IMappedCell,
 } from "./MappedMatrix";
 import { Project } from "../../model/Project/Project";
 import { IFolderType } from "../../model/Folder/Folder";
@@ -33,7 +33,7 @@ export function makeMappedMatrixFromSpreadsheet(
   path: string,
   mapping: IImportMapping,
   project: Project,
-  folderType: IFolderType
+  folderType: IFolderType,
 ): MappedMatrix {
   if (!fs.existsSync(path)) {
     throw new Error("Cannot find a workbook at " + path);
@@ -43,7 +43,7 @@ export function makeMappedMatrixFromSpreadsheet(
   const fullPath = Path.resolve(path);
   try {
     workbook = XLSX.readFile(fullPath, {
-      cellDates: false
+      cellDates: false,
       // for csv files I ran into a case where an ascii file had a non-breaking space (\u00A0)
       // which looked fine in excel but was changed to � on import.
       // So far, it seems like leaving things to auto-detect works better?
@@ -57,20 +57,14 @@ export function makeMappedMatrixFromSpreadsheet(
     // When using Wallaby JS, we have to configure it to know that any excel
     // files we use are binary. See wallaby.js. If this isn't done, you
     // will get this error.
-    throw new Error(
-      `Found the workbook at ${fullPath} but could not open it with the library.`
-    );
+    throw new Error(`Found the workbook at ${fullPath} but could not open it with the library.`);
   }
   if (workbook.SheetNames.length === 0) {
-    throw new Error(
-      "Apparently, we opened the workbook but Sheets[] is empty."
-    );
+    throw new Error("Apparently, we opened the workbook but Sheets[] is empty.");
   }
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   if (!worksheet) {
-    throw new Error(
-      "Apparently, we opened the workbook but could not open the first sheet."
-    );
+    throw new Error("Apparently, we opened the workbook but could not open the first sheet.");
   }
   const arrayOfArrays = worksheetToArrayOfArrays(worksheet);
   return makeMappedMatrix(arrayOfArrays, mapping, project, folderType);
@@ -89,12 +83,7 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
       const cell = worksheet[cellref];
 
       // dates need special handling
-      if (
-        cell?.w &&
-        cell?.v &&
-        cell.w != cell.v &&
-        typeof cell.v === "number"
-      ) {
+      if (cell?.w && cell?.v && cell.w != cell.v && typeof cell.v === "number") {
         // looks like a date
         // Excel will give the date as an abiguous string in some locale, which is hard on us to then work with.
         // It also gives it as a unambiguous number, so we convert that to an ISO string
@@ -105,9 +94,7 @@ function worksheetToArrayOfArrays(worksheet: XLSX.WorkSheet) {
         row.push(v);
       } else {
         // .w is fine for xslx, but .v is needed to also handle csv. However with .v, we can get a number instead of a string, so we convert that as needed.
-        const value = (cell?.w || cell?.v || "")
-          .toString()
-          .replace(/\u00A0/g, " "); // remove non-breaking spaces (not critical, but I had a bunch in a sample file and there it didn't make sense)
+        const value = (cell?.w || cell?.v || "").toString().replace(/\u00A0/g, " "); // remove non-breaking spaces (not critical, but I had a bunch in a sample file and there it didn't make sense)
         //console.log(`STM@ ${cell?.w} ${JSON.stringify(cell?.v)}`);
 
         row.push(value);
@@ -122,7 +109,7 @@ export function makeMappedMatrix(
   arrayOfArrays: any[][],
   mapping: IImportMapping,
   project: Project,
-  folderType: IFolderType
+  folderType: IFolderType,
 ) {
   // read the first row to get the import spreadsheet's names for each column, and give us an (as yet unmapped) matrix
   const matrix: MappedMatrix = makeUnmappedMatrix(arrayOfArrays);
@@ -135,14 +122,14 @@ export function makeMappedMatrix(
 function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
   const [firstRow, ...followingRows] = arrayOfArrays;
   const nonEmptyRows = followingRows.filter((r) =>
-    r.find((cellText: string) => cellText.trim().length > 0)
+    r.find((cellText: string) => cellText.trim().length > 0),
   );
   const columns: MappedColumnInfo[] = firstRow.map((value) => {
     const c: MappedColumnInfo = Object.assign(new MappedColumnInfo(), {
       incomingLabel: value.trim(),
       //validationType: "unknown",
       lametaProperty: "not yet",
-      mappingStatus: "Unmatched"
+      mappingStatus: "Unmatched",
     });
     return c;
   });
@@ -154,7 +141,7 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
       const c: IMappedCell = {
         column: columns[columnIndex],
         value: cell,
-        importStatus: CellImportStatus.OK
+        importStatus: CellImportStatus.OK,
       };
       return c;
     });
@@ -162,8 +149,8 @@ function makeUnmappedMatrix(arrayOfArrays: any[][]): MappedMatrix {
       Object.assign(new MappedRow(), {
         cells,
         importStatus: RowImportStatus.No /* will get replaced */,
-        index
-      })
+        index,
+      }),
     );
   });
 
@@ -174,7 +161,7 @@ function addMappingAndValidatationInfoToColumns(
   matrix: MappedMatrix,
   mapping: IImportMapping,
   project: Project,
-  folderType: IFolderType
+  folderType: IFolderType,
 ) {
   // todo: look up each incoming column label and then add the corresponding target lameta property
   matrix.columnInfos.forEach((column) => {
@@ -184,11 +171,8 @@ function addMappingAndValidatationInfoToColumns(
       return;
     }
 
-    column.lametaProperty =
-      mapping[folderType][column.incomingLabel]?.lameta || "custom";
-    if (
-      column.lametaProperty.toLowerCase() == column.incomingLabel.toLowerCase()
-    ) {
+    column.lametaProperty = mapping[folderType][column.incomingLabel]?.lameta || "custom";
+    if (column.lametaProperty.toLowerCase() == column.incomingLabel.toLowerCase()) {
       column.mappingStatus = "Identity";
     } else if (column.lametaProperty === "custom") {
       column.mappingStatus = "Custom";
@@ -203,10 +187,7 @@ function addMappingAndValidatationInfoToColumns(
         column.mappingStatus = "Skip";
         column.explanation = `This access protocol doesn't match the project's access protocol.`;
       } else {
-        column.choices =
-          project.authorityLists.accessChoicesOfCurrentProtocol.map(
-              (c) => c.id
-          );
+        column.choices = project.authorityLists.accessChoicesOfCurrentProtocol.map((c) => c.id);
         column.closedList = true; // review what if it's the "Custom" list?
       }
     } else if (def) {
@@ -280,8 +261,7 @@ function getProblemsFromLanguageListText(languageListText: string): string[] {
       .split(",")
       .map((s) => s.trim());
     languagesInEitherNameOrCode.forEach((l) => {
-      if ("und" === staticLanguageFinder.findCodeFromCodeOrLanguageName(l))
-        problems.push(l);
+      if ("und" === staticLanguageFinder.findCodeFromCodeOrLanguageName(l)) problems.push(l);
     });
   }
   return problems;
@@ -290,22 +270,16 @@ function getProblemsFromLanguageListText(languageListText: string): string[] {
 function setInitialRowImportStatus(
   matrix: MappedMatrix,
   project: Project,
-  folderType: IFolderType
+  folderType: IFolderType,
 ) {
   const getStatus = (r: MappedRow) => {
     const uniqueIdentifierProperty = folderType === "session" ? "id" : "name";
     if (!r.asObjectByLametaProperties()[uniqueIdentifierProperty]) {
       return RowImportStatus.NotAllowed;
     }
-    if (
-      r.cells.find((c) => c.importStatus === CellImportStatus.MissingKeyDef)
-    ) {
+    if (r.cells.find((c) => c.importStatus === CellImportStatus.MissingKeyDef)) {
       return RowImportStatus.NotAllowed;
-    } else if (
-      r.cells.find(
-        (c) => c.importStatus === CellImportStatus.NotInClosedVocabulary
-      )
-    ) {
+    } else if (r.cells.find((c) => c.importStatus === CellImportStatus.NotInClosedVocabulary)) {
       return RowImportStatus.NotAllowed;
     }
 
@@ -326,8 +300,7 @@ function setInitialRowImportStatus(
     } else if (project.findFolderById(folderType, id)) {
       r.matchesExistingRecord = true;
       // if the other checks passed and the only problem is this overwrite issue
-      if (r.importStatus === RowImportStatus.Yes)
-        r.importStatus = RowImportStatus.No; // allowed, but off by default
+      if (r.importStatus === RowImportStatus.Yes) r.importStatus = RowImportStatus.No; // allowed, but off by default
     }
   });
 }
@@ -341,9 +314,7 @@ function getImportSituationForValue(cell: IMappedCell) {
   if (!cell.column.choices) return CellImportStatus.OK;
 
   const lowerCaseOfCellValue = cell.value.toLowerCase();
-  const match = cell.column.choices?.find(
-    (c) => c.toLowerCase() === lowerCaseOfCellValue
-  );
+  const match = cell.column.choices?.find((c) => c.toLowerCase() === lowerCaseOfCellValue);
   if (match) {
     // fix upper/lower case
     cell.value = match;

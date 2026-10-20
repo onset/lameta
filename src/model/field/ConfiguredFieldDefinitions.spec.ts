@@ -1,8 +1,8 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 import {
   computeMergedCatalog,
   makeFieldDefinitionCatalog,
-  prepareGlobalFieldDefinitionCatalog
+  prepareGlobalFieldDefinitionCatalog,
 } from "./ConfiguredFieldDefinitions";
 import exp from "constants";
 import { ensurePluginOrder } from "react-table";
@@ -15,10 +15,10 @@ describe("computeMergedCatalog", () => {
           key: "title",
           tabIndex: 99,
           tooltip: "My special tooltip",
-          multilingual: true
+          multilingual: true,
         },
-        { key: "region", show: "never" }
-      ]
+        { key: "region", show: "never" },
+      ],
     };
     const { mergedCatalog } = computeMergedCatalog(ourCatalog);
     expect(mergedCatalog.project.find((f) => f.key == "title")).toEqual({
@@ -33,7 +33,7 @@ describe("computeMergedCatalog", () => {
       tipOnUsingThisField: "This is the funded project title.",
       tooltip: "My special tooltip", // configuration added this
       xmlTag: "Title", // configuration added this
-      multilingual: true // configuration added this
+      multilingual: true, // configuration added this
     });
   });
 
@@ -44,10 +44,10 @@ describe("computeMergedCatalog", () => {
         {
           key: "title",
           tabIndex: 99,
-          tooltip: "My special tooltip"
+          tooltip: "My special tooltip",
         },
-        { key: "bogus", englishLabel: "Bogus" }
-      ]
+        { key: "bogus", englishLabel: "Bogus" },
+      ],
     };
 
     // todo I don't know why this fails even though the exception is being thrown
@@ -76,28 +76,23 @@ describe("prepareFieldDefinitionCatalog", () => {
   it("default project title and description include help text", () => {
     const catalog = makeFieldDefinitionCatalog("default");
     expect(catalog.project.find((f) => f.key == "title")!.tipOnUsingThisField).toBe(
-      "This is the funded project title."
+      "This is the funded project title.",
     );
-    expect(
-      catalog.project.find((f) => f.key == "projectDescription")!
-        .tipOnUsingThisField
-    ).toBe("This is a brief summary of your project");
+    expect(catalog.project.find((f) => f.key == "projectDescription")!.tipOnUsingThisField).toBe(
+      "This is a brief summary of your project",
+    );
   });
 
   it("desfault session description is monolingual", () => {
     const catalog = makeFieldDefinitionCatalog("default");
-    expect(
-      catalog.session.find((f) => f.key == "description")!.multilingual
-    ).toBe(false);
+    expect(catalog.session.find((f) => f.key == "description")!.multilingual).toBe(false);
   });
 });
 
 describe("ELAR archive configuration", () => {
   it("hides funding project title in project fields", () => {
     const catalog = makeFieldDefinitionCatalog("ELAR");
-    const fundingProjectTitle = catalog.project.find(
-      (f) => f.key === "fundingProjectTitle"
-    );
+    const fundingProjectTitle = catalog.project.find((f) => f.key === "fundingProjectTitle");
 
     expect(fundingProjectTitle).toBeDefined();
     expect(fundingProjectTitle!.visibility).toBe("never");
@@ -124,20 +119,18 @@ describe("ELAR archive configuration", () => {
 
     expect(nameField).toBeDefined();
     expect(nameField!.tipOnUsingThisField).toBe(
-      "Person will be listed by this name on the ELAR catalogue."
+      "Person will be listed by this name on the ELAR catalogue.",
     );
     expect(birthYearField).toBeDefined();
     expect(birthYearField!.tipOnUsingThisField).toBe(
-      'Enter an approximation or "?" if unsure, and describe in the Description field below.'
+      'Enter an approximation or "?" if unsure, and describe in the Description field below.',
     );
   });
 
   it("uses Americas-only continent choices", () => {
     const catalog = makeFieldDefinitionCatalog("ELAR");
     const projectContinent = catalog.project.find((f) => f.key === "continent");
-    const sessionContinent = catalog.session.find(
-      (f) => f.key === "locationContinent"
-    );
+    const sessionContinent = catalog.session.find((f) => f.key === "locationContinent");
     const expectedChoices = [
       "unspecified",
       "Africa",
@@ -145,7 +138,7 @@ describe("ELAR archive configuration", () => {
       "Asia",
       "Australia",
       "Europe",
-      "Oceania"
+      "Oceania",
     ];
 
     expect(projectContinent).toBeDefined();
@@ -156,7 +149,7 @@ describe("ELAR archive configuration", () => {
       "Australia",
       "Europe",
       "Americas",
-      "Oceania"
+      "Oceania",
     ]);
     expect(sessionContinent).toBeDefined();
     expect(sessionContinent!.choices).toEqual(expectedChoices);

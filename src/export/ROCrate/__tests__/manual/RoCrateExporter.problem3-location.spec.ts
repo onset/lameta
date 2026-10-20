@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { getRoCrate } from "../../RoCrateExporter";
 import { Project } from "../../../../model/Project/Project";
 import path from "path";

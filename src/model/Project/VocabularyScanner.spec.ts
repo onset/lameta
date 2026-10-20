@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach, afterEach, vi, beforeAll } from "vitest";
+import { describe, expect, it, beforeEach, afterEach, vi, beforeAll } from "vite-plus/test";
 import {
   isBuiltInGenre,
   isBuiltInRole,

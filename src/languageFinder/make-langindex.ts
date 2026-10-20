@@ -4,7 +4,7 @@ import { ILangIndexEntry } from "./LanguageFinder";
 
 //--------------------------------------------------------------------------------------
 // RUN THIS WITH
-// yarn make-langindex
+// pnpm run make-langindex
 // whenever we take in a new langtags.json from https://github.com/silnrsi/langtags
 // Then make sure that the langindex.spec.ts tests all pass
 //--------------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ function process(allEntries) {
   //console.log(`${multipleTagsCount} languages had more than one tag.`);
 
   console.log(
-    "Now check with `yarn test langindex.spec.ts` and then all other tests with `yarn test` and `yarn e2e`."
+    "Now check with `pnpm exec vitest run src/languageFinder/langindex.spec.ts` and then all other tests with `pnpm run test -- --run` and `pnpm run e2e`."
   );
 
   fs.writeFileSync(

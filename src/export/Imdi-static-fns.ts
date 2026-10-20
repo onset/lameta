@@ -15,7 +15,7 @@ export function fieldElement(
   defaultValue?: string,
   imdiSupportsMultipleElements: boolean = true,
   extraAttributes?: Record<string, string>,
-  metadataSlotTags?: string[]
+  metadataSlotTags?: string[],
 ): {
   tail: XmlBuilder.XMLElementOrXMLNode;
   mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
@@ -34,7 +34,7 @@ export function fieldElement(
       elementName,
       text,
       tail,
-      extraAttributes
+      extraAttributes,
     );
   } else if (field && !field.isEmpty()) {
     lastElementWeAdded = addElementsFromFieldContent(
@@ -43,7 +43,7 @@ export function fieldElement(
       tail,
       imdiSupportsMultipleElements,
       extraAttributes,
-      metadataSlotTags
+      metadataSlotTags,
     );
   }
   //lastElementWeAdded = tail.element("hello", "world");
@@ -54,7 +54,7 @@ export function fieldElement(
 
 function addExtraAttributes(
   element: XmlBuilder.XMLElementOrXMLNode,
-  extraAttributes?: Record<string, string>
+  extraAttributes?: Record<string, string>,
 ) {
   if (extraAttributes) {
     Object.entries(extraAttributes).forEach(([attrName, attrValue]) => {
@@ -67,7 +67,7 @@ function addElementWithMonolingualStringContentIfNotEmpty(
   elementName: string,
   text: string | undefined,
   tail: XmlBuilder.XMLElementOrXMLNode,
-  extraAttributes?: Record<string, string>
+  extraAttributes?: Record<string, string>,
 ) {
   if (text && text.length > 0) {
     const element = tail.element(elementName, text);
@@ -82,16 +82,14 @@ function addElementsFromFieldContent(
   tail: XmlBuilder.XMLElementOrXMLNode,
   imdiSupportsMultipleElements: boolean,
   extraAttributes?: Record<string, string>,
-  metadataSlotTags?: string[]
+  metadataSlotTags?: string[],
 ) {
   let element;
   if (field.definition?.imdiRange) {
     // wer're assuming at this point that we don't have mulilingual vocabularies
     element = tail.element(elementName, field.text);
     element.attribute("Link", field.definition.imdiRange);
-    const type = field.definition.imdiIsClosedVocabulary
-      ? "ClosedVocabulary"
-      : "OpenVocabulary";
+    const type = field.definition.imdiIsClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
     element.attribute("Type", type);
     addExtraAttributes(element, extraAttributes);
   } else {
@@ -105,10 +103,7 @@ function addElementsFromFieldContent(
     const axes = shouldUseVirtualMultilingual
       ? field
           .getEffectiveSlotTags(metadataSlotTags)
-          .filter(
-            (language) =>
-              field.getTextAxisVirtual(language, metadataSlotTags).trim() !== ""
-          )
+          .filter((language) => field.getTextAxisVirtual(language, metadataSlotTags).trim() !== "")
       : field.getAllNonEmptyTextAxes();
     const getTextForLanguage = (language: string) =>
       shouldUseVirtualMultilingual

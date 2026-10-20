@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Makes the Sentry release for the version in package.json and uploads the source maps that
-# `yarn build` left in dist/. CI runs this on each publish, once per platform; running it twice
+# `vp run build` left in dist/. CI runs this on each publish, once per platform; running it twice
 # for one version is harmless.
 
 # Needs SENTRY_AUTH_TOKEN, or LAMETA_SENTRY_AUTH_TOKEN, holding a Sentry auth token with

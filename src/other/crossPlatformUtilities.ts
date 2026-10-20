@@ -22,11 +22,11 @@ export async function asyncTrash(path: string) {
 }
 export async function asyncTrashWithContext<T>(
   path: string,
-  callerContext: T
+  callerContext: T,
 ): Promise<{ succeeded: boolean; path: string; context: T }> {
   // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
   // So convert to backslashes as needed:
-  const fixedPath = Path.normalize(path).replace("/", Path.sep); // ?
+  const fixedPath = Path.normalize(path).replace(/\//g, Path.sep);
 
   const msg = t`lameta was not able to delete the file.`;
 
@@ -41,19 +41,19 @@ export async function asyncTrashWithContext<T>(
         return Promise.resolve({
           succeeded: !fs.existsSync(fixedPath),
           path: path,
-          context: callerContext
+          context: callerContext,
         });
       else
         return Promise.resolve({
           succeeded: false,
           path: path,
-          context: callerContext
+          context: callerContext,
         });
     } catch (e) {
       return Promise.resolve({
         succeeded: false,
         path: path,
-        context: callerContext
+        context: callerContext,
       });
     }
   } else {
@@ -62,7 +62,7 @@ export async function asyncTrashWithContext<T>(
     return Promise.resolve({
       succeeded: !fs.existsSync(fixedPath),
       path: path,
-      context: callerContext
+      context: callerContext,
     }); // we don't get a result from removeSync
   }
 
@@ -134,10 +134,7 @@ export function getAllFilesSync(directory: string): string[] {
     const entries = fs.readdirSync(directory, { withFileTypes: true });
     return entries
       .filter(
-        (entry) =>
-          entry.isFile() &&
-          entry.name.includes(".") &&
-          !isMacOSMetadataFile(entry.name)
+        (entry) => entry.isFile() && entry.name.includes(".") && !isMacOSMetadataFile(entry.name),
       )
       .map((entry) => Path.join(directory, entry.name));
   } catch (err: any) {
@@ -145,10 +142,7 @@ export function getAllFilesSync(directory: string): string[] {
     // (matching the behavior of glob which returns [] for non-matching patterns)
     // Only log unexpected errors (not ENOENT which is expected for optional directories)
     if (err.code !== "ENOENT") {
-      console.error(
-        `getAllFilesSync: Error reading directory ${directory}:`,
-        err
-      );
+      console.error(`getAllFilesSync: Error reading directory ${directory}:`, err);
     }
     return [];
   }

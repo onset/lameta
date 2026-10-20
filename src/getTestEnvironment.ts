@@ -23,7 +23,7 @@ export function getTestEnvironment(): TestEnvironment {
     E2ERoot: runtimeEnv["E2ERoot"] || "",
     E2E_PROJECT_NAME: runtimeEnv["E2E_PROJECT_NAME"] || "",
     E2E_ARCHIVE_CONFIG: runtimeEnv["E2E_ARCHIVE_CONFIG"] || "",
-    LAMETA_RELEASES_REPO: runtimeEnv["LAMETA_RELEASES_REPO"] || "onset/lameta"
+    LAMETA_RELEASES_REPO: runtimeEnv["LAMETA_RELEASES_REPO"] || "onset/lameta",
   };
   //console.log("getTestEnvironment() = ", JSON.stringify(e, null, 2));
   return e;

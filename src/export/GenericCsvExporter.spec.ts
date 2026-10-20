@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 import { Project } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as temp from "temp";
@@ -7,7 +7,7 @@ import {
   makeCsvForProject,
   makeCsvForSessions,
   csvEncode,
-  makeGenericCsvZipFile
+  makeGenericCsvZipFile,
 } from "./CsvExporter";
 
 // tslint:disable-next-line:no-submodule-imports
@@ -39,10 +39,7 @@ beforeAll(() => {
 describe("csv exporter", () => {
   it("should produce the file requested", async () => {
     // didn't work, though I set this variable in the main.yml
-    if (
-      process.platform === "win32" &&
-      process.env.in_github_action === "true"
-    ) {
+    if (process.platform === "win32" && process.env.in_github_action === "true") {
       // for some reason this fails to ever deliver a file in the windows github action environment
       console.log("Skipping csv exporter test on github-actions on windows.");
     } else {
@@ -70,9 +67,7 @@ describe("csv encoding", () => {
     expect(csvEncode("one\r\ntwo")).toBe('"one\r\ntwo"');
   });
   it("should double quotes if there are quotes", () => {
-    expect(csvEncode('please, call me "John"')).toBe(
-      '"please, call me ""John"""'
-    );
+    expect(csvEncode('please, call me "John"')).toBe('"please, call me ""John"""');
   });
   // LAM-115: https://linear.app/lameta/issue/LAM-115
   // When a value contains quotes but no commas or newlines, the function
@@ -116,9 +111,7 @@ describe("people csv export", () => {
     expect(people(2, "education")).toBe("Grade 1");
     expect(people(2, "birthYear")).toBe("1972");
     expect(people(2, "gender")).toBe("Male");
-    expect(people(2, "languages")).toContain(
-      "*etr (also mother) (also father)"
-    );
+    expect(people(2, "languages")).toContain("*etr (also mother) (also father)");
     expect(people(2, "languages")).toContain("hui");
     expect(people(2, "languages")).toContain("tpi");
   });
@@ -139,7 +132,7 @@ describe("sessions csv export", () => {
     const description = [
       "On spine: Mon intervent 1/12/77",
       "On back cover: Solomon Is.",
-      "On reel: N 1"
+      "On reel: N 1",
     ].join("\n");
 
     sessionWithLineFeeds.properties.setText("description", description);
@@ -166,7 +159,7 @@ describe("sessions csv export", () => {
   });
   it("should have good contributor list", () => {
     expect(session(1, "contributions")).toBe(
-      "participant:Awi Heole|participant:Ilawi Amosa|recorder:Hatton|speaker:Awi Heole"
+      "participant:Awi Heole|participant:Ilawi Amosa|recorder:Hatton|speaker:Awi Heole",
     );
   });
 });

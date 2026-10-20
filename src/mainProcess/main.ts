@@ -9,9 +9,9 @@ import { dialog } from "electron";
 import { is } from "@electron-toolkit/utils";
 import { app, BrowserWindow, shell, ipcMain, screen, session } from "electron";
 import { release } from "os";
-import { join } from "path";
+import { join } from "node:path";
 import { mkdirSync } from "fs";
-import * as path from "path";
+import * as path from "node:path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { initLaunchTest } from "./launchTest";
@@ -38,9 +38,7 @@ if (process.env.E2E) {
 } else {
   // Allow multiple instances for developers
   const isDeveloper =
-    is.dev ||
-    process.env.VITE_DEV_SERVER_URL ||
-    process.env.NODE_ENV === "development";
+    is.dev || process.env.VITE_DEV_SERVER_URL || process.env.NODE_ENV === "development";
 
   if (!isDeveloper && !app.requestSingleInstanceLock()) {
     app.quit();
@@ -119,8 +117,8 @@ async function createWindow() {
       preload: getTestEnvironment().E2E ? undefined : preload,
       nodeIntegration: true,
       contextIsolation: false,
-      webSecurity: false // this is safe, so long as we have no way of showing external web content
-    }
+      webSecurity: false, // this is safe, so long as we have no way of showing external web content
+    },
   });
 
   require("@electron/remote/main").enable(win.webContents);
@@ -150,7 +148,7 @@ async function createWindow() {
     //fillLastMonitor();
     if (process.env.NODE_ENV === "development") {
       console.log(
-        "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable."
+        "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable.",
       );
 
       win!.webContents.openDevTools();
@@ -216,8 +214,8 @@ ipcMain.handle("open-win", (event, arg) => {
     webPreferences: {
       preload,
       nodeIntegration: true,
-      contextIsolation: false
-    }
+      contextIsolation: false,
+    },
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
@@ -236,9 +234,7 @@ ipcMain.handle("getAppPath", () => {
 // with the file path as a command line argument. We need to capture this and set
 // global.arguments so the renderer process can access it.
 {
-  const sprjArg = process.argv.find(
-    (arg) => arg.endsWith(".sprj") && !arg.startsWith("-")
-  );
+  const sprjArg = process.argv.find((arg) => arg.endsWith(".sprj") && !arg.startsWith("-"));
   if (sprjArg) {
     console.log(`Found .sprj file in command line args: ${sprjArg}`);
     (global as any).arguments = ["ignore", sprjArg];
@@ -270,7 +266,7 @@ ipcMain.on("copyStopped", () => {
 ipcMain.handle("confirm-quit", async (event, ...args) => {
   const result = await dialog.showMessageBox(win!, {
     message: args[0],
-    buttons: [args[1], args[2]]
+    buttons: [args[1], args[2]],
   });
   return result;
 });

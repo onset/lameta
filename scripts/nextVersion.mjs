@@ -6,7 +6,7 @@
 // branches have done.
 //
 // Used by .github/workflows/main.yml and by the publish skill. No dependencies, so CI can run
-// it before `yarn install`.
+// it before `vp install`.
 //
 //   node scripts/nextVersion.mjs --branch beta --tags-file tags.txt
 //   node scripts/nextVersion.mjs --branch beta --tags-file tags.txt --latest
@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 export const channelForBranch = {
   master: "alpha",
   beta: "beta",
-  release: "release"
+  release: "release",
 };
 
 // "release" has no suffix: 4.0.0. The others do: 4.0.53-beta.
@@ -43,7 +43,7 @@ export function parseTag(tag) {
     major: Number(major),
     minor: Number(minor),
     patch: Number(patch),
-    channel
+    channel,
   };
 }
 
@@ -51,18 +51,13 @@ export function parseTag(tag) {
 export function nextVersion(packageVersion, channel, tags) {
   const match = /^(\d+)\.(\d+)/.exec(packageVersion);
   if (!match) {
-    throw new Error(
-      `package.json version "${packageVersion}" does not start with major.minor`
-    );
+    throw new Error(`package.json version "${packageVersion}" does not start with major.minor`);
   }
   const major = Number(match[1]);
   const minor = Number(match[2]);
   const patches = tags
     .map(parseTag)
-    .filter(
-      (t) =>
-        t && t.channel === channel && t.major === major && t.minor === minor
-    )
+    .filter((t) => t && t.channel === channel && t.major === major && t.minor === minor)
     .map((t) => t.patch);
   const patch = patches.length ? Math.max(...patches) + 1 : 0;
   return formatVersion(major, minor, patch, channel);
@@ -79,16 +74,12 @@ export function latestByChannel(tags) {
       !best ||
       t.major > best.major ||
       (t.major === best.major && t.minor > best.minor) ||
-      (t.major === best.major &&
-        t.minor === best.minor &&
-        t.patch > best.patch)
+      (t.major === best.major && t.minor === best.minor && t.patch > best.patch)
     ) {
       latest[t.channel] = { ...t, tag: tag.trim() };
     }
   }
-  return Object.fromEntries(
-    Object.entries(latest).map(([channel, t]) => [channel, t.tag])
-  );
+  return Object.fromEntries(Object.entries(latest).map(([channel, t]) => [channel, t.tag]));
 }
 
 function main(argv) {
@@ -112,8 +103,8 @@ function main(argv) {
   if (!channel) {
     throw new Error(
       `Branch "${branch}" does not publish. Publish from one of: ${Object.keys(
-        channelForBranch
-      ).join(", ")}.`
+        channelForBranch,
+      ).join(", ")}.`,
     );
   }
   const packageJson = JSON.parse(readFileSync("package.json", "utf8"));

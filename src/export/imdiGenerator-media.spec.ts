@@ -9,7 +9,7 @@ import {
 import temp from "temp";
 import * as fs from "fs-extra";
 import assert from "assert";
-import { describe, it, vi, beforeAll, afterAll } from "vitest";
+import { describe, it, vi, beforeAll, afterAll } from "vite-plus/test";
 
 temp.track(); // cleanup on exit: doesn't work
 

@@ -30,36 +30,26 @@ export function getChannelsToRecommend(current: Channel): Channel[] {
 
 export function getNewerReleases<T extends IReleaseSummary>(
   releases: T[],
-  currentVersion: string
+  currentVersion: string,
 ): T[] {
   const currentChannel = getChannel(currentVersion);
   const channels = getChannelsToRecommend(currentChannel);
   // undefined when running a build that was never published, such as a developer's
-  const running = releases.find(
-    (r) => r.tag_name.replace(/^v/, "") === currentVersion
-  );
+  const running = releases.find((r) => r.tag_name.replace(/^v/, "") === currentVersion);
   return releases.filter((r) => {
     const channel = getChannel(r.tag_name);
     if (!channels.includes(channel)) return false;
-    if (channel === currentChannel)
-      return Semver.compare(r.tag_name, currentVersion) > 0;
-    return (
-      running !== undefined &&
-      Date.parse(r.published_at) > Date.parse(running.published_at)
-    );
+    if (channel === currentChannel) return Semver.compare(r.tag_name, currentVersion) > 0;
+    return running !== undefined && Date.parse(r.published_at) > Date.parse(running.published_at);
   });
 }
 
 export function sortNewestFirst<T extends IReleaseSummary>(releases: T[]): T[] {
-  return [...releases].sort(
-    (a, b) => Date.parse(b.published_at) - Date.parse(a.published_at)
-  );
+  return [...releases].sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at));
 }
 
 // The newest release of each channel in the list, which are the ones worth a Download link.
-export function newestOfEachChannel<T extends IReleaseSummary>(
-  releasesNewestFirst: T[]
-): Set<T> {
+export function newestOfEachChannel<T extends IReleaseSummary>(releasesNewestFirst: T[]): Set<T> {
   const seen = new Set<Channel>();
   const newest = new Set<T>();
   for (const r of releasesNewestFirst) {

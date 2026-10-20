@@ -31,11 +31,7 @@ or
 
 ```ts
 {
-  this.i18n._(
-    "project.DescriptionDocuments",
-    {},
-    { defaults: "Description Documents" }
-  );
+  this.i18n._("project.DescriptionDocuments", {}, { defaults: "Description Documents" });
 }
 ```
 
@@ -55,15 +51,15 @@ Our `strings:extract-json` script extracts the translatable fields from all the 
 
 ## 1) Build the string catalog
 
-`yarn strings:extract` reads .linguirc to know what files to include. It creates `po` files.
+`vp run strings:extract` reads .linguirc to know what files to include. It creates `po` files.
 
 ## 2) Sync with Crowdin
 
-`yarn strings:sync` will send everything and pull the translations from Crowdin. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
+`vp run strings:sync` will send everything and pull the translations from Crowdin. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
 
 ## 3) Let lingui create its js files (`messages.js`, `fields.js`, etc.)
 
-`yarn strings:compile`
+`vp run strings:compile`
 
 # Checking for new strings using pseudo localization
 

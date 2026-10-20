@@ -22,7 +22,7 @@ export const i18n = i18nFromLinguiCore;
 
 const catalogFolderAliases: Record<string, string[]> = {
   "zh-CN": ["zh-cn", "zh"],
-  "pt-BR": ["pt"]
+  "pt-BR": ["pt"],
 };
 
 let olacRoles: IChoice[];
@@ -73,13 +73,11 @@ function resolveCatalogFolder(code: string): string {
   const candidates = [
     code,
     code.toLowerCase(),
-    ...((catalogFolderAliases[code] || []) as string[])
+    ...((catalogFolderAliases[code] || []) as string[]),
   ];
 
   for (const candidate of candidates) {
-    const path = locateDependencyForFilesystemCall(
-      `locale/${candidate}/messages.js`
-    );
+    const path = locateDependencyForFilesystemCall(`locale/${candidate}/messages.js`);
     if (fs.existsSync(path)) {
       return candidate;
     }
@@ -93,11 +91,11 @@ function loadOneCatalog(folder: string, localeCode: string, set: string) {
   // if it doesn't exist
   if (!fs.existsSync(path)) {
     console.error(
-      `Could not locate ${path}. If you are running the dev server, make sure you have run "yarn strings:compile" at least once.`
+      `Could not locate ${path}. If you are running the dev server, make sure you have run "pnpm run strings:compile" at least once.`,
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // oxlint-disable-next-line @typescript-eslint/no-var-requires
   const { messages } = require(path);
   i18n.load(localeCode, messages);
 }
@@ -151,9 +149,10 @@ export function translateTip(tip?: string): string {
   if (!tip) return "";
   return i18n._(tip);
 }
-export function translateAccessProtocolLabelOrDescription(
-  englishLabel: string
-): { label: string; description: string } {
+export function translateAccessProtocolLabelOrDescription(englishLabel: string): {
+  label: string;
+  description: string;
+} {
   // because there is an "ID" but also an "id" (for Indonesian), the loader (dsv at the moment) does this crazy thing to the ID column name
   const keyForTheIDColumn = '\ufeff"ID"';
   const labelRow = rawAccessProtocols.find((row) => row["en"] === englishLabel);
@@ -161,7 +160,7 @@ export function translateAccessProtocolLabelOrDescription(
   const choiceId = labelRow[keyForTheIDColumn];
   const descriptionRowId = choiceId + ".Description";
   const descriptionRow = rawAccessProtocols.find(
-    (row) => row[keyForTheIDColumn] === descriptionRowId
+    (row) => row[keyForTheIDColumn] === descriptionRowId,
   );
 
   let description = descriptionRow
@@ -171,10 +170,7 @@ export function translateAccessProtocolLabelOrDescription(
   const label = labelRow[currentUILanguage] || englishLabel;
 
   // some of the descriptions get translated exaclty the same as the label, which is just noise, so we don't want to show them
-  if (
-    description.toLocaleLowerCase().trim() === label.toLocaleLowerCase().trim()
-  )
-    description = "";
+  if (description.toLocaleLowerCase().trim() === label.toLocaleLowerCase().trim()) description = "";
   return { label, description };
 }
 export function translateChoice(choice: string): string {
@@ -195,7 +191,7 @@ export function translateGenre(genre: string) {
  * Translate a genre to a specific language (for IMDI export).
  * Returns undefined if no translation is available for that language.
  * First checks built-in translations (genres.csv), then project-level translations.
- * 
+ *
  * @param genre The genre value to translate
  * @param targetLanguage The target language code
  * @param projectTranslationFn Optional function to get project-level translation
@@ -203,27 +199,27 @@ export function translateGenre(genre: string) {
 export function translateGenreToLanguage(
   genre: string,
   targetLanguage: string,
-  projectTranslationFn?: (value: string, lang: string) => string | undefined
+  projectTranslationFn?: (value: string, lang: string) => string | undefined,
 ): string | undefined {
   // Look up the genre by ID to get its English label (genres.json labels are in English)
   const genreChoice = genresJSON.find((g: any) => g.id === genre);
   const englishLabel = genreChoice?.label || genre;
-  
+
   // Try built-in translations first
   const builtInTranslation = getMatchForLanguage(genresCSV, englishLabel, targetLanguage);
   if (builtInTranslation) return builtInTranslation;
-  
+
   // For English, the value typed by the user IS the English translation
   // (custom values are entered in English in the current UI)
   if (targetLanguage === "en" || targetLanguage === "eng") {
     return englishLabel;
   }
-  
+
   // Fall back to project-level translations
   if (projectTranslationFn) {
     return projectTranslationFn(genre, targetLanguage);
   }
-  
+
   return undefined;
 }
 
@@ -231,7 +227,7 @@ export function translateGenreToLanguage(
  * Translate a role to a specific language (for IMDI export).
  * Returns undefined if no translation is available for that language.
  * First checks built-in translations (roles.csv), then project-level translations.
- * 
+ *
  * @param role The role value to translate
  * @param targetLanguage The target language code
  * @param projectTranslationFn Optional function to get project-level translation
@@ -239,27 +235,27 @@ export function translateGenreToLanguage(
 export function translateRoleToLanguage(
   role: string,
   targetLanguage: string,
-  projectTranslationFn?: (value: string, lang: string) => string | undefined
+  projectTranslationFn?: (value: string, lang: string) => string | undefined,
 ): string | undefined {
   // If olacRoles hasn't been initialized (e.g., in unit tests), just use the role as-is
   const roleChoice: IChoice | undefined = olacRoles?.find((c) => c.id === role);
   const englishLabel = roleChoice?.label || role;
-  
+
   // Try built-in translations first
   const builtInTranslation = getMatchForLanguage(roles, englishLabel, targetLanguage);
   if (builtInTranslation) return builtInTranslation;
-  
+
   // For English, the value typed by the user IS the English translation
   // (custom values are entered in English in the current UI)
   if (targetLanguage === "en" || targetLanguage === "eng") {
     return englishLabel;
   }
-  
+
   // Fall back to project-level translations
   if (projectTranslationFn) {
     return projectTranslationFn(role, targetLanguage);
   }
-  
+
   return undefined;
 }
 
@@ -269,11 +265,7 @@ export function translateRoleToLanguage(
  * then regional variants (e.g., "es" -> "es-ES").
  * Returns undefined if no translation is found.
  */
-function getMatchForLanguage(
-  lines: any[],
-  s: string,
-  targetLanguage: string
-): string | undefined {
+function getMatchForLanguage(lines: any[], s: string, targetLanguage: string): string | undefined {
   if (!s || s.length === 0) return undefined;
 
   // Normalize: Subject Language/Languages mismatch
@@ -298,7 +290,7 @@ function getMatchForLanguage(
     rus: "ru",
     ind: "id",
     fas: "fa",
-    eng: "en"
+    eng: "en",
   };
   const normalizedLang = iso3to2[targetLanguage] || targetLanguage;
 
@@ -311,7 +303,7 @@ function getMatchForLanguage(
   const columnMappings: Record<string, string[]> = {
     es: ["es-ES"],
     pt: ["pt-BR"],
-    zh: ["zh-CN"]
+    zh: ["zh-CN"],
   };
 
   const alternatives = columnMappings[normalizedLang];
@@ -331,7 +323,7 @@ function getMatch(
   lines: any[],
   s: string,
   fileThatShouldHaveThis: string,
-  fieldName?: string
+  fieldName?: string,
 ): string {
   // there is a mismatch in the plurality of the CSV's "Subject Language" and the code's "Subject Languages"
   // I'd rather fix this when we get out of using the CSV as I'm concerned about losing translations in Crowdin.
@@ -349,9 +341,7 @@ function getMatch(
         if (!fieldName || fieldName.toLowerCase().indexOf("country") < 0) {
           const forField = fieldName ? `for field ${fieldName}` : "";
 
-          console.warn(
-            `TODO: Add \t"${s}"\t to locale/${fileThatShouldHaveThis} ${forField}`
-          );
+          console.warn(`TODO: Add \t"${s}"\t to locale/${fileThatShouldHaveThis} ${forField}`);
         }
         return "MISSING-" + s;
       }
@@ -386,7 +376,7 @@ export function i18nUnitTestPrep() {
 /**
  * Check if a genre value has translations available for all the given languages.
  * Checks both built-in (genres.csv) and project-level translations.
- * 
+ *
  * @param genre The genre value to check
  * @param languageCodes The language codes to check
  * @param projectTranslationFn Optional function to get project-level translation
@@ -395,14 +385,12 @@ export function i18nUnitTestPrep() {
 export function isGenreMissingTranslations(
   genre: string,
   languageCodes: string[],
-  projectTranslationFn?: (value: string, lang: string) => string | undefined
+  projectTranslationFn?: (value: string, lang: string) => string | undefined,
 ): boolean {
   // Skip English since it's always available (the value itself is the English)
-  const nonEnglishCodes = languageCodes.filter(
-    (code) => code !== "en" && code !== "eng"
-  );
+  const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
   if (nonEnglishCodes.length === 0) return false;
-  
+
   return nonEnglishCodes.some((code) => {
     const translation = translateGenreToLanguage(genre, code, projectTranslationFn);
     return !translation || translation.trim().length === 0;
@@ -412,7 +400,7 @@ export function isGenreMissingTranslations(
 /**
  * Check if a role value has translations available for all the given languages.
  * Checks both built-in (roles.csv) and project-level translations.
- * 
+ *
  * @param role The role value to check
  * @param languageCodes The language codes to check
  * @param projectTranslationFn Optional function to get project-level translation
@@ -421,14 +409,12 @@ export function isGenreMissingTranslations(
 export function isRoleMissingTranslations(
   role: string,
   languageCodes: string[],
-  projectTranslationFn?: (value: string, lang: string) => string | undefined
+  projectTranslationFn?: (value: string, lang: string) => string | undefined,
 ): boolean {
   // Skip English since it's always available (the value itself is the English)
-  const nonEnglishCodes = languageCodes.filter(
-    (code) => code !== "en" && code !== "eng"
-  );
+  const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
   if (nonEnglishCodes.length === 0) return false;
-  
+
   return nonEnglishCodes.some((code) => {
     const translation = translateRoleToLanguage(role, code, projectTranslationFn);
     return !translation || translation.trim().length === 0;

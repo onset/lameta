@@ -7,7 +7,7 @@ import {
   NotifyError,
   NotifyWarning,
   NotifyException,
-  NotifyFileAccessProblem
+  NotifyFileAccessProblem,
 } from "../../components/Notify";
 import * as fs from "fs-extra";
 import * as Path from "path";
@@ -16,7 +16,7 @@ import assert from "assert";
 import {
   asyncTrash,
   getAllFilesSync,
-  isMacOSMetadataFile
+  isMacOSMetadataFile,
 } from "../../other/crossPlatformUtilities";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { CopyManager, getExtension } from "../../other/CopyManager";
@@ -30,11 +30,7 @@ import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaF
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import temp from "temp";
 
-export type IFolderType =
-  | "project"
-  | "session"
-  | "person"
-  | "project documents";
+export type IFolderType = "project" | "session" | "person" | "project documents";
 
 // Project, Session, or Person
 export abstract class Folder {
@@ -59,12 +55,12 @@ export abstract class Folder {
     directory: string,
     metadataFile: FolderMetadataFile | null,
     files: File[],
-    customVocabularies: EncounteredVocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry,
   ) {
     makeObservable(this, {
       marked: observable,
       files: observable,
-      selectedFile: observable
+      selectedFile: observable,
     });
 
     this.customVocabularies = customVocabularies;
@@ -80,10 +76,7 @@ export abstract class Folder {
 
   // Person overrides this to look at both the name and the code field
   public wouldCollideWithIdFields(value: string): boolean {
-    return (
-      value.trim().toLowerCase() ===
-      this.textValueThatControlsFolderName().toLowerCase()
-    );
+    return value.trim().toLowerCase() === this.textValueThatControlsFolderName().toLowerCase();
   }
   public get /*overridden by subclasses*/ metadataFileExtensionWithDot(): string {
     return "--error--";
@@ -115,13 +108,10 @@ export abstract class Folder {
   // for a future "copy" user function, but
   // 1) we'd need to copy over all the meta data
   // 2) it is currently synchronous. If we change that, it will break tests so something would have to be done.
-  public copyInOneProjectFileIfNotThereAlready(
-    sourceFile: File,
-    destDirectory: string
-  ) {
+  public copyInOneProjectFileIfNotThereAlready(sourceFile: File, destDirectory: string) {
     const destPath = Path.join(
       destDirectory,
-      Path.basename(sourceFile.pathInFolderToLinkFileOrLocalCopy)
+      Path.basename(sourceFile.pathInFolderToLinkFileOrLocalCopy),
     );
     if (fs.existsSync(destPath)) {
       return;
@@ -130,7 +120,7 @@ export abstract class Folder {
     // just for unit tests
     if (!fs.existsSync(sourceFile.pathInFolderToLinkFileOrLocalCopy))
       throw new Error(
-        `copyInOneProjectFileIfNotThereAlready ${sourceFile.pathInFolderToLinkFileOrLocalCopy} doesn't exist.`
+        `copyInOneProjectFileIfNotThereAlready ${sourceFile.pathInFolderToLinkFileOrLocalCopy} doesn't exist.`,
       );
 
     // note, I can't think of how the .meta file of the consent could be helpful, so
@@ -148,43 +138,28 @@ export abstract class Folder {
     await this.copyInOneFileAsync(path);
   }
 
-  public copyInOneFileAsync(
-    pathToOriginalFile: string,
-    newFileName?: string
-  ): Promise<void> {
+  public copyInOneFileAsync(pathToOriginalFile: string, newFileName?: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (
-        ["session", "person", "meta"].includes(
-          getExtension(pathToOriginalFile)?.toLowerCase()
-        )
-      ) {
-        NotifyWarning(
-          t`Cannot add files of that type` +
-            ` (${getExtension(pathToOriginalFile)}`
-        );
+      if (["session", "person", "meta"].includes(getExtension(pathToOriginalFile)?.toLowerCase())) {
+        NotifyWarning(t`Cannot add files of that type` + ` (${getExtension(pathToOriginalFile)}`);
         return;
       }
-      const n = sanitizeForArchive(
-        newFileName ? newFileName : Path.basename(pathToOriginalFile)
-      );
+      const n = sanitizeForArchive(newFileName ? newFileName : Path.basename(pathToOriginalFile));
       const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);
 
       if (fs.existsSync(dest)) {
-        NotifyWarning(
-          t`There is already a file here with the name` + ` (${n})`
-        );
+        NotifyWarning(t`There is already a file here with the name` + ` (${n})`);
         return;
       }
       const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
-      const linkInsteadOfCopy =
-        !!mediaFolder && isSubDirectory(mediaFolder, pathToOriginalFile);
+      const linkInsteadOfCopy = !!mediaFolder && isSubDirectory(mediaFolder, pathToOriginalFile);
 
       if (linkInsteadOfCopy) {
         const f = OtherFile.CreateLinkFile(
           pathToOriginalFile,
           this.customVocabularies,
-          this.directory
+          this.directory,
         );
 
         this.files.push(f);
@@ -199,16 +174,16 @@ export abstract class Folder {
               dest,
               (progress: string) => {
                 f.copyProgress = progress;
-              }
+              },
             )
               .then((successfulDestinationPath) => {
                 const pendingFile = this.files.find(
-                  (x) => x.pathInFolderToLinkFileOrLocalCopy === dest
+                  (x) => x.pathInFolderToLinkFileOrLocalCopy === dest,
                 );
                 if (!pendingFile) {
                   NotifyError(
                     // not translating for now
-                    `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`
+                    `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`,
                   );
                   reject();
                   return;
@@ -219,19 +194,19 @@ export abstract class Folder {
               .catch((error) => {
                 console.log(`error ${error}`);
                 const fileIndex = this.files.findIndex(
-                  (x) => x.pathInFolderToLinkFileOrLocalCopy === dest
+                  (x) => x.pathInFolderToLinkFileOrLocalCopy === dest,
                 );
                 if (fileIndex < 0) {
                   NotifyException(
                     error, // not translating for now
-                    `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`
+                    `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`,
                   );
                   reject();
                   return;
                 }
                 this.files.splice(fileIndex, 1);
               }),
-          0
+          0,
         );
 
         this.files.push(f);
@@ -297,7 +272,7 @@ export abstract class Folder {
   protected static loadChildFiles(
     directory: string,
     folderMetaDataFile: File,
-    customVocabularies: EncounteredVocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry,
   ): File[] {
     Folder.cleanupZombieMetaFiles(directory);
     const files = new Array<File>();
@@ -315,8 +290,7 @@ export abstract class Folder {
           !path.endsWith(".meta") &&
           !path.endsWith(".test") &&
           !fs.lstatSync(path).isDirectory() && // there's a problem with saymore classic oral annotation folders sneaking in
-          Path.normalize(path) !==
-            Path.normalize(folderMetaDataFile.metadataFilePath)
+          Path.normalize(path) !== Path.normalize(folderMetaDataFile.metadataFilePath)
         ) {
           const file = new OtherFile(path, customVocabularies);
           files.push(file);
@@ -332,15 +306,11 @@ export abstract class Folder {
 
   public MoveFileToTrashWithUI(file: File) {
     ShowDeleteDialog(file.pathInFolderToLinkFileOrLocalCopy, async () => {
-      sentryBreadCrumb(
-        `Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`
-      );
+      sentryBreadCrumb(`Moving to trash: ${file.pathInFolderToLinkFileOrLocalCopy}`);
       let continueTrashing = true; // if there is no described file, then can always go ahead with trashing metadata file
       if (fs.existsSync(file.pathInFolderToLinkFileOrLocalCopy)) {
         // electron.shell.showItemInFolder(file.describedFilePath);
-        continueTrashing = (
-          await asyncTrash(file.pathInFolderToLinkFileOrLocalCopy)
-        ).succeeded;
+        continueTrashing = (await asyncTrash(file.pathInFolderToLinkFileOrLocalCopy)).succeeded;
       }
       if (!continueTrashing) {
         return;
@@ -352,8 +322,7 @@ export abstract class Folder {
         if (fs.existsSync(file.metadataFilePath)) {
           if (!(await asyncTrash(file.metadataFilePath))) {
             NotifyError(
-              t`lameta was not able to put this file in the trash` +
-                ` (${file.metadataFilePath})`
+              t`lameta was not able to put this file in the trash` + ` (${file.metadataFilePath})`,
             );
           }
         }
@@ -367,10 +336,7 @@ export abstract class Folder {
       this.forgetFile(file);
     });
   }
-  public renameChildWithFilenameMinusExtension(
-    childFile: File,
-    newCoreName: string
-  ): boolean {
+  public renameChildWithFilenameMinusExtension(childFile: File, newCoreName: string): boolean {
     return childFile.tryToRenameBothFiles(newCoreName);
   }
 
@@ -378,9 +344,7 @@ export abstract class Folder {
   protected renameFilesAndFolders(newFolderName: string): boolean {
     sentryBreadCrumb(`renameFilesAndFolders ${newFolderName}.`);
     if (this.files.some((f) => f.copyInProgress)) {
-      NotifyWarning(
-        t`Please wait until all files are finished copying into this folder`
-      );
+      NotifyWarning(t`Please wait until all files are finished copying into this folder`);
       return false;
     }
     this.saveAllFilesInFolder(true);
@@ -400,22 +364,17 @@ export abstract class Folder {
     ) {
       // this could almost just be silent. To see it, create several new people in a row
       NotifyWarning(
-        t`lameta tried to rename the folder "${oldFolderName}" to "${newFolderName}", but there is already a folder with that name.`
+        t`lameta tried to rename the folder "${oldFolderName}" to "${newFolderName}", but there is already a folder with that name.`,
       );
       return false;
     }
     // first, we just do a trial run to see if this will work
-    console.debug(
-      `renameFilesAndFolders() at point where it test the directory name.`
-    );
+    console.debug(`renameFilesAndFolders() at point where it test the directory name.`);
     try {
       PatientFS.renameSync(this.directory, newDirPath);
       PatientFS.renameSync(newDirPath, this.directory);
     } catch (err) {
-      NotifyFileAccessProblem(
-        couldNotRenameDirectory + " [[STEP:Precheck]]",
-        err
-      );
+      NotifyFileAccessProblem(couldNotRenameDirectory + " [[STEP:Precheck]]", err);
       return false;
     }
     try {
@@ -423,15 +382,12 @@ export abstract class Folder {
         f.throwIfFilesMissing();
       });
     } catch (err) {
-      NotifyFileAccessProblem(
-        couldNotRenameDirectory + " [[STEP:Files Exist]]",
-        err
-      );
+      NotifyFileAccessProblem(couldNotRenameDirectory + " [[STEP:Files Exist]]", err);
       return false;
     }
 
     console.debug(
-      `renameFilesAndFolders() at point where checks for files that have the basename as part of their name.`
+      `renameFilesAndFolders() at point where checks for files that have the basename as part of their name.`,
     );
 
     // ok, that worked, so now have all the files rename themselves if their name depends on the folder name
@@ -441,15 +397,12 @@ export abstract class Folder {
       } catch (err) {
         const base = Path.basename(f.metadataFilePath);
         const msg = t`lameta was not able to rename one of the files in the folder.`;
-        NotifyFileAccessProblem(
-          `${msg} (${base})` + " [[STEP:File names]]",
-          err
-        );
+        NotifyFileAccessProblem(`${msg} (${base})` + " [[STEP:File names]]", err);
       }
     });
     // and actually do the rename
     console.debug(
-      `renameFilesAndFolders() at point where it actually renames the directory (to ${newDirPath}).`
+      `renameFilesAndFolders() at point where it actually renames the directory (to ${newDirPath}).`,
     );
     try {
       PatientFS.renameSync(this.directory, newDirPath);
@@ -459,15 +412,12 @@ export abstract class Folder {
       // );
     } catch (err) {
       const msg = t`lameta was not able to rename the folder.`;
-      NotifyFileAccessProblem(
-        `${msg} (${this.displayName}).` + " [[STEP:Actual folder]]",
-        err
-      );
+      NotifyFileAccessProblem(`${msg} (${this.displayName}).` + " [[STEP:Actual folder]]", err);
       return false; // don't continue on with telling the folders that they moved.
     }
 
     console.debug(
-      `renameFilesAndFolders() at point where it tells the file objects in memory about their new location.`
+      `renameFilesAndFolders() at point where it tells the file objects in memory about their new location.`,
     );
 
     // ok, only after the folder was successfully renamed do we tell the individual files that they have been moved
@@ -477,7 +427,7 @@ export abstract class Folder {
         f.updateRecordOfWhatFolderThisIsLocatedIn(newFolderName);
       } catch (err) {
         console.error(
-          `renameFilesAndFolders(): Error updating record of what folder this is located in for ${f.pathInFolderToLinkFileOrLocalCopy}`
+          `renameFilesAndFolders(): Error updating record of what folder this is located in for ${f.pathInFolderToLinkFileOrLocalCopy}`,
         );
         throw err;
       }
@@ -494,9 +444,7 @@ export abstract class Folder {
   }
 
   public getNeedRenameOfFolder(): boolean {
-    const newFileName = sanitizeForArchive(
-      this.textValueThatControlsFolderName()
-    );
+    const newFileName = sanitizeForArchive(this.textValueThatControlsFolderName());
 
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
     // Windows is always case-insensitive, and macos usually (but not always!) is. This method
@@ -505,9 +453,7 @@ export abstract class Folder {
   }
 
   public nameMightHaveChanged(): boolean {
-    const newFileName = sanitizeForArchive(
-      this.textValueThatControlsFolderName()
-    );
+    const newFileName = sanitizeForArchive(this.textValueThatControlsFolderName());
 
     // Note, this code hasn't been tested with Linux, which has a case-sensitive file system.
     // Windows is always case-insensitive, and macos usually (but not always!) is. This method
@@ -535,7 +481,7 @@ export abstract class Folder {
       this.detectAndRepairMisnamedMetadataFile(
         this.directory,
         this.metadataFile.metadataFilePath,
-        this.metadataFileExtensionWithDot
+        this.metadataFileExtensionWithDot,
       );
       this.metadataFile.save(false);
     }
@@ -544,13 +490,10 @@ export abstract class Folder {
   public detectAndRepairMisnamedMetadataFile(
     directory: string,
     expectedMetadataFilePath: string,
-    metadataFileExtensionWithDot: string
+    metadataFileExtensionWithDot: string,
   ) {
     if (!fs.existsSync(expectedMetadataFilePath)) {
-      const matchingPaths = this.findZombieMetadataFiles(
-        directory,
-        metadataFileExtensionWithDot
-      );
+      const matchingPaths = this.findZombieMetadataFiles(directory, metadataFileExtensionWithDot);
       if (matchingPaths.length > 1) {
         try {
           PatientFS.renameSync(matchingPaths[0], expectedMetadataFilePath);
@@ -558,7 +501,7 @@ export abstract class Folder {
         } catch (err) {
           NotifyException(
             err,
-            `lameta was not able to fix the name of ${matchingPaths[0]} to fit the folder name.` // intentionally not adding the translation list
+            `lameta was not able to fix the name of ${matchingPaths[0]} to fit the folder name.`, // intentionally not adding the translation list
           );
           // not sure what to do now....
         }
@@ -571,24 +514,19 @@ export abstract class Folder {
       (f) =>
         // ignore macOS AppleDouble sidecars (._*) — a binary "._Foo.session"
         // must never be renamed into place as the real metadata file (issue #68)
-        !isMacOSMetadataFile(f) && f.match(new RegExp(`.*(${extension})$`, "ig"))
+        !isMacOSMetadataFile(f) && f.match(new RegExp(`.*(${extension})$`, "ig")),
     );
   }
   public saveAllFilesInFolder(beforeRename: boolean = false) {
     if (this.beingDeleted) {
-      console.warn(
-        `Skipping saveAllFilesInFolder( ${this.displayName}) because beingDeleted`
-      );
+      console.warn(`Skipping saveAllFilesInFolder( ${this.displayName}) because beingDeleted`);
       return;
     }
 
     // 9/2021 there is a very hard to reproduce bug where, after deletion, something is trying to save
     // either the folder or something in the folder.
     if (this.wasDeleted) {
-      debugger;
-      console.error(
-        ` called on ${this.displayName} which was already deleted.`
-      );
+      console.error(` called on ${this.displayName} which was already deleted.`);
       return;
     }
     for (const f of this.files) {
@@ -621,16 +559,14 @@ export abstract class Folder {
           //  opening a file in ms word creates a hidden file that starts with ~
           // the fact that it's open with Word is probably going to cause problems,
           // but this temp file is not a problem, don't want to give a misleading error message.
-          elm.match(
-            new RegExp(`^(?!~).*(${this.metadataFileExtensionWithDot})$`, "ig")
-          )
+          elm.match(new RegExp(`^(?!~).*(${this.metadataFileExtensionWithDot})$`, "ig")),
       );
       if (x.length > 1) {
         NotifyMultipleProjectFiles(
           this.filePrefix,
           this.metadataFileExtensionWithDot,
           Path.basename(this.directory) + this.metadataFileExtensionWithDot,
-          this.directory
+          this.directory,
         );
       }
     }

@@ -5,7 +5,7 @@ import {
   beforeEach,
   afterEach,
   afterAll
-} from "vitest";
+} from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";

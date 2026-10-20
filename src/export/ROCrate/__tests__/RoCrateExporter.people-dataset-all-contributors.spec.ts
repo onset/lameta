@@ -7,7 +7,7 @@
  *
  * Related: LAM-98 person-files dataset structure
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import {
   createPersonId,

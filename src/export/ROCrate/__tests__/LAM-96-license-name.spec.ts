@@ -9,7 +9,7 @@
  * 1. Session license entities have a `name` property
  * 2. The ldac:DataReuseLicense class entity has a `name` property
  */
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vite-plus/test";
 import {
   createSessionLicense,
   createLdacAccessTypeDefinitions,

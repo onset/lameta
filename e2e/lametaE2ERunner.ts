@@ -140,7 +140,7 @@ export class LametaE2ERunner {
       /*
         By default we only surface console "error" messages from the renderer during e2e
         runs so the output stays readable. To see everything (log/debug/info/warning/etc.),
-        run with E2E_VERBOSE=1 yarn e2e ...
+        run with E2E_VERBOSE=1 pnpm run e2e -- ...
       */
       p.on("console", (msg) => {
         try {

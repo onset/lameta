@@ -6,7 +6,7 @@ import { File } from "./File";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import {
   fieldDefinitionsOfCurrentConfig,
-  prepareGlobalFieldDefinitionCatalog
+  prepareGlobalFieldDefinitionCatalog,
 } from "../field/ConfiguredFieldDefinitions";
 import { PatientFS } from "../../other/patientFile";
 import { isMacOSMetadataFile } from "../../other/crossPlatformUtilities";
@@ -20,7 +20,7 @@ export class FolderMetadataFile extends File {
     doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
     fieldCatalog: FieldDefinition[],
-    customVocabularies: EncounteredVocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry,
   ) {
     const name = Path.basename(directory);
 
@@ -30,25 +30,19 @@ export class FolderMetadataFile extends File {
       // does a file exist here with the right extension but the wrong name?
       const files = fs.readdirSync(directory);
       const possibleFiles = files.filter(
-        (f) =>
-          f.endsWith(fileExtensionForMetadata) && !isMacOSMetadataFile(f)
+        (f) => f.endsWith(fileExtensionForMetadata) && !isMacOSMetadataFile(f),
       );
       if (possibleFiles.length > 0) {
         // use the first one. The next save will try to sort out the names
-        const pathToFileWithUnexpectedName = Path.join(
-          directory,
-          possibleFiles[0]
-        );
+        const pathToFileWithUnexpectedName = Path.join(directory, possibleFiles[0]);
         try {
           PatientFS.renameSync(pathToFileWithUnexpectedName, metadataPath);
-          console.log(
-            `renamed ${pathToFileWithUnexpectedName} to ${metadataPath}`
-          );
+          console.log(`renamed ${pathToFileWithUnexpectedName} to ${metadataPath}`);
           // ok good, we're all set
         } catch (err) {
           // ah well
           console.error(
-            `Could not rename ${pathToFileWithUnexpectedName} to ${metadataPath}, using ${pathToFileWithUnexpectedName} instead`
+            `Could not rename ${pathToFileWithUnexpectedName} to ${metadataPath}, using ${pathToFileWithUnexpectedName} instead`,
           );
           metadataPath = pathToFileWithUnexpectedName;
         }
@@ -63,12 +57,12 @@ export class FolderMetadataFile extends File {
       xmlRootName,
       doOutputTypeInXmlTags,
       fileExtensionForMetadata,
-      false
+      false,
     );
     this.encounteredVocabularyRegistry = customVocabularies;
     this.readDefinitionsFromJson(fieldCatalog);
 
-    /* NB: don't do this within the constructor. subclass fields are not initialized until after super(): 
+    /* NB: don't do this within the constructor. subclass fields are not initialized until after super():
     this.finishLoading();
 
     Bizarrly, the only place this problem showed up is with Wallabyjs, when something downstream of finishLoading() was trying to access PersonMetadtaFile.languages,
@@ -111,10 +105,7 @@ export class FolderMetadataFile extends File {
       //console.log("Setting prop from fields.json5: " + field.key);
     });
   }
-  protected specialLoadingOfField(
-    tag: string,
-    propertiesFromXml: any
-  ): boolean {
+  protected specialLoadingOfField(tag: string, propertiesFromXml: any): boolean {
     //console.log("FolderMetaDataFile.specialHandlingOfField");
     return false;
   }

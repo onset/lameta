@@ -46,9 +46,9 @@ export const LametaDialog: React.FunctionComponent<{
           height: `calc(100vh - ${props.initialViewportMargin * 2}px)`,
           maxWidth: "none",
           maxHeight: "none",
-          margin: 0
+          margin: 0,
         }
-      : {})
+      : {}),
   };
 
   return (
@@ -57,9 +57,7 @@ export const LametaDialog: React.FunctionComponent<{
       onClose={() => requestClose()}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
-          const defaultButton = document.querySelector(
-            ".defaultButton"
-          ) as HTMLButtonElement;
+          const defaultButton = document.querySelector(".defaultButton") as HTMLButtonElement;
           if (defaultButton) {
             defaultButton.click();
           }
@@ -69,7 +67,7 @@ export const LametaDialog: React.FunctionComponent<{
       }}
       maxWidth={false}
       PaperProps={{
-        style: paperStyle
+        style: paperStyle,
       }}
       {...dialogProps}
     >
@@ -88,8 +86,7 @@ export const DialogTitle: React.FunctionComponent<{
   const background = props.backgroundColor || "transparent";
 
   // This is lame, but it's really what looks right to me. When there is a color bar, it looks better to have less padding at the top.
-  const titleTopPadding =
-    background === "transparent" ? kDialogTopPadding : kDialogPadding;
+  const titleTopPadding = background === "transparent" ? kDialogTopPadding : kDialogPadding;
   return (
     <div
       css={css`
@@ -267,6 +264,6 @@ export function useSetupLametaDialog() {
   return {
     currentlyOpen,
     showDialog,
-    closeDialog
+    closeDialog,
   };
 }

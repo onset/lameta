@@ -13,17 +13,9 @@ import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
 import { lameta_blue, lameta_orange } from "../containers/theme";
 import { getTestEnvironment } from "../getTestEnvironment";
-import {
-  getNewerReleases,
-  newestOfEachChannel,
-  sortNewestFirst
-} from "./releaseChannels";
+import { getNewerReleases, newestOfEachChannel, sortNewestFirst } from "./releaseChannels";
 
-type Mode =
-  | "querying"
-  | "update-available"
-  | "just-show-release-notes"
-  | "closed";
+type Mode = "querying" | "update-available" | "just-show-release-notes" | "closed";
 
 interface IGithubRelease {
   assets: { browser_download_url: string }[];
@@ -53,16 +45,12 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
   checkForUpdates = () => {
     axios
-      .get(
-        `https://api.github.com/repos/${
-          getTestEnvironment().LAMETA_RELEASES_REPO
-        }/releases`
-      )
+      .get(`https://api.github.com/repos/${getTestEnvironment().LAMETA_RELEASES_REPO}/releases`)
       .then((result) => {
         // Newest first by date: each channel numbers its versions separately, so the
         // numbers cannot order releases from different channels.
         const all = sortNewestFirst<IGithubRelease>(
-          result.data.filter((r: IGithubRelease) => r.draft === false)
+          result.data.filter((r: IGithubRelease) => r.draft === false),
         );
 
         // const all = [
@@ -114,9 +102,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
       <ReactModal
         ariaHideApp={false}
         className="releaseDialog" // this cannot be empty, even if you don't use it, else the dialog is shoved to the upper left
-        isOpen={
-          mode === "just-show-release-notes" || mode === "update-available"
-        }
+        isOpen={mode === "just-show-release-notes" || mode === "update-available"}
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => setMode("closed")}
       >
@@ -136,8 +122,8 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             {/* I couldn't get version to show up inside this string in a packaged lameta, just dev. That's why it is now outside. */}
             {appI18n._(
               /*i18n*/ {
-                id: "You are running lameta version:"
-              }
+                id: "You are running lameta version:",
+              },
             )}
             &nbsp;{version}
           </div>
@@ -159,10 +145,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
           >
             {!allReleases ||
               (allReleases.length === 0 && (
-                <p>
-                  Sorry, lameta could not retrieve the release notes from
-                  github.
-                </p>
+                <p>Sorry, lameta could not retrieve the release notes from github.</p>
               ))}
             {releasesToShow.map((release) => (
               <div
@@ -256,7 +239,7 @@ function getDownloadUrl(release: any) {
     const platformToExtension = { win32: "exe", darwin: "dmg" };
     const installerExtension = platformToExtension[process.platform];
     const url = (release.assets as Array<any>).find((a) =>
-      _.endsWith(a.browser_download_url, installerExtension)
+      _.endsWith(a.browser_download_url, installerExtension),
     );
     return url?.browser_download_url;
   } catch (error) {

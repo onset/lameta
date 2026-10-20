@@ -15,7 +15,7 @@ export function claimSprjFiles(exePath: string): void {
   const writes: [key: string, value: string][] = [
     ["HKCU\\Software\\Classes\\.sprj", fileClass],
     [`${classKey}\\DefaultIcon`, `"${exePath}",0`],
-    [`${classKey}\\shell\\open\\command`, `"${exePath}" "%1"`]
+    [`${classKey}\\shell\\open\\command`, `"${exePath}" "%1"`],
   ];
   for (const [key, value] of writes) {
     execFile("reg", ["add", key, "/ve", "/d", value, "/f"], (error) => {

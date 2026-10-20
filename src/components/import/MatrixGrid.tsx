@@ -6,12 +6,12 @@ import {
   TableFixedColumns,
   TableHeaderRow,
   TableSelection,
-  VirtualTable
+  VirtualTable,
 } from "@devexpress/dx-react-grid-material-ui";
 import Paper from "@mui/material/Paper";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Theme } from "@mui/material/styles";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import {
@@ -20,7 +20,7 @@ import {
   MappedColumnInfo,
   MappedMatrix,
   MappedRow,
-  RowImportStatus
+  RowImportStatus,
 } from "./MappedMatrix";
 import { lameta_dark_green } from "../../containers/theme";
 import Tooltip from "react-tooltip-lite";
@@ -31,16 +31,14 @@ const styles = (theme: Theme) => ({
   tableCell: {
     borderRight: `1px solid rgba(224,224,224,1)`,
     "&:last-child": {
-      borderRight: 0
-    }
-  }
+      borderRight: 0,
+    },
+  },
 });
 const TableComponentBase = ({ classes, ...restProps }) => (
   <Table.Table {...restProps} className={classes.tableStriped} />
 );
-const TableComponent = withStyles(styles, { name: "TableComponent" })(
-  TableComponentBase
-);
+const TableComponent = withStyles(styles, { name: "TableComponent" })(TableComponentBase);
 const tableColumnExtensions = [{ columnName: "status_column", width: 70 }];
 export const MatrixGrid: React.FunctionComponent<{
   matrix: MappedMatrix;
@@ -124,28 +122,27 @@ export const MatrixGrid: React.FunctionComponent<{
               ) : (
                 <span></span>
               )}
-              {row.matchesExistingRecord &&
-                row.importStatus !== RowImportStatus.NotAllowed && (
-                  <Tooltip
-                    content={
-                      "This project already has a record with this ID. Tick the box to the left to replace it with this row."
-                    }
-                    background={lameta_dark_green}
-                    color={"white"}
-                  >
-                    <WarningRoundedIcon
-                      color="secondary"
-                      //fontSize="small"
-                      css={css`
-                        //margin-left: -8px;
-                        margin-bottom: -6px;
-                      `}
-                    />
-                  </Tooltip>
-                )}
+              {row.matchesExistingRecord && row.importStatus !== RowImportStatus.NotAllowed && (
+                <Tooltip
+                  content={
+                    "This project already has a record with this ID. Tick the box to the left to replace it with this row."
+                  }
+                  background={lameta_dark_green}
+                  color={"white"}
+                >
+                  <WarningRoundedIcon
+                    color="secondary"
+                    //fontSize="small"
+                    css={css`
+                      //margin-left: -8px;
+                      margin-bottom: -6px;
+                    `}
+                  />
+                </Tooltip>
+              )}
             </div>
           );
-        }
+        },
       },
       // followed by the columns of the spreadsheet
       ...props.matrix.columnInfos.map((columnInfo, columnIndex) => {
@@ -176,9 +173,9 @@ export const MatrixGrid: React.FunctionComponent<{
           ),
           getCellValue: (row: MappedRow) => {
             return getCellComponent(row.cells[columnIndex]);
-          }
+          },
         };
-      })
+      }),
     ];
     return columnObjects;
   }, [props.matrix]);
@@ -242,18 +239,16 @@ export const MatrixGrid: React.FunctionComponent<{
               .map((row) => props.matrix.rows.indexOf(row))}
             onSelectionChange={(selection) => {
               props.matrix.rows.forEach((row) => {
-                if (row.importStatus == RowImportStatus.Yes)
-                  row.importStatus = RowImportStatus.No;
+                if (row.importStatus == RowImportStatus.Yes) row.importStatus = RowImportStatus.No;
               });
               selection.forEach((index) => {
                 const row = props.matrix.rows[index];
-                if (row.importStatus == RowImportStatus.No)
-                  row.importStatus = RowImportStatus.Yes;
+                if (row.importStatus == RowImportStatus.No) row.importStatus = RowImportStatus.Yes;
               });
               props.chosenRowsCountChanged();
             }}
           />
-          {/* switching to VirtualTable sped things up enormously with only 500 people, including showing 
+          {/* switching to VirtualTable sped things up enormously with only 500 people, including showing
           the grid and closing the dialog */}
           <VirtualTable
             columnExtensions={tableColumnExtensions}
@@ -273,9 +268,7 @@ export const MatrixGrid: React.FunctionComponent<{
           <IntegratedSelection />
           <TableSelectionWithDisabledRows />
           {/* keep the left-most column fixed even when we scroll horizontally */}
-          <TableFixedColumns
-            leftColumns={[TableSelection.COLUMN_TYPE, "status_column"]}
-          />
+          <TableFixedColumns leftColumns={[TableSelection.COLUMN_TYPE, "status_column"]} />
         </Grid>
       </Paper>
     </div>
@@ -323,9 +316,7 @@ function getMappingStatusComponents(column: MappedColumnInfo) {
       return (
         <div
           css={css`
-            ${column.lametaProperty.length > kCharsBeforeWeHaveToShrink
-              ? "font-size:9px"
-              : ""};
+            ${column.lametaProperty.length > kCharsBeforeWeHaveToShrink ? "font-size:9px" : ""};
           `}
           title={column.lametaProperty}
         >
@@ -384,11 +375,7 @@ function getCellComponent(cell?: IMappedCell) {
 
     case CellImportStatus.NotInClosedVocabulary:
       return (
-        <Tooltip
-          content={cell.problemDescription}
-          background={"red"}
-          color={"white"}
-        >
+        <Tooltip content={cell.problemDescription} background={"red"} color={"white"}>
           <div
             css={css`
               ${defaultStyling}

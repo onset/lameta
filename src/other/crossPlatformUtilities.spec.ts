@@ -1,12 +1,8 @@
-import { describe, it, afterEach, expect } from "vitest";
+import { describe, it, afterEach, expect } from "vite-plus/test";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as os from "os";
-import {
-  normalizePath,
-  isMacOSMetadataFile,
-  getAllFilesSync
-} from "./crossPlatformUtilities";
+import { normalizePath, isMacOSMetadataFile, getAllFilesSync } from "./crossPlatformUtilities";
 
 describe("Linked file", () => {
   it("normalizePath converts to forward slashes", () => {
@@ -28,12 +24,8 @@ describe("isMacOSMetadataFile", () => {
     expect(isMacOSMetadataFile("/some/dir/._foo.jpg.meta")).toBe(true);
     // Path.join uses the native separator, so this exercises backslashes on
     // Windows and forward slashes elsewhere
-    expect(isMacOSMetadataFile(Path.join("some", "dir", ".DS_Store"))).toBe(
-      true
-    );
-    expect(isMacOSMetadataFile(Path.join("some", "dir", "foo.jpg"))).toBe(
-      false
-    );
+    expect(isMacOSMetadataFile(Path.join("some", "dir", ".DS_Store"))).toBe(true);
+    expect(isMacOSMetadataFile(Path.join("some", "dir", "foo.jpg"))).toBe(false);
   });
   it("does not flag normal files", () => {
     expect(isMacOSMetadataFile("foo.jpg")).toBe(false);

@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, afterAll } from "vitest";
+import { describe, it, beforeAll, afterAll } from "vite-plus/test";
 
 import { Project } from "../model/Project/Project";
 import {

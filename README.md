@@ -18,14 +18,44 @@ Stack: Typescript, React, mobx, vite, electron.
 
 ## Get Started
 
-Make sure [volta](https://github.com/volta-cli/volta) is installed. Verify that it is working correctly via `volta list`. You should see the same versions of node & yarn as are listed in `packages.json`.
+Install [Vite+](https://viteplus.dev/guide/).
 
-Note that due to a common failure of nodejs.org to deliver node to the github actions, we are currently using a mirror. See `.volta/hooks.json`.
+On Windows, run:
+
+```powershell
+irm https://vite.plus/ps1 | iex
+```
+
+On macOS or Linux, run:
 
 ```bash
-yarn
-yarn lingui compile  <-- just once, before dev will work
-yarn dev
+curl -fsSL https://vite.plus | bash
+```
+
+After installation, open a new shell and verify the CLI:
+
+```bash
+vp help
+```
+
+Vite+ supplies the Node version that `engines.node` in `package.json` names, and the pnpm version that `packageManager` names. You don't install either yourself.
+
+```bash
+vp install
+vp run strings:compile  # just once, before dev will work
+vp run dev
+```
+
+Run `package.json` scripts with `vp run <script>`. You don't need a global `pnpm`.
+
+If `vp env doctor` reports that `node` is "not vp shim", another Node install (for example Volta, or a Node.js installer in `C:\Program Files\nodejs`) comes before `~/.vite-plus/bin` on your PATH. Uninstall it or move it after `~/.vite-plus/bin`.
+
+Common commands:
+
+```bash
+vp check
+vp test
+vp build
 ```
 
 ## Packaging
@@ -33,7 +63,7 @@ yarn dev
 To package apps for the local platform:
 
 ```bash
-yarn package
+vp run package
 ```
 
 More information available in the upstream project:
@@ -42,7 +72,7 @@ More information available in the upstream project:
 ### unit tests
 
 ```bash
-yarn test
+vp test
 ```
 
 ### e2e tests
@@ -52,8 +82,8 @@ arbitrary URL, the render process in electron is tied up with its own chromium b
 run a built exe of lameta.
 
 ```bash
-yarn  e2ebuildwatch
-yarn e2e
+vp run e2ebuildwatch
+vp run e2e
 ```
 
 Note that at the time of this writing, playwright does not have a "watch" mode via command line, and the "ui" mode, which can watch, does not work with electron.
@@ -61,7 +91,7 @@ Note that at the time of this writing, playwright does not have a "watch" mode v
 To run just one e2e fixture, name it:
 
 ```bash
-yarn e2e registration.e2e.ts
+vp run e2e registration.e2e.ts
 ```
 
 If you see `ENOENT: no such file or directory, scandir "<path>\archive-configurations"`, you may have forgotten to do the `build` step.
@@ -69,7 +99,7 @@ If you see `ENOENT: no such file or directory, scandir "<path>\archive-configura
 To show the Playwright Inspector (which has a recorder), use
 
 ```bash
-yarn e2erecord
+vp run e2erecord
 ```
 
 ### l10n
@@ -78,7 +108,7 @@ When running lameta, if you see this in the Chrome debug console:
 
 `Uncaught Error: Cannot find module './en/messages.js'`
 
-then you need to do `yarn strings:compile`.
+then you need to do `vp run strings:compile`.
 
 ### Publishing
 

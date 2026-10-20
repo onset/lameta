@@ -17,7 +17,7 @@
  * See: https://linear.app/lameta/issue/LAM-103/fix-relation
  */
 
-import { vi, describe, it, beforeEach, expect, afterEach } from "vitest";
+import { vi, describe, it, beforeEach, expect, afterEach } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";

@@ -38,15 +38,13 @@ Last name
 export function makeGenericCsvZipFile(
   path: string,
   project: Project,
-  folderFilter: (f: Folder) => boolean
+  folderFilter: (f: Folder) => boolean,
 ): Promise<string> {
-  return asyncMakeZipFile(path, (archiver) =>
-    exportGenericCsv(project, archiver, folderFilter)
-  );
+  return asyncMakeZipFile(path, (archiver) => exportGenericCsv(project, archiver, folderFilter));
 }
 export async function asyncMakeZipFile(
   path: string,
-  synchronousExportFunction: (archive: nodeArchiver.Archiver) => void
+  synchronousExportFunction: (archive: nodeArchiver.Archiver) => void,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const archive = nodeArchiver.create("zip");
@@ -86,11 +84,11 @@ export async function asyncMakeZipFile(
 export function exportGenericCsv(
   project: Project,
   archive: nodeArchiver.Archiver,
-  folderFilter: (f: Folder) => boolean
+  folderFilter: (f: Folder) => boolean,
 ) {
   archive.append(makeCsvForProject(project), { name: "project.csv" });
   archive.append(makeCsvForSessions(project, folderFilter), {
-    name: "sessions.csv"
+    name: "sessions.csv",
   });
   archive.append(makeCsvForPeople(project), { name: "people.csv" });
 }
@@ -115,14 +113,7 @@ function getGenericCsv(folders: Folder[]): string {
     return "";
   }
   currentKnownFields = folders[0].knownFields;
-  const blacklist = [
-    "modifiedDate",
-    "size",
-    "type",
-    "hasConsent",
-    "displayName",
-    "filename"
-  ];
+  const blacklist = ["modifiedDate", "size", "type", "hasConsent", "displayName", "filename"];
   const foundFields = getKeys(folders)
     .filter((k) => {
       if (blacklist.indexOf(k) > -1) return false;
@@ -191,7 +182,7 @@ function addContributionsIfSession(folder: Folder): string[] {
     session
       .getAllContributionsToAllFiles()
       .map((c) => [c.role, c.personReference].join(":"))
-      .join("|")
+      .join("|"),
   ];
 }
 
@@ -258,9 +249,6 @@ export function makeCsvForPeople(project: Project): string {
   return getGenericCsv(project.persons.items);
 }
 
-export function makeCsvForSessions(
-  project: Project,
-  folderFilter: (f: Folder) => boolean
-): string {
+export function makeCsvForSessions(project: Project, folderFilter: (f: Folder) => boolean): string {
   return getGenericCsv(project.sessions.items.filter(folderFilter));
 }

@@ -12,9 +12,7 @@ const fs = require("fs");
 const path = require("path");
 const JSON5 = require("json5");
 
-const base = JSON5.parse(
-  fs.readFileSync(path.join(__dirname, "electron-builder.json5"), "utf8")
-);
+const base = JSON5.parse(fs.readFileSync(path.join(__dirname, "electron-builder.json5"), "utf8"));
 const { name, version } = require("./package.json");
 
 const channel = version.includes("-alpha")
@@ -23,8 +21,7 @@ const channel = version.includes("-alpha")
     ? "beta"
     : "release";
 
-const productName =
-  channel === "release" ? base.productName : `${base.productName} ${channel}`;
+const productName = channel === "release" ? base.productName : `${base.productName} ${channel}`;
 const appId = channel === "release" ? base.appId : `${base.appId}.${channel}`;
 // The Windows installer names the install folder after the package name, not the product name,
 // so without this every channel would install over the others in Programs\lameta.
@@ -34,5 +31,5 @@ module.exports = {
   ...base,
   productName,
   appId,
-  extraMetadata: { ...base.extraMetadata, name: packageName, productName }
+  extraMetadata: { ...base.extraMetadata, name: packageName, productName },
 };

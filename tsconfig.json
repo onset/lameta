@@ -1,10 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "package.json": [
-        "./package.json"
-      ],
+      "package.json": ["./package.json"]
     },
     "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "bundler",
@@ -13,19 +10,14 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
     "target": "ES2020",
-    "lib": [
-      "dom",
-      "es6",
-      "dom.iterable",
-      "scripthost",
-      "ES2020"
-    ],
+    "lib": ["dom", "es6", "dom.iterable", "scripthost", "ES2020"],
     "types": [
       "node",
       "vitest/globals", // <--- not working? // this is paired with `globals:true` in the vitest config so we don't have to import vitest types
       "vite/client", // Vite-injected env variables , Asset imports
       "@emotion/react/types/css-prop"
     ],
+    "strict": false,
     "alwaysStrict": true,
     "strictNullChecks": true,
     "noImplicitAny": false,
@@ -43,9 +35,7 @@
       {
         "name": "typescript-styled-plugin", // adds intellisense for css / emotion
         "lint": {
-          "validProperties": [
-            "label"
-          ]
+          "validProperties": ["label"]
         }
       }
     ]
@@ -61,9 +51,5 @@
     "test/e2e/lametaRunner.unusedts",
     "test/e2e/e2e.spekdisabled.unusedts"
   ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["dist", "node_modules", "**/*.spec.ts"]
 }
