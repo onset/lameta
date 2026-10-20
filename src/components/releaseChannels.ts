@@ -48,16 +48,15 @@ export function sortNewestFirst<T extends IReleaseSummary>(releases: T[]): T[] {
   return [...releases].sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at));
 }
 
-// The newest release of each channel in the list, which are the ones worth a Download link.
-export function newestOfEachChannel<T extends IReleaseSummary>(releasesNewestFirst: T[]): Set<T> {
-  const seen = new Set<Channel>();
-  const newest = new Set<T>();
-  for (const r of releasesNewestFirst) {
+// The highest-numbered release of each channel in the list, which are the ones worth a Download
+// link. By number, not date: a draft published late can be older than one published before it.
+export function newestOfEachChannel<T extends IReleaseSummary>(releases: T[]): Set<T> {
+  const highest = new Map<Channel, T>();
+  for (const r of releases) {
     const channel = getChannel(r.tag_name);
-    if (!seen.has(channel)) {
-      seen.add(channel);
-      newest.add(r);
-    }
+    const best = highest.get(channel);
+    if (!best || Semver.compare(r.tag_name, best.tag_name) > 0) highest.set(channel, r);
   }
-  return newest;
+  // in the list's own order
+  return new Set(releases.filter((r) => highest.get(getChannel(r.tag_name)) === r));
 }

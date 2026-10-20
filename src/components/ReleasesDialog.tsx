@@ -45,7 +45,10 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
   checkForUpdates = () => {
     axios
-      .get(`https://api.github.com/repos/${getTestEnvironment().LAMETA_RELEASES_REPO}/releases`)
+      // GitHub's maximum page; a running release missing from the page loses its cross-channel news
+      .get(
+        `https://api.github.com/repos/${getTestEnvironment().LAMETA_RELEASES_REPO}/releases?per_page=100`,
+      )
       .then((result) => {
         // Newest first by date: each channel numbers its versions separately, so the
         // numbers cannot order releases from different channels.

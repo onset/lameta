@@ -16,7 +16,7 @@ export SENTRY_PROJECT=lameta
 
 VERSION=$(node -p "require('./package.json').version")
 COMMIT=$(git rev-parse HEAD)
-sentry() { npx --yes @sentry/cli@2.39.1 "$@"; }
+sentry() { vp dlx @sentry/cli@2.39.1 "$@"; }
 
 echo "VERSION: $VERSION"
 echo "COMMIT: $COMMIT"

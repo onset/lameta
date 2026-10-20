@@ -57,4 +57,10 @@ describe("newestOfEachChannel", () => {
     const newest = newestOfEachChannel(sortNewestFirst(releases));
     expect(tags([...newest])).toEqual(["v4.0.12-alpha", "v4.0.1", "v4.0.53-beta"]);
   });
+
+  it("picks the higher-numbered beta even when a lower one was published after it", () => {
+    const lateDraft = [...releases, r("v4.0.51-beta", "2027-01-25T00:00:00Z")];
+    const newest = newestOfEachChannel(sortNewestFirst(lateDraft));
+    expect(tags([...newest])).toEqual(["v4.0.12-alpha", "v4.0.1", "v4.0.53-beta"]);
+  });
 });

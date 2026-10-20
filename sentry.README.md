@@ -4,11 +4,11 @@ This is currently hosted at sentry.io.
 
 Publishing (see README.md) makes the Sentry release and uploads the source maps for you, by running `./make-sentry-release.sh` after each platform's build. To run it by hand:
 
-1. Run `yarn build`, which leaves the source maps in dist/ (they are hidden maps: the bundles do not point at them, and the installer leaves them out).
+1. Run `vp run build`, which leaves the source maps in dist/ (they are hidden maps: the bundles do not point at them, and the installer leaves them out).
 
 2. Set a LAMETA_SENTRY_AUTH_TOKEN environment variable with a sentry auth token that has permissions org:read, project:read, project:releases
 
-3. run `./make-sentry-release.sh` in a bash shell. It fetches sentry-cli through npx.
+3. run `./make-sentry-release.sh` in a bash shell. It fetches sentry-cli through `vp dlx`.
 
 Other commands:
 `sentry-cli login`
@@ -25,7 +25,7 @@ The sentry-cli is fairly user-hostile at the moment. Note the required ordering 
 `sentry-cli repos -o "onset-org"  list`
 Note that even if you set SENTRY_ORG, you cannot omit -o parameter.
 
-However I've added .sentryclirc with the org and project set, so you *can* omit the other parameters. YOu would need to add your own:
+However I've added .sentryclirc with the org and project set, so you _can_ omit the other parameters. YOu would need to add your own:
 
 ```
 [defaults]
