@@ -11,7 +11,6 @@ n8marti has kindly created [a snap package](https://github.com/wasta-linux/lamet
 # For Users
 
 Learn more about this tool on its website: [https://www.lameta.org/](https://www.lameta.org/)
-lameta was previously known as SayMoreX.
 
 # For Developers
 
@@ -95,9 +94,12 @@ lameta has three channels. Each one is published from its own branch:
 
 Each channel installs under its own name and app id, so one computer can have all three at
 once. Each keeps its own settings folder, which means each has its own recent-projects list,
-and they can all run at the same time. The `.sprj` file association goes to whichever one was
-installed last. (Betas and alphas published before this scheme installed as plain `lameta`, so
-a tester who installs a new beta ends up with both.)
+and they can all run at the same time.
+
+On Windows, double-clicking a `.sprj` file opens it in whichever channel you ran last: each
+time lameta starts, it registers itself as the program for `.sprj` files. On macOS, the system
+chooses which installed channel opens a `.sprj` file; to change it, use Get Info on a `.sprj`
+file, pick the app under "Open with", and click Change All.
 
 #### Version numbers
 

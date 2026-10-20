@@ -60,6 +60,7 @@ export default defineConfig({
       include: [
         "src/mainProcess/main",
         "src/mainProcess/launchTest.ts",
+        "src/mainProcess/fileAssociation.ts",
         "src/other/locateDependency.ts",
         "src/other/spellCheckLanguages.ts",
         "src/mainProcess/MainProcessApi.ts",

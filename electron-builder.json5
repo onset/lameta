@@ -68,6 +68,7 @@
     fileAssociations: [
       {
         ext: "sprj",
+        // Every channel uses this name, and src/mainProcess/fileAssociation.ts writes to it.
         name: "lameta/lameta project"
       }
     ]
