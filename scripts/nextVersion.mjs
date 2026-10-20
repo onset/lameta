@@ -20,8 +20,7 @@ import { fileURLToPath } from "node:url";
 export const channelForBranch = {
   master: "alpha",
   beta: "beta",
-  release: "release",
-  "channel-versioning": "beta" // TEMPORARY: for testing the workflow
+  release: "release"
 };
 
 // "release" has no suffix: 4.0.0. The others do: 4.0.53-beta.
