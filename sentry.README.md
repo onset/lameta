@@ -2,11 +2,13 @@ Currently using "@sentry/browser" instead of '@sentry/electron' because of bugs 
 
 This is currently hosted at sentry.io.
 
-1. curl -sL https://sentry.io/get-cli/ | bash # may need some other install method on windows
+Publishing (see README.md) makes the Sentry release and uploads the source maps for you, by running `./make-sentry-release.sh` after each platform's build. To run it by hand:
+
+1. Run `yarn build`, which leaves the source maps in dist/ (they are hidden maps: the bundles do not point at them, and the installer leaves them out).
 
 2. Set a LAMETA_SENTRY_AUTH_TOKEN environment variable with a sentry auth token that has permissions org:read, project:read, project:releases
 
-3. run `./make-sentry-release.sh` in a bash shell
+3. run `./make-sentry-release.sh` in a bash shell. It fetches sentry-cli through npx.
 
 Other commands:
 `sentry-cli login`

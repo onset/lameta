@@ -22,6 +22,9 @@ export default defineConfig({
   },
   build: {
     emptyOutDir: true,
+    // Maps without a sourceMappingURL comment; CI uploads them to Sentry (make-sentry-release.sh)
+    // and electron-builder.json5 leaves them out of the installer.
+    sourcemap: "hidden",
     rollupOptions: {
       external: ["ts-node"]
     }

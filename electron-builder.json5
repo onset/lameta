@@ -47,6 +47,8 @@
       to: "dist/assets"
     },
     "dist/",
+    // the source maps go to Sentry, not to users
+    "!dist/**/*.map",
     "locale/",
     "archive-configurations/",
     "schemas/",
