@@ -115,6 +115,27 @@ jobs:
           mkdir -p ~/private_keys/
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
 
+      - name: Put the signing certificate in a keychain (macOS)
+        # electron-builder 25 unlocks its own keychain with the certificate's password instead of
+        # the keychain's, which current macOS runners refuse. So on macOS we make the keychain here
+        # and electron-builder finds the identity in it.
+        if: startsWith(matrix.os, 'macos')
+        env:
+          CERTIFICATE: ${{ secrets.PROD_MACOS_CERTIFICATE }}
+          CERTIFICATE_PASSWORD: ${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+          echo "$CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/certificate.p12" -k "$KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -f pkcs12 -T /usr/bin/codesign -T /usr/bin/productbuild
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/certificate.p12"
+
       - name: Run full build (includes locale compilation)
         run: yarn fullbuild
 
@@ -132,8 +153,9 @@ jobs:
           # Skip building since we already did it in fullbuild step
           skip_build: true
         env:
-          CSC_LINK: ${{ secrets.PROD_MACOS_CERTIFICATE }}
-          CSC_KEY_PASSWORD: ${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}
+          # Empty on macOS, which signs from the keychain made above
+          CSC_LINK: ${{ !startsWith(matrix.os, 'macos') && secrets.PROD_MACOS_CERTIFICATE || '' }}
+          CSC_KEY_PASSWORD: ${{ !startsWith(matrix.os, 'macos') && secrets.PROD_MACOS_CERTIFICATE_PWD || '' }}
           # it's not clear which of these are used I see both in other people's yml
           APPLEID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}}
           APPLEIDPASS: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD }} # this is the "app-specific password", not the account password
