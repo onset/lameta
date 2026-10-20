@@ -2,23 +2,19 @@ import { describe, it, expect, vi } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import {
   setupCommonMocks,
-  setupExporterMocks,
   createMockProject,
   createMockSession,
-  createFsExtraMock
 } from "./test-utils/rocrate-test-setup";
 
 // Setup all common mocks before imports
 setupCommonMocks();
-setupExporterMocks();
-createFsExtraMock();
 
 describe("RoCrateExporter Publisher Entity", () => {
   const mockProject = createMockProject({
     metadata: {
       title: "Test Project",
-      projectDescription: "A test project"
-    }
+      projectDescription: "A test project",
+    },
   });
 
   // Add sessions property to avoid the error
@@ -26,8 +22,8 @@ describe("RoCrateExporter Publisher Entity", () => {
 
   const mockSession = createMockSession({
     metadata: {
-      title: "Test Session"
-    }
+      title: "Test Session",
+    },
   });
 
   it("should include the publisher as a defined Organization entity in the graph", async () => {
@@ -46,16 +42,14 @@ describe("RoCrateExporter Publisher Entity", () => {
 
     // Check that the publisher entity is actually defined in the graph
     // This ensures the entity exists before we try to access its properties
-    const publisherEntity = graph.find(
-      (item: any) => item["@id"] === "#publisher-lameta"
-    );
+    const publisherEntity = graph.find((item: any) => item["@id"] === "#publisher-lameta");
 
     // Guard: Ensure entity exists before checking properties (prevents test false negatives)
     expect(publisherEntity).toBeDefined();
     if (!publisherEntity) {
       throw new Error(
         "#publisher-lameta entity is not defined in the graph. " +
-          "Check RoCrateExporter to ensure publisher entity is being created."
+          "Check RoCrateExporter to ensure publisher entity is being created.",
       );
     }
 
@@ -69,9 +63,7 @@ describe("RoCrateExporter Publisher Entity", () => {
 
     // Find any session entity (they also have publisher references)
     const sessionEntity = graph.find(
-      (item: any) =>
-        Array.isArray(item["@type"]) &&
-        item["@type"].includes("CollectionEvent")
+      (item: any) => Array.isArray(item["@type"]) && item["@type"].includes("CollectionEvent"),
     );
 
     if (sessionEntity && sessionEntity.publisher) {
@@ -80,7 +72,7 @@ describe("RoCrateExporter Publisher Entity", () => {
       expect(sessionEntity.publisher["@id"]).toBe("#publisher-lameta");
 
       const publisherEntity = graph.find(
-        (item: any) => item["@id"] === sessionEntity.publisher["@id"]
+        (item: any) => item["@id"] === sessionEntity.publisher["@id"],
       );
 
       expect(publisherEntity).toBeDefined();

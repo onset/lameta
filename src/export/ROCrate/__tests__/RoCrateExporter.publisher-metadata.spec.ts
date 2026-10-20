@@ -1,16 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
-import {
-  setupCommonMocks,
-  setupExporterMocks,
-  createMockProject,
-  createFsExtraMock
-} from "./test-utils/rocrate-test-setup";
+import { setupCommonMocks, createMockProject } from "./test-utils/rocrate-test-setup";
 
 // Setup all common mocks before imports
 setupCommonMocks();
-setupExporterMocks();
-createFsExtraMock();
 
 // Mock fs-extra specifically for reading archive configuration files
 vi.mock("fs-extra", async () => {
@@ -21,10 +14,7 @@ vi.mock("fs-extra", async () => {
       ...actual,
       existsSync: vi.fn().mockImplementation((path: string) => {
         // Return true for archive configuration settings files
-        if (
-          path.includes("archive-configurations") &&
-          path.includes("settings.json5")
-        ) {
+        if (path.includes("archive-configurations") && path.includes("settings.json5")) {
           return true;
         }
         return true;
@@ -34,24 +24,22 @@ vi.mock("fs-extra", async () => {
         if (path.includes("PARADISEC") && path.includes("settings.json5")) {
           return JSON.stringify({
             configurationFullName: "PARADISEC",
-            description:
-              "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
+            description: "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
             url: "https://www.paradisec.org.au/",
-            archiveUsesParadisec: true
+            archiveUsesParadisec: true,
           });
         }
         if (path.includes("ELAR") && path.includes("settings.json5")) {
           return JSON.stringify({
             configurationFullName: "ELAR - Endangered Languages Archive",
-            description:
-              "Endangered Languages Archive at SOAS University of London",
+            description: "Endangered Languages Archive at SOAS University of London",
             url: "https://www.elararchive.org/",
-            archiveUsesImdi: true
+            archiveUsesImdi: true,
           });
         }
         if (path.includes("lameta") && path.includes("settings.json5")) {
           return JSON.stringify({
-            configurationFullName: "lameta"
+            configurationFullName: "lameta",
             // No description or url for lameta
           });
         }
@@ -61,15 +49,12 @@ vi.mock("fs-extra", async () => {
       mkdirSync: vi.fn(),
       statSync: vi.fn().mockReturnValue({
         size: 1024,
-        birthtime: new Date("2024-01-01T00:00:00.000Z")
+        birthtime: new Date("2024-01-01T00:00:00.000Z"),
       }),
-      readdirSync: vi.fn().mockReturnValue([])
+      readdirSync: vi.fn().mockReturnValue([]),
     },
     existsSync: vi.fn().mockImplementation((path: string) => {
-      if (
-        path.includes("archive-configurations") &&
-        path.includes("settings.json5")
-      ) {
+      if (path.includes("archive-configurations") && path.includes("settings.json5")) {
         return true;
       }
       return true;
@@ -78,24 +63,22 @@ vi.mock("fs-extra", async () => {
       if (path.includes("PARADISEC") && path.includes("settings.json5")) {
         return JSON.stringify({
           configurationFullName: "PARADISEC",
-          description:
-            "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
+          description: "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
           url: "https://www.paradisec.org.au/",
-          archiveUsesParadisec: true
+          archiveUsesParadisec: true,
         });
       }
       if (path.includes("ELAR") && path.includes("settings.json5")) {
         return JSON.stringify({
           configurationFullName: "ELAR - Endangered Languages Archive",
-          description:
-            "Endangered Languages Archive at SOAS University of London",
+          description: "Endangered Languages Archive at SOAS University of London",
           url: "https://www.elararchive.org/",
-          archiveUsesImdi: true
+          archiveUsesImdi: true,
         });
       }
       if (path.includes("lameta") && path.includes("settings.json5")) {
         return JSON.stringify({
-          configurationFullName: "lameta"
+          configurationFullName: "lameta",
         });
       }
       return "mock file content";
@@ -104,9 +87,9 @@ vi.mock("fs-extra", async () => {
     mkdirSync: vi.fn(),
     statSync: vi.fn().mockReturnValue({
       size: 1024,
-      birthtime: new Date("2024-01-01T00:00:00.000Z")
+      birthtime: new Date("2024-01-01T00:00:00.000Z"),
     }),
-    readdirSync: vi.fn().mockReturnValue([])
+    readdirSync: vi.fn().mockReturnValue([]),
   };
 });
 
@@ -117,8 +100,8 @@ describe("RoCrateExporter Publisher Metadata", () => {
         metadata: {
           title: "Test Project",
           projectDescription: "A test project",
-          archiveConfigurationName: "PARADISEC"
-        }
+          archiveConfigurationName: "PARADISEC",
+        },
       });
       (mockProject as any).sessions = { items: [] };
 
@@ -126,15 +109,13 @@ describe("RoCrateExporter Publisher Metadata", () => {
       const graph = roCrateData["@graph"];
 
       // Find the publisher entity
-      const publisherEntity = graph.find(
-        (item: any) => item["@id"] === "#publisher-paradisec"
-      );
+      const publisherEntity = graph.find((item: any) => item["@id"] === "#publisher-paradisec");
 
       expect(publisherEntity).toBeDefined();
       expect(publisherEntity["@type"]).toBe("Organization");
       expect(publisherEntity.name).toBe("PARADISEC");
       expect(publisherEntity.description).toBe(
-        "Pacific and Regional Archive for Digital Sources in Endangered Cultures"
+        "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
       );
       expect(publisherEntity.url).toBe("https://www.paradisec.org.au/");
     });
@@ -144,8 +125,8 @@ describe("RoCrateExporter Publisher Metadata", () => {
         metadata: {
           title: "Test Project",
           projectDescription: "A test project",
-          archiveConfigurationName: "ELAR"
-        }
+          archiveConfigurationName: "ELAR",
+        },
       });
       (mockProject as any).sessions = { items: [] };
 
@@ -153,15 +134,13 @@ describe("RoCrateExporter Publisher Metadata", () => {
       const graph = roCrateData["@graph"];
 
       // Find the publisher entity
-      const publisherEntity = graph.find(
-        (item: any) => item["@id"] === "#publisher-elar"
-      );
+      const publisherEntity = graph.find((item: any) => item["@id"] === "#publisher-elar");
 
       expect(publisherEntity).toBeDefined();
       expect(publisherEntity["@type"]).toBe("Organization");
       expect(publisherEntity.name).toBe("ELAR");
       expect(publisherEntity.description).toBe(
-        "Endangered Languages Archive at SOAS University of London"
+        "Endangered Languages Archive at SOAS University of London",
       );
       expect(publisherEntity.url).toBe("https://www.elararchive.org/");
     });
@@ -171,8 +150,8 @@ describe("RoCrateExporter Publisher Metadata", () => {
         metadata: {
           title: "Test Project",
           projectDescription: "A test project",
-          archiveConfigurationName: "lameta"
-        }
+          archiveConfigurationName: "lameta",
+        },
       });
       (mockProject as any).sessions = { items: [] };
 
@@ -180,9 +159,7 @@ describe("RoCrateExporter Publisher Metadata", () => {
       const graph = roCrateData["@graph"];
 
       // Find the publisher entity
-      const publisherEntity = graph.find(
-        (item: any) => item["@id"] === "#publisher-lameta"
-      );
+      const publisherEntity = graph.find((item: any) => item["@id"] === "#publisher-lameta");
 
       expect(publisherEntity).toBeDefined();
       expect(publisherEntity["@type"]).toBe("Organization");
@@ -197,8 +174,8 @@ describe("RoCrateExporter Publisher Metadata", () => {
         metadata: {
           title: "Test Project",
           projectDescription: "A test project",
-          archiveConfigurationName: "PARADISEC"
-        }
+          archiveConfigurationName: "PARADISEC",
+        },
       });
       (mockProject as any).sessions = { items: [] };
 

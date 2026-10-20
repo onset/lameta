@@ -39,13 +39,17 @@ After installation, open a new shell and verify the CLI:
 vp help
 ```
 
-Vite+ manages the pinned Node runtime and package manager for this repo. `package.json` pins pnpm via the `packageManager` field.
+Vite+ supplies the Node version that `engines.node` in `package.json` names, and the pnpm version that `packageManager` names. You don't install either yourself.
 
 ```bash
 vp install
-pnpm run strings:compile  # just once, before dev will work
-vp dev
+vp run strings:compile  # just once, before dev will work
+vp run dev
 ```
+
+Run `package.json` scripts with `vp run <script>`. You don't need a global `pnpm`.
+
+If `vp env doctor` reports that `node` is "not vp shim", another Node install (for example Volta, or a Node.js installer in `C:\Program Files\nodejs`) comes before `~/.vite-plus/bin` on your PATH. Uninstall it or move it after `~/.vite-plus/bin`.
 
 Common commands:
 
@@ -60,7 +64,7 @@ vp build
 To package apps for the local platform:
 
 ```bash
-pnpm run package
+vp run package
 ```
 
 More information available in the upstream project:
@@ -79,8 +83,8 @@ arbitrary URL, the render process in electron is tied up with its own chromium b
 run a built exe of lameta.
 
 ```bash
-pnpm run e2ebuildwatch
-pnpm run e2e
+vp run e2ebuildwatch
+vp run e2e
 ```
 
 Note that at the time of this writing, playwright does not have a "watch" mode via command line, and the "ui" mode, which can watch, does not work with electron.
@@ -88,7 +92,7 @@ Note that at the time of this writing, playwright does not have a "watch" mode v
 To run just one e2e fixture, name it:
 
 ```bash
-pnpm run e2e -- registration.e2e.ts
+vp run e2e registration.e2e.ts
 ```
 
 If you see `ENOENT: no such file or directory, scandir "<path>\archive-configurations"`, you may have forgotten to do the `build` step.
@@ -96,7 +100,7 @@ If you see `ENOENT: no such file or directory, scandir "<path>\archive-configura
 To show the Playwright Inspector (which has a recorder), use
 
 ```bash
-pnpm run e2erecord
+vp run e2erecord
 ```
 
 ### l10n
@@ -105,7 +109,7 @@ When running lameta, if you see this in the Chrome debug console:
 
 `Uncaught Error: Cannot find module './en/messages.js'`
 
-then you need to do `pnpm run strings:compile`.
+then you need to do `vp run strings:compile`.
 
 ### Publishing a new release
 

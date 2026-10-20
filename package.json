@@ -217,7 +217,7 @@
     "@typescript-eslint/eslint-plugin": "8.18.1",
     "@typescript-eslint/parser": "8.18.1",
     "@vitejs/plugin-react": "5.2.0",
-    "@vitest/ui": "4.1.0",
+    "@vitest/ui": "5.0.5",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
     "babel-plugin-macros": "3.1.0",
@@ -259,7 +259,7 @@
     "node": "24.15.0",
     "pnpm": "11.0.3"
   },
-  "packageManager": "pnpm@11.0.3",
+  "packageManager": "pnpm@12.14.0",
   "debug": {
     "env": {
       "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777"
