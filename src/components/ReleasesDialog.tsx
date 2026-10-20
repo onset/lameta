@@ -7,21 +7,15 @@ import { t, Trans } from "@lingui/macro";
 import * as _ from "lodash";
 import pkg from "package.json";
 const ReactMarkdown = require("react-markdown");
-import Semver from "semver";
 import { sentryException } from "../other/errorHandling";
 import { i18n as appI18n } from "../other/localization";
 import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
 import { lameta_blue, lameta_orange } from "../containers/theme";
 import { getTestEnvironment } from "../getTestEnvironment";
+import { getNewerReleases, newestOfEachChannel, sortNewestFirst } from "./releaseChannels";
 
-type Mode =
-  | "querying"
-  | "update-available"
-  | "just-show-release-notes"
-  | "closed";
-
-type Channel = "alpha" | "beta" | "release";
+type Mode = "querying" | "update-available" | "just-show-release-notes" | "closed";
 
 interface IGithubRelease {
   assets: { browser_download_url: string }[];
@@ -48,13 +42,19 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
     setVersion(pkg.version);
   }, []);
   //  console.log("Version = " + version);
-  const channelsToRecommend = getChannelsToRecommend();
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
   checkForUpdates = () => {
     axios
-      .get("https://api.github.com/repos/onset/lameta/releases")
+      // GitHub's maximum page; a running release missing from the page loses its cross-channel news
+      .get(
+        `https://api.github.com/repos/${getTestEnvironment().LAMETA_RELEASES_REPO}/releases?per_page=100`,
+      )
       .then((result) => {
-        const all = sortReleases(result.data).filter((r) => r.draft === false);
+        // Newest first by date: each channel numbers its versions separately, so the
+        // numbers cannot order releases from different channels.
+        const all = sortNewestFirst<IGithubRelease>(
+          result.data.filter((r: IGithubRelease) => r.draft === false),
+        );
 
         // const all = [
         //   {
@@ -70,7 +70,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
         //   },
         // ];
         setAllReleases(all);
-        if (getNewerReleases(all, channelsToRecommend).length) {
+        if (getNewerReleases(all, pkg.version).length) {
           NotifyUpdateAvailable(() => setMode("update-available"));
         }
       })
@@ -95,8 +95,9 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
   }, []);
 
   const releasesToShow = showNewReleasesOnly
-    ? getNewerReleases(allReleases, channelsToRecommend)
+    ? getNewerReleases(allReleases, pkg.version)
     : allReleases;
+  const releasesToOfferForDownload = newestOfEachChannel(releasesToShow);
 
   //const notes = notesArray ? notesArray!.map((n) => n.note).join("<br/>") : "";
   return (
@@ -104,9 +105,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
       <ReactModal
         ariaHideApp={false}
         className="releaseDialog" // this cannot be empty, even if you don't use it, else the dialog is shoved to the upper left
-        isOpen={
-          mode === "just-show-release-notes" || mode === "update-available"
-        }
+        isOpen={mode === "just-show-release-notes" || mode === "update-available"}
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => setMode("closed")}
       >
@@ -126,8 +125,8 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             {/* I couldn't get version to show up inside this string in a packaged lameta, just dev. That's why it is now outside. */}
             {appI18n._(
               /*i18n*/ {
-                id: "You are running lameta version:"
-              }
+                id: "You are running lameta version:",
+              },
             )}
             &nbsp;{version}
           </div>
@@ -149,12 +148,9 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
           >
             {!allReleases ||
               (allReleases.length === 0 && (
-                <p>
-                  Sorry, lameta could not retrieve the release notes from
-                  github.
-                </p>
+                <p>Sorry, lameta could not retrieve the release notes from github.</p>
               ))}
-            {releasesToShow.map((release, index) => (
+            {releasesToShow.map((release) => (
               <div
                 key={release.name}
                 css={css`
@@ -174,8 +170,9 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                   `}
                 >
                   {release.name}
-                  {/* If we're showing the dialog prompting them to upgrade, only give the top option of their current channel for Downloading */}
-                  {(index === 0 || mode === "just-show-release-notes") &&
+                  {/* If we're showing the dialog prompting them to upgrade, only offer the newest release of each channel for Downloading */}
+                  {(releasesToOfferForDownload.has(release) ||
+                    mode === "just-show-release-notes") &&
                     getDownloadUrl(release) && (
                       <a
                         css={css`
@@ -245,58 +242,11 @@ function getDownloadUrl(release: any) {
     const platformToExtension = { win32: "exe", darwin: "dmg" };
     const installerExtension = platformToExtension[process.platform];
     const url = (release.assets as Array<any>).find((a) =>
-      _.endsWith(a.browser_download_url, installerExtension)
+      _.endsWith(a.browser_download_url, installerExtension),
     );
     return url?.browser_download_url;
   } catch (error) {
     sentryException(error);
     return undefined;
   }
-}
-
-function getChannel(version: string): Channel {
-  if (_.includes(version, "alpha")) return "alpha";
-  if (_.includes(version, "beta")) return "beta";
-  return "release";
-}
-
-// this isn't ideal... once someone goes up to a release, they'll never be
-// informed about betas. To improve this, we will need some more UI so that
-// people can specify what channels they are interested in hearing about.
-function getChannelsToRecommend(): Channel[] {
-  const current = getChannel(pkg.version as string);
-  if (current === "alpha") return ["alpha", "beta", "release"];
-  if (current === "beta") return ["beta", "release"];
-  return ["release"];
-}
-
-function getNewerReleases(
-  releasesNewestFirst: IGithubRelease[],
-  channelsToInclude: Channel[]
-) {
-  const current = pkg.version as string;
-  return releasesNewestFirst.filter(
-    (r) =>
-      channelsToInclude.includes(getChannel(r.tag_name)) &&
-      Semver.compare(r.tag_name, current) > 0
-  );
-}
-
-function sortReleases(releases: IGithubRelease[]) {
-  try {
-    // Here we call "coerce" to make it a bit more tolerant of accidents like an upper-case V or a missing 3rd digit.
-    // But if we really screw up, an get an error here,  just give up on the sorting.
-    releases.sort(
-      (a, b) =>
-        Semver.compare(
-          Semver.coerce(a.tag_name) || a.tag_name,
-          Semver.coerce(b.tag_name) || b.tag_name
-        ) * -1
-    );
-  } catch (err) {
-    console.error("Error while trying to sort releases.");
-    console.error(err);
-    sentryException(err);
-  }
-  return releases;
 }

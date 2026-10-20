@@ -15,6 +15,7 @@ import * as path from "node:path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { initLaunchTest } from "./launchTest";
+import { claimSprjFiles } from "./fileAssociation";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
 
 // Disable GPU Acceleration for Windows 7
@@ -180,6 +181,10 @@ async function createWindow() {
 }
 
 app.whenReady().then(createWindow);
+
+if (process.platform === "win32" && app.isPackaged && !process.env.E2E) {
+  claimSprjFiles(app.getPath("exe"));
+}
 
 app.on("window-all-closed", () => {
   win = null;

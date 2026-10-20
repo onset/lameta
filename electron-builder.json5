@@ -1,7 +1,6 @@
 {
   productName: "lameta",
   appId: "com.github.lameta.lameta",
-  afterSign: "electron-builder-notarize",
   dmg: {
     contents: [
       {
@@ -47,6 +46,8 @@
       to: "dist/assets"
     },
     "dist/",
+    // the source maps go to Sentry, not to users
+    "!dist/**/*.map",
     "locale/",
     "archive-configurations/",
     "schemas/",
@@ -62,16 +63,13 @@
   },
   win: {
     target: "nsis",
-    icon: "build/windows.ico",
-    fileAssociations: [
-      {
-        ext: "sprj",
-        name: "lameta/lameta project"
-      }
-    ]
+    icon: "build/windows.ico"
+    // No fileAssociations: build/installer.nsh registers .sprj, so that uninstalling one
+    // channel leaves .sprj working for the others.
   },
   nsis: {
-    artifactName: "${productName} Windows Setup ${version}.${ext}"
+    artifactName: "${productName} Windows Setup ${version}.${ext}",
+    include: "build/installer.nsh"
   },
   mac: {
     target: { target: "default", arch: ["universal"] },
