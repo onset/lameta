@@ -59,8 +59,16 @@ jobs:
           git diff --cached --quiet || git commit -m "Publish $VERSION [skip ci]"
           # This fails if someone pushed to the branch since the run started; run it again.
           git push origin "HEAD:$BRANCH"
+          SHA=$(git rev-parse HEAD)
+          # electron-builder uploads into this draft. Left to itself it would create the draft
+          # pointing at the default branch, so publishing it would tag the wrong commit.
+          if ! gh release view "v$VERSION" > /dev/null 2>&1; then
+            PRERELEASE=""
+            case "$VERSION" in *-*) PRERELEASE="--prerelease" ;; esac
+            gh release create "v$VERSION" --draft $PRERELEASE --target "$SHA" --title "$VERSION" --notes ""
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "Publishing $VERSION from $BRANCH"
 
   build:
