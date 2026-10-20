@@ -44,7 +44,7 @@ function loadCsvTextMap(): Map<string, Record<string, string>> {
   const map = new Map<string, Record<string, string>>();
   for (const name of ["fields.csv", "choices.csv", "tips.csv"]) {
     const p = path.join(BACKUP, "root-build", name);
-    const raw = fs.readFileSync(p, "utf8").replace(/^﻿/, "");
+    const raw = fs.readFileSync(p, "utf8").replace(/^\uFEFF/, "");
     const rows = Papa.parse<string[]>(raw, { skipEmptyLines: true }).data;
     const header = rows[0];
     const enIdx = header.findIndex((h) => h.toLowerCase() === "en");
