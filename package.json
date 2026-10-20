@@ -2,7 +2,7 @@
   "main": "dist/src/mainProcess/main.js",
   "name": "lameta",
   "productName": "lameta",
-  "version": "99.0.2-beta",
+  "version": "99.0.3-beta",
   "author": {
     "name": "lameta",
     "email": "sorryno@email.org"
