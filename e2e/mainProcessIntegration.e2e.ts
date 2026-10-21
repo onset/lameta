@@ -248,8 +248,8 @@ test.describe("Popup menus", () => {
   });
 
   test("Add to Dictionary adds the word to the spell checker", async () => {
-    // On Windows the spell checker's dictionary belongs to the operating system and
-    // outlives the test, so use a new word and take it out again afterwards.
+    // Every test in a run shares one user data folder, and with it the spell checker's
+    // dictionary, so use a word no other test has added and take it out again afterwards.
     const word =
       "Zqv" +
       Array.from({ length: 6 }, () =>
@@ -278,9 +278,9 @@ test.describe("Popup menus", () => {
     const cell = page.getByRole("gridcell", { name: /PopupMenuTest\.txt/ });
     await cell.first().waitFor({ state: "visible", timeout: 10000 });
 
-    // The menu decides which items to show from the file that was selected before the
-    // right-click, so select it first.
-    await fileList.selectFile("PopupMenuTest.txt");
+    // Select the session's own metadata file first: right-clicking another file must
+    // still offer what that file allows, such as Rename.
+    await fileList.selectFile(".session");
     const count = await lameta.getPopupMenuCount();
     await cell.first().click({ button: "right" });
     const menu = await lameta.waitForPopupMenu(count);

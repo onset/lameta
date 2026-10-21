@@ -309,7 +309,14 @@ export const _FileList: React.FunctionComponent<{
                 // then after it is selected, show the context menu
                 window.setTimeout(
                   () =>
-                    showFileMenu(props.folder, rowInfo.original, true, isSpecialSayMoreFile, x, y),
+                    showFileMenu(
+                      props.folder,
+                      rowInfo.original,
+                      true,
+                      rowInfo.original === props.folder.metadataFile,
+                      x,
+                      y,
+                    ),
                   0,
                 );
               },
