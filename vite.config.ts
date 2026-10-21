@@ -16,6 +16,8 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   staged: {
     "*": "vp check --fix",
+    // vp check reports lint warnings but passes; the lint is kept at zero warnings
+    "*.{ts,tsx,js,mjs,cjs}": "vp lint --deny-warnings",
   },
   fmt: {
     // Downloaded backups, sample projects and test data must stay byte-for-byte as they are.
