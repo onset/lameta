@@ -3,7 +3,7 @@ import { css, keyframes } from "@emotion/react";
 
 import * as React from "react";
 import { observer } from "mobx-react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { File } from "../model/file/File";
 import {
   CloudFileStatus,

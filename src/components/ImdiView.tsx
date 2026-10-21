@@ -9,7 +9,7 @@ import { File } from "../model/file/File";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { XMLValidationResult } from "xmllint-wasm";
 import Alert from "@mui/material/Alert";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import { SearchableCodeViewer } from "./SearchableCodeViewer";
 import { NotifyException } from "./Notify";

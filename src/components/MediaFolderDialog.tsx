@@ -5,7 +5,7 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState } from "react";
 import { i18n } from "@lingui/core";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,

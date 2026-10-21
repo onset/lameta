@@ -12,7 +12,7 @@ import "./FolderList.css";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { SearchContext } from "./SearchContext";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import HighlightSearchTerm from "./HighlightSearchTerm";

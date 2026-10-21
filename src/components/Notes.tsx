@@ -4,7 +4,7 @@ import { Field } from "../model/field/Field";
 import { TextFieldEdit } from "./TextFieldEdit";
 import { InfoIndicator } from "./FieldIndicators";
 import { css } from "@emotion/react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 export const Notes: React.FunctionComponent<{

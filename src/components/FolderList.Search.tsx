@@ -5,7 +5,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { i18n as appI18n } from "../other/localization";
 import { FolderGroup } from "../model/Folder/FolderGroup";
 import { observer } from "mobx-react";

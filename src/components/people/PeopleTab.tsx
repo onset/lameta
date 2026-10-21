@@ -4,7 +4,8 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { Project } from "../../model/Project/Project";
 import { File } from "../../model/file/File";
 import "./PeopleTab.css";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import ComponentTab from "../componentTab/ComponentTab";
 interface IProps {
   project: Project;

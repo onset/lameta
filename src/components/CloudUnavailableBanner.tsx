@@ -1,7 +1,8 @@
 import { css } from "@emotion/react";
 import * as React from "react";
 import { observer } from "mobx-react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { cloudReadGuard } from "../other/cloudReadGuard";
 import { Project } from "../model/Project/Project";
 

@@ -2,8 +2,8 @@ import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 import DeleteIcon from "@mui/icons-material/Delete";
 import * as React from "react";
-import { Trans } from "@lingui/macro";
-import { t } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import { lameta_orange } from "../../containers/theme";
 import { runInAction } from "mobx";
 import {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import ReactModal from "react-modal";
 //import "./RegistrationDialog.scss";
 import CloseOnEscape from "react-close-on-escape";

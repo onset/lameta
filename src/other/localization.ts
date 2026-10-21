@@ -1,24 +1,33 @@
 /* --------------------------------------------------------------------
   Set up the stuff handled by lingui  
   ---------------------------------------------------------------------*/
-import { i18n as i18nFromLinguiCore } from "@lingui/core";
+import { i18n as i18nFromLinguiCore, type Messages } from "@lingui/core";
 import userSettings from "./UserSettings";
-import { t } from "@lingui/macro";
-// tslint:disable-next-line: no-submodule-imports
-import * as allPlurals from "make-plural/plurals"; // this is from lingui.
+import { t } from "@lingui/core/macro";
+import { compileMessage } from "@lingui/message-utils/compileMessage";
 
 import moment from "moment";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { IChoice } from "../model/field/Field";
 import { loadOLACRoles } from "../model/Project/AuthorityLists/AuthorityLists";
-import fs from "fs";
 
 const languages = ["en", "es", "zh-CN", "fa", "fr", "id", "ps", "ru", "pt-BR"];
-export const catalogs = {};
 export let currentUILanguage: string;
 // in the past we had to have our own version, with the upgrade to lingui 3
 // this could probably go away.
 export const i18n = i18nFromLinguiCore;
+// Field labels, choices and tips are looked up by their English text (`i18n._(label)`), which
+// is not a compiled message when a catalog lacks it. This compiles such text at runtime,
+// instead of Lingui logging "Uncompiled message detected" for each one.
+i18n.setMessagesCompiler(compileMessage);
+
+// The Lingui Vite plugin compiles each .po file when it is imported (see lingui.vite.config.ts).
+// They are bundled eagerly: the renderer bundle is CommonJS, and a separate chunk would load
+// with require(), which runs the whole entry bundle a second time.
+const catalogs = import.meta.glob<Messages>("../../locale/*/{messages,fields,vocabularies}.po", {
+  eager: true,
+  import: "messages",
+});
 
 const catalogFolderAliases: Record<string, string[]> = {
   "zh-CN": ["zh-cn", "zh"],
@@ -42,14 +51,6 @@ export function initializeLocalization() {
   }
   // TODO: lingui has fallback, so maybe we should not default to English above?
 
-  // Load plural rules for all supported languages. We don't actually do plurals, but without this we get a console error.
-  languages.forEach((lang) => {
-    const language = lang.split("-")[0]; // handle cases like zh-CN -> zh
-    if (allPlurals[language]) {
-      i18n.loadLocaleData(lang, { plurals: allPlurals[language] });
-    }
-  });
-
   setUILanguage(currentUILanguage);
   olacRoles = loadOLACRoles();
 }
@@ -69,6 +70,10 @@ export function setUILanguage(code: string) {
 
   //if (reload) remote.getCurrentWindow().reload();
 }
+function catalogKey(folder: string, set: string): string {
+  return `../../locale/${folder}/${set}.po`;
+}
+
 function resolveCatalogFolder(code: string): string {
   const candidates = [
     code,
@@ -77,8 +82,7 @@ function resolveCatalogFolder(code: string): string {
   ];
 
   for (const candidate of candidates) {
-    const path = locateDependencyForFilesystemCall(`locale/${candidate}/messages.js`);
-    if (fs.existsSync(path)) {
+    if (catalogs[catalogKey(candidate, "messages")]) {
       return candidate;
     }
   }
@@ -87,16 +91,11 @@ function resolveCatalogFolder(code: string): string {
 }
 
 function loadOneCatalog(folder: string, localeCode: string, set: string) {
-  const path = locateDependencyForFilesystemCall(`locale/${folder}/${set}.js`);
-  // if it doesn't exist
-  if (!fs.existsSync(path)) {
-    console.error(
-      `Could not locate ${path}. If you are running the dev server, make sure you have run "pnpm run strings:compile" at least once.`,
-    );
+  const messages = catalogs[catalogKey(folder, set)];
+  if (!messages) {
+    console.error(`Could not locate locale/${folder}/${set}.po.`);
+    return;
   }
-
-  // oxlint-disable-next-line @typescript-eslint/no-var-requires
-  const { messages } = require(path);
   i18n.load(localeCode, messages);
 }
 
@@ -115,7 +114,6 @@ import genresJSON from "../model/Project/Session/genres.json";
 // note: accessProtocols.csv is pretty confusing because it's not the list of choices, but rather a mix
 // of protocol names, choices, and choice descriptions.
 import rawAccessProtocols from "../../locale/accessProtocols.csv";
-import { locateDependencyForFilesystemCall } from "./locateDependency";
 import { sentenceCase } from "./case";
 
 export function translateFileType(englishTypeName: string): string {
@@ -367,10 +365,6 @@ function getMatch(
   }
   //console.log(`No ${currentUILanguage} translation for ${s}, "${s}"`);
   return s;
-}
-
-export function i18nUnitTestPrep() {
-  i18n.loadLocaleData(i18n.locale, { plurals: () => "other" }); // silence i18n error  i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
 }
 
 /**

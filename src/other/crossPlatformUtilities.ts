@@ -2,7 +2,7 @@ const electron = require("electron");
 import * as Path from "path";
 import * as fs from "fs-extra";
 import { PatientFS } from "./patientFile";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { NotifyException } from "../components/Notify";
 

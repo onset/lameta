@@ -1,5 +1,5 @@
 import ReactSelect, { MultiValueProps } from "react-select";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { default as React, useState } from "react";
 import { Folder } from "../../model/Folder/Folder";
 import { Contribution } from "../../model/file/File";

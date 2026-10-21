@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState, useEffect } from "react";

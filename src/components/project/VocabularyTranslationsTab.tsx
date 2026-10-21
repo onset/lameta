@@ -1,7 +1,8 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { css } from "@emotion/react";
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { observer } from "mobx-react";
 import { Project } from "../../model/Project/Project";
 import {

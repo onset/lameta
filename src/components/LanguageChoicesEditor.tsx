@@ -1,6 +1,6 @@
 import { Field } from "../model/field/Field";
 import { FieldProblemLine } from "./problems/FieldProblemLine";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 // tslint:disable-next-line: no-submodule-imports
 import AsyncSelect from "react-select/async";
 import CreatableAsyncSelect from "react-select/async-creatable";

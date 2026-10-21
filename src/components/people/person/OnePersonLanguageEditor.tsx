@@ -5,7 +5,7 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
 import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { ToggleIconButton } from "./ToggleIconButton";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { isPrivateUseTag } from "../../../languageFinder/privateUseLanguages";
 
 // A person's language holds a code chosen in SingleLanguageChooser, or, for a

@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "paths": {
-      "package.json": ["./package.json"]
+      "package.json": ["./package.json"],
+      // see the comment at the top of that file
+      "@lingui/react/macro": ["./src/types/lingui-react-macro.d.ts"]
     },
     "skipLibCheck": true, //needed to get fork-ts-checker-webpack-plugin to work
     "moduleResolution": "bundler",

@@ -32,7 +32,7 @@ import { sentryBreadCrumb } from "../../other/errorHandling";
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
 import { PatientFS } from "../../other/patientFile";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import userSettings from "../../other/UserSettings";
 import {

@@ -2,7 +2,8 @@ import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
 import * as React from "react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { i18n as appI18n } from "../../other/localization";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { Markdown } from "../Markdown";
@@ -34,8 +35,8 @@ export const ExportChoices: React.FunctionComponent<{
         </label>
         <p>
           <Trans>
-            A single zip archive that contains one comma-separated file for each
-            of Project, Sessions, and People.
+            A single zip archive that contains one comma-separated file for each of Project,
+            Sessions, and People.
           </Trans>
         </p>
         <label>
@@ -50,8 +51,8 @@ export const ExportChoices: React.FunctionComponent<{
         </label>
         <p>
           <Trans>
-            A single comma-separated file with project information followed by
-            one row per session. Many lameta fields are omitted.
+            A single comma-separated file with project information followed by one row per session.
+            Many lameta fields are omitted.
           </Trans>
         </p>
         {/* <label>
@@ -79,9 +80,7 @@ export const ExportChoices: React.FunctionComponent<{
           <Trans>IMDI Only</Trans>
         </label>
         <p>
-          <Trans>
-            A folder with an IMDI file for the project and each session.
-          </Trans>
+          <Trans>A folder with an IMDI file for the project and each session.</Trans>
         </p>
         <label>
           <input
@@ -95,8 +94,7 @@ export const ExportChoices: React.FunctionComponent<{
         </label>
         <p>
           <Trans>
-            A folder containing all the project's archivable files, with IMDI
-            wrapped for OPEX.
+            A folder containing all the project's archivable files, with IMDI wrapped for OPEX.
           </Trans>
         </p>
         <label>
@@ -112,7 +110,7 @@ export const ExportChoices: React.FunctionComponent<{
         <div>
           <Markdown>
             {appI18n._(
-              "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
+              "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile.",
             )}
           </Markdown>
         </div>
@@ -123,9 +121,7 @@ export const ExportChoices: React.FunctionComponent<{
           margin-top: 15px;
           /* Hide this section when exporting RO-Crate, at this time we're not clear that this would be useful.
              If it turns out that we do want it, we need to implement the filtering in the ro-crate exporter. */
-          visibility: ${props.exportFormat === "ro-crate"
-            ? "hidden"
-            : "visible"};
+          visibility: ${props.exportFormat === "ro-crate" ? "hidden" : "visible"};
         `}
       >
         <FormControl
@@ -146,10 +142,7 @@ export const ExportChoices: React.FunctionComponent<{
             }}
           >
             <MenuItem value="all">{t`All Sessions`}</MenuItem>
-            <MenuItem
-              value="marked"
-              disabled={props.countOfMarkedSessions === 0}
-            >
+            <MenuItem value="marked" disabled={props.countOfMarkedSessions === 0}>
               {t`${props.countOfMarkedSessions} Marked Sessions`}
             </MenuItem>
           </Select>

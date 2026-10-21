@@ -6,7 +6,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import RoleChooser from "../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.css";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { SearchContext, useHasSearchMatch, useSearchContext } from "../SearchContext";
 import { highlightMatches } from "../highlighting";
 import { css } from "@emotion/react";

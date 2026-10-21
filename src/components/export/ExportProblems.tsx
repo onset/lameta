@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 import * as React from "react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { CircularProgress } from "@mui/material";
 import { IProblem } from "../../problems/problems";
 import { IProjectCheck } from "../../problems/checkProject";

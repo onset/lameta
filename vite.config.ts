@@ -2,8 +2,8 @@
 import path from "node:path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite-plus";
-//import react from "@vitejs/plugin-react-swc";
 import react from "@vitejs/plugin-react";
+import { lingui } from "@lingui/vite-plugin";
 import electron from "vite-electron-plugin";
 import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
 import renderer from "vite-plugin-electron-renderer";
@@ -123,17 +123,15 @@ export default defineConfig({
         copyFileSync("src/model/Project/Session/genres.json", "dist/vocabularies/genres.json");
       },
     },
-    //lingui(),
-    react({
-      // TODO: linguijs V4 will allow us to get rid of babel and use swc, using
-      //plugins: [["@lingui/swc-plugin", {}]],
-      // and then we can import the po files directly instead of having to compile js files
-      babel: {
-        // makes lingui macros work. There is a some performance penalty, but I
-        //don't know how much. See https://github.com/skovhus/vite-lingui
-        plugins: ["macros"],
-      },
+    // Compiles the Lingui macros and lets code import locale/*/*.po as compiled catalogs
+    lingui({
+      configPath: path.resolve(rootDir, "lingui.vite.config.ts"),
+      // Keep each message's English text in the bundle (Lingui strips it from production
+      // builds by default), so a string that is missing from the catalogs shows in English
+      // instead of as its hashed id.
+      macroTransform: { macro: { descriptorFields: "all" } },
     }),
+    react(),
     electron({
       outDir: "dist",
       include: [

@@ -3,12 +3,12 @@ import { css } from "@emotion/react";
 import * as React from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import * as _ from "lodash";
 import pkg from "package.json";
 const ReactMarkdown = require("react-markdown");
 import { sentryException } from "../other/errorHandling";
-import { i18n as appI18n } from "../other/localization";
 import axios from "axios";
 import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
 import { lameta_blue, lameta_orange } from "../containers/theme";
@@ -123,11 +123,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
             `}
           >
             {/* I couldn't get version to show up inside this string in a packaged lameta, just dev. That's why it is now outside. */}
-            {appI18n._(
-              /*i18n*/ {
-                id: "You are running lameta version:",
-              },
-            )}
+            {t`You are running lameta version:`}
             &nbsp;{version}
           </div>
         </div>

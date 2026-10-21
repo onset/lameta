@@ -487,6 +487,10 @@ msgstr "Tandai untuk Diekspor atau Dihapus"
 msgid "Media Folder"
 msgstr "Folder Media"
 
+#. js-lingui-explicit-id
+msgid "Media Folder Settings"
+msgstr ""
+
 msgid "Media Folder Settings..."
 msgstr "Pengaturan Folder Media..."
 
@@ -952,8 +956,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr "Kami tidak memiliki tips khusus untuk kesalahan ini. Jika Anda tidak bisa memperbaikinya dengan me-restart komputer, harap laporkan masalah ini ke https://github.com/onset/lameta/issues."

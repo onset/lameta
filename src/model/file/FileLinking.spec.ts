@@ -8,8 +8,6 @@ import {
   setCurrentProjectId,
   setMediaFolderOrEmptyForThisProjectAndMachine,
 } from "../Project/MediaFolderAccess";
-import { i18nUnitTestPrep } from "../../other/localization";
-i18nUnitTestPrep();
 
 let externalMediaDirectory;
 let mp3PathInMediaDirectory;

@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import { default as React, useState, useEffect } from "react";
 import { observer } from "mobx-react";
 import ReactTable from "react-table-6";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { File } from "../model/file/File";
 import ffmpeg from "fluent-ffmpeg";
 import ExifReader from "exifreader";

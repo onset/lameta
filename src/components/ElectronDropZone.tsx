@@ -1,7 +1,7 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
 import { NotifyWarning } from "./Notify";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import * as nodePath from "path";
 import { getTestEnvironment } from "../getTestEnvironment";
 

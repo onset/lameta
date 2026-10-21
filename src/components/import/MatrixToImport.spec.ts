@@ -22,9 +22,7 @@ import * as mobx from "mobx";
 mobx.configure({
   enforceActions: "never",
 });
-import { i18nUnitTestPrep } from "../../other/localization";
 import { IPersonLanguage } from "../../model/PersonLanguage";
-i18nUnitTestPrep();
 
 let project: Project;
 const projectDir = temp.mkdirSync("lameta spreadsheet importer test");

@@ -6,14 +6,12 @@ import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
 import { Contribution } from "../model/file/File";
-import { i18nUnitTestPrep } from "../other/localization";
 import { checkProjectFolders } from "./lametaChecks";
 import { combineProblems } from "./problems";
 import { IRulesFileProblem } from "./rulesSandboxMain";
 
 mobx.configure({ enforceActions: "never" });
 temp.track();
-i18nUnitTestPrep();
 
 // `addToEtr009`: the name of a file to put in ETR009's folder first. lameta renames a
 // file that the user adds, so a name that breaks the rules can only come from a

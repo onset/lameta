@@ -7,7 +7,8 @@ import "./Form.css";
 import ReactTable from "react-table-6";
 import { TextFieldEdit } from "./TextFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useEffect, useState } from "react";
 
 export interface IProps {

@@ -2,7 +2,8 @@ import * as React from "react";
 import userSettings from "../other/UserSettings";
 import "./RegistrationReminder.css";
 import RegistrationDialog from "./registration/RegistrationDialog";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { observer } from "mobx-react";
 
 // This is in the upper right corner of the screen. It shows either

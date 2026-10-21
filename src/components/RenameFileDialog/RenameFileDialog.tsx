@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 /* removed emotion jsx declaration */
 
 import * as React from "react";

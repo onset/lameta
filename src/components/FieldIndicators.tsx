@@ -6,13 +6,13 @@ import commaSeparatedIcon from "@assets/comma-separated.svg";
 import piiIcon from "@assets/pii.svg";
 import willNotBeArchivedIcon from "@assets/not-archive.svg";
 import notImportantToArchiveIcon from "@assets/archive-unimportant.svg";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { tooltipBackground } from "../containers/theme";
 
 const iconStyle = { height: "1em", marginLeft: "5px" };
 const colors = {
   background: tooltipBackground,
-  color: "white"
+  color: "white",
 };
 
 // just a little 🛈 with a tooltip of whatever children you give it
@@ -42,11 +42,7 @@ export const CommaSeparatedIndicator: React.FunctionComponent<{
   return (
     // wrapping with a div helps the tooltip to be positioned correctly in some cases (e.g. Notes tab)
     <div className={props.className}>
-      <Tooltip
-        styles={{ display: "inline" }}
-        {...colors}
-        content={props.children}
-      >
+      <Tooltip styles={{ display: "inline" }} {...colors} content={props.children}>
         <img src={commaSeparatedIcon} style={{ ...iconStyle }} />
       </Tooltip>
     </div>
@@ -64,8 +60,7 @@ export const PiiIndicator: React.FunctionComponent<{
         {...colors}
         content={
           <Trans>
-            This Personally Identifiable Information may not be exported by some
-            formats.
+            This Personally Identifiable Information may not be exported by some formats.
           </Trans>
         }
       >
@@ -86,15 +81,11 @@ export const NotConsumedByArchiveIndicator: React.FunctionComponent<{
         {...colors}
         content={
           <Trans>
-            This will not be consumed by the archive. It is only for the use of
-            the researcher.
+            This will not be consumed by the archive. It is only for the use of the researcher.
           </Trans>
         }
       >
-        <img
-          src={willNotBeArchivedIcon}
-          style={{ ...iconStyle, height: ".7em" }}
-        />
+        <img src={willNotBeArchivedIcon} style={{ ...iconStyle, height: ".7em" }} />
       </Tooltip>
     </div>
   );
@@ -109,14 +100,9 @@ export const NotImportantToArchiveIndicator: React.FunctionComponent<{
       <Tooltip
         styles={{ display: "inline" }}
         {...colors}
-        content={
-          <Trans>Not important to the archive, but will be included</Trans>
-        }
+        content={<Trans>Not important to the archive, but will be included</Trans>}
       >
-        <img
-          src={notImportantToArchiveIcon}
-          style={{ ...iconStyle, height: "8px" }}
-        />
+        <img src={notImportantToArchiveIcon} style={{ ...iconStyle, height: "8px" }} />
       </Tooltip>
     </div>
   );

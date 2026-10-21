@@ -6,7 +6,7 @@ import { revealInFolder } from "../other/crossPlatformUtilities";
 import * as React from "react";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { quitApp } from "../other/windowIpc";
 import { ipcRenderer } from "electron";
 import log from "../other/log";

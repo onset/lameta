@@ -8,7 +8,7 @@ import "./Form.css";
 import ReactTable from "react-table-6";
 import { TextFieldEdit } from "./TextFieldEdit";
 import FieldNameEdit from "./FieldNameEdit";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { FieldLabel } from "./FieldLabel";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 
@@ -47,9 +47,7 @@ class CustomFieldsTable extends React.Component<IProps> {
         didAddOneOrMoreFields = true;
         //actually add this field to the file, empty for now. When saving,
         // empty ones are not going to be saved to disk anyhow.
-        file.properties.addCustomProperty(
-          this.makeFieldForUnusedCustomField(n, n)
-        );
+        file.properties.addCustomProperty(this.makeFieldForUnusedCustomField(n, n));
       });
 
     // When the file set up its dirty detection, this field did not exist on this file.
@@ -68,9 +66,7 @@ class CustomFieldsTable extends React.Component<IProps> {
     this.fieldsForRows = file.properties
       .values()
       .filter((f) => (f.definition ? f.definition.isCustom : false))
-      .sort((a, b) =>
-        a.definition.englishLabel.localeCompare(b.definition.englishLabel)
-      ); // enhance: really we don't care about your locale, we care aobut the language of the label
+      .sort((a, b) => a.definition.englishLabel.localeCompare(b.definition.englishLabel)); // enhance: really we don't care about your locale, we care aobut the language of the label
 
     // add one blank row
     const placeHolder = this.makePlaceholderForCustomField();
@@ -88,10 +84,7 @@ class CustomFieldsTable extends React.Component<IProps> {
         this.computeRows(this.props.file);
         this.forceUpdate();
       } else {
-        this.props.file.properties.changeKeyOfCustomField(
-          f,
-          f.definition.englishLabel
-        );
+        this.props.file.properties.changeKeyOfCustomField(f, f.definition.englishLabel);
       }
     } else {
       if (f.definition.englishLabel.trim().length === 0) {
@@ -107,7 +100,7 @@ class CustomFieldsTable extends React.Component<IProps> {
       //review do this here?
       this.props.file.encounteredVocabularyRegistry.encountered(
         this.props.file.type + EncounteredVocabularyRegistry.kCustomFieldSuffix,
-        f.key
+        f.key,
       );
 
       f.persist = f.definition.persist = true; // But what if it is empty? Let the saving code worry about that.
@@ -129,7 +122,7 @@ class CustomFieldsTable extends React.Component<IProps> {
       tabIndex: 0,
       isCustom: true,
       showOnAutoForm: false, // we do show it, but in the custom table,
-      multilingual: false // REVIEW
+      multilingual: false, // REVIEW
     };
     return Field.fromFieldDefinition(definition);
   }
@@ -143,7 +136,7 @@ class CustomFieldsTable extends React.Component<IProps> {
       tabIndex: 0,
       isCustom: true,
       showOnAutoForm: false, // we do show it, but in the custom table
-      multilingual: false // REVIEW
+      multilingual: false, // REVIEW
     };
     return Field.fromFieldDefinition(definition);
   }
@@ -155,9 +148,7 @@ class CustomFieldsTable extends React.Component<IProps> {
     const customFieldTableColumns = [
       {
         id: "name",
-        Header: this.props.firstColumnHeaderText
-          ? this.props.firstColumnHeaderText
-          : t`Field`,
+        Header: this.props.firstColumnHeaderText ? this.props.firstColumnHeaderText : t`Field`,
         maxWidth: 150,
         Cell: (cellInfo: any) => {
           const field = cellInfo.original as Field;
@@ -170,7 +161,7 @@ class CustomFieldsTable extends React.Component<IProps> {
               }}
             />
           );
-        }
+        },
       },
       {
         id: "value",
@@ -192,14 +183,14 @@ class CustomFieldsTable extends React.Component<IProps> {
               autoFocus={this.focusField === field}
             />
           );
-        }
-      }
+        },
+      },
     ];
     const customFieldsDef = new FieldDefinition({
       key: "Custom Fields",
       markAsNotImdi: true,
       tipOnUsingThisField:
-        "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+        "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
     });
 
     return (

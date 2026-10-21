@@ -8,7 +8,7 @@ import { initializeSentry as initializeErrorReporting } from "./other/errorHandl
 import { initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { NotifyException } from "./components/Notify";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import ReactModal from "react-modal";
 import * as mobx from "mobx";
 

@@ -44,7 +44,7 @@ vi.mock("../components/Notify", () => ({
   getCannotRenameFileMsg: vi.fn(() => "Cannot rename file"),
 }));
 
-vi.mock("@lingui/macro", () => ({
+vi.mock("@lingui/core/macro", () => ({
   t: (strings: TemplateStringsArray) => strings[0],
 }));
 

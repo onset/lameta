@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import * as React from "react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { Dialog, DialogContent, LinearProgress } from "@mui/material";
 import { DialogMiddle } from "./LametaDialog";
 import { Project, ProjectHolder } from "../model/Project/Project";

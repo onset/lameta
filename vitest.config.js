@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "url";
 import react from "@vitejs/plugin-react";
+import { lingui } from "@lingui/vite-plugin";
 import { defineConfig } from "vite-plus";
 import dsv from "@rollup/plugin-dsv";
 
@@ -10,8 +11,8 @@ export default defineConfig({
   resolve: {
     alias: {
       path: "node:path",
-      "package.json": path.resolve(rootDir, "./package.json")
-    }
+      "package.json": path.resolve(rootDir, "./package.json"),
+    },
   },
   test: {
     globals: true,
@@ -30,22 +31,25 @@ export default defineConfig({
     // so I had to detect when we're tesitng within the real MainProcessApiAccess.ts and create a mock there.
 
     setupFiles: ["./src/vitest.mock.ts"],
+    server: {
+      deps: {
+        // @lingui/react imports "react/jsx-runtime", which Node cannot resolve in React 17
+        // (it has no "exports" map); letting Vite bundle it resolves the import.
+        inline: ["@lingui/react"],
+      },
+    },
     /**
      * The default timeout of 5000ms is sometimes not enough for playwright.
      */
     testTimeout: 30_000,
-    hookTimeout: 30_000
+    hookTimeout: 30_000,
   },
   plugins: [
-    react({
-      babel: {
-        // makes lingui macros work. There is a some performance penalty, but I
-        //don't know how much. See https://github.com/skovhus/vite-lingui
-        plugins: ["macros"]
-        // I don't know why, but css props work without this or the 'macros' thing above
-        //   plugins: ["@emotion/babel-plugin"],
-      }
+    lingui({
+      configPath: path.resolve(rootDir, "lingui.vite.config.ts"),
+      macroTransform: true,
     }),
-    dsv() // without this, importing genres.csv causes a failure when it sees `"foo",,"bar"`
-  ]
+    react(),
+    dsv(), // without this, importing genres.csv causes a failure when it sees `"foo",,"bar"`
+  ],
 });

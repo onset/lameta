@@ -21,7 +21,7 @@ import { Contribution } from "../model/file/File";
 const electron = require("electron");
 import "./FolderPane.css";
 import { PersonContributions } from "./PersonContributions";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import SplitPane from "react-split-pane";
 import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";

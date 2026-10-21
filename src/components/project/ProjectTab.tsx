@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import * as React from "react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { observer } from "mobx-react";
 import { Project } from "../../model/Project/Project";
 //import { DocumentsPane } from "./DocumentsPane";

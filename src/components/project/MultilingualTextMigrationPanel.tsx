@@ -11,7 +11,8 @@ import {
   DialogActions,
 } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { Project } from "../../model/Project/Project";
 import { lameta_orange } from "../../containers/theme";
 
