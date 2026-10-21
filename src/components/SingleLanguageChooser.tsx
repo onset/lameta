@@ -73,7 +73,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
   );
 
   return (
-    <div className={"field " + (props.className ? props.className : "")}>
+    <div className={"field " + (props.className ? props.className : "")} title={props.title}>
       <AsyncSelect
         tabIndex={props.tabIndex ? props.tabIndex : undefined}
         name={props.labelInUILanguage}
