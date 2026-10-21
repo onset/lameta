@@ -505,8 +505,8 @@ importers:
         specifier: 7.24.7
         version: 7.24.7(@babel/core@7.23.9(supports-color@8.1.1))(supports-color@8.1.1)
       '@crowdin/cli':
-        specifier: 4.4.1
-        version: 4.4.1(encoding@0.1.13)
+        specifier: 5.4.0
+        version: 5.4.0
       '@lingui/cli':
         specifier: 3.17.2
         version: 3.17.2(@babel/core@7.23.9(supports-color@8.1.1))(@types/node@24.19.2)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@24.19.2)(typescript@5.5.3))(typescript@5.5.3)
@@ -1329,8 +1329,48 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
-  '@crowdin/cli@4.4.1':
-    resolution: {integrity: sha512-xMKpEnROB+TD2cvkjCmgt/vhxp9V/mraAeD5Mqocev6eUutQW7JfqX7Q2dOE9H1SIoXs7UzNpzpaZ64YdxVcZg==}
+  '@crowdin/cli-darwin-arm64@5.4.0':
+    resolution: {integrity: sha512-Z2GPhpSoVbrhPjecnw9UacEJ7WHaVosO8qmBOnfmeQZbxYvtvBfz+pxJgnKcae1TWUhyaMS2r7tqQMerF1Nb6g==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@crowdin/cli-darwin-x64@5.4.0':
+    resolution: {integrity: sha512-dPhM2UwBFHS6OzeyWg17RFCu1A5yp0dKwLJfylqTpcFtHTPv6cM2c6dFvzlqE7g+iatDpeerkJgLabJM+bc3xA==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@crowdin/cli-linux-arm64-musl@5.4.0':
+    resolution: {integrity: sha512-Pd0GvgxTEouqEf5NnxEtvK81K5IerZ/yP2s2pDiIscohlNKRsrlNJV0vLWY8i/Lbs16CJD4tfeEVCyQjJYgZhw==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@crowdin/cli-linux-arm64@5.4.0':
+    resolution: {integrity: sha512-87+fLTBWMt4WYRRc6rieK6cGtyeOS4qoxAsy6Js2OyWIZmsDVGr+bcBx9uSl/107yJa7LWGomZE+jns/n/2Cfw==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@crowdin/cli-linux-x64-musl@5.4.0':
+    resolution: {integrity: sha512-IZGBwTzee1j4NeAWJdV+ZE5cJLHj10TODx4TV/j+03NGu0OpL2vnoDBLJ51SHHT+z02c2FUmBILZyfVcogpRcw==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@crowdin/cli-linux-x64@5.4.0':
+    resolution: {integrity: sha512-Sb6m1hzRvct2f1UOgNGJsPdBGLwvyxiJeFCAA107TIgUOaNJnkMSljNQX/oW62KrflZNAYQu8HIrBmFAcE8VWA==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@crowdin/cli-win32-x64@5.4.0':
+    resolution: {integrity: sha512-gZRVXBG4jZ7y4a6Boc4oMu932V1pHZHm4Au4q9yCc7gf8loj+wv8SzktEKG1CNI9QbuoyPv/b/tqNrGaFsl1+Q==}
+    cpu: [x64]
+    os: [win32]
+
+  '@crowdin/cli@5.4.0':
+    resolution: {integrity: sha512-OE4hyoaX7+unsIDxZKGvO5k+9FjiV9bz1ccBcg2WHK5wTshT+9z7QfDx4zGFU7wlOwe29HutxTsJ1yX0LTXjyw==}
+    engines: {node: '>=20'}
     hasBin: true
 
   '@cspotcode/source-map-support@0.8.1':
@@ -3247,10 +3287,6 @@ packages:
   comma-separated-tokens@1.0.8:
     resolution: {integrity: sha512-GHuDRO12Sypu2cV70d1dkA2EUmXHgntrzbpvOB+Qy+49ypNfGgFQIC2fhhXbnyrJRynDCAARsT7Ou0M6hirpfw==}
 
-  command-exists-promise@2.0.2:
-    resolution: {integrity: sha512-T6PB6vdFrwnHXg/I0kivM3DqaCGZLjjYSOe0a5WgFKcz1sOnmOeIjnhQPXVXX3QjVbLyTJ85lJkX6lUpukTzaA==}
-    engines: {node: '>=6'}
-
   commander@12.1.0:
     resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
     engines: {node: '>=18'}
@@ -4181,10 +4217,6 @@ packages:
   inquirer@7.3.3:
     resolution: {integrity: sha512-JG3eIAj5V9CwcGvuOmoo6LB9kbAYT8HXffUl6memuszlwDC/qvFAJw49XJ5NROSFNPxp3iQg1GqkFhaY/CR0IA==}
     engines: {node: '>=8.0.0'}
-
-  interpret@1.4.0:
-    resolution: {integrity: sha512-agE4QfB2Lkp9uICn7BAqoscw4SZP9kTE2hxiFI3jBPmXJfdqiahTbUuKGsMoN2GtqL9AxhYioAcVvgsb1HvRbA==}
-    engines: {node: '>= 0.10'}
 
   invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
@@ -5161,9 +5193,6 @@ packages:
     resolution: {integrity: sha512-eRWB5LBz7PpDu4PUlwT0PhnQfTQJlDDdPa35urV4Osrm0t0AqQFGn+UIkU3klZvwJ8KPO3VbBFsXquA6p6kqZw==}
     engines: {node: '>=12', npm: '>=6'}
 
-  pend@1.2.0:
-    resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
-
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -5480,10 +5509,6 @@ packages:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
 
-  rechoir@0.6.2:
-    resolution: {integrity: sha512-HFM8rkZ+i3zrV+4LQjwQ0W+ez98pApMGM3HUrN04j3CqzPOzl9nmP15Y8YXNm8QHGv/eacOVEjqhmWpkRV0NAw==}
-    engines: {node: '>= 0.10'}
-
   refractor@2.10.1:
     resolution: {integrity: sha512-Xh9o7hQiQlDbxo5/XkOX6H+x/q8rmlmZKr97Ie1Q8ZM32IRRd3B/UxuA/yXDW79DBSXGWxm2yRTbcTVmAciJRw==}
 
@@ -5688,11 +5713,6 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
-
-  shelljs@0.8.5:
-    resolution: {integrity: sha512-TiwcRcrkhHvbrZbnRcFYMLl30Dfov3HKqzp5tO5b4pt6G/SezKcYhmDg15zXVBswHmctSAQKznqNW2LO5tTDow==}
-    engines: {node: '>=4'}
-    hasBin: true
 
   signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
@@ -6386,10 +6406,6 @@ packages:
 
   yargs@17.7.2:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
-    engines: {node: '>=12'}
-
-  yauzl@3.3.0:
-    resolution: {integrity: sha512-PtGEvEP30p7sbIBJKUBjUnqgTVOyMURc4dLo9iNyAJnNIEz9pm88cCXF21w94Kg3k6RXkeZh5DHOGS0qEONvNQ==}
     engines: {node: '>=12'}
 
   yn@3.1.1:
@@ -7314,15 +7330,36 @@ snapshots:
 
   '@colors/colors@1.6.0': {}
 
-  '@crowdin/cli@4.4.1(encoding@0.1.13)':
-    dependencies:
-      command-exists-promise: 2.0.2
-      node-fetch: 2.7.0(encoding@0.1.13)
-      shelljs: 0.8.5
-      tar: 6.2.1
-      yauzl: 3.3.0
-    transitivePeerDependencies:
-      - encoding
+  '@crowdin/cli-darwin-arm64@5.4.0':
+    optional: true
+
+  '@crowdin/cli-darwin-x64@5.4.0':
+    optional: true
+
+  '@crowdin/cli-linux-arm64-musl@5.4.0':
+    optional: true
+
+  '@crowdin/cli-linux-arm64@5.4.0':
+    optional: true
+
+  '@crowdin/cli-linux-x64-musl@5.4.0':
+    optional: true
+
+  '@crowdin/cli-linux-x64@5.4.0':
+    optional: true
+
+  '@crowdin/cli-win32-x64@5.4.0':
+    optional: true
+
+  '@crowdin/cli@5.4.0':
+    optionalDependencies:
+      '@crowdin/cli-darwin-arm64': 5.4.0
+      '@crowdin/cli-darwin-x64': 5.4.0
+      '@crowdin/cli-linux-arm64': 5.4.0
+      '@crowdin/cli-linux-arm64-musl': 5.4.0
+      '@crowdin/cli-linux-x64': 5.4.0
+      '@crowdin/cli-linux-x64-musl': 5.4.0
+      '@crowdin/cli-win32-x64': 5.4.0
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -9271,8 +9308,6 @@ snapshots:
 
   comma-separated-tokens@1.0.8: {}
 
-  command-exists-promise@2.0.2: {}
-
   commander@12.1.0: {}
 
   commander@14.0.3: {}
@@ -10323,8 +10358,6 @@ snapshots:
       strip-ansi: 6.0.1
       through: 2.3.8
 
-  interpret@1.4.0: {}
-
   invariant@2.2.4:
     dependencies:
       loose-envify: 1.4.0
@@ -11304,8 +11337,6 @@ snapshots:
 
   pe-library@0.4.1: {}
 
-  pend@1.2.0: {}
-
   picocolors@1.1.1: {}
 
   picomatch@2.3.2: {}
@@ -11670,10 +11701,6 @@ snapshots:
     dependencies:
       picomatch: 2.3.2
 
-  rechoir@0.6.2:
-    dependencies:
-      resolve: 1.22.12
-
   refractor@2.10.1:
     dependencies:
       hastscript: 5.1.2
@@ -11874,12 +11901,6 @@ snapshots:
       shebang-regex: 3.0.0
 
   shebang-regex@3.0.0: {}
-
-  shelljs@0.8.5:
-    dependencies:
-      glob: 7.2.3
-      interpret: 1.4.0
-      rechoir: 0.6.2
 
   signal-exit@3.0.7: {}
 
@@ -12598,11 +12619,6 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
-
-  yauzl@3.3.0:
-    dependencies:
-      buffer-crc32: 0.2.13
-      pend: 1.2.0
 
   yn@3.1.1: {}
 

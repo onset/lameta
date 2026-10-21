@@ -169,7 +169,7 @@
     "@babel/preset-env": "7.23.9",
     "@babel/preset-react": "7.23.3",
     "@babel/preset-typescript": "7.24.7",
-    "@crowdin/cli": "4.4.1",
+    "@crowdin/cli": "5.4.0",
     "@lingui/cli": "3.17.2",
     "@playwright/test": "1.54.2",
     "@types/archiver": "5.3.1",
