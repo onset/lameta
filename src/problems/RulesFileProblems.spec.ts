@@ -5,6 +5,7 @@ import temp from "temp";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
+import { Contribution } from "../model/file/File";
 import { makeLametaSourceReader } from "../export/lametaSourceComment";
 import { RulesFileProblems } from "./RulesFileProblems";
 import { rulesSandboxMain } from "./rulesSandboxMain";
@@ -181,5 +182,74 @@ describe("RulesFileProblems", () => {
     // and the export's check reports it too
     expect((await runner.checkNow(project)).errors.map((e) => e.kind)).toEqual(["load"]);
     stop();
+  });
+  // A finding goes where the IMDI element's nearest lameta-source comment says. An
+  // element without one of its own takes its parent's, which is the session or the
+  // file with no field, and a click then opens the wrong tab.
+  it("points each of ELAR's findings at the file and field that it is about", async () => {
+    const project = loadEdoloUnderElarWithTwoSessions();
+    project.properties.setText("metadataLanguages", "en;es");
+    const [etr009, etr010] = project.sessions.items as Session[];
+    etr009.properties.setText("genre", "weird stuff");
+    etr009.properties.setText("access", "S");
+    etr009.properties.setText("accessDescription", "asked");
+    etr009.metadataFile!.contributions.push(new Contribution("Ilawi Amosa", "", ""));
+    const mp3 = etr009.files.find((f) => f.getTextProperty("filename") === "ETR009_Careful.mp3")!;
+    mp3.contributions.push(new Contribution("Awi Heole", "", ""));
+    for (const file of etr010.files) file.contributions.splice(0);
+    const runner = new RulesFileProblems(
+      async (input) => ({
+        value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
+      }),
+      () => "archive-configurations/ELAR/rules.js",
+    );
+
+    const { problems, errors } = await runner.checkNow(project);
+    expect(errors).toEqual([]);
+    const targets = [
+      ...new Set(problems.map((p) => JSON.stringify([p.checkId, p.subject, p.target]))),
+    ].map((t) => JSON.parse(t));
+    const etr009At = (fields: object) => ({ folderType: "session", folderId: "ETR009", ...fields });
+    expect(targets).toEqual([
+      ["checkMediaFiles/sessionId", "File name", etr009At({ fileName: "SceneAroundCamera.JPG" })],
+      ["checkMediaFiles/sessionId", "File name", etr009At({ fileName: "SceneHouse.JPG" })],
+      ["checkWrittenResources/dateStamp", "File name", etr009At({ fileName: "ETR009_AText.txt" })],
+      [
+        "checkWrittenResources/length",
+        "File name",
+        etr009At({ fileName: "ETR009_Tiny_StandardAudio.wav.annotations.eaf" }),
+      ],
+      [
+        "checkWrittenResources/dateStamp",
+        "File name",
+        etr009At({ fileName: "ETR009_Tiny_StandardAudio.wav.annotations.eaf" }),
+      ],
+      [
+        "checkWrittenResources/extension",
+        "File format",
+        etr009At({ fileName: "ETR009_XDoc.docx" }),
+      ],
+      ["checkWrittenResources/dateStamp", "File name", etr009At({ fileName: "ETR009_XDoc.docx" })],
+      ["checkActorRole", "Ilawi Amosa", etr009At({ fieldKey: "contributions" })],
+      [
+        "checkActorRole",
+        "Awi Heole",
+        etr009At({ fileName: "ETR009_Careful.mp3", fieldKey: "contributions" }),
+      ],
+      ["genreMapping", null, etr009At({ fieldKey: "genre" })],
+      ["genreTranslation", "Genre", etr009At({ fieldKey: "genre" })],
+      [
+        "accessDescriptionTranslation",
+        "Access Explanation",
+        etr009At({ fieldKey: "accessDescription" }),
+      ],
+      ["checkForResources", "Session", { folderType: "session", folderId: "ETR010" }],
+      [
+        "checkForActors",
+        "Session",
+        { folderType: "session", folderId: "ETR010", fieldKey: "contributions" },
+      ],
+      ["checkCorpusFolderName", "Project name", { folderType: "project", fieldKey: "name" }],
+    ]);
   });
 });

@@ -27,17 +27,21 @@ const notHatton = (p: { subject?: string }) => p.subject !== "Hatton";
 
 describe("checkProjectFolders", () => {
   it("finds the Edolo sample's contributor who has no person record", () => {
-    expect(checkProjectFolders(loadEdolo()).map((p) => [p.checkId, p.subject])).toEqual([
-      ["contributorWithoutPerson", "Hatton"],
+    expect(
+      checkProjectFolders(loadEdolo()).map((p) => [p.checkId, p.subject, p.target.fileName]),
+    ).toEqual([
+      ["contributorWithoutPerson", "Hatton", "ETR009_Careful.mp3"],
+      ["contributorWithoutPerson", "Hatton", "ETR009_Tiny.mp4"],
     ]);
   });
 
-  it("reports a contributor who has no matching person, once per session", () => {
+  it("reports a contributor who has no matching person, once per file", () => {
     const project = loadEdolo();
     const session = project.sessions.items[0] as Session;
     session.metadataFile!.contributions.push(
       new Contribution("Nobody Known", "speaker", ""),
       new Contribution("Nobody Known", "recorder", ""),
+      new Contribution("nobody known", "researcher", ""),
     );
     expect(
       checkProjectFolders(project)
