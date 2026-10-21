@@ -1,6 +1,6 @@
 import { render } from "react-dom";
 import { ipcRenderer } from "electron";
-import { app, process } from "@electron/remote";
+import { quitApp } from "./other/windowIpc";
 import "./app.global.css";
 import { App } from "./containers/App";
 import { initializeAnalytics, analyticsEvent } from "./other/analytics";
@@ -24,25 +24,24 @@ mobx.configure({
   useProxies: "always",
 });
 
-app.whenReady().then(async () => {
-  initializeErrorReporting(false);
+// The main process creates this window only after the app is ready, so no need to wait for that here.
+initializeErrorReporting(false);
 
-  initializeLocalization();
-  initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
-  analyticsEvent("Launch", "Launch");
+initializeLocalization();
+initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
+analyticsEvent("Launch", "Launch");
 
-  document.body.setAttribute("class", process.platform);
-  const container = document.getElementById("root");
-  ReactModal.setAppElement(container!);
+document.body.setAttribute("class", process.platform);
+const container = document.getElementById("root");
+ReactModal.setAppElement(container!);
 
-  render(<App />, container, () => {
-    try {
-      // see test-launch.ts
-      ipcRenderer.send("renderer-ready");
-    } catch (e) {
-      console.error("Failed to notify main of renderer-ready:", e);
-    }
-  });
+render(<App />, container, () => {
+  try {
+    // see test-launch.ts
+    ipcRenderer.send("renderer-ready");
+  } catch (e) {
+    console.error("Failed to notify main of renderer-ready:", e);
+  }
 });
 
 window.onbeforeunload = (e: BeforeUnloadEvent) => {
@@ -57,7 +56,7 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
       .then((result) => {
         if (result.response === 1) {
           CopyManager.abandonCopying(true);
-          app.quit(); // this time it will go through
+          quitApp(); // this time it will go through
         }
       });
     return "this is ignored but prevents quitting";

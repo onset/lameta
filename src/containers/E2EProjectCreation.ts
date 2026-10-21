@@ -11,7 +11,7 @@
 
 import * as fs from "fs-extra";
 import * as Path from "path";
-import { app } from "@electron/remote";
+import { getPath } from "../other/windowIpc";
 import { Project, ProjectHolder } from "../model/Project/Project";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { NotifyError } from "../components/Notify";
@@ -41,7 +41,7 @@ export function createProjectForE2E(projectHolder: ProjectHolder): boolean {
   const projectName = testEnv.E2E_PROJECT_NAME;
   const archiveConfig = testEnv.E2E_ARCHIVE_CONFIG;
 
-  const root = testEnv.E2ERoot || app.getPath("documents");
+  const root = testEnv.E2ERoot || getPath("documents");
   // Handle project names with slashes (used in some tests for paths) - sanitize the leaf name
   const parts = projectName.split("/");
   const sanitizedParts = parts.map((p: string) => sanitize(p));
@@ -66,9 +66,7 @@ export function createProjectForE2E(projectHolder: ProjectHolder): boolean {
     userSettings.PreviousProjectDirectory = directory;
     return true;
   } catch (err) {
-    NotifyError(
-      `E2E: lameta had a problem while creating the project at ${directory}: ${err}`
-    );
+    NotifyError(`E2E: lameta had a problem while creating the project at ${directory}: ${err}`);
     return false;
   }
 }

@@ -10,7 +10,6 @@ import { Person } from "./Person/Person";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
-import * as remote from "@electron/remote";
 import { asyncTrash, asyncTrashWithContext } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { languageSlotColors } from "../../containers/theme";
