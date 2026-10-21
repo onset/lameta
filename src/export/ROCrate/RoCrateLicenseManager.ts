@@ -34,8 +34,7 @@ function isRawAccessValue(license: string): boolean {
  */
 function getNormalizedLicenseId(access: string, project: Project): string {
   const archiveConfigurationName =
-    project.metadataFile?.getTextProperty("archiveConfigurationName") ||
-    "unknown";
+    project.metadataFile?.getTextProperty("archiveConfigurationName") || "unknown";
 
   // Extract the key part from complex access labels
   // For labels like "F: Free to All", extract "F"
@@ -43,12 +42,8 @@ function getNormalizedLicenseId(access: string, project: Project): string {
   const accessKey = access.includes(":") ? access.split(":")[0].trim() : access;
 
   // Create a normalized ID using archive name and access key
-  const normalizedArchive = archiveConfigurationName
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "-");
-  const normalizedAccessKey = accessKey
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "-");
+  const normalizedArchive = archiveConfigurationName.toLowerCase().replace(/[^a-z0-9]/g, "-");
+  const normalizedAccessKey = accessKey.toLowerCase().replace(/[^a-z0-9]/g, "-");
 
   return `#license-${normalizedArchive}-${normalizedAccessKey}`;
 }
@@ -59,12 +54,9 @@ function getNormalizedLicenseId(access: string, project: Project): string {
  * @param authorityLists The authority lists containing access choices
  * @returns The description text for the access choice
  */
-function getDescriptionFromAccessChoice(
-  choiceId: string,
-  authorityLists: AuthorityLists
-): string {
+function getDescriptionFromAccessChoice(choiceId: string, authorityLists: AuthorityLists): string {
   const choice = authorityLists.accessChoicesOfCurrentProtocol.find(
-    (c: IChoice) => c.id === choiceId
+    (c: IChoice) => c.id === choiceId,
   );
   if (!choice) return "";
   return choice.description;
@@ -76,12 +68,9 @@ function getDescriptionFromAccessChoice(
  * @param authorityLists The authority lists containing access choices
  * @returns The LDAC access category URI (ldac:OpenAccess or ldac:AuthorizedAccess)
  */
-function getLdacAccessCategory(
-  choiceId: string,
-  authorityLists: AuthorityLists
-): string {
+function getLdacAccessCategory(choiceId: string, authorityLists: AuthorityLists): string {
   const choice = authorityLists.accessChoicesOfCurrentProtocol.find(
-    (c: IChoice) => c.id === choiceId
+    (c: IChoice) => c.id === choiceId,
   );
 
   // If the choice has an ldacAccessCategory property, use it
@@ -123,20 +112,19 @@ export function createAccessLicense(access: string | undefined, project: Project
     : expandLdacId("ldac:OpenAccess");
 
   const archiveConfigurationName =
-    project.metadataFile?.getTextProperty("archiveConfigurationName") ||
-    "current archive";
+    project.metadataFile?.getTextProperty("archiveConfigurationName") || "current archive";
 
   const license: any = {
     "@id": getNormalizedLicenseId(normalizedAccess, project),
     "@type": expandLdacId("ldac:DataReuseLicense"),
     name: `${archiveConfigurationName} ${normalizedAccess} License`,
-    "ldac:access": { "@id": ldacAccessCategory }
+    "ldac:access": { "@id": ldacAccessCategory },
   };
 
   if (sanitizedAccess) {
     const accessDescription = getDescriptionFromAccessChoice(
       sanitizedAccess,
-      project.authorityLists
+      project.authorityLists,
     );
     if (accessDescription) {
       license.description = `Marked with the ${archiveConfigurationName}-specific term, '${sanitizedAccess}' which means '${accessDescription}'`;
@@ -169,13 +157,9 @@ export function createSessionLicense(session: Session, project: Project): any {
  * @param project The project containing the session
  * @returns The normalized license ID string
  */
-export function getSessionLicenseId(
-  session: Session,
-  project: Project
-): string {
+export function getSessionLicenseId(session: Session, project: Project): string {
   const access = session.metadataFile?.getTextProperty("access");
-  const normalizedAccess =
-    access && access !== "unspecified" && access !== "" ? access : "public";
+  const normalizedAccess = access && access !== "unspecified" && access !== "" ? access : "public";
   return getNormalizedLicenseId(normalizedAccess, project);
 }
 
@@ -190,7 +174,7 @@ export function getSessionLicenseId(
 export function createDistinctLicenses(
   sessions: Session[],
   project: Project,
-  additionalAccessValues: string[] = []
+  additionalAccessValues: string[] = [],
 ): any[] {
   const distinctLicenses = new Map<string, any>();
 
@@ -222,9 +206,7 @@ export function createDistinctLicenses(
  * @param usedAccessTypes Set of access type IDs that are actually referenced by licenses
  * @returns Array of LDAC access type definition objects for only the used types
  */
-export function createLdacAccessTypeDefinitions(
-  usedAccessTypes: Set<string>
-): object[] {
+export function createLdacAccessTypeDefinitions(usedAccessTypes: Set<string>): object[] {
   // If no access types are used, return empty array to avoid orphaned entities
   if (usedAccessTypes.size === 0) {
     return [];
@@ -236,7 +218,7 @@ export function createLdacAccessTypeDefinitions(
   definitions.push({
     "@id": expandLdacId("ldac:AccessTypes"),
     "@type": "DefinedTermSet",
-    name: "Access Types"
+    name: "Access Types",
   });
 
   // Only include OpenAccess if it's actually used
@@ -247,7 +229,7 @@ export function createLdacAccessTypeDefinitions(
       name: "Open Access",
       description:
         "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
-      inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") }
+      inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") },
     });
   }
 
@@ -257,9 +239,8 @@ export function createLdacAccessTypeDefinitions(
       "@id": expandLdacId("ldac:AuthorizedAccess"),
       "@type": "DefinedTerm",
       name: "Authorized Access",
-      description:
-        "Data covered by this license requires explicit authorization for access.",
-      inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") }
+      description: "Data covered by this license requires explicit authorization for access.",
+      inDefinedTermSet: { "@id": expandLdacId("ldac:AccessTypes") },
     });
   }
 
@@ -326,7 +307,7 @@ export class RoCrateLicense {
       return undefined;
     }
     const accessValue = sanitizeAccessValue(
-      file.getTextProperty?.("access") || file.properties?.getTextStringOrEmpty?.("access")
+      file.getTextProperty?.("access") || file.properties?.getTextStringOrEmpty?.("access"),
     );
     if (!accessValue) {
       return undefined;

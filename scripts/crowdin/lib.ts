@@ -16,7 +16,7 @@ export const API_BASE = "https://api.crowdin.com/api/v2";
 // folder layout (post-cleanup), and the multilingual CSV column headers.
 export interface Lang {
   crowdinId: string; // Crowdin language id
-  folder: string; // locale/<folder>/  (matches .linguirc locales)
+  folder: string; // locale/<folder>/  (matches lingui.config.ts locales)
   csvColumn: string; // column header in genres/roles/accessProtocols.csv
 }
 export const LANGS: Lang[] = [
@@ -26,7 +26,7 @@ export const LANGS: Lang[] = [
   { crowdinId: "zh-CN", folder: "zh-CN", csvColumn: "zh-CN" },
   { crowdinId: "pt-BR", folder: "pt-BR", csvColumn: "pt-BR" },
   { crowdinId: "id", folder: "id", csvColumn: "id" },
-  { crowdinId: "fa", folder: "fa", csvColumn: "fa" }
+  { crowdinId: "fa", folder: "fa", csvColumn: "fa" },
 ];
 
 function token(): string {
@@ -42,7 +42,7 @@ export async function sleep(ms: number): Promise<void> {
 // Thin fetch wrapper: JSON in/out, bearer auth, 429/5xx backoff.
 export async function api(
   pathAndQuery: string,
-  init?: { method?: string; body?: unknown }
+  init?: { method?: string; body?: unknown },
 ): Promise<any> {
   const url = API_BASE + pathAndQuery;
   for (let attempt = 0; ; attempt++) {
@@ -50,9 +50,9 @@ export async function api(
       method: init?.method ?? "GET",
       headers: {
         Authorization: `Bearer ${token()}`,
-        ...(init?.body ? { "Content-Type": "application/json" } : {})
+        ...(init?.body ? { "Content-Type": "application/json" } : {}),
       },
-      body: init?.body ? JSON.stringify(init.body) : undefined
+      body: init?.body ? JSON.stringify(init.body) : undefined,
     });
     if ((res.status === 429 || res.status >= 500) && attempt < 6) {
       const wait = Math.min(2000 * 2 ** attempt, 30000);
@@ -64,7 +64,7 @@ export async function api(
     const json = await res.json().catch(() => undefined);
     if (!res.ok) {
       throw new Error(
-        `Crowdin API ${init?.method ?? "GET"} ${pathAndQuery} -> ${res.status}: ${JSON.stringify(json)}`
+        `Crowdin API ${init?.method ?? "GET"} ${pathAndQuery} -> ${res.status}: ${JSON.stringify(json)}`,
       );
     }
     return json;

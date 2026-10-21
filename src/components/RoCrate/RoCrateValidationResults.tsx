@@ -43,9 +43,7 @@ const ValidationResult: React.FC<{
   );
 };
 
-const ValidationResultsList: React.FC<{ list: { errors; info; warnings } }> = (
-  props
-) => {
+const ValidationResultsList: React.FC<{ list: { errors; info; warnings } }> = (props) => {
   return (
     <Grid
       container
@@ -55,7 +53,7 @@ const ValidationResultsList: React.FC<{ list: { errors; info; warnings } }> = (
         width: "100%",
         margin: 0,
         maxHeight: "100%",
-        overflowY: "auto"
+        overflowY: "auto",
       }}
       wrap="nowrap"
     >

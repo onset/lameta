@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
+import { describe, it, expect, vi } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import { setupCommonMocks, createMockProject } from "./test-utils/rocrate-test-setup";
 

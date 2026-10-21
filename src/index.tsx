@@ -7,7 +7,8 @@ import { initializeAnalytics, analyticsEvent } from "./other/analytics";
 import { initializeSentry as initializeErrorReporting } from "./other/errorHandling";
 import { initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
-import { t } from "@lingui/macro";
+import { NotifyException } from "./components/Notify";
+import { t } from "@lingui/core/macro";
 import ReactModal from "react-modal";
 import * as mobx from "mobx";
 
@@ -44,7 +45,7 @@ render(<App />, container, () => {
   }
 });
 
-window.onbeforeunload = (e: BeforeUnloadEvent) => {
+window.onbeforeunload = () => {
   if (CopyManager.filesAreStillCopying()) {
     ipcRenderer
       .invoke(
@@ -58,7 +59,8 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
           CopyManager.abandonCopying(true);
           quitApp(); // this time it will go through
         }
-      });
+      })
+      .catch((err) => NotifyException(err as Error));
     return "this is ignored but prevents quitting";
   }
   return; // just quit

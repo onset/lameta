@@ -1,5 +1,6 @@
 import * as React from "react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { Project } from "../model/Project/Project";
 
 export interface TranslationTooltipResult {
@@ -15,15 +16,13 @@ export interface TranslationTooltipResult {
  */
 const navigateToVocabularyTranslations = () => {
   // Click the main Project tab
-  const projectTab = document.querySelector(
-    '[data-testid="project-tab"]'
-  ) as HTMLElement;
+  const projectTab = document.querySelector('[data-testid="project-tab"]') as HTMLElement;
   if (projectTab) {
     projectTab.click();
     // After a brief delay to allow tab switch, click the Translations sub-tab
     setTimeout(() => {
       const vocabTab = document.querySelector(
-        '[data-testid="project-vocabulary-translations-tab"]'
+        '[data-testid="project-vocabulary-translations-tab"]',
       ) as HTMLElement;
       if (vocabTab) {
         vocabTab.click();
@@ -42,7 +41,7 @@ const navigateToVocabularyTranslations = () => {
  */
 export const buildTranslationTooltip = (
   value: string,
-  translateToLanguage: (value: string, lang: string) => string | undefined
+  translateToLanguage: (value: string, lang: string) => string | undefined,
 ): TranslationTooltipResult => {
   const slots = Project.getMetadataLanguageSlots();
   if (slots.length <= 1 || !value) {
@@ -57,7 +56,7 @@ export const buildTranslationTooltip = (
     translations.push({
       name: displayName,
       text: translated || t`missing`,
-      missing: !translated
+      missing: !translated,
     });
   }
 
@@ -86,7 +85,7 @@ export const buildTranslationTooltip = (
             style={{
               color: "white",
               textDecoration: "underline",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             <Trans>Translations</Trans>

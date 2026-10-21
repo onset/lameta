@@ -16,7 +16,7 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
     lameta = new LametaE2ERunner();
     project = await launchWithProject(
       lameta,
-      "AutoFileAndFolderRenaming" + /*random*/ Math.random().toString()
+      "AutoFileAndFolderRenaming" + /*random*/ Math.random().toString(),
     );
     page = lameta.page;
     fileList = new E2eFileList(lameta, page, project.projectDirectory);
@@ -46,43 +46,27 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
     await page.waitForTimeout(1000);
     expect(
       fs.existsSync(
-        Path.join(
-          project.projectDirectory,
-          "People",
-          "Paul_Hewson",
-          "Paul_Hewson.person"
-        )
-      )
+        Path.join(project.projectDirectory, "People", "Paul_Hewson", "Paul_Hewson.person"),
+      ),
     ).toBeTruthy();
     const original = Path.join(
       project.projectDirectory,
       "People",
       "Paul_Hewson",
-      "Paul_Hewson_foo.txt"
+      "Paul_Hewson_foo.txt",
     );
 
     await fileList.addFile("Paul_Hewson_foo.txt", { page, path: original });
     await expectFileNameInGrid("Paul_Hewson_foo.txt");
 
-    await expect(
-      fs.existsSync(original),
-      `Expected to find ${original}`
-    ).toBeTruthy();
+    expect(fs.existsSync(original), `Expected to find ${original}`).toBeTruthy();
 
     // Select the person file to get back to the person editing form
     await fileList.selectFile("Paul_Hewson.person");
     await setFullName("Bono");
     await expectFileNameInGrid("Bono_foo.txt");
-    const after = Path.join(
-      project.projectDirectory,
-      "People",
-      "Bono",
-      "Bono_foo.txt"
-    );
-    expect(
-      fs.existsSync(original),
-      `Expected to NOT find ${original}`
-    ).toBeFalsy();
+    const after = Path.join(project.projectDirectory, "People", "Bono", "Bono_foo.txt");
+    expect(fs.existsSync(original), `Expected to NOT find ${original}`).toBeFalsy();
     expect(fs.existsSync(after), `Expected to find ${after}`).toBeTruthy();
   });
 });
@@ -90,9 +74,9 @@ test.describe("AutoFileAndFolderRenaming Tests", () => {
 async function expectFileNameInGrid(name: string) {
   await expect(
     page.getByRole("gridcell", {
-      name: name
+      name: name,
     }),
-    `Expected the file list to have a file named "${name}"`
+    `Expected the file list to have a file named "${name}"`,
   ).toBeVisible({ timeout: 1000 });
 }
 async function setFullName(name: string) {

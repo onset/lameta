@@ -9,9 +9,10 @@ import { File } from "../model/file/File";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
 import { XMLValidationResult } from "xmllint-wasm";
 import Alert from "@mui/material/Alert";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import { SearchableCodeViewer } from "./SearchableCodeViewer";
+import { NotifyException } from "./Notify";
 import ImdiBundler from "../export/ImdiBundler";
 
 interface ImdiViewProps {
@@ -28,27 +29,32 @@ interface ImdiViewProps {
  * The parent component is responsible for generating the IMDI string.
  */
 export const ImdiView: React.FunctionComponent<ImdiViewProps> = (props) => {
-  const [validationResult, setValidationResult] =
-    React.useState<XMLValidationResult | undefined>();
+  const [validationResult, setValidationResult] = React.useState<XMLValidationResult | undefined>();
   const [schemaName, setSchemaName] = React.useState<string>("IMDI_3.0.xsd");
 
   // Validate the IMDI when it changes
   React.useEffect(() => {
+    // Drop the verdict on the previous XML so the preview never shows it against this XML.
+    setValidationResult(undefined);
+    let superseded = false;
     if (props.imdi) {
-      const imdiSchema =
-        GetOtherConfigurationSettings().imdiSchema || "IMDI_3.0.xsd";
+      const imdiSchema = GetOtherConfigurationSettings().imdiSchema || "IMDI_3.0.xsd";
       setSchemaName(imdiSchema);
 
       const xmlToValidate = props.wrapForValidation
         ? props.wrapForValidation(props.imdi)
         : props.imdi;
 
-      mainProcessApi.validateImdiAsync(xmlToValidate, imdiSchema).then((r) => {
-        setValidationResult(r);
-      });
-    } else {
-      setValidationResult(undefined);
+      mainProcessApi
+        .validateImdiAsync(xmlToValidate, imdiSchema)
+        .then((r) => {
+          if (!superseded) setValidationResult(r);
+        })
+        .catch((err) => NotifyException(err as Error));
     }
+    return () => {
+      superseded = true;
+    };
   }, [props.imdi, props.wrapForValidation]);
 
   if (!props.imdi) {
@@ -120,8 +126,7 @@ export const ImdiView: React.FunctionComponent<ImdiViewProps> = (props) => {
                 }
               `}
             >
-              <Trans>This XML conforms to the IMDI schema.</Trans> ({schemaName}
-              )
+              <Trans>This XML conforms to the IMDI schema.</Trans> ({schemaName})
             </Alert>
           )
         }
@@ -237,19 +242,15 @@ export type ImdiTarget =
  */
 export function generateImdi(
   target: ImdiTarget,
-  project: Project
+  project: Project,
 ): { imdi: string; rulesWarning?: string } {
   switch (target.type) {
     case "session": {
-      const imdi = ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        target.session,
-        project
-      );
+      const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, target.session, project);
       const rulesWarning = target.session.getRulesViolationsString(
         project.persons.items.map((p) =>
-          p.properties.getTextStringOrEmpty(p.propertyForCheckingId)
-        )
+          p.properties.getTextStringOrEmpty(p.propertyForCheckingId),
+        ),
       );
       return { imdi, rulesWarning: rulesWarning || undefined };
     }
@@ -258,31 +259,23 @@ export function generateImdi(
       const imdi = ImdiGenerator.generateCorpus(
         IMDIMode.RAW_IMDI,
         project,
-        new Array<string>() // we don't bother to compute the children IMDIs for this view
+        new Array<string>(), // we don't bother to compute the children IMDIs for this view
       );
       return { imdi };
     }
 
     case "person": {
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        target.person,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, target.person, project);
       const imdi = generator.actor(
         target.person,
         "will get role in context of session",
-        new Date() // normally this will be the date of the session, but for viewing we use today
+        new Date(), // normally this will be the date of the session, but for viewing we use today
       ) as string;
       return { imdi };
     }
 
     case "file": {
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        target.folder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, target.folder, project);
       const imdi = generator.resourceFile(target.file) as string;
       return { imdi };
     }
@@ -291,39 +284,31 @@ export function generateImdi(
       if (target.folder.files.length === 0) {
         return { imdi: "" };
       }
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        target.folder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, target.folder, project);
       const imdi = generator.makePseudoSessionImdiForOtherFolder(
         target.name,
         target.folder,
         "Collection description", // genre
         false, // omitNamespaces
         target.title,
-        target.description
+        target.description,
       );
       return { imdi };
     }
 
     case "consentBundle": {
-      const { session, tempDir, hasConsentFiles } =
-        ImdiBundler.createConsentBundleSession(project);
+      const { session, tempDir, hasConsentFiles } = ImdiBundler.createConsentBundleSession(project);
 
       if (!hasConsentFiles) {
         ImdiBundler.cleanupConsentBundleTempDir(tempDir);
         return { imdi: "" };
       }
 
-      const imdi = ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project
-      );
-
-      ImdiBundler.cleanupConsentBundleTempDir(tempDir);
-      return { imdi };
+      try {
+        return { imdi: ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project) };
+      } finally {
+        ImdiBundler.cleanupConsentBundleTempDir(tempDir);
+      }
     }
   }
 }
@@ -335,7 +320,7 @@ export function generateImdi(
 export function useImdiGeneration(
   target: ImdiTarget,
   project: Project,
-  deps: React.DependencyList = []
+  deps: React.DependencyList = [],
 ): {
   imdi: string;
   rulesWarning?: string;
@@ -356,7 +341,7 @@ export function useImdiGeneration(
 
   return {
     ...result,
-    wrapForValidation: needsWrapping ? wrapImdiFragmentForValidation : undefined
+    wrapForValidation: needsWrapping ? wrapImdiFragmentForValidation : undefined,
   };
 }
 
@@ -383,9 +368,7 @@ interface TargetImdiViewProps {
  * determines the IMDI generation strategy. This provides backward
  * compatibility for existing callers.
  */
-export const TargetImdiView: React.FunctionComponent<TargetImdiViewProps> = (
-  props
-) => {
+export const TargetImdiView: React.FunctionComponent<TargetImdiViewProps> = (props) => {
   const [imdi, setImdi] = React.useState<string>("");
   const [rulesWarning, setRulesWarning] = React.useState<string | undefined>();
   const [needsWrapping, setNeedsWrapping] = React.useState(false);
@@ -432,9 +415,9 @@ interface DocumentFolderImdiViewProps {
  * Shows the IMDI that would be generated for a document folder
  * (DescriptionDocuments or OtherDocuments).
  */
-export const DocumentFolderImdiView: React.FunctionComponent<
-  DocumentFolderImdiViewProps
-> = (props) => {
+export const DocumentFolderImdiView: React.FunctionComponent<DocumentFolderImdiViewProps> = (
+  props,
+) => {
   const [imdi, setImdi] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -443,7 +426,7 @@ export const DocumentFolderImdiView: React.FunctionComponent<
       folder: props.folder,
       name: props.name,
       title: props.title,
-      description: props.description
+      description: props.description,
     };
     const result = generateImdi(target, props.project);
     setImdi(result.imdi);
@@ -453,7 +436,7 @@ export const DocumentFolderImdiView: React.FunctionComponent<
     props.name,
     props.title,
     props.description,
-    props.folder.files.length
+    props.folder.files.length,
   ]);
 
   return <ImdiView imdi={imdi} />;
@@ -466,9 +449,7 @@ interface ConsentImdiViewProps {
 /**
  * Shows the IMDI that would be generated for the ConsentDocuments bundle.
  */
-export const ConsentImdiView: React.FunctionComponent<ConsentImdiViewProps> = (
-  props
-) => {
+export const ConsentImdiView: React.FunctionComponent<ConsentImdiViewProps> = (props) => {
   const [imdi, setImdi] = React.useState<string>("");
 
   React.useEffect(() => {

@@ -218,7 +218,7 @@ export class LametaE2ERunner {
   public async clickMenu(menuLabel: string, itemLabel: string, subMenuChoiceLabel?: string) {
     //console.log(`clickMenu(${menuLabel}, ${itemLabel})`);
     await this.electronApp.evaluate(
-      async ({ Menu, dialog }, params) => {
+      async ({ Menu }, params) => {
         const menubar = Menu.getApplicationMenu();
         // review: Somehow, the "id" is always undefined, but the "label" is correct.
         // However if you debug in the browser, the id is there.
@@ -369,25 +369,39 @@ export class LametaE2ERunner {
     const cancelButton = this.page.getByTestId("cancel");
     const registrationReminder = this.page.locator("#registrationReminder");
 
-    const ensureDialogVisible = async () => {
-      try {
-        await cancelButton.waitFor({ state: "visible", timeout: 1000 });
-        return true;
-      } catch {}
+    // The home page opens the registration dialog when it mounts, and under a loaded
+    // machine that can be several seconds after the window appears. Wait for the home
+    // page (or the dialog, or a workspace's reminder) first, so that the short checks
+    // below do not give up before the dialog exists and leave it blocking the next click.
+    try {
+      await this.page
+        .locator("#creatNewProjectLink")
+        .or(cancelButton)
+        .or(registrationReminder)
+        .first()
+        .waitFor({ state: "visible", timeout: 20000 });
+    } catch {}
 
+    // HomePage renders #creatNewProjectLink in the same commit whose componentDidMount calls
+    // RegistrationDialog.show(), so the dialog appears a commit later than the link. Wait for
+    // the dialog or the reminder together, with enough time for that commit under load.
+    try {
+      await cancelButton
+        .or(registrationReminder)
+        .first()
+        .waitFor({ state: "visible", timeout: 5000 });
+    } catch {
+      return;
+    }
+    if (!(await cancelButton.isVisible())) {
       try {
-        await registrationReminder.waitFor({ state: "visible", timeout: 2000 });
         await registrationReminder.click();
         await cancelButton.waitFor({ state: "visible", timeout: 3000 });
-        return true;
       } catch {
-        return false;
+        return;
       }
-    };
-
-    if (await ensureDialogVisible()) {
-      await cancelButton.click();
     }
+    await cancelButton.click();
   }
 
   private async dismissPrereleaseDialogIfPresent() {

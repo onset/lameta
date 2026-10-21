@@ -51,22 +51,22 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
       integrations: [
         new Sentry.Integrations.Breadcrumbs({
           // these aren't bad but my errors were getting refused for being too big
-          console: false
+          console: false,
         }),
         new RewriteFrames({
           iteratee: (frame: StackFrame) => {
             const start = frame.filename!.indexOf("dist");
             const newFilename = "~/" + frame.filename?.substr(start, 99);
             return { ...frame, filename: newFilename };
-          }
-        })
+          },
+        }),
       ],
       beforeSend(event) {
         try {
           console.log("Sending " + JSON.stringify(event));
-        } catch (err) {}
+        } catch {}
         return event;
-      }
+      },
       /* This works, but I have it turned off for now because we don't really have a support
             plan in place.
             
@@ -86,10 +86,7 @@ export function initializeSentry(evenIfDevelopmentBuild: boolean = false) {
       }
         */
     });
-    setUserInfoForErrorReporting(
-      userSettingsSingleton.Email,
-      userSettingsSingleton.HowUsing
-    );
+    setUserInfoForErrorReporting(userSettingsSingleton.Email, userSettingsSingleton.HowUsing);
   }
 }
 export function setUserInfoForErrorReporting(email: string, howUsing: string) {
@@ -160,10 +157,7 @@ export function safeCaptureException(err: any) {
   // Check if we're running in E2E test environment where Sentry should be disabled
   if (getTestEnvironment().E2E) {
     // Log that we're skipping Sentry to help with debugging, but don't spam the console
-    console.log(
-      "Skipping Sentry.captureException in E2E test environment:",
-      err.message || err
-    );
+    console.log("Skipping Sentry.captureException in E2E test environment:", err.message || err);
     return; // Early return - don't call Sentry at all
   }
 

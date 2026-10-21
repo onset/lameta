@@ -20,12 +20,10 @@ describe("PeopleChooser onChange logic", () => {
    */
   function fixedOnChangeHandler(
     contributions: Contribution[],
-    newChoices: { contribution: Contribution }[]
+    newChoices: { contribution: Contribution }[],
   ): Contribution[] {
     // LAM-114 fix: Preserve contributions without personReference before clearing
-    const contributionsWithoutPersonRef = contributions.filter(
-      (c) => !c.personReference
-    );
+    const contributionsWithoutPersonRef = contributions.filter((c) => !c.personReference);
 
     const result: Contribution[] = [];
     newChoices.forEach((c) => {
@@ -47,7 +45,7 @@ describe("PeopleChooser onChange logic", () => {
     const noPersonContrib = new Contribution(
       "",
       "consultant",
-      "important metadata without a person"
+      "important metadata without a person",
     );
 
     const initialContributions = [alice, bob, noPersonContrib];
@@ -58,12 +56,12 @@ describe("PeopleChooser onChange logic", () => {
       .map((c, index) => ({
         value: "existing" + index,
         label: c.personReference + ":" + (c.role || ""),
-        contribution: c
+        contribution: c,
       }));
 
     // User removes Bob - now only Alice is in the selection
     const newSelection = visibleContributions.filter(
-      (v) => v.contribution.personReference !== "Bob"
+      (v) => v.contribution.personReference !== "Bob",
     );
 
     // Apply the fixed onChange handler
@@ -82,7 +80,7 @@ describe("PeopleChooser onChange logic", () => {
     const noPersonContrib = new Contribution(
       "",
       "consultant",
-      "important metadata without a person"
+      "important metadata without a person",
     );
 
     const initialContributions = [alice, noPersonContrib];
@@ -91,7 +89,7 @@ describe("PeopleChooser onChange logic", () => {
     const charlie = new Contribution("Charlie", "speaker", "new person");
     const newSelection = [
       { value: "existing0", label: "Alice:participant", contribution: alice },
-      { value: "choice0", label: "Charlie:speaker", contribution: charlie }
+      { value: "choice0", label: "Charlie:speaker", contribution: charlie },
     ];
 
     // Apply the fixed onChange handler

@@ -1,11 +1,29 @@
 import { css } from "@emotion/react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { observer } from "mobx-react";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
 import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { ToggleIconButton } from "./ToggleIconButton";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { isPrivateUseTag } from "../../../languageFinder/privateUseLanguages";
+
+// A person's language holds a code chosen in SingleLanguageChooser, or, for a
+// language that the name-to-code migration could not identify, the original name.
+export function getUnrecognizedLanguageTooltip(
+  code: string | undefined,
+  languageFinder: LanguageFinder,
+): string {
+  const trimmed = code?.trim() ?? "";
+  if (
+    trimmed === "" ||
+    isPrivateUseTag(trimmed) ||
+    languageFinder.findOneLanguageNameFromCode_Or_ReturnCode(trimmed) !== trimmed
+  ) {
+    return "";
+  }
+  return t`lameta does not recognize the Language name "${trimmed}"`;
+}
 
 export const OnePersonLanguageEditor: React.FunctionComponent<{
   language: IPersonLanguage;
@@ -13,24 +31,8 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
   onChange: (code: string) => void;
   autoFocus?: boolean;
 }> = observer((props) => {
-  const [tooltip, setTooltip] = useState("");
-  const [validationClass, setValidationClass] = useState("");
-  const updateValidationClass = (lang) => {
-    if (
-      !lang ||
-      lang.trim() === "" ||
-      props.languageFinder.findOne639_3CodeFromName(lang, "und") !== "und"
-    ) {
-      setValidationClass("");
-      setTooltip("");
-    } else {
-      setTooltip(`lameta does not recognize the Language name '${lang}'`);
-      setValidationClass("languageNotRecognized");
-    }
-  };
-  React.useEffect(() => {
-    updateValidationClass(props.language.code);
-  }, []);
+  const tooltip = getUnrecognizedLanguageTooltip(props.language.code, props.languageFinder);
+  const validationClass = tooltip ? "languageNotRecognized" : "";
 
   return (
     <div
@@ -53,6 +55,7 @@ export const OnePersonLanguageEditor: React.FunctionComponent<{
         onChange={(v) => props.onChange(v)}
         languageFinder={props.languageFinder}
         className={"language-name " + validationClass}
+        title={tooltip || undefined}
         autoFocus={props.autoFocus}
       />
       <ToggleIconButton

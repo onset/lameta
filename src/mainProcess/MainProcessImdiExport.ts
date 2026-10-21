@@ -1,11 +1,7 @@
 import * as fs from "fs-extra";
 import * as Path from "node:path";
 import { BrowserWindow } from "electron";
-import {
-  ExportSessionData,
-  ExportCorpusData,
-  FileCopyRequest
-} from "../export/ExportBundleTypes";
+import { ExportSessionData, ExportCorpusData } from "../export/ExportBundleTypes";
 
 /**
  * IMDI export file I/O methods for the main process.
@@ -17,9 +13,7 @@ export class MainProcessImdiExport {
   /**
    * Prepare the IMDI export root directory (remove if exists, create fresh)
    */
-  public async prepareImdiExportDirectory(
-    rootDirectory: string
-  ): Promise<void> {
+  public async prepareImdiExportDirectory(rootDirectory: string): Promise<void> {
     if (fs.existsSync(rootDirectory)) {
       await fs.remove(rootDirectory);
     }
@@ -32,7 +26,7 @@ export class MainProcessImdiExport {
    * Emits 'export-file-progress' events to renderer for each file.
    */
   public async writeImdiSessionData(
-    data: ExportSessionData
+    data: ExportSessionData,
   ): Promise<{ filesWritten: number; errors: string[] }> {
     const errors: string[] = [];
     let filesWritten = 0;
@@ -57,7 +51,7 @@ export class MainProcessImdiExport {
           sessionName: data.displayName,
           currentFile: fileName,
           currentFileIndex: i + 1,
-          totalFiles
+          totalFiles,
         });
 
         try {
@@ -88,9 +82,7 @@ export class MainProcessImdiExport {
   /**
    * Clean up a partial IMDI export directory (e.g., when export is cancelled)
    */
-  public async cleanupImdiExportDirectory(
-    rootDirectory: string
-  ): Promise<void> {
+  public async cleanupImdiExportDirectory(rootDirectory: string): Promise<void> {
     if (fs.existsSync(rootDirectory)) {
       await fs.remove(rootDirectory);
     }
@@ -117,10 +109,7 @@ export class MainProcessImdiExport {
    * Copy a single file for export, preserving timestamps
    * Uses async fs operations for better performance
    */
-  private async copyFileForExport(
-    source: string,
-    destination: string
-  ): Promise<void> {
+  private async copyFileForExport(source: string, destination: string): Promise<void> {
     // Ensure destination directory exists
     await fs.ensureDir(Path.dirname(destination));
 

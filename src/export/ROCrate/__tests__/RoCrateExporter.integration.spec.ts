@@ -5,8 +5,8 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
@@ -21,8 +21,8 @@ import { createPersonId } from "../RoCrateUtils";
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 2048,
-    birthtime: new Date("2010-06-06")
-  })
+    birthtime: new Date("2010-06-06"),
+  }),
 }));
 
 describe("RoCrateExporter LDAC Profile Full Integration", () => {
@@ -35,62 +35,60 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
 
   beforeEach(() => {
     // Mock field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
         key: "person",
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Person",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Create mock files representing the ETR009 session from the report
     const mockAudioFile = {
       getActualFilePath: () => "/sessions/ETR009/ETR009_Careful.mp3",
       getModifiedDate: () => new Date("2010-06-06"),
-      pathInFolderToLinkFileOrLocalCopy: "ETR009_Careful.mp3"
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Careful.mp3",
     } as any;
 
     const mockVideoFile = {
       getActualFilePath: () => "/sessions/ETR009/ETR009_Tiny.mp4",
       getModifiedDate: () => new Date("2010-06-06"),
-      pathInFolderToLinkFileOrLocalCopy: "ETR009_Tiny.mp4"
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Tiny.mp4",
     } as any;
 
     const mockSessionXml = {
       getActualFilePath: () => "/sessions/ETR009/ETR009.xml",
       getModifiedDate: () => new Date("2010-06-06"),
-      pathInFolderToLinkFileOrLocalCopy: "ETR009.xml"
+      pathInFolderToLinkFileOrLocalCopy: "ETR009.xml",
     } as any;
 
     const mockSessionMetadata = {
       getActualFilePath: () => "/sessions/ETR009/ETR009.session",
       getModifiedDate: () => new Date("2010-06-06"),
-      pathInFolderToLinkFileOrLocalCopy: "ETR009.session"
+      pathInFolderToLinkFileOrLocalCopy: "ETR009.session",
     } as any;
 
     const mockPhoto1 = {
       getActualFilePath: () => "/people/Awi_Heole/Awi_Heole_Photo.JPG",
       getModifiedDate: () => new Date("2010-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole_Photo.JPG"
+      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole_Photo.JPG",
     } as any;
 
     const mockPersonFile1 = {
       getActualFilePath: () => "/people/Awi_Heole/Awi_Heole.person",
       getModifiedDate: () => new Date("2010-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole.person"
+      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole.person",
     } as any;
 
     const mockPhoto2 = {
       getActualFilePath: () => "/people/Ilawi_Amosa/Ilawi_Amosa_Photo.JPG",
       getModifiedDate: () => new Date("2010-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "Ilawi_Amosa_Photo.JPG"
+      pathInFolderToLinkFileOrLocalCopy: "Ilawi_Amosa_Photo.JPG",
     } as any;
 
     // Mock persons from the report
@@ -106,10 +104,10 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      files: [mockPhoto1, mockPersonFile1]
+      files: [mockPhoto1, mockPersonFile1],
     } as any;
 
     mockPerson2 = {
@@ -124,10 +122,10 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      files: [mockPhoto2]
+      files: [mockPhoto2],
     } as any;
 
     awiPersonId = createPersonId(mockPerson1);
@@ -140,8 +138,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       knownFields: [],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
-          if (key === "title")
-            return "The story behind how we catch fish with poison bark";
+          if (key === "title") return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -151,19 +148,14 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      files: [
-        mockAudioFile,
-        mockVideoFile,
-        mockSessionXml,
-        mockSessionMetadata
-      ],
+      files: [mockAudioFile, mockVideoFile, mockSessionXml, mockSessionMetadata],
       getAllContributionsToAllFiles: vi.fn().mockReturnValue([
         { personReference: "Awi_Heole", role: "speaker" },
-        { personReference: "Ilawi_Amosa", role: "speaker" } // Both are speakers for the test
-      ])
+        { personReference: "Ilawi_Amosa", role: "speaker" }, // Both are speakers for the test
+      ]),
     } as any;
 
     // Mock project
@@ -178,18 +170,17 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           return "";
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       knownFields: [],
-      authorityLists: { accessChoicesOfCurrentProtocol: [] }
+      authorityLists: { accessChoicesOfCurrentProtocol: [] },
     } as any;
 
     // Set up prototypes for instanceof checks
@@ -203,9 +194,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     // Verify root dataset structure
-    const rootDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
+    const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
     expect(rootDataset).toBeDefined();
     expect(rootDataset["@type"]).toEqual(["Dataset", "RepositoryCollection"]);
     expect(rootDataset.name).toBe("Edolo Language Documentation");
@@ -213,7 +202,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
 
     // Verify root dataset uses pcdm:hasMember for sessions
     expect(rootDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "#session-ETR009"
+      "@id": "#session-ETR009",
     });
     // Root hasPart should no longer contain standalone Person references
     const rootHasPart = rootDataset.hasPart ?? [];
@@ -222,13 +211,9 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       if (typeof id !== "string") {
         return false;
       }
-      const referencedEntity = result["@graph"].find(
-        (entry: any) => entry["@id"] === id
-      );
+      const referencedEntity = result["@graph"].find((entry: any) => entry["@id"] === id);
       const types = referencedEntity?.["@type"];
-      const isPerson = Array.isArray(types)
-        ? types.includes("Person")
-        : types === "Person";
+      const isPerson = Array.isArray(types) ? types.includes("Person") : types === "Person";
       // LAM-58 https://linear.app/lameta/issue/LAM-58/ro-crate-person-ids-use-name-fragments
       // ensures People use #Name fragments, so we must rely on @type instead
       // of the old #person-* prefix when asserting they are absent from hasPart.
@@ -238,21 +223,12 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
 
     // Verify session event entity (central hub)
     const sessionEvent = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "#session-ETR009" &&
-        item["@type"].includes("CollectionEvent")
+      (item: any) => item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
     );
     expect(sessionEvent).toBeDefined();
-    expect(sessionEvent["@type"]).toEqual([
-      "RepositoryObject",
-      "CollectionEvent"
-    ]);
-    expect(sessionEvent.collectionEventType).toBe(
-      "https://w3id.org/ldac/terms#Session"
-    );
-    expect(sessionEvent.name).toBe(
-      "The story behind how we catch fish with poison bark"
-    );
+    expect(sessionEvent["@type"]).toEqual(["RepositoryObject", "CollectionEvent"]);
+    expect(sessionEvent.collectionEventType).toBe("https://w3id.org/ldac/terms#Session");
+    expect(sessionEvent.name).toBe("The story behind how we catch fish with poison bark");
     expect(sessionEvent.description).toBe("Some guys talking");
     expect(sessionEvent.startDate).toBe("2010-06-06");
     expect(sessionEvent.keywords).toBe("fishing, poison");
@@ -275,23 +251,21 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
     // LAM-103: Session files should be in the session directory Dataset, not the CollectionEvent
     // The CollectionEvent (#session-*) should NOT have hasPart - files belong to Sessions/ETR009/
     expect(sessionEvent.hasPart).toBeUndefined();
-    const sessionDir = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/"
-    );
+    const sessionDir = result["@graph"].find((item: any) => item["@id"] === "Sessions/ETR009/");
     expect(sessionDir).toBeDefined();
     expect(sessionDir.hasPart).toContainEqual({
-      "@id": "Sessions/ETR009/ETR009_Careful.mp3"
+      "@id": "Sessions/ETR009/ETR009_Careful.mp3",
     });
     expect(sessionDir.hasPart).toContainEqual({
-      "@id": "Sessions/ETR009/ETR009_Tiny.mp4"
+      "@id": "Sessions/ETR009/ETR009_Tiny.mp4",
     });
     expect(sessionDir.hasPart).toContainEqual({
-      "@id": "Sessions/ETR009/ETR009.xml"
+      "@id": "Sessions/ETR009/ETR009.xml",
     });
 
     // Verify Place entity
     const placeEntity = result["@graph"].find(
-      (item: any) => item["@id"] === "#huya" && item["@type"] === "Place"
+      (item: any) => item["@id"] === "#huya" && item["@type"] === "Place",
     );
     expect(placeEntity).toBeDefined();
     expect(placeEntity.name).toBe("huya");
@@ -299,66 +273,63 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
 
     // Verify Person entities with proper IDs
     const person1 = result["@graph"].find(
-      (item: any) => item["@id"] === awiPersonId && item["@type"] === "Person"
+      (item: any) => item["@id"] === awiPersonId && item["@type"] === "Person",
     );
     expect(person1).toBeDefined();
 
     const person2 = result["@graph"].find(
-      (item: any) => item["@id"] === ilawiPersonId && item["@type"] === "Person"
+      (item: any) => item["@id"] === ilawiPersonId && item["@type"] === "Person",
     );
     expect(person2).toBeDefined();
 
     // Verify specific file types and roles
     const audioFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3",
     );
     expect(audioFile["@type"]).toEqual(["File", "AudioObject"]);
     expect(audioFile.role).toBeUndefined();
 
     const videoFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4",
     );
     expect(videoFile["@type"]).toEqual(["File", "VideoObject"]);
     expect(videoFile.role).toBeUndefined();
 
     const xmlFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml",
     );
     // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
     expect(xmlFile["@type"]).toBe("File");
     expect(xmlFile.role).toBeUndefined();
 
     const photo1 = result["@graph"].find(
-      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG",
     );
     expect(photo1["@type"]).toEqual(["File", "ImageObject"]);
     expect(photo1.role).toBeUndefined();
 
     const personFile = result["@graph"].find(
-      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole.person"
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole.person",
     );
     // LAM-54: session/person metadata blobs are plain files in RO-Crate (https://linear.app/lameta/issue/LAM-54)
     // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
     expect(personFile["@type"]).toBe("File");
 
     const sessionMetadataFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.session"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.session",
     );
     // LAM-69: Per RO-Crate spec, non-media files only need "File" type (https://linear.app/lameta/issue/LAM-69)
     expect(sessionMetadataFile["@type"]).toBe("File");
     expect(personFile.role).toBeUndefined();
 
     // Verify that no separate Role entities are created (we use LDAC properties directly)
-    const roleEntities = result["@graph"].filter(
-      (item: any) => item["@type"] === "Role"
-    );
+    const roleEntities = result["@graph"].filter((item: any) => item["@type"] === "Role");
     expect(roleEntities).toHaveLength(0); // No separate Role entities
 
     // Verify license entity (normalized)
     const license = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "#license-unknown-public" &&
-        item["@type"] === "ldac:DataReuseLicense"
+        item["@id"] === "#license-unknown-public" && item["@type"] === "ldac:DataReuseLicense",
     );
     // If license is not defined, log the entire graph
     if (!license) {
@@ -374,7 +345,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
 
     // Verify metadata file
     const metadataFile = result["@graph"].find(
-      (item: any) => item["@id"] === "ro-crate-metadata.json"
+      (item: any) => item["@id"] === "ro-crate-metadata.json",
     );
     expect(metadataFile).toBeDefined();
     expect(metadataFile["@type"]).toBe("CreativeWork");
@@ -386,27 +357,21 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
 
     // Count entities that have proper relationships
     const entitiesWithRelationships = result["@graph"].filter(
-      (item: any) =>
-        item.hasPart || item.participant || item.location || item.about
+      (item: any) => item.hasPart || item.participant || item.location || item.about,
     );
 
     // Should have root dataset, session event, and possibly person entities with relationships
     expect(entitiesWithRelationships.length).toBeGreaterThan(1);
 
     // Verify the graph is connected - root links to sessions via pcdm:hasMember and hasPart still lists any project-level files
-    const rootDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
+    const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
     const rootConnections =
-      (rootDataset.hasPart?.length ?? 0) +
-      (rootDataset["pcdm:hasMember"]?.length ?? 0);
+      (rootDataset.hasPart?.length ?? 0) + (rootDataset["pcdm:hasMember"]?.length ?? 0);
     expect(rootConnections).toBeGreaterThan(0);
 
     // Session event links to people via LDAC role properties and files
     const sessionEvent = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "#session-ETR009" &&
-        item["@type"].includes("CollectionEvent")
+      (item: any) => item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
     );
 
     // Count LDAC role properties instead of generic participant
@@ -414,15 +379,13 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       (key) =>
         key.startsWith("ldac:") &&
         sessionEvent[key] &&
-        (Array.isArray(sessionEvent[key]) || sessionEvent[key]["@id"])
+        (Array.isArray(sessionEvent[key]) || sessionEvent[key]["@id"]),
     ).length;
     expect(roleCount).toBeGreaterThan(0);
 
     // LAM-103: Session CollectionEvent should NOT have hasPart, files are in the directory Dataset
     expect(sessionEvent.hasPart).toBeUndefined();
-    const sessionDir = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/"
-    );
+    const sessionDir = result["@graph"].find((item: any) => item["@id"] === "Sessions/ETR009/");
     expect(sessionDir.hasPart.length).toBeGreaterThan(0);
   });
 });

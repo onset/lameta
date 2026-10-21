@@ -1,11 +1,7 @@
-import { describe, it, beforeAll, afterAll } from "vite-plus/test";
+import { describe, it, beforeAll } from "vite-plus/test";
 
 import { Project } from "../model/Project/Project";
-import {
-  setResultXml,
-  xexpect as expect,
-  count
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect, count } from "../other/xmlUnitTestUtils";
 import ImdiBundler from "./ImdiBundler";
 import * as fs from "fs-extra";
 import * as os from "os";
@@ -16,14 +12,13 @@ import { Contribution } from "../model/file/File";
 // find the the temp directory of this computer
 
 describe("Consent in OPEX+Files export", () => {
-  let thisRunDir: string;
   let targetDir: string;
   beforeAll(async () => {
     const thisSpecDir = Path.join(os.tmpdir(), "consent opex bundler tests");
-    [thisRunDir, targetDir] = await doExport(IMDIMode.OPEX, thisSpecDir, true);
+    [, targetDir] = await doExport(IMDIMode.OPEX, thisSpecDir, true);
     const xml = fs.readFileSync(
       Path.join(targetDir, "ConsentDocuments", "ConsentDocuments.opex"),
-      "utf8"
+      "utf8",
     );
     expect(xml).toBeTruthy();
     setResultXml(xml);
@@ -50,14 +45,10 @@ describe("Consent in OPEX+Files export", () => {
 
   it("There should be 2 consent files in the ConsentDocuments folder", () => {
     expect(
-      fs.existsSync(
-        Path.join(targetDir, "ConsentDocuments", "Person_1_Consent.JPG")
-      )
+      fs.existsSync(Path.join(targetDir, "ConsentDocuments", "Person_1_Consent.JPG")),
     ).toBeTruthy();
     expect(
-      fs.existsSync(
-        Path.join(targetDir, "ConsentDocuments", "Person_2_Consent.JPG")
-      )
+      fs.existsSync(Path.join(targetDir, "ConsentDocuments", "Person_2_Consent.JPG")),
     ).toBeTruthy();
   });
 
@@ -66,53 +57,39 @@ describe("Consent in OPEX+Files export", () => {
   it("If ELAR, it should have an Access of 'S'", () => {
     expect("//MediaFile/Access/Availability").toMatch("S");
     expect("//MediaFile/Access/Description").toMatch("Consent documents");
-    expect(
-      "//MediaFile/Access/Description[@LanguageId='ISO639-3:spa']"
-    ).toMatch("Documentos de consentimiento");
+    expect("//MediaFile/Access/Description[@LanguageId='ISO639-3:spa']").toMatch(
+      "Documentos de consentimiento",
+    );
   });
 
   // per Notion #241
   it("Resources/MediaFile/ResourceLink should be ConsentDocuments", () => {
-    expect("//MediaFile[1]/ResourceLink").toMatch(
-      "ConsentDocuments/Person_1_Consent.JPG"
-    );
-    expect("//MediaFile[2]/ResourceLink").toMatch(
-      "ConsentDocuments/Person_2_Consent.JPG"
-    );
+    expect("//MediaFile[1]/ResourceLink").toMatch("ConsentDocuments/Person_1_Consent.JPG");
+    expect("//MediaFile[2]/ResourceLink").toMatch("ConsentDocuments/Person_2_Consent.JPG");
   });
 });
 
 describe("Consent in IMDI-only export", () => {
-  let thisRunDir: string;
   let targetDir: string;
   beforeAll(async () => {
     const thisSpecDir = Path.join(os.tmpdir(), "consent imdi bundler tests");
     fs.mkdirSync(thisSpecDir, { recursive: true });
-    [thisRunDir, targetDir] = await doExport(
-      IMDIMode.RAW_IMDI,
-      thisSpecDir,
-      false
-    );
+    [, targetDir] = await doExport(IMDIMode.RAW_IMDI, thisSpecDir, false);
   });
   it("The file ConsentDocuments.imdi should exist", () => {
-    expect(
-      fs.existsSync(Path.join(targetDir, "ConsentDocuments.imdi"))
-    ).toBeTruthy();
+    expect(fs.existsSync(Path.join(targetDir, "ConsentDocuments.imdi"))).toBeTruthy();
   });
 });
 
 async function doExport(
   imdiMode: IMDIMode,
   thisSpecDir: string,
-  includeFiles: boolean
+  includeFiles: boolean,
 ): Promise<[thisRunDir: string, targetDir: string]> {
   fs.mkdirSync(thisSpecDir, { recursive: true });
   const randomStringForFileName = Math.random().toString(36).substring(7);
   // including "fssync" in the path tells our file copy thing to just do the copy synchronously
-  const thisRunDir = Path.join(
-    thisSpecDir,
-    "run-" + randomStringForFileName + "-fssync"
-  );
+  const thisRunDir = Path.join(thisSpecDir, "run-" + randomStringForFileName + "-fssync");
   fs.mkdirSync(thisRunDir);
   const projectDir = Path.join(thisRunDir, "projectDir");
   fs.mkdirSync(projectDir);
@@ -125,14 +102,11 @@ async function doExport(
   project.properties.setText("metadataLanguages", "en:English;es:Spanish");
 
   // Provide a project translation for the access description used by the consent bundle
-  project.vocabularyTranslations?.ensureExportStringEntry(
-    "Consent documents",
-    ["en", "es"]
-  );
+  project.vocabularyTranslations?.ensureExportStringEntry("Consent documents", ["en", "es"]);
   project.vocabularyTranslations?.updateExportStringTranslation(
     "Consent documents",
     "es",
-    "Documentos de consentimiento"
+    "Documentos de consentimiento",
   );
 
   // NB: this is to test the access protocol used for consent bundles,
@@ -151,13 +125,11 @@ async function doExport(
 
   const session = project.addSession();
   session.addContribution(
-    new Contribution(person1.getIdToUseForReferences(), "Consultant", "blah")
+    new Contribution(person1.getIdToUseForReferences(), "Consultant", "blah"),
   );
+  session.addContribution(new Contribution(person2.getIdToUseForReferences(), "Speaker", "blah"));
   session.addContribution(
-    new Contribution(person2.getIdToUseForReferences(), "Speaker", "blah")
-  );
-  session.addContribution(
-    new Contribution(person3.getIdToUseForReferences(), "Translator", "blah")
+    new Contribution(person3.getIdToUseForReferences(), "Translator", "blah"),
   );
 
   await ImdiBundler.addConsentBundle(
@@ -167,8 +139,8 @@ async function doExport(
     [],
     imdiMode,
     includeFiles,
-    (f) => true,
-    true
+    () => true,
+    true,
   );
   return [thisRunDir, targetDir];
 }

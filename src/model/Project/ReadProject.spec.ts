@@ -27,54 +27,29 @@ describe("Project Read", () => {
   // UTC, which is actually the previous day, drop the time, drop the time offset.
 
   it("should read SubjectLanguages", () => {
-    const f = GetProjectFileWithOneField(
-      "SubjectLanguages",
-      "dde: Doondo;etr: Edolo"
-    );
-    expect(f.properties.getTextStringOrEmpty("SubjectLanguages")).toBe(
-      "dde: Doondo;etr: Edolo"
-    );
+    const f = GetProjectFileWithOneField("SubjectLanguages", "dde: Doondo;etr: Edolo");
+    expect(f.properties.getTextStringOrEmpty("SubjectLanguages")).toBe("dde: Doondo;etr: Edolo");
   });
 
   it("should read CollectionSubjectLanguages into SubjectLanguages", () => {
-    const f = GetProjectFileWithOneField(
-      "CollectionSubjectLanguages",
-      "dde: Doondo;etr: Edolo"
-    );
-    expect(f.properties.getTextStringOrEmpty("SubjectLanguages")).toBe(
-      "dde: Doondo;etr: Edolo"
-    );
+    const f = GetProjectFileWithOneField("CollectionSubjectLanguages", "dde: Doondo;etr: Edolo");
+    expect(f.properties.getTextStringOrEmpty("SubjectLanguages")).toBe("dde: Doondo;etr: Edolo");
   });
 
   it("should read CollectionWorkingLanguages into WorkingLanguages", () => {
-    const f = GetProjectFileWithOneField(
-      "CollectionWorkingLanguages",
-      "dde: Doondo"
-    );
-    expect(f.properties.getTextStringOrEmpty("WorkingLanguages")).toBe(
-      "dde: Doondo"
-    );
+    const f = GetProjectFileWithOneField("CollectionWorkingLanguages", "dde: Doondo");
+    expect(f.properties.getTextStringOrEmpty("WorkingLanguages")).toBe("dde: Doondo");
   });
 
   // Before lameta 3, we could store a single language for the vernacular. If we
   // find a file using that but no modern collectionSubjectLanguage, collectionSubjectLanguage
   // should be loaded with the value from VernacularISO3CodeAndName.
   it("should load/migrate old VernacularISO3CodeAndName into collectionSubjectLanguage if missing or empty", () => {
-    const f = GetProjectFileWithOneField(
-      "VernacularISO3CodeAndName",
-      "abc:Abracadabra"
-    );
-    expect(
-      f.properties.getTextStringOrEmpty("SubjectLanguages")
-    ).toBe("abc:Abracadabra");
+    const f = GetProjectFileWithOneField("VernacularISO3CodeAndName", "abc:Abracadabra");
+    expect(f.properties.getTextStringOrEmpty("SubjectLanguages")).toBe("abc:Abracadabra");
     // do same for AnaylsisISO3CodeAndName and WorkingLanguages
-    const f2 = GetProjectFileWithOneField(
-      "AnalysisISO3CodeAndName",
-      "xyz:Xabradabra"
-    );
-    expect(f2.properties.getTextStringOrEmpty("WorkingLanguages")).toBe(
-      "xyz:Xabradabra"
-    );
+    const f2 = GetProjectFileWithOneField("AnalysisISO3CodeAndName", "xyz:Xabradabra");
+    expect(f2.properties.getTextStringOrEmpty("WorkingLanguages")).toBe("xyz:Xabradabra");
   });
   // REVIEW why? Why do we want to keep that old field around in memory?
   // it("fill legacy language fields from modern collectionLanguages", () => {
@@ -97,43 +72,27 @@ describe("Project Read", () => {
 
   it("should read archiveConfigurationName", () => {
     const f = GetProjectFileWithOneField("ArchiveConfigurationName", "ELAR");
-    expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe(
-      "ELAR"
-    );
+    expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe("ELAR");
   });
   it("should read AccessProtocol into configurationName", () => {
     const f = GetProjectFileWithOneField("AccessProtocol", "ELAR");
-    expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe(
-      "ELAR"
-    );
+    expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe("ELAR");
   });
   it("archiveConfigurationName should be 'unknown' if missing configurationName & accessProtocol", () => {
     const f = GetProjectFileWithOneField("Foo", "bar");
-    expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe(
-      "default"
-    );
+    expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe("default");
   });
   it("should read V2 AnalysisISO3CodeAndName into WorkingLanguages", () => {
-    const f = GetProjectFileWithOneField(
-      "AnalysisISO3CodeAndName",
-      "dde: Doondo"
-    );
-    expect(f.properties.getTextStringOrEmpty("WorkingLanguages")).toBe(
-      "dde: Doondo"
-    );
+    const f = GetProjectFileWithOneField("AnalysisISO3CodeAndName", "dde: Doondo");
+    expect(f.properties.getTextStringOrEmpty("WorkingLanguages")).toBe("dde: Doondo");
   });
   it("should migrate legacy collectionDescription into projectDescription", () => {
-    const f = GetProjectFileWithOneField(
-      "collectionDescription",
-      "Legacy project description"
-    );
+    const f = GetProjectFileWithOneField("collectionDescription", "Legacy project description");
 
     expect(f.properties.getTextStringOrEmpty("projectDescription")).toBe(
-      "Legacy project description"
+      "Legacy project description",
     );
-    expect(f.properties.getTextStringOrEmpty("collectionDescription")).toBe(
-      ""
-    );
+    expect(f.properties.getTextStringOrEmpty("collectionDescription")).toBe("");
   });
   it("should drop legacy CollectionKey when reading a project", () => {
     const f = GetProjectFileWithOneField("CollectionKey", "obsolete-id");
@@ -144,38 +103,25 @@ describe("Project Read", () => {
   it("should read Doondo Project", () => {
     const doondoPath = "c:/dev/Doondo";
     if (fs.existsSync(doondoPath)) {
-      const f = new ProjectMetadataFile(
-        doondoPath,
-        new EncounteredVocabularyRegistry()
-      );
+      const f = new ProjectMetadataFile(doondoPath, new EncounteredVocabularyRegistry());
 
       expect(f.properties.getTextStringOrEmpty("title")).toBe(
-        "Doondo Language Documentation Corpus"
+        "Doondo Language Documentation Corpus",
       );
       expect(f.properties.getTextStringOrEmpty("projectDescription")).toBe(
-        "This corpus includes 7 hours of original audio recordings in Doondo."
+        "This corpus includes 7 hours of original audio recordings in Doondo.",
       );
-      expect(
-        f.properties.getTextStringOrEmpty("archiveConfigurationName")
-      ).toBe("REAP");
-      expect(f.properties.getTextStringOrEmpty("SubjectLanguages")).toBe(
-        "dde: Doondo"
-      );
+      expect(f.properties.getTextStringOrEmpty("archiveConfigurationName")).toBe("REAP");
+      expect(f.properties.getTextStringOrEmpty("SubjectLanguages")).toBe("dde: Doondo");
     }
   });
 });
 
-function GetProjectFileWithOneField(
-  tag: string,
-  content: string
-): ProjectMetadataFile {
+function GetProjectFileWithOneField(tag: string, content: string): ProjectMetadataFile {
   fs.writeFileSync(
     Path.join(projectDirectory, projectName + ".sprj"),
     `<?xml version="1.0" encoding="utf-8"?>
-  <Project><${tag}>${content}</${tag}></Project>`
+  <Project><${tag}>${content}</${tag}></Project>`,
   );
-  return new ProjectMetadataFile(
-    projectDirectory,
-    new EncounteredVocabularyRegistry()
-  );
+  return new ProjectMetadataFile(projectDirectory, new EncounteredVocabularyRegistry());
 }

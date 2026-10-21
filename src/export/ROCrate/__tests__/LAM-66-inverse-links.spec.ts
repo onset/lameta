@@ -20,26 +20,24 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 // Mock fs-extra module
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01")
-  })
+    birthtime: new Date("2023-01-01"),
+  }),
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";
 import { Person } from "../../../model/Project/Person/Person";
-import { Folder } from "../../../model/Folder/Folder";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
-import { createPersonId } from "../RoCrateUtils";
 
 describe("LAM-66: Inverse Links", () => {
   let mockProject: Project;
@@ -48,61 +46,57 @@ describe("LAM-66: Inverse Links", () => {
 
   beforeEach(() => {
     // Mock field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
         key: "person",
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Person",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Mock files for session
     const mockAudioFile = {
       getActualFilePath: () => "/sessions/Test_Session/Test_Session.wav",
       getModifiedDate: () => new Date("2024-01-15"),
-      pathInFolderToLinkFileOrLocalCopy: "Test_Session.wav"
+      pathInFolderToLinkFileOrLocalCopy: "Test_Session.wav",
     } as any;
 
     const mockSessionMetaFile = {
       getActualFilePath: () => "/sessions/Test_Session/Test_Session.session",
       getModifiedDate: () => new Date("2024-01-15"),
-      pathInFolderToLinkFileOrLocalCopy: "Test_Session.session"
+      pathInFolderToLinkFileOrLocalCopy: "Test_Session.session",
     } as any;
 
     // Mock files for person
     const mockPersonFile = {
       getActualFilePath: () => "/people/Test_Person/Test_Person.person",
       getModifiedDate: () => new Date("2024-01-15"),
-      pathInFolderToLinkFileOrLocalCopy: "Test_Person.person"
+      pathInFolderToLinkFileOrLocalCopy: "Test_Person.person",
     } as any;
 
     const mockConsentImageFile = {
       getActualFilePath: () => "/people/Test_Person/Test_Person_Consent.JPG",
       getModifiedDate: () => new Date("2024-01-15"),
-      pathInFolderToLinkFileOrLocalCopy: "Test_Person_Consent.JPG"
+      pathInFolderToLinkFileOrLocalCopy: "Test_Person_Consent.JPG",
     } as any;
 
     // Mock files for project documents
     const mockDescFile = {
       getActualFilePath: () => "/project/DescriptionDocuments/description.txt",
       getModifiedDate: () => new Date("2024-01-15"),
-      pathInFolderToLinkFileOrLocalCopy: "description.txt"
+      pathInFolderToLinkFileOrLocalCopy: "description.txt",
     } as any;
 
     const mockOtherDocFile = {
       getActualFilePath: () => "/project/OtherDocuments/readme.txt",
       getModifiedDate: () => new Date("2024-01-15"),
-      pathInFolderToLinkFileOrLocalCopy: "readme.txt"
+      pathInFolderToLinkFileOrLocalCopy: "readme.txt",
     } as any;
 
     // Mock person
@@ -119,10 +113,10 @@ describe("LAM-66: Inverse Links", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      files: [mockPersonFile, mockConsentImageFile]
+      files: [mockPersonFile, mockConsentImageFile],
     } as any;
 
     // Mock session
@@ -138,28 +132,28 @@ describe("LAM-66: Inverse Links", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [mockAudioFile, mockSessionMetaFile],
       getAllContributionsToAllFiles: vi.fn().mockReturnValue([
         {
           personReference: "Test_Person",
-          role: "speaker"
-        }
-      ])
+          role: "speaker",
+        },
+      ]),
     } as any;
 
     // Mock description folder
     const mockDescFolder = {
       files: [mockDescFile],
-      directory: "/project/DescriptionDocuments"
+      directory: "/project/DescriptionDocuments",
     } as any;
 
     // Mock other docs folder
     const mockOtherDocsFolder = {
       files: [mockOtherDocFile],
-      directory: "/project/OtherDocuments"
+      directory: "/project/OtherDocuments",
     } as any;
 
     mockProject = {
@@ -172,20 +166,19 @@ describe("LAM-66: Inverse Links", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "projectDescription")
-            return "A test project for inverse links";
+          if (key === "projectDescription") return "A test project for inverse links";
           return "";
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       knownFields: [],
       descriptionFolder: mockDescFolder,
       otherDocsFolder: mockOtherDocsFolder,
-      authorityLists: { accessChoicesOfCurrentProtocol: [] }
+      authorityLists: { accessChoicesOfCurrentProtocol: [] },
     } as any;
 
     // Set up prototypes
@@ -201,15 +194,11 @@ describe("LAM-66: Inverse Links", () => {
       const graph = roCrate["@graph"];
 
       // Find the session entity
-      const sessionEntity = graph.find(
-        (e: any) => e["@id"] === "#session-Test_Session"
-      );
+      const sessionEntity = graph.find((e: any) => e["@id"] === "#session-Test_Session");
       expect(sessionEntity).toBeDefined();
 
       // Find the audio file entity
-      const audioFile = graph.find((e: any) =>
-        e["@id"]?.endsWith("Test_Session.wav")
-      );
+      const audioFile = graph.find((e: any) => e["@id"]?.endsWith("Test_Session.wav"));
       expect(audioFile).toBeDefined();
 
       // LAM-66 + LAM-99: Session files now point to their session directory Dataset
@@ -225,9 +214,7 @@ describe("LAM-66: Inverse Links", () => {
       const graph = roCrate["@graph"];
 
       // Find description document file
-      const descFile = graph.find(
-        (e: any) => e["@id"] === "DescriptionDocuments/description.txt"
-      );
+      const descFile = graph.find((e: any) => e["@id"] === "DescriptionDocuments/description.txt");
 
       // LAM-102: Description documents now live under a DescriptionDocuments/ Dataset
       // (similar to LAM-101 OtherDocuments/) so their isPartOf points to the Dataset.
@@ -246,9 +233,7 @@ describe("LAM-66: Inverse Links", () => {
       const graph = roCrate["@graph"];
 
       // Find other document file
-      const otherFile = graph.find(
-        (e: any) => e["@id"] === "OtherDocuments/readme.txt"
-      );
+      const otherFile = graph.find((e: any) => e["@id"] === "OtherDocuments/readme.txt");
 
       // LAM-66 + LAM-101: Verify project-level files have isPartOf pointing to OtherDocuments/ Dataset
       // https://linear.app/lameta/issue/LAM-66/add-inverse-links
@@ -267,7 +252,7 @@ describe("LAM-66: Inverse Links", () => {
 
       // Find the person entity
       const personEntity = graph.find(
-        (e: any) => e["@type"] === "Person" && e.name === "Test Person"
+        (e: any) => e["@type"] === "Person" && e.name === "Test Person",
       );
 
       // If we have a person with subjectOf...
@@ -276,8 +261,8 @@ describe("LAM-66: Inverse Links", () => {
           typeof personEntity.subjectOf === "object"
             ? personEntity.subjectOf["@id"]
             : Array.isArray(personEntity.subjectOf)
-            ? personEntity.subjectOf[0]["@id"]
-            : null;
+              ? personEntity.subjectOf[0]["@id"]
+              : null;
 
         if (subjectOfId) {
           // Find the file referenced by subjectOf
@@ -299,7 +284,7 @@ describe("LAM-66: Inverse Links", () => {
 
       // Find the person entity
       const personEntity = graph.find(
-        (e: any) => e["@type"] === "Person" && e.name === "Test Person"
+        (e: any) => e["@type"] === "Person" && e.name === "Test Person",
       );
 
       // If we have a person with image property
@@ -308,8 +293,8 @@ describe("LAM-66: Inverse Links", () => {
           typeof personEntity.image === "object"
             ? personEntity.image["@id"]
             : Array.isArray(personEntity.image)
-            ? personEntity.image[0]["@id"]
-            : null;
+              ? personEntity.image[0]["@id"]
+              : null;
 
         if (imageId) {
           // Find the image file
@@ -335,14 +320,12 @@ describe("LAM-66: Inverse Links", () => {
       const hasPartRefs: { parentId: string; childId: string }[] = [];
       graph.forEach((entity: any) => {
         if (entity.hasPart) {
-          const parts = Array.isArray(entity.hasPart)
-            ? entity.hasPart
-            : [entity.hasPart];
+          const parts = Array.isArray(entity.hasPart) ? entity.hasPart : [entity.hasPart];
           parts.forEach((part: any) => {
             if (part["@id"]) {
               hasPartRefs.push({
                 parentId: entity["@id"],
-                childId: part["@id"]
+                childId: part["@id"],
               });
             }
           });
@@ -370,13 +353,7 @@ describe("LAM-66: Inverse Links", () => {
             ? childEntity["@type"]
             : [childEntity["@type"]];
           const isContextualEntity = childTypes.some((t: string) =>
-            [
-              "Person",
-              "Organization",
-              "Place",
-              "DefinedTerm",
-              "Language"
-            ].includes(t)
+            ["Person", "Organization", "Place", "DefinedTerm", "Language"].includes(t),
           );
           if (isContextualEntity) {
             return;
@@ -393,28 +370,19 @@ describe("LAM-66: Inverse Links", () => {
           if (isSessionEntity && isFileChild) {
             // For session files, isPartOf should point to the session directory
             const sessionName = parentId.replace("#session-", "");
-            expect(
-              childEntity,
-              `File ${childId} should have isPartOf`
-            ).toHaveProperty("isPartOf");
+            expect(childEntity, `File ${childId} should have isPartOf`).toHaveProperty("isPartOf");
             expect(childEntity.isPartOf).toEqual({
-              "@id": `Sessions/${sessionName}/`
+              "@id": `Sessions/${sessionName}/`,
             });
           } else if (parentId === "#descriptionDocuments") {
             // LAM-102: CollectionProtocol references files for LDAC,
             // but files' isPartOf points to DescriptionDocuments/ Dataset
-            expect(
-              childEntity,
-              `File ${childId} should have isPartOf`
-            ).toHaveProperty("isPartOf");
+            expect(childEntity, `File ${childId} should have isPartOf`).toHaveProperty("isPartOf");
             expect(childEntity.isPartOf).toEqual({
-              "@id": "DescriptionDocuments/"
+              "@id": "DescriptionDocuments/",
             });
           } else {
-            expect(
-              childEntity,
-              `File ${childId} should have isPartOf`
-            ).toHaveProperty("isPartOf");
+            expect(childEntity, `File ${childId} should have isPartOf`).toHaveProperty("isPartOf");
             expect(childEntity.isPartOf).toEqual({ "@id": parentId });
           }
         }
@@ -429,14 +397,12 @@ describe("LAM-66: Inverse Links", () => {
       const subjectOfRefs: { personId: string; fileId: string }[] = [];
       graph.forEach((entity: any) => {
         if (entity["@type"] === "Person" && entity.subjectOf) {
-          const subjects = Array.isArray(entity.subjectOf)
-            ? entity.subjectOf
-            : [entity.subjectOf];
+          const subjects = Array.isArray(entity.subjectOf) ? entity.subjectOf : [entity.subjectOf];
           subjects.forEach((subject: any) => {
             if (subject["@id"]) {
               subjectOfRefs.push({
                 personId: entity["@id"],
-                fileId: subject["@id"]
+                fileId: subject["@id"],
               });
             }
           });
@@ -448,9 +414,7 @@ describe("LAM-66: Inverse Links", () => {
       subjectOfRefs.forEach(({ personId, fileId }) => {
         const fileEntity = graph.find((e: any) => e["@id"] === fileId);
         if (fileEntity) {
-          expect(fileEntity, `File ${fileId} should have about`).toHaveProperty(
-            "about"
-          );
+          expect(fileEntity, `File ${fileId} should have about`).toHaveProperty("about");
           expect(fileEntity.about).toEqual({ "@id": personId });
         }
       });
@@ -464,14 +428,12 @@ describe("LAM-66: Inverse Links", () => {
       const imageRefs: { personId: string; fileId: string }[] = [];
       graph.forEach((entity: any) => {
         if (entity["@type"] === "Person" && entity.image) {
-          const images = Array.isArray(entity.image)
-            ? entity.image
-            : [entity.image];
+          const images = Array.isArray(entity.image) ? entity.image : [entity.image];
           images.forEach((image: any) => {
             if (image["@id"]) {
               imageRefs.push({
                 personId: entity["@id"],
-                fileId: image["@id"]
+                fileId: image["@id"],
               });
             }
           });
@@ -483,10 +445,7 @@ describe("LAM-66: Inverse Links", () => {
       imageRefs.forEach(({ personId, fileId }) => {
         const fileEntity = graph.find((e: any) => e["@id"] === fileId);
         if (fileEntity) {
-          expect(
-            fileEntity,
-            `Image file ${fileId} should have about`
-          ).toHaveProperty("about");
+          expect(fileEntity, `Image file ${fileId} should have about`).toHaveProperty("about");
           expect(fileEntity.about).toEqual({ "@id": personId });
         }
       });

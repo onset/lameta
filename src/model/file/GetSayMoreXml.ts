@@ -4,7 +4,6 @@ import { Field } from "../field/Field";
 import { File, Contribution } from "./File";
 import assert from "assert";
 import { NotifyException } from "../../components/Notify";
-import { override } from "mobx";
 
 // This supplies the xml that gets saved in the .sprj, .session, and .person files
 export default function getSayMoreXml(
@@ -13,7 +12,7 @@ export default function getSayMoreXml(
   contributions: Contribution[],
   file: File,
   doOutputTypeInXmlTags: boolean,
-  doOutputEmptyCustomFields: boolean // used for watching empty custom fields
+  doOutputEmptyCustomFields: boolean, // used for watching empty custom fields
 ): string {
   try {
     /* Note, if this is called during load from recomputeChangeWatcher, we haven't migrated yet.
@@ -24,7 +23,7 @@ export default function getSayMoreXml(
 
     const root = xmlbuilder.create(xmlRootName, {
       version: "1.0",
-      encoding: "utf-8"
+      encoding: "utf-8",
     });
     // 0.0.0 because we haven't started using this yet. It is just here  that in the future
     // *if* we use it, old versions will know not to open the file. Note, we would never just replace
@@ -34,21 +33,13 @@ export default function getSayMoreXml(
     // to their release version if there is a problem.
     // 0.9.2 (predicted) switched to new person languages format
     root.attribute("minimum_lameta_version_to_read", "0.0.0");
-    const propertiesToPersist = properties
-      .values()
-      .filter((field) => field.persist);
-    writeSimplePropertyElements(
-      root,
-      propertiesToPersist,
-      doOutputTypeInXmlTags
-    );
+    const propertiesToPersist = properties.values().filter((field) => field.persist);
+    writeSimplePropertyElements(root, propertiesToPersist, doOutputTypeInXmlTags);
     if (properties.getValue("participants")) {
       // In older versions of SayMore & lameta, there were "participants", people without roles.
       // Now we just use the Contributors, which have roles and comments. But we still write out
       // this list in case the file is opened by an old version of SayMore
-      const legacyParticipantsList = contributions
-        .map((c) => c.personReference)
-        .join(";");
+      const legacyParticipantsList = contributions.map((c) => c.personReference).join(";");
       root.element("participants", {}, legacyParticipantsList);
     }
 
@@ -59,29 +50,27 @@ export default function getSayMoreXml(
     // JH: I don't see a reason to wrap them up under a parent, but remember we're conforming to the inherited format at this point.
     writeElementGroup(
       root,
-      propertiesToPersist.filter(
-        (f) => f.definition && f.definition.isAdditional
-      ),
+      propertiesToPersist.filter((f) => f.definition && f.definition.isAdditional),
       "AdditionalFields",
-      false // only custom fields might need special treatment
+      false, // only custom fields might need special treatment
     );
     writeElementGroup(
       root,
       propertiesToPersist.filter((f) => f.definition && f.definition.isCustom),
       "CustomFields",
-      doOutputEmptyCustomFields
+      doOutputEmptyCustomFields,
     );
     //writeElementsWeDontUnderstand();
     return root.end({
       pretty: true,
       indent: "  ",
       /*there are parts of the Windows Classic reading that will choke on a self-closing tag, thus this allowEmpty:true, which prevents self closing tags */
-      allowEmpty: true
+      allowEmpty: true,
     });
   } catch (error) {
     NotifyException(
       error, // not translating for now
-      `While saving ${file.metadataFilePath}, got ${error} (getXml)`
+      `While saving ${file.metadataFilePath}, got ${error} (getXml)`,
     );
     throw error;
   }
@@ -90,13 +79,12 @@ export default function getSayMoreXml(
 function writeSimplePropertyElements(
   root: xmlbuilder.XMLElementOrXMLNode,
   properties: Field[],
-  doOutputTypeInXmlTags: boolean
+  doOutputTypeInXmlTags: boolean,
 ) {
   properties
     .filter(
       (field) =>
-        !field.definition ||
-        (!field.definition.isCustom && !field.definition.isAdditional)
+        !field.definition || (!field.definition.isCustom && !field.definition.isAdditional),
     )
     //.filter(field => field.type !== FieldType.Contributions)
     .forEach((field) => {
@@ -109,7 +97,7 @@ function writeSimplePropertyElements(
           doOutputTypeInXmlTags,
           false,
           "AccessProtocol",
-          "lameta 3 and following use <ArchiveConfigurationName> as that matches what we're actually doing with it now. We still emit <AccessProtocol> for compatibility with SayMore and older versions of lameta"
+          "lameta 3 and following use <ArchiveConfigurationName> as that matches what we're actually doing with it now. We still emit <AccessProtocol> for compatibility with SayMore and older versions of lameta",
         );
       }
       if (field.key === "SubjectLanguages") {
@@ -119,13 +107,13 @@ function writeSimplePropertyElements(
           doOutputTypeInXmlTags,
           false,
           "CollectionSubjectLanguages",
-          "lameta now uses <SubjectLanguages> and still emits <CollectionSubjectLanguages> for compatibility with older lameta versions"
+          "lameta now uses <SubjectLanguages> and still emits <CollectionSubjectLanguages> for compatibility with older lameta versions",
         );
         writeLanguageFieldForBackwardsCompat(
           root,
           field,
           "VernacularISO3CodeAndName",
-          "lameta now uses <SubjectLanguages> to store multiple languages. We still emit the first language as <VernacularISO3CodeAndName> for compatibility with SayMore and older versions of lameta"
+          "lameta now uses <SubjectLanguages> to store multiple languages. We still emit the first language as <VernacularISO3CodeAndName> for compatibility with SayMore and older versions of lameta",
         );
       }
       if (field.key === "WorkingLanguages") {
@@ -135,13 +123,13 @@ function writeSimplePropertyElements(
           doOutputTypeInXmlTags,
           false,
           "CollectionWorkingLanguages",
-          "lameta now uses <WorkingLanguages> and still emits <CollectionWorkingLanguages> for compatibility with older lameta versions"
+          "lameta now uses <WorkingLanguages> and still emits <CollectionWorkingLanguages> for compatibility with older lameta versions",
         );
         writeLanguageFieldForBackwardsCompat(
           root,
           field,
           "AnalysisISO3CodeAndName",
-          "lameta now uses <WorkingLanguages> to store multiple languages. We still emit the first language as <AnalysisISO3CodeAndName> for compatibility with SayMore and older versions of lameta"
+          "lameta now uses <WorkingLanguages> to store multiple languages. We still emit the first language as <AnalysisISO3CodeAndName> for compatibility with SayMore and older versions of lameta",
         );
       }
     });
@@ -151,10 +139,10 @@ function writeElementGroup(
   root: xmlbuilder.XMLElementOrXMLNode,
   fields: Field[],
   groupTag: string,
-  doOutputEmptyFields: boolean // used for watching empty custom fields
+  doOutputEmptyFields: boolean, // used for watching empty custom fields
 ) {
   const groupParent = root.element(groupTag, {
-    type: "xml"
+    type: "xml",
   });
 
   let didWriteAtLeastOne = false;
@@ -165,7 +153,7 @@ function writeElementGroup(
         groupParent,
         f,
         true /* we only have these additional fields for sessions & people, which have type on the xml tag*/,
-        doOutputEmptyFields
+        doOutputEmptyFields,
       );
       didWriteAtLeastOne = true;
     }
@@ -178,16 +166,10 @@ function writeElementGroup(
   }
 }
 
-function writeContributions(
-  root: xmlbuilder.XMLElementOrXMLNode,
-  contributions: Contribution[]
-) {
+function writeContributions(root: xmlbuilder.XMLElementOrXMLNode, contributions: Contribution[]) {
   const contributionsElement = root.element("Contributions");
   contributions.forEach((contribution) => {
-    if (
-      contribution.personReference &&
-      contribution.personReference.trim().length > 0
-    ) {
+    if (contribution.personReference && contribution.personReference.trim().length > 0) {
       let tail = contributionsElement.element("contributor");
       if (contribution.personReference) {
         tail = tail.element("name", contribution.personReference).up();
@@ -220,17 +202,15 @@ function writeLanguageFieldForBackwardsCompat(
   root: xmlbuilder.XMLElementOrXMLNode,
   field: Field,
   overrideTag?: string,
-  comment?: string
+  comment?: string,
 ) {
-  const { type, value } = field.typeAndValueEscapedForXml();
+  const { value } = field.typeAndValueEscapedForXml();
 
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization...
   // for now we just use those same tags when writing so that the file can be opened in that SM
   const tag =
     overrideTag ||
-    (field.definition && field.definition.xmlTag
-      ? field.definition.xmlTag
-      : field.key);
+    (field.definition && field.definition.xmlTag ? field.definition.xmlTag : field.key);
 
   if (comment) {
     root.comment(comment);
@@ -246,7 +226,7 @@ function writeField(
   doOutputTypeInXmlTags: boolean,
   doOutputEmptyFields: boolean = false,
   overrideTag?: string,
-  comment?: string
+  comment?: string,
 ) {
   if (field.definition?.omitSave) return;
   const { type, value } = field.typeAndValueEscapedForXml();
@@ -255,9 +235,7 @@ function writeField(
   // for now we just use those same tags when writing so that the file can be opened in that SM
   const tag =
     overrideTag ||
-    (field.definition && field.definition.xmlTag
-      ? field.definition.xmlTag
-      : field.key);
+    (field.definition && field.definition.xmlTag ? field.definition.xmlTag : field.key);
 
   if (type === "date") {
     // console.log(
@@ -267,7 +245,7 @@ function writeField(
   } else {
     assert.ok(
       field.key.indexOf("date") === -1 || type === "date",
-      "SHOULDN'T " + field.key + " BE A DATE?"
+      "SHOULDN'T " + field.key + " BE A DATE?",
     );
 
     // output comment
@@ -278,8 +256,7 @@ function writeField(
     // For some reason SayMore Windows 3 had a @type attribute on sessions and people, but not project
     if (doOutputTypeInXmlTags) attributes.type = type;
     if (field.definition?.deprecated) attributes.deprecated = "true";
-    if (field.definition?.xmlComment)
-      attributes.comment = field.definition.xmlComment;
+    if (field.definition?.xmlComment) attributes.comment = field.definition.xmlComment;
     if (doOutputEmptyFields || value.trim().length > 0) {
       root.element(tag, attributes, value.trim()).up();
     }
@@ -289,7 +266,7 @@ function writeField(
 function writeDate(
   builder: xmlbuilder.XMLElementOrXMLNode,
   tag: string,
-  dateString: string
+  dateString: string,
 ): xmlbuilder.XMLElementOrXMLNode {
   if (dateString) {
     // if (moment(dateString).isValid()) {

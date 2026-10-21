@@ -19,7 +19,7 @@ export function claimSprjFiles(exePath: string): void {
   ];
   for (const [key, value] of writes) {
     execFile("reg", ["add", key, "/ve", "/d", value, "/f"], (error) => {
-      if (error) console.error(`Could not register .sprj files: ${error}`);
+      if (error) console.error(`Could not register .sprj files: ${error.message}`);
     });
   }
 }

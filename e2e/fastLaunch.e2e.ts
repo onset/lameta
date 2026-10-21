@@ -49,9 +49,7 @@ test.describe("Fast Launch Feature", () => {
     await project.goToProjectCollection();
 
     // ELAR has a "Steward" field that should be visible
-    const stewardField = page.locator(
-      '[data-testid="field-collectionSteward-edit"]'
-    );
+    const stewardField = page.locator('[data-testid="field-collectionSteward-edit"]');
     await expect(stewardField).toBeVisible();
   });
 

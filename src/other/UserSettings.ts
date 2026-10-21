@@ -29,8 +29,6 @@ export class UserSettings {
   private paradisecMode: boolean;
   private showLanguageTags: boolean; // Show language tags on multilingual fields
   private showProblems: boolean; // Show the sidebar that lists metadata problems
-  // archive configuration name -> path of a local rules file to use instead of that configuration's own
-  private problemRulesFiles: Record<string, string>;
   private howUsing: string;
   public uiFontZoom: number;
   private sendErrors: boolean;
@@ -48,7 +46,6 @@ export class UserSettings {
       | "paradisecMode"
       | "showLanguageTags"
       | "showProblems"
-      | "problemRulesFiles"
       | "howUsing"
       | "sendErrors"
       | "ignoreFileNamingRules"
@@ -59,7 +56,6 @@ export class UserSettings {
       paradisecMode: observable,
       showLanguageTags: observable,
       showProblems: observable,
-      problemRulesFiles: observable,
       howUsing: observable,
       uiFontZoom: observable,
       sendErrors: observable,
@@ -95,7 +91,7 @@ export class UserSettings {
             } else {
               fs.rmSync(brokenPath); // we have two files, bad and good names. Remove incorrectly named one (note, it could be the more recent, ah well)
             }
-          } catch (e) {
+          } catch {
             // ah well
           }
         }
@@ -123,7 +119,6 @@ export class UserSettings {
     this.paradisecMode = this.store.get("paradisecMode") || false;
     this.showLanguageTags = this.store.get("showLanguageTags") || false;
     this.showProblems = this.store.get("showProblems") || false;
-    this.problemRulesFiles = this.store.get("problemRulesFiles") || {};
     this.howUsing = this.store.get("howUsing", "");
     // lastVersion was new in 0.83 (first "Digame" release after name change from saymorex,
     // before changing to "lameta" for version 0.84)
@@ -166,18 +161,6 @@ export class UserSettings {
   public set ShowProblems(show: boolean) {
     this.showProblems = show;
     this.store.set("showProblems", this.showProblems);
-  }
-  // The local rules file chosen for this archive configuration, or undefined to use
-  // the configuration's own rules file
-  public getProblemRulesFile(configurationName: string): string | undefined {
-    return this.problemRulesFiles[configurationName] || undefined;
-  }
-  public setProblemRulesFile(configurationName: string, path: string | undefined) {
-    const files = { ...this.problemRulesFiles };
-    if (path) files[configurationName] = path;
-    else delete files[configurationName];
-    this.problemRulesFiles = files;
-    this.store.set("problemRulesFiles", this.problemRulesFiles);
   }
   public get ShowLanguageTags() {
     return this.showLanguageTags;

@@ -2,10 +2,10 @@ import { describe, it, beforeAll, afterAll, beforeEach } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
-import { setResultXml, xexpect as expect, count, printResultXml } from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect, count } from "../other/xmlUnitTestUtils";
 import temp from "temp";
 import { FieldDefinition } from "../model/field/FieldDefinition";
-import { Field, FieldType } from "../model/field/Field";
+import { Field } from "../model/field/Field";
 
 let project: Project;
 let session: Session;

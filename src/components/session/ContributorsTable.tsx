@@ -6,8 +6,7 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import RoleChooser from "../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.css";
-import { i18n as appI18n } from "../../other/localization";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { SearchContext, useHasSearchMatch, useSearchContext } from "../SearchContext";
 import { highlightMatches } from "../highlighting";
 import { css } from "@emotion/react";
@@ -51,9 +50,6 @@ export interface IProps {
   file: File;
   authorityLists: AuthorityLists;
   selectContribution?: Contribution;
-}
-interface IState {
-  unused: number;
 }
 
 class ContributorsTable extends React.Component<IProps> {

@@ -27,7 +27,7 @@ import Tooltip from "react-tooltip-lite";
 import { IntegratedSelection, SelectionState } from "@devexpress/dx-react-grid";
 const kCharsBeforeWeHaveToShrink = 14;
 
-const styles = (theme: Theme) => ({
+const styles = (_theme: Theme) => ({
   tableCell: {
     borderRight: `1px solid rgba(224,224,224,1)`,
     "&:last-child": {
@@ -160,9 +160,11 @@ export const MatrixGrid: React.FunctionComponent<{
               </div>
               <div
                 css={css`
-                  ${columnInfo.incomingLabel.length > kCharsBeforeWeHaveToShrink
-                    ? "font-size:9px"
-                    : ""};
+                  ${
+                    columnInfo.incomingLabel.length > kCharsBeforeWeHaveToShrink
+                      ? "font-size:9px"
+                      : ""
+                  };
                 `}
                 title={columnInfo.incomingLabel}
               >
@@ -380,7 +382,7 @@ function getCellComponent(cell?: IMappedCell) {
             css={css`
               ${defaultStyling}
               //text-decoration: line-through red;
-              color:red;
+              color: red;
               border: solid red 1px;
               text-align: center;
               display: flex;

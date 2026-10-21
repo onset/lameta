@@ -7,7 +7,7 @@ import {
   createSessionId,
   createPersonId,
   createUnresolvedContributorId,
-  createFileId
+  createFileId,
 } from "../RoCrateUtils";
 
 describe("RoCrateUtils - Vocabulary Handling", () => {
@@ -19,14 +19,14 @@ describe("RoCrateUtils - Vocabulary Handling", () => {
       "unspecified",
       "",
       "null",
-      "undefined"
+      "undefined",
     ];
 
     for (const term of unknownTerms) {
       const result = getVocabularyMapping(
         term,
         "genres.json", // This file might not exist but that's OK for this test
-        "Test Project"
+        "Test Project",
       );
 
       expect(result.id).toBe("tag:lameta/unknown");
@@ -40,7 +40,7 @@ describe("RoCrateUtils - Vocabulary Handling", () => {
     const result = getVocabularyMapping(
       "some_nonexistent_custom_genre",
       "genres.json", // This file might not exist but that's OK for this test
-      "Test Project"
+      "Test Project",
     );
 
     // Should not be the simplified unknown ID
@@ -55,7 +55,7 @@ describe("RoCrateUtils - Vocabulary Handling", () => {
       id: "tag:lameta/unknown",
       term: "tag:lameta/unknown",
       originalTerm: "<Unknown>",
-      definition: null
+      definition: null,
     };
 
     const termDefinition = createTermDefinition(mapping);
@@ -72,14 +72,12 @@ describe("RoCrateUtils - Vocabulary Handling", () => {
       id: "tag:lameta,TestProject:genre/CustomGenre",
       term: "tag:lameta,TestProject:genre/CustomGenre",
       originalTerm: "CustomGenre",
-      definition: null
+      definition: null,
     };
 
     const termDefinition = createTermDefinition(mapping);
 
-    expect(termDefinition["@id"]).toBe(
-      "tag:lameta,TestProject:genre/CustomGenre"
-    );
+    expect(termDefinition["@id"]).toBe("tag:lameta,TestProject:genre/CustomGenre");
     expect(termDefinition.name).toBe("CustomGenre"); // Should preserve original
     expect(termDefinition.description).toBe("Custom term: CustomGenre");
   });
@@ -93,9 +91,7 @@ describe("RoCrateUtils - IRI Sanitization", () => {
   });
 
   it("should encode parentheses", () => {
-    expect(sanitizeForIri("BAKALA Michel (@Mfouati)")).toBe(
-      "BAKALA%20Michel%20%28@Mfouati%29"
-    );
+    expect(sanitizeForIri("BAKALA Michel (@Mfouati)")).toBe("BAKALA%20Michel%20%28@Mfouati%29");
     // Exclamation marks are allowed in IRIs
     expect(sanitizeForIri("File with!")).toBe("File%20with!");
   });
@@ -242,14 +238,12 @@ describe("RoCrateUtils - ID Generation", () => {
     it("should create fragment ID with prefix and sanitized value", () => {
       expect(createFragmentId("test", "Value")).toBe("#test-Value");
       // Spaces become %20
-      expect(createFragmentId("session", "My Session")).toBe(
-        "#session-My%20Session"
-      );
+      expect(createFragmentId("session", "My Session")).toBe("#session-My%20Session");
     });
 
     it("should encode parentheses", () => {
       expect(createFragmentId("contributor", "John (Smith)")).toBe(
-        "#contributor-John%20%28Smith%29"
+        "#contributor-John%20%28Smith%29",
       );
     });
 
@@ -259,9 +253,7 @@ describe("RoCrateUtils - ID Generation", () => {
     });
 
     it("should handle empty values by using prefix as fallback", () => {
-      expect(createFragmentId("contributor", "")).toBe(
-        "#contributor-contributor"
-      );
+      expect(createFragmentId("contributor", "")).toBe("#contributor-contributor");
       expect(createFragmentId("test", "   ")).toBe("#test-test");
     });
 
@@ -272,14 +264,12 @@ describe("RoCrateUtils - ID Generation", () => {
 
   describe("createSessionId", () => {
     it("should create session fragment ID from filePrefix", () => {
-      expect(createSessionId({ filePrefix: "Session001" })).toBe(
-        "#session-Session001"
-      );
+      expect(createSessionId({ filePrefix: "Session001" })).toBe("#session-Session001");
     });
 
     it("should handle sessions with special characters", () => {
       expect(createSessionId({ filePrefix: "My Session (2024)" })).toBe(
-        "#session-My%20Session%20%282024%29"
+        "#session-My%20Session%20%282024%29",
       );
     });
 
@@ -296,15 +286,11 @@ describe("RoCrateUtils - ID Generation", () => {
     });
 
     it("should convert spaces to percent-encoding", () => {
-      expect(createPersonId({ filePrefix: "John Smith" })).toBe(
-        "#John%20Smith"
-      );
+      expect(createPersonId({ filePrefix: "John Smith" })).toBe("#John%20Smith");
     });
 
     it("should encode parentheses", () => {
-      expect(createPersonId({ filePrefix: "John (Smith)" })).toBe(
-        "#John%20%28Smith%29"
-      );
+      expect(createPersonId({ filePrefix: "John (Smith)" })).toBe("#John%20%28Smith%29");
     });
 
     it("should use 'person' as default for missing filePrefix", () => {
@@ -321,9 +307,7 @@ describe("RoCrateUtils - ID Generation", () => {
     });
 
     it("should encode parentheses", () => {
-      expect(createUnresolvedContributorId("John (Consultant)")).toBe(
-        "#John%20%28Consultant%29"
-      );
+      expect(createUnresolvedContributorId("John (Consultant)")).toBe("#John%20%28Consultant%29");
     });
 
     it("should preserve non-Latin characters", () => {
@@ -340,42 +324,36 @@ describe("RoCrateUtils - ID Generation", () => {
     it("should create session file path for session folders", () => {
       const sessionFolder = {
         filePrefix: "Session001",
-        getAllContributionsToAllFiles: () => []
+        getAllContributionsToAllFiles: () => [],
       };
-      expect(createFileId(sessionFolder, "audio.wav")).toBe(
-        "Sessions/Session001/audio.wav"
-      );
+      expect(createFileId(sessionFolder, "audio.wav")).toBe("Sessions/Session001/audio.wav");
     });
 
     it("should create person file path for person folders", () => {
       const personFolder = {
         filePrefix: "John_Smith",
         knownFields: [],
-        files: []
+        files: [],
       };
-      expect(createFileId(personFolder, "photo.jpg")).toBe(
-        "People/John_Smith/photo.jpg"
-      );
+      expect(createFileId(personFolder, "photo.jpg")).toBe("People/John_Smith/photo.jpg");
     });
 
     it("should create root-relative path for project folders", () => {
       const projectFolder = {
         filePrefix: "MyProject",
-        sessions: []
+        sessions: [],
       };
-      expect(createFileId(projectFolder, "project.sprj")).toBe(
-        "project.sprj"
-      );
+      expect(createFileId(projectFolder, "project.sprj")).toBe("project.sprj");
     });
 
     it("should sanitize special characters in file names", () => {
       const sessionFolder = {
         filePrefix: "Session001",
-        getAllContributionsToAllFiles: () => []
+        getAllContributionsToAllFiles: () => [],
       };
       // Spaces become %20
       expect(createFileId(sessionFolder, "file with spaces.wav")).toBe(
-        "Sessions/Session001/file%20with%20spaces.wav"
+        "Sessions/Session001/file%20with%20spaces.wav",
       );
     });
   });

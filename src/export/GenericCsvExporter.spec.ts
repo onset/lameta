@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
+import { describe, it, beforeAll, expect } from "vite-plus/test";
 import { Project } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as temp from "temp";
@@ -20,15 +20,13 @@ let sessionsCsv: string;
 let sessionMatrix: any;
 let projectMatrix: any;
 
-const kEol: string = require("os").EOL;
-
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   peopleCsv = makeCsvForPeople(project);
   //  fs.writeFileSync("d:/temp/peoplecsv.csv", peopleCsv);
   peopleMatrix = parseSync(peopleCsv, { relax_column_count: false });
 
-  sessionsCsv = makeCsvForSessions(project, (f) => true);
+  sessionsCsv = makeCsvForSessions(project, () => true);
   sessionMatrix = parseSync(sessionsCsv, { relax_column_count: false });
   //fs.writeFileSync("d:/temp/sessionsCsv.csv", sessionsCsv);
   const projectCsv = makeCsvForProject(project);

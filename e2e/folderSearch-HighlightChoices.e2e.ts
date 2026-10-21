@@ -9,10 +9,7 @@ let project: E2eProject;
 test.describe("Folder Search Choice Field Highlighting", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    project = await launchWithProject(
-      lameta,
-      "FolderSearchChoiceHighlight/тест"
-    );
+    project = await launchWithProject(lameta, "FolderSearchChoiceHighlight/тест");
     page = lameta.page;
   });
   test.afterAll(async () => {
@@ -49,9 +46,7 @@ test.describe("Folder Search Choice Field Highlighting", () => {
     await searchInput.press("Enter");
     await page.waitForTimeout(250);
 
-    await expect(
-      page.getByTestId("inline-highlight").filter({ hasText: /Quirky/i })
-    ).toBeVisible();
+    await expect(page.getByTestId("inline-highlight").filter({ hasText: /Quirky/i })).toBeVisible();
   });
 
   test("access chooser shows selected value and is searchable by code", async () => {
@@ -63,7 +58,7 @@ test.describe("Folder Search Choice Field Highlighting", () => {
 
     // Wait for the app to reload after configuration change
     await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     await ensureSession();
@@ -76,14 +71,10 @@ test.describe("Folder Search Choice Field Highlighting", () => {
     await accessInput.press("Enter");
 
     // Verify the selected value is displayed in the chooser.
-    await expect(page.locator("#access-chooser")).toContainText(
-      /available upon request only/i
-    );
+    await expect(page.locator("#access-chooser")).toContainText(/available upon request only/i);
 
     // The session should be visible in the list
-    await expect(
-      page.getByRole("gridcell", { name: "New_Session", exact: true })
-    ).toBeVisible();
+    await expect(page.getByRole("gridcell", { name: "New_Session", exact: true })).toBeVisible();
 
     // And the access field should still show its value
     await expect(page.locator("#access-chooser")).toBeVisible();

@@ -1,14 +1,14 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
-import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Folder } from "../model/Folder/Folder";
 import "./session/SessionForm.css";
 import "./Form.css";
 import ReactTable from "react-table-6";
 import { TextFieldEdit } from "./TextFieldEdit";
 import ClosedChoiceEdit from "./ClosedChoiceEdit";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useEffect, useState } from "react";
 
 export interface IProps {
@@ -36,7 +36,7 @@ const AdditionalFieldsTable: React.FC<IProps> = observer(({ folder }) => {
       Cell: (cellInfo: any) => {
         const field = cellInfo.original as Field;
         return field.labelInUILanguage;
-      }
+      },
     },
     {
       id: "value",
@@ -63,8 +63,8 @@ const AdditionalFieldsTable: React.FC<IProps> = observer(({ folder }) => {
             />
           );
         }
-      }
-    }
+      },
+    },
   ];
 
   return (

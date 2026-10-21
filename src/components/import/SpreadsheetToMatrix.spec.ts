@@ -3,14 +3,12 @@ import * as temp from "temp";
 import { makeMappedMatrix, makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
 import { availableSpreadsheetMappings } from "./MatrixImporter";
 import { MappedMatrix, CellImportStatus, RowImportStatus } from "./MappedMatrix";
-import * as Path from "path";
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
+import { describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 
 let project: Project;
 const projectDir = temp.mkdirSync("lameta spreadsheet importer test");
 const lingMetaX_ImportMap = availableSpreadsheetMappings.LingMetaXMap; //require("./LingMetaXMap.json5");
 const lingMetaX_Xlsx_SessionsPath = "sample data/LingMetaX_Sessions.xlsx";
-const lingMetaX_Xlsx_PeoplePath = "sample data/LingMetaX_People.xlsx";
 const lingMetaX_Csv_SessionsPath = "sample data/LingMetaX_Sessions.csv";
 
 // *********** IMPORTANT **************
@@ -23,7 +21,6 @@ describe("SpreadsheetToMatrix", () => {
   beforeEach(() => {
     project.sessions.items.splice(0, 1000);
     project.persons.items.splice(0, 1000);
-    Path.resolve;
   });
   it("Can read in people xlsx with no people", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
@@ -43,6 +40,10 @@ describe("SpreadsheetToMatrix", () => {
     );
     personSmokeTest(matrix);
     const customColumn = matrix.columnInfos.find((info) => info.incomingLabel.startsWith("custom"));
+    // The label stays as the spreadsheet has it; makeCustomField() in MatrixImporter sanitizes it.
+    expect(customColumn?.incomingLabel).toBe("custom column with spaces");
+    expect(customColumn?.lametaProperty).toBe("custom");
+    expect(customColumn?.mappingStatus).toBe("Custom");
   });
 
   it("Can read in session xslx", () => {
@@ -92,7 +93,6 @@ describe("SpreadsheetToMatrix", () => {
     ];
     const m = makeMappedMatrix(inputRows, lingMetaX_ImportMap, project, "session");
     expect(m.rows.length).toBe(1);
-    m.rows[0].cells; // ?
 
     // Joe is a speaker in role 1
     expect(m.rows[0].cells[0].column.incomingLabel).toBe("participant_1_full_name");
@@ -173,7 +173,6 @@ it("Can map in filename and title from some data using LingMetaXMap column label
   ];
   const m = makeMappedMatrix(inputRows, lingMetaX_ImportMap, project, "session");
   expect(m.rows.length).toBe(1);
-  m.rows[0].cells; // ?
   expect(m.rows[0].cells[0].column.lametaProperty).toBe("id");
   expect(m.rows[0].cells[1].column.lametaProperty).toBe("title");
   expect(m.rows[0].cells[0].value).toBe("forest recording");

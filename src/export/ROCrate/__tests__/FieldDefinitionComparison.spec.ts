@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vite-plus/test";
 import {
   fieldDefinitionsOfCurrentConfig,
-  prepareGlobalFieldDefinitionCatalog
+  prepareGlobalFieldDefinitionCatalog,
 } from "../../../model/field/ConfiguredFieldDefinitions";
 
 describe("Field Definition Approach Comparison", () => {
@@ -14,7 +14,7 @@ describe("Field Definition Approach Comparison", () => {
     const commonFields = fieldDefinitionsOfCurrentConfig.common;
 
     console.log(
-      `Loaded ${sessionFields.length} session fields and ${commonFields.length} common fields`
+      `Loaded ${sessionFields.length} session fields and ${commonFields.length} common fields`,
     );
 
     // Verify we have more than just empty arrays
@@ -34,16 +34,12 @@ describe("Field Definition Approach Comparison", () => {
     prepareGlobalFieldDefinitionCatalog("lameta");
 
     // Test that genre field has proper RO-Crate mapping
-    const genreField = fieldDefinitionsOfCurrentConfig.session.find(
-      (f) => f.key === "genre"
-    );
+    const genreField = fieldDefinitionsOfCurrentConfig.session.find((f) => f.key === "genre");
     expect(genreField?.rocrate).toBeDefined();
     expect(genreField?.rocrate?.key).toBe("ldac:linguisticGenre");
 
     // Test that language field has proper RO-Crate template
-    const languageField = fieldDefinitionsOfCurrentConfig.common.find(
-      (f) => f.key === "language"
-    );
+    const languageField = fieldDefinitionsOfCurrentConfig.common.find((f) => f.key === "language");
     expect(languageField?.rocrate).toBeDefined();
     expect(languageField?.rocrate?.template?.["@type"]).toBe("Language");
   });

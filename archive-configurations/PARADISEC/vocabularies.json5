@@ -4,13 +4,13 @@
       id: "O",
       label: "Open",
       description: "Open (subject to PARADISEC access conditions)",
-      ldacAccessCategory: "ldac:OpenAccess"
+      ldacAccessCategory: "ldac:OpenAccess",
     },
     {
       id: "C",
       label: "Closed",
       description: "Closed (subject to certain specified conditions)",
-      ldacAccessCategory: "ldac:AuthorizedAccess"
-    }
-  ]
+      ldacAccessCategory: "ldac:AuthorizedAccess",
+    },
+  ],
 }

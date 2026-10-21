@@ -38,11 +38,7 @@ async function validate(filePath: string) {
   const ldacValidator = new LdacValidator();
   const hierarchyErrors: string[] = [];
   const hierarchyWarnings: string[] = [];
-  ldacValidator.validateCrateHierarchy(
-    roCrate["@graph"],
-    hierarchyErrors,
-    hierarchyWarnings
-  );
+  ldacValidator.validateCrateHierarchy(roCrate["@graph"], hierarchyErrors, hierarchyWarnings);
 
   console.log(`Hierarchy ERRORS (${hierarchyErrors.length}):`);
   hierarchyErrors.forEach((e, i) => console.log(`  ${i + 1}. ${e}`));
@@ -58,11 +54,12 @@ async function validate(filePath: string) {
 
 // Main entry point
 if (process.argv.length < 3) {
-  console.log(
-    "Usage: pnpm exec tsx scripts/validate-rocrate.ts <path-to-ro-crate-metadata.json>"
-  );
+  console.log("Usage: pnpm exec tsx scripts/validate-rocrate.ts <path-to-ro-crate-metadata.json>");
   process.exit(1);
 }
 
 const filePath = path.resolve(process.argv[2]);
-validate(filePath);
+validate(filePath).catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

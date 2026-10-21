@@ -25,16 +25,14 @@ test.describe("Folder search persistence across tab switches", () => {
     // ensure search registered (data-last-search reflects current query)
     await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
       "data-last-search",
-      /Session/
+      /Session/,
     );
     // switch to Project tab
     await page.getByTestId("project-tab").click();
     // switch back to Sessions tab
     await page.getByTestId("sessions-tab").click();
     // search input should retain value and clear button visible
-    await expect(page.getByTestId("folder-search-input")).toHaveValue(
-      "Session"
-    );
+    await expect(page.getByTestId("folder-search-input")).toHaveValue("Session");
     await expect(page.getByTestId("folder-search-clear")).toBeVisible();
   });
 });

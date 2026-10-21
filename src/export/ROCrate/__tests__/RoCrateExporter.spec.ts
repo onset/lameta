@@ -1223,13 +1223,12 @@ describe("RoCrateExporter project document folders", () => {
       filePrefix: "Letter_from_Jan",
     };
 
-    const projectWithLetter = {
-      ...mockProject,
+    const projectWithLetter = Object.assign({}, mockProject, {
       otherDocsFolder: {
         files: [letterFile],
         filePrefix: "OtherDocuments",
       },
-    } as any;
+    }) as any;
 
     const result = (await getRoCrate(projectWithLetter, projectWithLetter)) as any;
 
@@ -1273,13 +1272,12 @@ describe("RoCrateExporter project document folders", () => {
       filePrefix: "Project_Overview",
     };
 
-    const projectWithDescription = {
-      ...mockProject,
+    const projectWithDescription = Object.assign({}, mockProject, {
       descriptionFolder: {
         files: [descriptionFile],
         filePrefix: "DescriptionDocuments",
       },
-    } as any;
+    }) as any;
 
     const result = (await getRoCrate(projectWithDescription, projectWithDescription)) as any;
 
@@ -1313,11 +1311,10 @@ describe("RoCrateExporter project document folders", () => {
 
   it("should handle empty document folders gracefully", async () => {
     // Create project with empty folders
-    const emptyProject = {
-      ...mockProject,
+    const emptyProject = Object.assign({}, mockProject, {
       descriptionFolder: { files: [] },
       otherDocsFolder: { files: [] },
-    } as any;
+    }) as any;
 
     const result = (await getRoCrate(emptyProject, emptyProject)) as any;
 
@@ -1334,11 +1331,10 @@ describe("RoCrateExporter project document folders", () => {
 
   it("should handle missing document folders gracefully", async () => {
     // Create project with null folders
-    const projectWithoutFolders = {
-      ...mockProject,
+    const projectWithoutFolders = Object.assign({}, mockProject, {
       descriptionFolder: null,
       otherDocsFolder: null,
-    } as any;
+    }) as any;
 
     const result = (await getRoCrate(projectWithoutFolders, projectWithoutFolders)) as any;
 

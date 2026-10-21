@@ -26,7 +26,7 @@ interface LdacClassRule {
 const namespaceAliasHints: Array<{ marker: string; prefix: string }> = [
   { marker: "w3id.org/ldac/terms", prefix: "ldac" },
   { marker: "purl.org/dc/terms", prefix: "dct" },
-  { marker: "pcdm.org/models", prefix: "pcdm" }
+  { marker: "pcdm.org/models", prefix: "pcdm" },
 ];
 
 const typeAliasCache = new Map<string, string[]>();
@@ -115,11 +115,11 @@ function extractPrefixedLocalName(identifier: string): string | undefined {
 }
 
 const subjectLanguagePropertyAliases = collectPropertyAliases(
-  "https://w3id.org/ldac/terms#subjectLanguage"
+  "https://w3id.org/ldac/terms#subjectLanguage",
 );
 
 const ldacClassIndex = buildLdacClassIndex(
-  (ldacProfile as { classes?: Record<string, LdacProfileClass> }).classes ?? {}
+  (ldacProfile as { classes?: Record<string, LdacProfileClass> }).classes ?? {},
 );
 
 const enforcedLdacClasses = new Set<string>([
@@ -131,14 +131,14 @@ const enforcedLdacClasses = new Set<string>([
   "Organization",
   "Place",
   "Language",
-  "ldac:CollectionEvent"
+  "ldac:CollectionEvent",
 ]);
 
 // Known LDAC types that are valid alternatives to Schema.org types
 export const KNOWN_LDAC_TYPES = new Set([
   "ldac:DataReuseLicense",
   "ldac:CollectionProtocol",
-  "ldac:CollectionEvent"
+  "ldac:CollectionEvent",
 ]);
 
 /**
@@ -148,11 +148,7 @@ export class LdacValidator {
   /**
    * Validate an entity against LDAC profile required properties
    */
-  validateEntityAgainstLdacProfile(
-    entity: any,
-    entityName: string,
-    errors: string[]
-  ): void {
+  validateEntityAgainstLdacProfile(entity: any, entityName: string, errors: string[]): void {
     const types = this.normalizeTypeList(entity?.["@type"]);
     const evaluatedProperties = new Set<string>();
 
@@ -162,10 +158,7 @@ export class LdacValidator {
         return;
       }
 
-      const matchedInputs = new Map<
-        string,
-        { rule: LdacRequiredInput; value: any }
-      >();
+      const matchedInputs = new Map<string, { rule: LdacRequiredInput; value: any }>();
       Object.entries(entity).forEach(([key, value]) => {
         const rule = classRule.aliasMap[key];
         if (!rule) {
@@ -189,7 +182,7 @@ export class LdacValidator {
         const match = matchedInputs.get(dedupeKey);
         if (!match || this.isEmptyValue(match.value)) {
           errors.push(
-            `${entityName} (${classRule.name}) is missing required ${input.primaryAlias} property`
+            `${entityName} (${classRule.name}) is missing required ${input.primaryAlias} property`,
           );
           evaluatedProperties.add(dedupeKey);
           return;
@@ -197,16 +190,14 @@ export class LdacValidator {
 
         if (input.multiple === false && Array.isArray(match.value)) {
           errors.push(
-            `${entityName} (${classRule.name}) expects ${input.primaryAlias} to be a single value`
+            `${entityName} (${classRule.name}) expects ${input.primaryAlias} to be a single value`,
           );
           evaluatedProperties.add(dedupeKey);
           return;
         }
 
         if (Array.isArray(match.value) && match.value.length === 0) {
-          errors.push(
-            `${entityName} (${classRule.name}) has an empty ${input.primaryAlias} array`
-          );
+          errors.push(`${entityName} (${classRule.name}) has an empty ${input.primaryAlias} array`);
           evaluatedProperties.add(dedupeKey);
           return;
         }
@@ -223,17 +214,12 @@ export class LdacValidator {
     entity: any,
     entityName: string,
     errors: string[],
-    warnings: string[]
+    warnings: string[],
   ): void {
-    const subjectLanguages = this.getPropertyByAliases(
-      entity,
-      subjectLanguagePropertyAliases
-    );
+    const subjectLanguages = this.getPropertyByAliases(entity, subjectLanguagePropertyAliases);
 
     if (!subjectLanguages) {
-      errors.push(
-        `${entityName} is missing required ldac:subjectLanguage property`
-      );
+      errors.push(`${entityName} is missing required ldac:subjectLanguage property`);
       return;
     }
 
@@ -250,15 +236,10 @@ export class LdacValidator {
     // Validate language references
     subjectLanguages.forEach((langRef: any, index: number) => {
       if (!langRef || typeof langRef !== "object" || !langRef["@id"]) {
-        errors.push(
-          `${entityName} ldac:subjectLanguage[${index}] must have an @id property`
-        );
-      } else if (
-        !langRef["@id"].startsWith("#language_") &&
-        !langRef["@id"].startsWith("http")
-      ) {
+        errors.push(`${entityName} ldac:subjectLanguage[${index}] must have an @id property`);
+      } else if (!langRef["@id"].startsWith("#language_") && !langRef["@id"].startsWith("http")) {
         warnings.push(
-          `${entityName} ldac:subjectLanguage[${index}] @id "${langRef["@id"]}" does not follow #language_* pattern`
+          `${entityName} ldac:subjectLanguage[${index}] @id "${langRef["@id"]}" does not follow #language_* pattern`,
         );
       }
     });
@@ -270,15 +251,13 @@ export class LdacValidator {
   validateFileLicense(file: any, errors: string[], warnings: string[]): void {
     if (!file.license) {
       warnings.push(
-        `File ${file["@id"]} does not declare a license; add one if required by the archive or LDAC profile`
+        `File ${file["@id"]} does not declare a license; add one if required by the archive or LDAC profile`,
       );
       return;
     }
 
     if (typeof file.license !== "object" || !file.license["@id"]) {
-      errors.push(
-        `File ${file["@id"]} license must be an object with @id property`
-      );
+      errors.push(`File ${file["@id"]} license must be an object with @id property`);
     }
   }
 
@@ -288,11 +267,7 @@ export class LdacValidator {
    * - RepositoryObjects contain Files
    * - Proper bidirectional relationships (hasPart/isPartOf, pcdm:hasMember/pcdm:memberOf)
    */
-  validateCrateHierarchy(
-    entities: any[],
-    errors: string[],
-    warnings: string[]
-  ): void {
+  validateCrateHierarchy(entities: any[], errors: string[], warnings: string[]): void {
     const entityById = new Map<string, any>();
     const collections: any[] = [];
     const objects: any[] = [];
@@ -320,11 +295,11 @@ export class LdacValidator {
       const memberOf = this.getPropertyByAliases(obj, [
         "pcdm:memberOf",
         "memberOf",
-        "http://pcdm.org/models#memberOf"
+        "http://pcdm.org/models#memberOf",
       ]);
       if (!memberOf) {
         errors.push(
-          `RepositoryObject "${obj["@id"]}" must have pcdm:memberOf referencing a RepositoryCollection`
+          `RepositoryObject "${obj["@id"]}" must have pcdm:memberOf referencing a RepositoryCollection`,
         );
       } else {
         // Validate the reference points to an actual collection
@@ -336,7 +311,7 @@ export class LdacValidator {
             const targetTypes = this.normalizeTypeList(target["@type"]);
             if (!targetTypes.includes("RepositoryCollection")) {
               errors.push(
-                `RepositoryObject "${obj["@id"]}" pcdm:memberOf references "${refId}" which is not a RepositoryCollection`
+                `RepositoryObject "${obj["@id"]}" pcdm:memberOf references "${refId}" which is not a RepositoryCollection`,
               );
             }
           }
@@ -349,23 +324,17 @@ export class LdacValidator {
       // - RepositoryObject is the conceptual entity (the session/event)
       // - Dataset is the physical container (the directory with files)
       // - They are linked via subjectOf/about relationships
-      const hasPart = this.getPropertyByAliases(obj, [
-        "hasPart",
-        "http://schema.org/hasPart"
-      ]);
-      const hasDirectFiles =
-        hasPart && (!Array.isArray(hasPart) || hasPart.length > 0);
+      const hasPart = this.getPropertyByAliases(obj, ["hasPart", "http://schema.org/hasPart"]);
+      const hasDirectFiles = hasPart && (!Array.isArray(hasPart) || hasPart.length > 0);
 
       // Check for files via subjectOf -> Dataset -> hasPart
       let hasFilesViaDataset = false;
       const subjectOf = this.getPropertyByAliases(obj, [
         "subjectOf",
-        "http://schema.org/subjectOf"
+        "http://schema.org/subjectOf",
       ]);
       if (subjectOf) {
-        const subjectOfRefs = Array.isArray(subjectOf)
-          ? subjectOf
-          : [subjectOf];
+        const subjectOfRefs = Array.isArray(subjectOf) ? subjectOf : [subjectOf];
         for (const ref of subjectOfRefs) {
           const refId = typeof ref === "object" ? ref["@id"] : ref;
           const dataset = entityById.get(refId);
@@ -374,12 +343,9 @@ export class LdacValidator {
             if (datasetTypes.includes("Dataset")) {
               const datasetHasPart = this.getPropertyByAliases(dataset, [
                 "hasPart",
-                "http://schema.org/hasPart"
+                "http://schema.org/hasPart",
               ]);
-              if (
-                datasetHasPart &&
-                (!Array.isArray(datasetHasPart) || datasetHasPart.length > 0)
-              ) {
+              if (datasetHasPart && (!Array.isArray(datasetHasPart) || datasetHasPart.length > 0)) {
                 hasFilesViaDataset = true;
                 break;
               }
@@ -390,7 +356,7 @@ export class LdacValidator {
 
       if (!hasDirectFiles && !hasFilesViaDataset) {
         warnings.push(
-          `RepositoryObject "${obj["@id"]}" (Session) should have files linked via hasPart or via subjectOf->Dataset->hasPart`
+          `RepositoryObject "${obj["@id"]}" (Session) should have files linked via hasPart or via subjectOf->Dataset->hasPart`,
         );
       }
     });
@@ -400,13 +366,10 @@ export class LdacValidator {
     // - Files belong to a Dataset (physical containment)
     // - The Dataset is "about" a RepositoryObject (semantic relationship)
     files.forEach((file) => {
-      const isPartOf = this.getPropertyByAliases(file, [
-        "isPartOf",
-        "http://schema.org/isPartOf"
-      ]);
+      const isPartOf = this.getPropertyByAliases(file, ["isPartOf", "http://schema.org/isPartOf"]);
       if (!isPartOf) {
         errors.push(
-          `File "${file["@id"]}" must have isPartOf referencing a RepositoryObject or Dataset`
+          `File "${file["@id"]}" must have isPartOf referencing a RepositoryObject or Dataset`,
         );
       } else {
         // Validate the reference points to an actual object or a Dataset about an object
@@ -421,34 +384,25 @@ export class LdacValidator {
 
             if (!isRepositoryObject && !isDataset) {
               warnings.push(
-                `File "${file["@id"]}" isPartOf references "${refId}" which is not a RepositoryObject or Dataset`
+                `File "${file["@id"]}" isPartOf references "${refId}" which is not a RepositoryObject or Dataset`,
               );
             } else if (isDataset && !isRepositoryObject) {
               // It's a Dataset - check if it has an "about" link to a RepositoryObject
               // This is valid in the dual hierarchy model
-              const about = this.getPropertyByAliases(target, [
-                "about",
-                "http://schema.org/about"
-              ]);
+              const about = this.getPropertyByAliases(target, ["about", "http://schema.org/about"]);
               if (about) {
-                const aboutId =
-                  typeof about === "object" ? about["@id"] : about;
+                const aboutId = typeof about === "object" ? about["@id"] : about;
                 const aboutEntity = entityById.get(aboutId);
                 if (aboutEntity) {
-                  const aboutTypes = this.normalizeTypeList(
-                    aboutEntity["@type"]
-                  );
+                  const aboutTypes = this.normalizeTypeList(aboutEntity["@type"]);
                   if (!aboutTypes.includes("RepositoryObject")) {
                     // Dataset exists but isn't about a RepositoryObject - this is still
                     // valid for project-level files (DescriptionDocuments, OtherDocuments, etc.)
                     // Only warn if it seems like it should be session-related
                     const fileId = file["@id"];
-                    if (
-                      typeof fileId === "string" &&
-                      fileId.startsWith("Sessions/")
-                    ) {
+                    if (typeof fileId === "string" && fileId.startsWith("Sessions/")) {
                       warnings.push(
-                        `File "${file["@id"]}" isPartOf references Dataset "${refId}" which is not about a RepositoryObject`
+                        `File "${file["@id"]}" isPartOf references Dataset "${refId}" which is not about a RepositoryObject`,
                       );
                     }
                   }
@@ -466,24 +420,23 @@ export class LdacValidator {
       const hasMember = this.getPropertyByAliases(collection, [
         "pcdm:hasMember",
         "hasMember",
-        "http://pcdm.org/models#hasMember"
+        "http://pcdm.org/models#hasMember",
       ]);
       if (hasMember) {
         const members = Array.isArray(hasMember) ? hasMember : [hasMember];
         members.forEach((memberRef) => {
-          const memberId =
-            typeof memberRef === "object" ? memberRef["@id"] : memberRef;
+          const memberId = typeof memberRef === "object" ? memberRef["@id"] : memberRef;
           const member = entityById.get(memberId);
           if (member) {
             const memberOf = this.getPropertyByAliases(member, [
               "pcdm:memberOf",
               "memberOf",
-              "http://pcdm.org/models#memberOf"
+              "http://pcdm.org/models#memberOf",
             ]);
             const memberOfIds = this.extractIds(memberOf);
             if (!memberOfIds.includes(collection["@id"])) {
               warnings.push(
-                `Bidirectional inconsistency: Collection "${collection["@id"]}" has pcdm:hasMember "${memberId}" but member lacks pcdm:memberOf back-reference`
+                `Bidirectional inconsistency: Collection "${collection["@id"]}" has pcdm:hasMember "${memberId}" but member lacks pcdm:memberOf back-reference`,
               );
             }
           }
@@ -493,10 +446,7 @@ export class LdacValidator {
 
     // Validate bidirectional consistency: hasPart <-> isPartOf
     objects.forEach((obj) => {
-      const hasPart = this.getPropertyByAliases(obj, [
-        "hasPart",
-        "http://schema.org/hasPart"
-      ]);
+      const hasPart = this.getPropertyByAliases(obj, ["hasPart", "http://schema.org/hasPart"]);
       if (hasPart) {
         const parts = Array.isArray(hasPart) ? hasPart : [hasPart];
         parts.forEach((partRef) => {
@@ -505,12 +455,12 @@ export class LdacValidator {
           if (part) {
             const isPartOf = this.getPropertyByAliases(part, [
               "isPartOf",
-              "http://schema.org/isPartOf"
+              "http://schema.org/isPartOf",
             ]);
             const isPartOfIds = this.extractIds(isPartOf);
             if (!isPartOfIds.includes(obj["@id"])) {
               warnings.push(
-                `Bidirectional inconsistency: RepositoryObject "${obj["@id"]}" has hasPart "${partId}" but part lacks isPartOf back-reference`
+                `Bidirectional inconsistency: RepositoryObject "${obj["@id"]}" has hasPart "${partId}" but part lacks isPartOf back-reference`,
               );
             }
           }
@@ -561,7 +511,7 @@ export class LdacValidator {
 }
 
 function buildLdacClassIndex(
-  classes: Record<string, LdacProfileClass>
+  classes: Record<string, LdacProfileClass>,
 ): Record<string, LdacClassRule> {
   const index: Record<string, LdacClassRule> = {};
 
@@ -574,7 +524,7 @@ function buildLdacClassIndex(
           id: input.id,
           multiple: input.multiple,
           aliases,
-          primaryAlias: aliases[1] ?? aliases[0] ?? input.id
+          primaryAlias: aliases[1] ?? aliases[0] ?? input.id,
         };
         return rule;
       });
@@ -589,7 +539,7 @@ function buildLdacClassIndex(
     const rule: LdacClassRule = {
       name: className,
       inputs,
-      aliasMap
+      aliasMap,
     };
 
     collectTypeAliases(className).forEach((alias) => {
@@ -609,7 +559,7 @@ function buildLdacClassIndex(
 export function ensureSubjectLanguage(
   entity: any,
   rocrateLanguages: RoCrateLanguages,
-  defaultLanguageCodes: string[] = ["und"]
+  defaultLanguageCodes: string[] = ["und"],
 ): void {
   if (!entity["ldac:subjectLanguage"]) {
     entity["ldac:subjectLanguage"] = [];

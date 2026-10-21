@@ -335,7 +335,7 @@ class MacCloudFileProvider implements CloudFileProvider {
       this.inFlight.delete(key);
     }
     this.queuedReads.clear();
-    for (const [key, child] of [...this.readers]) {
+    for (const [key, child] of Array.from(this.readers)) {
       this.readers.delete(key);
       this.inFlight.delete(key);
       try {

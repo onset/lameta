@@ -6,7 +6,7 @@ import {
   isCollectingWarnings,
   getCollectedWarnings,
   clearCollectedWarnings,
-  withWarningCollection
+  withWarningCollection,
 } from "./ExportWarningCollector";
 
 describe("ExportWarningCollector", () => {
@@ -115,7 +115,7 @@ describe("ExportWarningCollector", () => {
         withWarningCollection(async () => {
           collectExportWarning("warning before error");
           throw testError;
-        })
+        }),
       ).rejects.toThrow("test error");
 
       expect(isCollectingWarnings()).toBe(false);
@@ -131,9 +131,10 @@ describe("ExportWarningCollector", () => {
           throw testError;
         });
       } catch (e: unknown) {
-        expect(
-          (e as Error & { collectedWarnings?: string[] }).collectedWarnings
-        ).toEqual(["warning 1", "warning 2"]);
+        expect((e as Error & { collectedWarnings?: string[] }).collectedWarnings).toEqual([
+          "warning 1",
+          "warning 2",
+        ]);
       }
     });
 

@@ -1,20 +1,15 @@
 import * as fs from "fs-extra";
-import * as Path from "node:path";
 import { app, shell, ipcMain } from "electron";
 import { XMLValidationResult } from "xmllint-wasm";
 
 import { validateImdiAsyncInternal } from "./validateImdi";
 import { mainWindow } from "./main";
 import { MainProcessImdiExport } from "./MainProcessImdiExport";
-import {
-  ExportSessionData,
-  ExportCorpusData,
-  FileCopyRequest
-} from "../export/ExportBundleTypes";
+import { ExportSessionData, ExportCorpusData } from "../export/ExportBundleTypes";
 
 if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
   throw new Error(
-    "MainProcessApiAccess should not be imported in unit tests. Mocking should have prevented this."
+    "MainProcessApiAccess should not be imported in unit tests. Mocking should have prevented this.",
   );
 }
 
@@ -29,7 +24,7 @@ export class MainProcessApi {
   public trashItem(path: string): Promise<boolean> {
     return shell.trashItem(path).then(
       () => !fs.existsSync(path), // returned true but let's double-check
-      () => false // reject
+      () => false, // reject
     );
   }
 
@@ -37,33 +32,27 @@ export class MainProcessApi {
   // It has a browser build, but I couldn't get it loaded in vite. Could try again later.
   public async validateImdiAsync(
     imdiContents: string,
-    imdiSchemaName?: string
+    imdiSchemaName?: string,
   ): Promise<XMLValidationResult> {
-    return await validateImdiAsyncInternal(
-      app.getAppPath(),
-      imdiContents,
-      imdiSchemaName
-    );
+    return await validateImdiAsyncInternal(app.getAppPath(), imdiContents, imdiSchemaName);
   }
 
   // On macOS, calling shell.showItemInFolder from a renderer can delay Finder until app quits.
   // So we need to do it in the Main Process
   public async revealInFolder(path: string) {
-    await shell.showItemInFolder(path);
+    shell.showItemInFolder(path);
   }
 
   // ============================================================================
   // IMDI Export file I/O methods - delegated to MainProcessImdiExport
   // ============================================================================
 
-  public async prepareImdiExportDirectory(
-    rootDirectory: string
-  ): Promise<void> {
+  public async prepareImdiExportDirectory(rootDirectory: string): Promise<void> {
     return this.imdiExportHandler.prepareImdiExportDirectory(rootDirectory);
   }
 
   public async writeImdiSessionData(
-    data: ExportSessionData
+    data: ExportSessionData,
   ): Promise<{ filesWritten: number; errors: string[] }> {
     return this.imdiExportHandler.writeImdiSessionData(data);
   }
@@ -72,9 +61,7 @@ export class MainProcessApi {
     return this.imdiExportHandler.writeImdiCorpusData(data);
   }
 
-  public async cleanupImdiExportDirectory(
-    rootDirectory: string
-  ): Promise<void> {
+  public async cleanupImdiExportDirectory(rootDirectory: string): Promise<void> {
     return this.imdiExportHandler.cleanupImdiExportDirectory(rootDirectory);
   }
 
@@ -106,51 +93,39 @@ ipcMain.handle(
   "MainProcessApi.validateImdiAsync",
   async (_event, imdiContents: string, imdiSchemaName?: string) => {
     return mainProcessInstance.validateImdiAsync(imdiContents, imdiSchemaName);
-  }
+  },
 );
 
 ipcMain.handle(
   "MainProcessApi.prepareImdiExportDirectory",
   async (_event, rootDirectory: string) => {
     return mainProcessInstance.prepareImdiExportDirectory(rootDirectory);
-  }
+  },
 );
 
-ipcMain.handle(
-  "MainProcessApi.writeImdiSessionData",
-  async (_event, data: ExportSessionData) => {
-    return mainProcessInstance.writeImdiSessionData(data);
-  }
-);
+ipcMain.handle("MainProcessApi.writeImdiSessionData", async (_event, data: ExportSessionData) => {
+  return mainProcessInstance.writeImdiSessionData(data);
+});
 
-ipcMain.handle(
-  "MainProcessApi.writeImdiCorpusData",
-  async (_event, data: ExportCorpusData) => {
-    return mainProcessInstance.writeImdiCorpusData(data);
-  }
-);
+ipcMain.handle("MainProcessApi.writeImdiCorpusData", async (_event, data: ExportCorpusData) => {
+  return mainProcessInstance.writeImdiCorpusData(data);
+});
 
 ipcMain.handle(
   "MainProcessApi.cleanupImdiExportDirectory",
   async (_event, rootDirectory: string) => {
     return mainProcessInstance.cleanupImdiExportDirectory(rootDirectory);
-  }
+  },
 );
 
-ipcMain.handle(
-  "MainProcessApi.cancelImdiExportCopyOperations",
-  async (_event) => {
-    return mainProcessInstance.cancelImdiExportCopyOperations();
-  }
-);
+ipcMain.handle("MainProcessApi.cancelImdiExportCopyOperations", async (_event) => {
+  return mainProcessInstance.cancelImdiExportCopyOperations();
+});
 
 ipcMain.handle("MainProcessApi.hasActiveImdiCopyOperations", async (_event) => {
   return mainProcessInstance.hasActiveImdiCopyOperations();
 });
 
-ipcMain.handle(
-  "MainProcessApi.revealInFolder",
-  async (_event, path: string) => {
-    return mainProcessInstance.revealInFolder(path);
-  }
-);
+ipcMain.handle("MainProcessApi.revealInFolder", async (_event, path: string) => {
+  return mainProcessInstance.revealInFolder(path);
+});

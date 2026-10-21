@@ -58,7 +58,9 @@ const log = Winston.createLogger({
             Winston.format.timestamp({
               format: "HH:mm:ss",
             }),
-            Winston.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`),
+            Winston.format.printf(
+              (info) => `${String(info.timestamp)} ${info.level}: ${String(info.message)}`,
+            ),
           ),
           handleExceptions: false, // "true" here kills react ErrorBoundary
         }),

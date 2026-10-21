@@ -7,7 +7,7 @@ import path from "node:path";
 export async function validateImdiAsyncInternal(
   appPath: string,
   fileContents: string,
-  imdiSchemaName?: string // Optional schema name, defaults to "IMDI_3.0.xsd"
+  imdiSchemaName?: string, // Optional schema name, defaults to "IMDI_3.0.xsd"
 ): Promise<XMLValidationResult> {
   const schemaFileName = imdiSchemaName || "IMDI_3.0.xsd";
   const imdiSchemaPath = path.join(appPath, `schemas/${schemaFileName}`);
@@ -30,36 +30,30 @@ export async function validateImdiAsyncInternal(
   if (fileContents.indexOf("OPEXMetadata") > -1) {
     const opexSchemaPath = path.join(appPath, "schemas/OPEX-Metadata.xsd");
     const opexSchemaContents = fs.readFileSync(opexSchemaPath, "utf8");
-    const opexResult = await validateAgainstOneSchema(
-      fileContents,
-      opexSchemaContents
-    );
+    const opexResult = await validateAgainstOneSchema(fileContents, opexSchemaContents);
 
     // combine the results
     result = {
       valid: result.valid && opexResult.valid,
       normalized: result.normalized + opexResult.normalized,
       rawOutput: result.rawOutput + opexResult.rawOutput,
-      errors: result.errors.concat(opexResult.errors)
+      errors: result.errors.concat(opexResult.errors),
     };
   }
 
   return result;
 }
 
-async function validateAgainstOneSchema(
-  xml: string,
-  schema: string
-): Promise<XMLValidationResult> {
+async function validateAgainstOneSchema(xml: string, schema: string): Promise<XMLValidationResult> {
   try {
     const validationResult = await validateXML({
       xml: [
         {
           fileName: "imdi",
-          contents: xml
-        }
+          contents: xml,
+        },
       ],
-      schema: [schema]
+      schema: [schema],
     });
     // console.log(
     //   `----validateImdiAsync no errors:\n\n${imdiContents}\n\n${JSON.stringify(
@@ -78,9 +72,9 @@ async function validateAgainstOneSchema(
         {
           loc: null,
           message: e.message,
-          rawMessage: e.message
-        }
-      ]
+          rawMessage: e.message,
+        },
+      ],
     };
     // console.log(
     //   `*************validateImdiAsync Error:${JSON.stringify(r, null, 2)}`

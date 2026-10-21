@@ -151,9 +151,9 @@ async function createWindow() {
   if (process.env.VITE_DEV_SERVER_URL) {
     console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
     // electron-vite-vue#298
-    win.loadURL(url!);
+    win.loadURL(url!).catch((err) => console.error("Could not load the main window:", err));
   } else {
-    win.loadFile(indexHtml);
+    win.loadFile(indexHtml).catch((err) => console.error("Could not load the main window:", err));
   }
   win.on("ready-to-show", () => {
     win!.maximize();
@@ -181,16 +181,10 @@ async function createWindow() {
   // Initialize launch-test handling (no-op if not requested)
   initLaunchTest(win);
 
-  function fillLastMonitor() {
-    const displays = screen.getAllDisplays();
-    win?.setBounds(displays[displays.length - 1].bounds);
-    win?.maximize();
-  }
-
   // Make all external links open with the browser, not inside the application.
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (isExternalUrl(url)) {
-      shell.openExternal(url);
+      shell.openExternal(url).catch((err) => console.error(`Could not open ${url}:`, err));
     }
     return { action: "deny" };
   });
@@ -198,12 +192,17 @@ async function createWindow() {
   win.webContents.on("will-navigate", (event, navigationUrl) => {
     if (isExternalUrl(navigationUrl)) {
       event.preventDefault();
-      shell.openExternal(navigationUrl);
+      shell
+        .openExternal(navigationUrl)
+        .catch((err) => console.error(`Could not open ${navigationUrl}:`, err));
     }
   });
 }
 
-app.whenReady().then(createWindow);
+app
+  .whenReady()
+  .then(createWindow)
+  .catch((err) => console.error("Could not create the main window:", err));
 
 if (process.platform === "win32" && app.isPackaged && !process.env.E2E) {
   claimSprjFiles(app.getPath("exe"));
@@ -227,7 +226,7 @@ app.on("activate", () => {
   if (allWindows.length) {
     allWindows[0].focus();
   } else {
-    createWindow();
+    createWindow().catch((err) => console.error("Could not create the main window:", err));
   }
 });
 
@@ -242,9 +241,13 @@ ipcMain.handle("open-win", (event, arg) => {
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${url}#${arg}`);
+    childWindow
+      .loadURL(`${url}#${arg}`)
+      .catch((err) => console.error("Could not load the child window:", err));
   } else {
-    childWindow.loadFile(indexHtml, { hash: arg });
+    childWindow
+      .loadFile(indexHtml, { hash: arg })
+      .catch((err) => console.error("Could not load the child window:", err));
   }
 });
 
@@ -279,13 +282,6 @@ app.on("window-all-closed", () => {
   app.quit();
 });
 
-let copyInProgress: boolean;
-ipcMain.on("copyInProgress", () => {
-  copyInProgress = true;
-});
-ipcMain.on("copyStopped", () => {
-  copyInProgress = false;
-});
 ipcMain.handle("confirm-quit", async (event, ...args) => {
   const result = await dialog.showMessageBox(win!, {
     message: args[0],

@@ -13,13 +13,10 @@ import { describe, it, expect, beforeEach, afterEach } from "vite-plus/test";
 import {
   createSessionLicense,
   createLdacAccessTypeDefinitions,
-  clearLdacAccessTypeDefinitionsCache
+  clearLdacAccessTypeDefinitionsCache,
 } from "../RoCrateLicenseManager";
 import { expandLdacId } from "../RoCrateUtils";
-import {
-  createMockProject,
-  createMockSession
-} from "./test-utils/rocrate-test-setup";
+import { createMockProject, createMockSession } from "./test-utils/rocrate-test-setup";
 
 describe("LAM-96: License entities must have name property", () => {
   beforeEach(() => {
@@ -34,14 +31,14 @@ describe("LAM-96: License entities must have name property", () => {
     it("should include name property on session license entities", () => {
       const mockSession = createMockSession({
         metadata: {
-          access: "public"
-        }
+          access: "public",
+        },
       });
 
       const mockProject = createMockProject({
         metadata: {
-          archiveConfigurationName: "PARADISEC"
-        }
+          archiveConfigurationName: "PARADISEC",
+        },
       });
 
       const license = createSessionLicense(mockSession, mockProject);
@@ -55,14 +52,14 @@ describe("LAM-96: License entities must have name property", () => {
     it("should generate descriptive name including archive name and access type", () => {
       const mockSession = createMockSession({
         metadata: {
-          access: "Open"
-        }
+          access: "Open",
+        },
       });
 
       const mockProject = createMockProject({
         metadata: {
-          archiveConfigurationName: "PARADISEC"
-        }
+          archiveConfigurationName: "PARADISEC",
+        },
       });
 
       const license = createSessionLicense(mockSession, mockProject);
@@ -74,28 +71,25 @@ describe("LAM-96: License entities must have name property", () => {
     it("should handle various access types in the name", () => {
       const mockProject = createMockProject({
         metadata: {
-          archiveConfigurationName: "REAP"
-        }
+          archiveConfigurationName: "REAP",
+        },
       });
 
       // Test with restricted access
       const restrictedSession = createMockSession({
         metadata: {
-          access: "REAP Users"
-        }
+          access: "REAP Users",
+        },
       });
 
-      const restrictedLicense = createSessionLicense(
-        restrictedSession,
-        mockProject
-      );
+      const restrictedLicense = createSessionLicense(restrictedSession, mockProject);
       expect(restrictedLicense.name).toBe("REAP REAP Users License");
 
       // Test with public access
       const publicSession = createMockSession({
         metadata: {
-          access: "public"
-        }
+          access: "public",
+        },
       });
 
       const publicLicense = createSessionLicense(publicSession, mockProject);
@@ -105,14 +99,14 @@ describe("LAM-96: License entities must have name property", () => {
     it("should use 'public' in name when access is unspecified", () => {
       const mockSession = createMockSession({
         metadata: {
-          access: "unspecified"
-        }
+          access: "unspecified",
+        },
       });
 
       const mockProject = createMockProject({
         metadata: {
-          archiveConfigurationName: "TestArchive"
-        }
+          archiveConfigurationName: "TestArchive",
+        },
       });
 
       const license = createSessionLicense(mockSession, mockProject);
@@ -123,12 +117,12 @@ describe("LAM-96: License entities must have name property", () => {
     it("should use default archive name when not specified", () => {
       const mockSession = createMockSession({
         metadata: {
-          access: "public"
-        }
+          access: "public",
+        },
       });
 
       const mockProject = createMockProject({
-        metadata: {}
+        metadata: {},
       });
 
       const license = createSessionLicense(mockSession, mockProject);
@@ -145,12 +139,12 @@ describe("LAM-96: License entities must have name property", () => {
     it("should NOT include ldac:DataReuseLicense class entity (LAM-92 fix)", () => {
       const usedAccessTypes = new Set([
         expandLdacId("ldac:OpenAccess"),
-        expandLdacId("ldac:AuthorizedAccess")
+        expandLdacId("ldac:AuthorizedAccess"),
       ]);
       const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       const licenseClass = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:DataReuseLicense")
+        (d: any) => d["@id"] === expandLdacId("ldac:DataReuseLicense"),
       );
 
       // LAM-92: This entity should NOT be in the output - it causes orphaned entity warnings
@@ -160,13 +154,11 @@ describe("LAM-96: License entities must have name property", () => {
     it("should have name on all DefinedTerm entities", () => {
       const usedAccessTypes = new Set([
         expandLdacId("ldac:OpenAccess"),
-        expandLdacId("ldac:AuthorizedAccess")
+        expandLdacId("ldac:AuthorizedAccess"),
       ]);
       const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
-      const definedTerms = definitions.filter(
-        (d: any) => d["@type"] === "DefinedTerm"
-      );
+      const definedTerms = definitions.filter((d: any) => d["@type"] === "DefinedTerm");
 
       // All DefinedTerm entities should have names
       expect(definedTerms.length).toBeGreaterThan(0);
@@ -181,9 +173,7 @@ describe("LAM-96: License entities must have name property", () => {
       const usedAccessTypes = new Set([expandLdacId("ldac:OpenAccess")]);
       const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
-      const termSet = definitions.find(
-        (d: any) => d["@type"] === "DefinedTermSet"
-      );
+      const termSet = definitions.find((d: any) => d["@type"] === "DefinedTermSet");
 
       expect(termSet).toBeDefined();
       expect((termSet as any).name).toBeDefined();

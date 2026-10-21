@@ -12,23 +12,20 @@ files: [
       # keep translations when source strings change
       "update_option": "update_as_unapproved",
       # %two_letters_code% would give "pt" and "zh"; our locale folders (and
-      # .linguirc) use pt-BR and zh-CN, so override just those two.
-      "languages_mapping":
-        { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
+      # lingui.config.ts) use pt-BR and zh-CN, so override just those two.
+      "languages_mapping": { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
     },
     {
       "source": /en/fields.po,
       "translation": /%two_letters_code%/fields.po,
       "update_option": "update_as_unapproved",
-      "languages_mapping":
-        { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
+      "languages_mapping": { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
     },
     {
       "source": /en/vocabularies.po,
       "translation": /%two_letters_code%/vocabularies.po,
       "update_option": "update_as_unapproved",
-      "languages_mapping":
-        { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
+      "languages_mapping": { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
     },
     {
       "source": /accessProtocols.csv,

@@ -5,13 +5,14 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState } from "react";
 import { i18n } from "@lingui/core";
-import { t, Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,
   setMediaFolderOrEmptyForThisProjectAndMachine,
 } from "../model/Project/MediaFolderAccess";
 import { lameta_dark_green } from "../containers/theme";
+import { NotifyException } from "./Notify";
 import {
   DialogBottomButtons,
   DialogButton,
@@ -24,7 +25,7 @@ import {
 let staticShowMediaFolderDialog: () => void = () => {};
 export { staticShowMediaFolderDialog as ShowMediaFolderDialog };
 
-export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
+export const MediaFolderDialog: React.FunctionComponent<{}> = () => {
   const [path, setPath] = useState<string>(
     getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)",
   );
@@ -103,11 +104,14 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
                   defaultPath: require("os").homedir(),
                 };
 
-                ipcRenderer.invoke("showOpenDialog", options).then((result) => {
-                  if (result && result.filePaths && result.filePaths.length > 0) {
-                    setPath(result.filePaths[0]);
-                  }
-                });
+                ipcRenderer
+                  .invoke("showOpenDialog", options)
+                  .then((result) => {
+                    if (result && result.filePaths && result.filePaths.length > 0) {
+                      setPath(result.filePaths[0]);
+                    }
+                  })
+                  .catch((err) => NotifyException(err as Error));
               }}
             >
               <Trans>Change...</Trans>

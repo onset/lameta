@@ -27,10 +27,10 @@ export function createLametaTheme(): Theme {
         // NB: if you change this to lameta_green, then we have to figure out how
         // to get the import checkboxes to go to a darker shade
         main: lameta_dark_green,
-        contrastText: "white"
+        contrastText: "white",
       },
       warning: { main: "#F3AA18" },
-      info: { main: "#FFFF00" /* todo */ }
+      info: { main: "#FFFF00" /* todo */ },
     },
     components: {
       MuiAlert: {
@@ -39,16 +39,16 @@ export function createLametaTheme(): Theme {
             color: textPrimary,
             backgroundColor: "#f8ea2d",
             "& .MuiAlert-icon": {
-              color: textPrimary
+              color: textPrimary,
             },
             "& .MuiAlert-icon svg": {
               width: "1.5em",
-              height: "1.5em"
-            }
-          }
-        }
-      }
-    }
+              height: "1.5em",
+            },
+          },
+        },
+      },
+    },
   });
 }
 
@@ -60,10 +60,10 @@ export function createProjectTheme(): Theme {
         // NB: if you change this to lameta_green, then we have to figure out how
         // to get the import checkboxes to go to a darker shade
         main: lameta_orange,
-        contrastText: "white"
+        contrastText: "white",
       },
       warning: { main: "#F3AA18" },
-      info: { main: "#f6dbcb" }
+      info: { main: "#f6dbcb" },
     },
     components: {
       MuiAlert: {
@@ -72,11 +72,11 @@ export function createProjectTheme(): Theme {
             color: "#8B4513",
             backgroundColor: "#FFF8DC",
             "& .MuiAlert-icon": {
-              color: "#B8860B"
-            }
-          }
-        }
-      }
-    }
+              color: "#B8860B",
+            },
+          },
+        },
+      },
+    },
   });
 }

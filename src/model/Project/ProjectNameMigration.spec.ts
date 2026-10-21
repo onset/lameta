@@ -29,12 +29,8 @@ describe("Project name migration", () => {
 
     const project = Project.fromDirectory(projectDirectory);
 
-    expect(project.properties.getTextStringOrEmpty("title")).toBe(
-      "V2 Project Title"
-    );
-    expect(project.properties.getTextStringOrEmpty("name")).toBe(
-      "V2 Project Title"
-    );
+    expect(project.properties.getTextStringOrEmpty("title")).toBe("V2 Project Title");
+    expect(project.properties.getTextStringOrEmpty("name")).toBe("V2 Project Title");
   });
 
   it("does not overwrite an existing name when title is also present", () => {
@@ -44,12 +40,8 @@ describe("Project name migration", () => {
 
     const project = Project.fromDirectory(projectDirectory);
 
-    expect(project.properties.getTextStringOrEmpty("name")).toBe(
-      "Short Project Name"
-    );
-    expect(project.properties.getTextStringOrEmpty("title")).toBe(
-      "Long Project Title"
-    );
+    expect(project.properties.getTextStringOrEmpty("name")).toBe("Short Project Name");
+    expect(project.properties.getTextStringOrEmpty("title")).toBe("Long Project Title");
   });
 
   it("falls back to the folder name when both name and title are empty", () => {
@@ -67,6 +59,6 @@ function writeProjectFile(projectFields: string): void {
     `<?xml version="1.0" encoding="utf-8"?>
 <Project>
   ${projectFields}
-</Project>`
+</Project>`,
   );
 }

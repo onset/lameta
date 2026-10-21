@@ -7,7 +7,8 @@ import * as Path from "path";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.css";
 import { getPath } from "../../other/windowIpc";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import {
   DialogBottomButtons,
   DialogButton,

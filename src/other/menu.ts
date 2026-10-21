@@ -1,4 +1,5 @@
 import { shell } from "electron";
+import { NotifyException } from "../components/Notify";
 import {
   addWordToSpellCheckerDictionary,
   onContextMenu,
@@ -6,14 +7,13 @@ import {
   quitApp,
   runWebContentsCommand,
   setApplicationMenu,
-  setWindowTitle,
   toggleDevTools,
 } from "./windowIpc";
 import { IHomePageMenuConnections } from "../containers/HomePage";
 import { logPath } from "./log";
 import { ShowExportDialog } from "../components/export/ExportDialog";
 import { setUILanguage, currentUILanguage } from "./localization";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import userSettings from "./UserSettings";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import { initializeSentry } from "./errorHandling";
@@ -274,7 +274,9 @@ export default class LametaMenu {
             {
               label: t`Help translate`,
               click: () => {
-                shell.openPath("https://crowdin.com/project/saymorex"); // haven't been able to correct this URL yet
+                shell
+                  .openExternal("https://crowdin.com/project/saymorex") // haven't been able to correct this URL yet
+                  .catch((err) => NotifyException(err as Error));
               },
             },
           ],
@@ -412,17 +414,6 @@ export default class LametaMenu {
         },
       ],
     };
-    const testMenu = {
-      label: "Test",
-      submenu: [
-        {
-          label: "Menu Test",
-          click() {
-            setWindowTitle("Menu Test Invoked");
-          },
-        },
-      ],
-    };
     const helpMenu = {
       label: t`Help`,
       submenu: [
@@ -435,7 +426,9 @@ export default class LametaMenu {
         {
           label: t`Report a problem`,
           click: () => {
-            shell.openExternal("https://github.com/onset/lameta/issues");
+            shell
+              .openExternal("https://github.com/onset/lameta/issues")
+              .catch((err) => NotifyException(err as Error));
           },
         },
         {

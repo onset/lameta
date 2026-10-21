@@ -19,96 +19,90 @@ export interface HighlightableTabProps {
 }
 
 // Wraps react-tabs Tab and conditionally wraps its label in a highlighted span.
-export const HighlightableTab = React.forwardRef<
-  HTMLDivElement,
-  HighlightableTabProps
->(({ getSearchStrings, testId, children, className, ...rest }, ref) => {
-  const { searchTerm } = React.useContext(SearchContext);
+export const HighlightableTab = React.forwardRef<HTMLDivElement, HighlightableTabProps>(
+  ({ getSearchStrings, testId, children, className, ...rest }, ref) => {
+    const { searchTerm } = React.useContext(SearchContext);
 
-  // If no search strings are supplied, just behave like a normal Tab without extra DOM
-  if (!getSearchStrings) {
-    const baseClass = ["react-tabs__tab", className].filter(Boolean).join(" ");
+    // If no search strings are supplied, just behave like a normal Tab without extra DOM
+    if (!getSearchStrings) {
+      const baseClass = ["react-tabs__tab", className].filter(Boolean).join(" ");
+      return (
+        <Tab ref={ref as any} {...rest} className={baseClass} data-testid={testId}>
+          <span className="ht-label">{children}</span>
+        </Tab>
+      );
+    }
+
+    let highlight = false;
+
+    if (getSearchStrings && searchTerm.length > 0) {
+      const q = searchTerm; // normalized already
+      for (const raw of getSearchStrings() as any) {
+        const text = raw == null ? "" : String(raw);
+        if (text && text.toLowerCase().includes(q)) {
+          highlight = true;
+          break;
+        }
+      }
+    }
+
+    // Ensure the base react-tabs class is always present even if cloning fails
+    const mergedClassName = ["react-tabs__tab", className, "highlightable-tab"]
+      .filter(Boolean)
+      .join(" ");
+
     return (
       <Tab
         ref={ref as any}
         {...rest}
-        className={baseClass}
-        data-testid={testId}
-      >
-        <span className="ht-label">{children}</span>
-      </Tab>
-    );
-  }
-
-  let highlight = false;
-
-  if (getSearchStrings && searchTerm.length > 0) {
-    const q = searchTerm; // normalized already
-    for (const raw of getSearchStrings() as any) {
-      const text = raw == null ? "" : String(raw);
-      if (text && text.toLowerCase().includes(q)) {
-        highlight = true;
-        break;
-      }
-    }
-  }
-
-  // Ensure the base react-tabs class is always present even if cloning fails
-  const mergedClassName = ["react-tabs__tab", className, "highlightable-tab"]
-    .filter(Boolean)
-    .join(" ");
-
-  return (
-    <Tab
-      ref={ref as any}
-      {...rest}
-      className={mergedClassName}
-      css={css`
-        /* Ensure selected tab text still renders bold even with nested spans */
-        &.react-tabs__tab--selected span.ht-label {
-          font-weight: 600;
-        }
-        /* Provide inline layout in case upstream stylesheet load order changes */
-        &.react-tabs__tab {
-          display: inline-block;
-        }
-      `}
-    >
-      <span
+        className={mergedClassName}
         css={css`
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
+          /* Ensure selected tab text still renders bold even with nested spans */
+          &.react-tabs__tab--selected span.ht-label {
+            font-weight: 600;
+          }
+          /* Provide inline layout in case upstream stylesheet load order changes */
+          &.react-tabs__tab {
+            display: inline-block;
+          }
         `}
       >
-        {highlight && (
-          <span
-            data-testid={testId}
-            css={css`
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              width: 16px;
-              height: 16px;
-              border-radius: 50%;
-              background: ${lameta_orange};
-              color: white;
-              flex-shrink: 0;
-            `}
-          >
-            <SearchIcon
-              fontSize="inherit"
+        <span
+          css={css`
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+          `}
+        >
+          {highlight && (
+            <span
+              data-testid={testId}
               css={css`
-                font-size: 12px; /* ensure fits inside 16px circle */
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: ${lameta_orange};
+                color: white;
+                flex-shrink: 0;
               `}
-            />
-          </span>
-        )}
-        <span className="ht-label">{children}</span>
-      </span>
-    </Tab>
-  );
-});
+            >
+              <SearchIcon
+                fontSize="inherit"
+                css={css`
+                  font-size: 12px; /* ensure fits inside 16px circle */
+                `}
+              />
+            </span>
+          )}
+          <span className="ht-label">{children}</span>
+        </span>
+      </Tab>
+    );
+  },
+);
 
 // Let react-tabs know this component represents a Tab
 (HighlightableTab as any).tabsRole = "Tab";

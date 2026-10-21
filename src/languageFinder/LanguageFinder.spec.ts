@@ -76,8 +76,6 @@ describe("LanguageFinder", () => {
     expect(lf_qaa.findOne639_3CodeFromName("fOo Bar", "not this")).toBe("qaa");
     expect(lf_qaa.findOneLanguageNameFromCode_Or_ReturnCode("qaa")).toBe("Foo Bar");
   });
-  5;
-
   it("makeMatchesAndLabelsForSelect should handle English well", () => {
     expect(languageFinder.makeMatchesAndLabelsForSelect("en")[0].languageInfo.iso639_3).toBe("eng");
   });

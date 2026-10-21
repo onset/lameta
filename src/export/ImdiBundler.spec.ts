@@ -24,7 +24,7 @@ beforeAll(async () => {
       IMDIMode.OPEX,
       true,
       // oxlint-disable-next-line @typescript-eslint/no-unused-vars
-      (f) => true
+      (f) => true,
     );
   } catch (e) {
     expect(e).toBeUndefined();
@@ -56,26 +56,16 @@ describe("opex file placement", () => {
       targetDir,
       projectName,
       "DescriptionDocuments",
-      "DescriptionDocuments.opex"
+      "DescriptionDocuments.opex",
     );
     expect(fs.existsSync(p)).toBe(true);
   });
   it("should have a OtherDocuments opex inside of the OtherDocuments folder", () => {
-    const p = Path.join(
-      targetDir,
-      projectName,
-      "OtherDocuments",
-      "OtherDocuments.opex"
-    );
+    const p = Path.join(targetDir, projectName, "OtherDocuments", "OtherDocuments.opex");
     expect(fs.existsSync(p)).toBe(true);
   });
   it("should have a session opex inside of the session folder", () => {
-    const p = Path.join(
-      targetDir,
-      projectName,
-      "New_Session",
-      "New_Session.opex"
-    );
+    const p = Path.join(targetDir, projectName, "New_Session", "New_Session.opex");
     expect(fs.existsSync(p)).toBe(true);
   });
 
@@ -95,12 +85,7 @@ describe("opex file placement", () => {
     expect(fs.existsSync(p)).toBe(true);
   });
   it("should have an imdi file in the ConsentDocuments folder", () => {
-    const p = Path.join(
-      targetDir,
-      projectName,
-      "ConsentDocuments",
-      "ConsentDocuments.opex"
-    );
+    const p = Path.join(targetDir, projectName, "ConsentDocuments", "ConsentDocuments.opex");
     expect(fs.existsSync(p)).toBe(true);
   });
 });
@@ -126,7 +111,7 @@ describe("generateExportData async generator", () => {
       generatorTargetDir,
       IMDIMode.OPEX,
       true,
-      () => true
+      () => true,
     );
 
     const yieldedData: ExportSessionData[] = [];
@@ -163,7 +148,7 @@ describe("generateExportData async generator", () => {
       generatorTargetDir,
       IMDIMode.OPEX,
       true,
-      () => true
+      () => true,
     );
 
     let hasFilesToCopy = false;
@@ -190,7 +175,7 @@ describe("generateExportData async generator", () => {
       generatorTargetDir,
       IMDIMode.OPEX,
       false, // copyInProjectFiles = false
-      () => true
+      () => true,
     );
 
     let result = await generator.next();
@@ -202,11 +187,7 @@ describe("generateExportData async generator", () => {
   });
 
   it("should provide correct job info", () => {
-    const jobInfo = ImdiBundler.getExportJobInfo(
-      generatorProject,
-      generatorTargetDir,
-      () => true
-    );
+    const jobInfo = ImdiBundler.getExportJobInfo(generatorProject, generatorTargetDir, () => true);
 
     expect(jobInfo.totalSessions).toBeGreaterThanOrEqual(2); // at least 2 sessions
     expect(jobInfo.rootDirectory).toBe(generatorTargetDir);

@@ -8,7 +8,7 @@ import {
   createTermDefinition,
   getTermSets,
   getCustomUri,
-  isLdacIdentifier
+  isLdacIdentifier,
 } from "./RoCrateUtils";
 
 /**
@@ -48,8 +48,7 @@ export function handleLanguageField(context: FieldHandlerContext): boolean {
   // Check if this is a language field (explicit handler or language template)
   const hasLanguageHandler = field.rocrate?.handler === "languages";
   const hasLanguageTemplate =
-    field.type === "languageChoices" &&
-    field.rocrate?.template?.["@id"]?.includes("#language_");
+    field.type === "languageChoices" && field.rocrate?.template?.["@id"]?.includes("#language_");
 
   if (!hasLanguageHandler && !hasLanguageTemplate) {
     return false;
@@ -100,8 +99,7 @@ export function handleLanguageField(context: FieldHandlerContext): boolean {
  * @returns true if handled, false otherwise
  */
 export function handleVocabularyField(context: FieldHandlerContext): boolean {
-  const { project, field, values, folderEntry, otherEntries, propertyKey } =
-    context;
+  const { project, field, values, folderEntry, otherEntries, propertyKey } = context;
 
   if (!field.vocabularyFile) {
     return false;
@@ -119,14 +117,9 @@ export function handleVocabularyField(context: FieldHandlerContext): boolean {
   for (const termId of termValues) {
     try {
       // Get project title for custom ID generation
-      const projectTitle =
-        project.metadataFile?.getTextProperty("title") || "unknown-project";
+      const projectTitle = project.metadataFile?.getTextProperty("title") || "unknown-project";
 
-      const mapping = getVocabularyMapping(
-        termId,
-        field.vocabularyFile,
-        projectTitle
-      );
+      const mapping = getVocabularyMapping(termId, field.vocabularyFile, projectTitle);
       termReferences.push({ "@id": mapping.id });
       termDefinitions.push(createTermDefinition(mapping));
 
@@ -140,8 +133,7 @@ export function handleVocabularyField(context: FieldHandlerContext): boolean {
       console.warn(`Failed to load vocabulary for ${termId}:`, error);
 
       // Fallback to creating a custom term directly (this should rarely happen now)
-      const projectTitle =
-        project.metadataFile?.getTextProperty("title") || "unknown-project";
+      const projectTitle = project.metadataFile?.getTextProperty("title") || "unknown-project";
       const customId = getCustomUri(`genre/${termId}`, projectTitle);
 
       termReferences.push({ "@id": customId });
@@ -150,7 +142,7 @@ export function handleVocabularyField(context: FieldHandlerContext): boolean {
         "@type": "DefinedTerm",
         name: termId,
         description: `Custom term: ${termId}`,
-        inDefinedTermSet: { "@id": "#CustomGenreTerms" }
+        inDefinedTermSet: { "@id": "#CustomGenreTerms" },
       });
       hasCustomTerms = true;
     }
@@ -175,8 +167,7 @@ export function handleVocabularyField(context: FieldHandlerContext): boolean {
  * @returns true if handled, false otherwise
  */
 export function handlePlaceField(context: FieldHandlerContext): boolean {
-  const { folder, field, values, folderEntry, otherEntries, propertyKey } =
-    context;
+  const { folder, field, values, folderEntry, otherEntries, propertyKey } = context;
 
   const leafTemplate = field.rocrate?.template;
   if (!leafTemplate || leafTemplate["@type"] !== "Place") {
@@ -192,11 +183,7 @@ export function handlePlaceField(context: FieldHandlerContext): boolean {
     const leaf = getElementUsingTemplate(leafTemplate, value);
 
     // Build description from companion location fields
-    const locationParts = [
-      "locationRegion",
-      "locationCountry",
-      "locationContinent"
-    ]
+    const locationParts = ["locationRegion", "locationCountry", "locationContinent"]
       .map((key) => getOptionalFieldValue(folder, key))
       .filter((part): part is string => part !== null);
 
@@ -225,9 +212,7 @@ export function handlePlaceField(context: FieldHandlerContext): boolean {
  *
  * @returns true if handled, false otherwise
  */
-export function handleDefaultTemplateField(
-  context: FieldHandlerContext
-): boolean {
+export function handleDefaultTemplateField(context: FieldHandlerContext): boolean {
   const { field, values, folderEntry, otherEntries, propertyKey } = context;
 
   const leafTemplate = field.rocrate?.template;
@@ -241,10 +226,7 @@ export function handleDefaultTemplateField(
   }
 
   // Skip language templates - handled by handleLanguageField
-  if (
-    field.type === "languageChoices" &&
-    leafTemplate["@id"]?.includes("#language_")
-  ) {
+  if (field.type === "languageChoices" && leafTemplate["@id"]?.includes("#language_")) {
     return false;
   }
 
@@ -334,12 +316,10 @@ export function handlePlainValueField(context: FieldHandlerContext): boolean {
   }
 
   // Skip isAdditional fields that don't have rocrate definitions
-  const fieldDef = folder.metadataFile!.properties.getFieldDefinition?.(
-    field.key
-  );
+  const fieldDef = folder.metadataFile!.properties.getFieldDefinition?.(field.key);
   if (fieldDef && fieldDef.isAdditional) {
     console.warn(
-      `Skipping additional field '${field.key}' in RO-Crate export: no rocrate definition`
+      `Skipping additional field '${field.key}' in RO-Crate export: no rocrate definition`,
     );
     return true;
   }
@@ -358,11 +338,7 @@ export function handlePlainValueField(context: FieldHandlerContext): boolean {
  * Determines if a field should be skipped entirely.
  * Consolidates all skip-field logic in one place.
  */
-export function shouldSkipField(
-  field: FieldDefinition,
-  folder: Folder,
-  values: string[]
-): boolean {
+export function shouldSkipField(field: FieldDefinition, folder: Folder, values: string[]): boolean {
   // Skip deprecated/migrated fields
   if (field.deprecated && field.deprecated.indexOf("migrated") > -1) {
     return true;
@@ -380,10 +356,7 @@ export function shouldSkipField(
 
   // Skip empty fields (except language fields which need "und" fallback)
   const isLanguageField = field.rocrate?.handler === "languages";
-  if (
-    (values.length === 0 || values[0] === "unspecified") &&
-    !isLanguageField
-  ) {
+  if ((values.length === 0 || values[0] === "unspecified") && !isLanguageField) {
     return true;
   }
 
@@ -398,16 +371,12 @@ export function shouldSkipField(
 /**
  * Gets field values with proper handling for different field types.
  */
-export function getFieldValues(
-  folder: Folder,
-  field: FieldDefinition
-): string[] {
+export function getFieldValues(folder: Folder, field: FieldDefinition): string[] {
   if (field.omitExport) return [];
 
   if (field.rocrate?.handler === "languages") {
     // Handle languages for any folder type (Project, Session, Person)
-    const languageString =
-      folder.metadataFile?.properties.getTextStringOrEmpty(field.key) || "";
+    const languageString = folder.metadataFile?.properties.getTextStringOrEmpty(field.key) || "";
     return languageString
       .split(";")
       .map((s) => s.trim())
@@ -433,10 +402,7 @@ export function getFieldValues(
 /**
  * Creates a graph element using a template and a value.
  */
-export function getElementUsingTemplate(
-  template: object,
-  value: string
-): object {
+export function getElementUsingTemplate(template: object, value: string): object {
   const output = {};
   Object.keys(template).forEach((key) => {
     let replacedValue = template[key];
@@ -497,10 +463,7 @@ function sanitizeLanguageCode(code: string): string {
  * @param fieldKey - The key of the field to retrieve
  * @returns The trimmed field value, or null if not available
  */
-export function getOptionalFieldValue(
-  folder: Folder,
-  fieldKey: string
-): string | null {
+export function getOptionalFieldValue(folder: Folder, fieldKey: string): string | null {
   try {
     const field = folder.metadataFile!.properties.getValueOrThrow(fieldKey);
     if (field?.text?.trim() && field.text !== "unspecified") {

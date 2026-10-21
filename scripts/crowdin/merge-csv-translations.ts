@@ -44,12 +44,15 @@ for (const name of FILES) {
   const crowdin = parseCsv(crowdinPath);
   const header = repo.rows[0];
   if (header.join("|") !== crowdin.rows[0].join("|")) {
-    throw new Error(`${name}: header mismatch\n repo:    ${header}\n crowdin: ${crowdin.rows[0]}`);
+    throw new Error(
+      `${name}: header mismatch\n repo:    ${header.join(",")}\n crowdin: ${crowdin.rows[0].join(",")}`,
+    );
   }
-  const langCols = header
-    .map((h, i) => ({ h, i }))
-    .filter(({ h }) => !KEY_COLUMNS.includes(h));
-  if (langCols.length !== 7) throw new Error(`${name}: expected 7 language columns, got ${langCols.length} (${langCols.map((c) => c.h)})`);
+  const langCols = header.map((h, i) => ({ h, i })).filter(({ h }) => !KEY_COLUMNS.includes(h));
+  if (langCols.length !== 7)
+    throw new Error(
+      `${name}: expected 7 language columns, got ${langCols.length} (${langCols.map((c) => c.h).join(", ")})`,
+    );
 
   // key -> queue of crowdin rows (queue handles duplicate keys in order)
   const crowdinByKey = new Map<string, string[][]>();
@@ -87,7 +90,7 @@ for (const name of FILES) {
   const csv = Papa.unparse(repo.rows, { quotes: true, newline: repo.eol });
   fs.writeFileSync(repoPath, (repo.hadBom ? "﻿" : "") + csv + repo.eol);
   console.log(
-    `${name}: ${repo.rows.length - 1} rows; filled ${filled} empty cells, took crowdin on ${overwritten} conflicts, ${unmatched} repo-only rows`
+    `${name}: ${repo.rows.length - 1} rows; filled ${filled} empty cells, took crowdin on ${overwritten} conflicts, ${unmatched} repo-only rows`,
   );
 }
 

@@ -36,14 +36,14 @@ const usage = () => {
   console.error(
     [
       "Usage:",
-      "  tsx scripts/smoke-launch.ts --exe=./release/win-unpacked/lameta.exe --runs=10 --timeout=30000 [--verbose]",
+      "  tsx scripts/test-launch.ts --exe=./release/win-unpacked --runs=10 --timeout=30000 [--verbose]",
       "  OR",
-      "  tsx scripts/smoke-launch.ts --electron=./node_modules/.bin/electron --main=./dist/src/mainProcess/main.js --runs=10 --timeout=30000 [--verbose]",
+      "  tsx scripts/test-launch.ts --electron=./node_modules/.bin/electron --main=./dist/src/mainProcess/main.js --runs=10 --timeout=30000 [--verbose]",
       "",
       "Notes:",
       "  - Exactly one of --exe or (--electron and --main) must be provided.",
-      "  - There are no fallbacks or defaults; all required flags must be set."
-    ].join("\n")
+      "  - There are no fallbacks or defaults; all required flags must be set.",
+    ].join("\n"),
   );
 };
 
@@ -54,12 +54,7 @@ if (!runsStr || !timeoutStr) {
 
 const runs = parseInt(runsStr, 10);
 const timeoutMs = parseInt(timeoutStr, 10);
-if (
-  !Number.isFinite(runs) ||
-  runs <= 0 ||
-  !Number.isFinite(timeoutMs) ||
-  timeoutMs <= 0
-) {
+if (!Number.isFinite(runs) || runs <= 0 || !Number.isFinite(timeoutMs) || timeoutMs <= 0) {
   usage();
   process.exit(1);
 }
@@ -74,10 +69,19 @@ if ((usingExe ? 1 : 0) + (usingElectron ? 1 : 0) !== 1) {
 let binaryPath: string;
 if (usingExe) {
   binaryPath = path.resolve(process.cwd(), exe!);
+  // A folder such as release/win-unpacked: alpha and beta builds name the exe
+  // "lameta alpha.exe" / "lameta beta.exe", so find the one the channel produced.
+  if (fs.statSync(binaryPath).isDirectory()) {
+    const exes = fs.readdirSync(binaryPath).filter((f) => /^lameta.*\.exe$/i.test(f));
+    if (exes.length !== 1) {
+      console.error(`Expected one lameta*.exe in ${binaryPath}, found: ${exes.join(", ")}`);
+      process.exit(1);
+    }
+    binaryPath = path.join(binaryPath, exes[0]);
+  }
 } else {
   const e = electron!;
-  const looksLikePath =
-    /[\\/]/.test(e) || /^[A-Za-z]:/.test(e) || e.startsWith(".");
+  const looksLikePath = /[\\/]/.test(e) || /^[A-Za-z]:/.test(e) || e.startsWith(".");
   if (looksLikePath) {
     binaryPath = path.resolve(process.cwd(), e);
   } else {
@@ -106,9 +110,7 @@ if (usingElectron) {
     const compiledMain = path.resolve(process.cwd(), mainJs!);
     fs.accessSync(compiledMain, fs.constants.R_OK);
   } catch {
-    console.error(
-      `Cannot read compiled main: ${path.resolve(process.cwd(), mainJs!)}`
-    );
+    console.error(`Cannot read compiled main: ${path.resolve(process.cwd(), mainJs!)}`);
     process.exit(1);
   }
 }
@@ -120,7 +122,7 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
     ...binaryArgsBase,
     `--launch-test=${marker}`,
     `--user-data-dir=${userDataDir}`,
-    ...appArgFlags
+    ...appArgFlags,
   ];
   if (verbose) {
     console.log(`spawning: ${binaryPath} ${args.join(" ")}`);
@@ -129,8 +131,8 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
     stdio: verbose ? "inherit" : "ignore",
     env: {
       ...process.env,
-      ELECTRON_ENABLE_LOGGING: verbose ? "1" : undefined
-    }
+      ELECTRON_ENABLE_LOGGING: verbose ? "1" : undefined,
+    },
   });
 
   const result = await new Promise<{
@@ -161,8 +163,8 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
     throw new Error(
       [
         `App did not write the launch marker file: ${marker}.`,
-        `This indicates the app exited before reaching preload/renderer readiness.`
-      ].join(" ")
+        `This indicates the app exited before reaching preload/renderer readiness.`,
+      ].join(" "),
     );
   }
   const raw = fs.readFileSync(marker, "utf8");
@@ -174,20 +176,15 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
       [
         `Marker exists but is not valid JSON: ${marker}.`,
         `Raw contents: ${raw}`,
-        `Parse error: ${(e as Error).message}`
-      ].join(" ")
+        `Parse error: ${(e as Error).message}`,
+      ].join(" "),
     );
   }
   if (!parsed || parsed.ok !== true) {
     const phase = parsed?.phase ? `phase=${parsed.phase}` : "phase=unknown";
     const detail = parsed?.error ? `error=${parsed.error}` : `contents=${raw}`;
     throw new Error(
-      [
-        `App reported a launch failure via marker.`,
-        phase,
-        detail,
-        `marker=${marker}`
-      ].join(" ")
+      [`App reported a launch failure via marker.`, phase, detail, `marker=${marker}`].join(" "),
     );
   }
 }
@@ -214,9 +211,7 @@ async function main() {
     console.log(`All ${ok}/${runs} launches succeeded. Temp: ${tmpDir}`);
     return;
   }
-  console.error(
-    `App successfully launches ${ok}/${runs} times. Temp: ${tmpDir}`
-  );
+  console.error(`App successfully launches ${ok}/${runs} times. Temp: ${tmpDir}`);
   if (verbose) {
     console.error("Failure details:");
     for (const f of failures) {

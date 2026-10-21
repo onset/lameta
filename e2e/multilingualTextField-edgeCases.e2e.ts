@@ -2,14 +2,13 @@ import { test, expect, Page } from "@playwright/test";
 import {
   getDescriptionField,
   addLanguageViaMenu,
-  getDescriptionSlot,
   getDescriptionEditor,
   deleteLanguageFromDescription,
   countSlotsInDescription,
   setupMultilingualTestContextFast,
   teardownMultilingualTestContext,
   waitForSessionForm,
-  MultilingualTestContext
+  MultilingualTestContext,
 } from "./multilingualTextField-e2e-helpers";
 
 // Working languages configured for this test file.
@@ -30,10 +29,7 @@ let page: Page;
 
 test.describe("Multilingual Text Fields - Edge Cases", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContextFast(
-      "MultilingualEdgeCases",
-      kWorkingLanguages
-    );
+    context = await setupMultilingualTestContextFast("MultilingualEdgeCases", kWorkingLanguages);
     page = context.page;
   });
 
@@ -49,7 +45,7 @@ test.describe("Multilingual Text Fields - Edge Cases", () => {
 
     const longText =
       "This is a very long text that simulates a real-world scenario where users might enter detailed descriptions. ".repeat(
-        20
+        20,
       );
 
     const englishEditor = getDescriptionEditor(page, "en");
@@ -93,8 +89,7 @@ test.describe("Multilingual Text Fields - Edge Cases", () => {
     await waitForSessionForm(page);
 
     // Test with various scripts
-    const mixedScriptText =
-      "English text followed by 日本語 and العربية and עברית and 中文";
+    const mixedScriptText = "English text followed by 日本語 and العربية and עברית and 中文";
 
     const englishEditor = getDescriptionEditor(page, "en");
     await englishEditor.click();
@@ -164,15 +159,9 @@ test.describe("Multilingual Text Fields - Edge Cases", () => {
     // Verify we have working languages + French
     const allSlots = countSlotsInDescription(page);
     await expect(allSlots).toHaveCount(kWorkingLanguages.length + 1);
-    await expect(
-      descriptionField.getByTestId("translation-slot-en")
-    ).toBeVisible();
-    await expect(
-      descriptionField.getByTestId("translation-slot-es")
-    ).toBeVisible();
-    await expect(
-      descriptionField.getByTestId("translation-slot-fr")
-    ).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-en")).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-es")).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-fr")).toBeVisible();
   });
 
   test("handles newlines and multiline text", async () => {
@@ -212,27 +201,16 @@ test.describe("Multilingual Text Fields - Edge Cases", () => {
     const allSlots = countSlotsInDescription(page);
     await expect(allSlots).toHaveCount(kWorkingLanguages.length + 2);
 
-    await expect(
-      descriptionField.getByTestId("translation-slot-en")
-    ).toBeVisible();
-    await expect(
-      descriptionField.getByTestId("translation-slot-es")
-    ).toBeVisible();
-    await expect(
-      descriptionField.getByTestId("translation-slot-fr")
-    ).toBeVisible();
-    await expect(
-      descriptionField.getByTestId("translation-slot-de")
-    ).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-en")).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-es")).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-fr")).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-de")).toBeVisible();
   });
 });
 
 test.describe("Multilingual Text Fields - Stress Test", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContextFast(
-      "MultilingualStress",
-      kWorkingLanguages
-    );
+    context = await setupMultilingualTestContextFast("MultilingualStress", kWorkingLanguages);
     page = context.page;
   });
 
@@ -260,9 +238,7 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
     // Step 2: Type in Spanish (already exists as working language)
     const spanishEditor = getDescriptionEditor(page, "es");
     await spanishEditor.click();
-    await spanishEditor.fill(
-      "Descripción en español de la sesión de grabación"
-    );
+    await spanishEditor.fill("Descripción en español de la sesión de grabación");
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
@@ -271,9 +247,7 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
 
     const frenchEditor = getDescriptionEditor(page, "fr");
     await frenchEditor.click();
-    await frenchEditor.fill(
-      "Description française de la session d'enregistrement"
-    );
+    await frenchEditor.fill("Description française de la session d'enregistrement");
     await page.keyboard.press("Tab");
     await page.waitForTimeout(200);
 
@@ -301,9 +275,7 @@ test.describe("Multilingual Text Fields - Stress Test", () => {
     await deleteLanguageFromDescription(page, "fr");
 
     // Step 8: Verify French is gone but others remain
-    await expect(
-      descriptionField.getByTestId("translation-slot-fr")
-    ).not.toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-fr")).not.toBeVisible();
     await expect(englishAfter).toContainText("English description");
     await expect(spanishAfter).toContainText("Descripción en español");
 

@@ -1,18 +1,15 @@
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { Folder } from "../../model/Folder/Folder";
 import { Project } from "../../model/Project/Project";
 import { ExportProgress } from "../../export/ExportBundleTypes";
 import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
 import ImdiBundler from "../../export/ImdiBundler";
-import {
-  IMDIMode,
-  resetTildeBirthYearWarning
-} from "../../export/ImdiGenerator";
+import { IMDIMode, resetTildeBirthYearWarning } from "../../export/ImdiGenerator";
 import {
   startCollectingWarnings,
   stopCollectingWarnings,
   getCollectedWarnings,
-  clearCollectedWarnings
+  clearCollectedWarnings,
 } from "../../export/ExportWarningCollector";
 
 export interface HybridImdiExportCallbacks {
@@ -66,17 +63,12 @@ export const runHybridImdiExport = async (
   imdiMode: IMDIMode,
   copyInProjectFiles: boolean,
   folderFilter: (f: Folder) => boolean,
-  callbacks: HybridImdiExportCallbacks
+  callbacks: HybridImdiExportCallbacks,
 ): Promise<boolean> => {
-  const { setExportProgress, setExportLog, addLogEntry, cancelRequestedRef } =
-    callbacks;
+  const { setExportProgress, setExportLog, addLogEntry, cancelRequestedRef } = callbacks;
 
   // Get job info for progress calculation
-  const jobInfo = ImdiBundler.getExportJobInfo(
-    project,
-    outputPath,
-    folderFilter
-  );
+  const jobInfo = ImdiBundler.getExportJobInfo(project, outputPath, folderFilter);
 
   // Reset progress
   setExportProgress({
@@ -85,7 +77,7 @@ export const runHybridImdiExport = async (
     totalSessions: jobInfo.totalSessions,
     currentSessionName: "",
     percentage: 0,
-    message: t`Preparing export...`
+    message: t`Preparing export...`,
   });
   setExportLog([]);
   cancelRequestedRef.current = false;
@@ -107,7 +99,7 @@ export const runHybridImdiExport = async (
       outputPath,
       imdiMode,
       copyInProjectFiles,
-      folderFilter
+      folderFilter,
     );
 
     let sessionIndex = 0;
@@ -132,16 +124,14 @@ export const runHybridImdiExport = async (
 
       // Update progress state. This triggers a React re-render, but the actual
       // DOM update happens when we hit the next `await` and yield to the event loop.
-      const percentage = Math.round(
-        (sessionIndex / jobInfo.totalSessions) * 100
-      );
+      const percentage = Math.round((sessionIndex / jobInfo.totalSessions) * 100);
       setExportProgress({
         phase: "sessions",
         currentSession: sessionIndex,
         totalSessions: jobInfo.totalSessions,
         currentSessionName: sessionData.sessionId,
         percentage,
-        message: t`Exporting ${sessionData.sessionId}...`
+        message: t`Exporting ${sessionData.sessionId}...`,
       });
 
       // Write session data via main process.
@@ -149,9 +139,7 @@ export const runHybridImdiExport = async (
       // - The progress UI to actually repaint
       // - Click handlers to process (including Cancel)
       // The main process also sends file-level progress events during large copies.
-      const writeResult = await mainProcessApi.writeImdiSessionData(
-        sessionData
-      );
+      const writeResult = await mainProcessApi.writeImdiSessionData(sessionData);
 
       // Log any errors from file copying
       for (const error of writeResult.errors) {
@@ -183,7 +171,7 @@ export const runHybridImdiExport = async (
       ...prev,
       phase: "corpus",
       percentage: 100,
-      message: t`Writing corpus metadata...`
+      message: t`Writing corpus metadata...`,
     }));
 
     await mainProcessApi.writeImdiCorpusData(corpusData);

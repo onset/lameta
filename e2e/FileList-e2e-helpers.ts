@@ -13,10 +13,7 @@ export class E2eFileList {
     this.projectDirectory = projectDirectory;
   }
 
-  public async addFile(
-    name: string,
-    wait: { page: Page; path: string } | undefined = undefined
-  ) {
+  public async addFile(name: string, wait?: { page: Page; path: string }) {
     //console.log("e2e root 2: " + process.env.E2ERoot);
     // first, creating the "original" at our test root, which is a level above the lameta project directory
     const p = Path.join(process.env.E2ERoot!, name);
@@ -49,9 +46,7 @@ export class E2eFileList {
 
   public async selectFile(fileName: string) {
     // Use DOM readiness signals instead of time-based pauses
-    const fileCell = this.page
-      .getByRole("gridcell", { name: fileName })
-      .first();
+    const fileCell = this.page.getByRole("gridcell", { name: fileName }).first();
     await fileCell.waitFor({ state: "attached", timeout: 5000 });
     await fileCell.scrollIntoViewIfNeeded();
     await fileCell.waitFor({ state: "visible", timeout: 5000 });
@@ -88,12 +83,7 @@ async function waitForCondition(page: any, conditionFunction: () => boolean) {
 }
 
 // Retry writing a file with exponential backoff if it's temporarily locked
-async function retryWriteFile(
-  page: any,
-  filePath: string,
-  content: string,
-  maxRetries = 5
-) {
+async function retryWriteFile(page: any, filePath: string, content: string, maxRetries = 5) {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       fs.writeFileSync(filePath, content);

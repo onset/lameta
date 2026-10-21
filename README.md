@@ -42,7 +42,6 @@ Vite+ supplies the Node version that `engines.node` in `package.json` names, and
 
 ```bash
 vp install
-vp run strings:compile  # just once, before dev will work
 vp run dev
 ```
 
@@ -101,14 +100,6 @@ To show the Playwright Inspector (which has a recorder), use
 ```bash
 vp run e2erecord
 ```
-
-### l10n
-
-When running lameta, if you see this in the Chrome debug console:
-
-`Uncaught Error: Cannot find module './en/messages.js'`
-
-then you need to do `vp run strings:compile`.
 
 ### Publishing
 

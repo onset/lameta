@@ -9,13 +9,7 @@ import { css } from "@emotion/react";
 import Alert from "@mui/material/Alert";
 import { ArchiveConfigurationSummary } from "../../ArchiveConfigurationSummary";
 import { Button, Collapse } from "@mui/material";
-import {
-  lameta_green,
-  lameta_dark_green,
-  lameta_blue,
-  lameta_dark_blue,
-  textPrimary,
-} from "../../containers/theme";
+import { lameta_dark_blue, textPrimary } from "../../containers/theme";
 
 import { TextFieldEdit } from "../TextFieldEdit";
 

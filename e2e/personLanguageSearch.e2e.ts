@@ -44,20 +44,16 @@ test.describe("Person Language Search", () => {
 
     // Debug: Check how many people are visible before searching
     const allPeopleBeforeSearch = page.locator(".folderList .rt-tbody .rt-tr");
-    const countBeforeSearch = await allPeopleBeforeSearch.count();
+    await allPeopleBeforeSearch.count();
 
     // Debug: Check if we can see the Test Person
-    const testPersonVisible = await page
-      .getByRole("gridcell", { name: /Test Person/i })
-      .isVisible();
+    await page.getByRole("gridcell", { name: /Test Person/i }).isVisible();
 
     // Debug: First test if basic name search works
 
     await searchUtils.performSearch("Test");
     const countAfterNameSearch = await allPeopleBeforeSearch.count();
-    console.log(
-      `Debug: ${countAfterNameSearch} people visible after searching for 'Test'`
-    );
+    console.log(`Debug: ${countAfterNameSearch} people visible after searching for 'Test'`);
 
     // Clear the search before testing language search
     await searchUtils.clearSearch();

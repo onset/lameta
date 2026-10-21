@@ -22,9 +22,13 @@ pnpm through Vite+ (`vp`), one TypeScript stack, no .NET.
 - Format: `vp fmt`
 - Unit tests: `vp test run`
 - Build: `pnpm run build`
-- End-to-end tests: `pnpm run build` first, then `pnpm run e2e`. The suite drives `dist/`, and
-  `playwright.config.ts` runs no build of its own, so a source edit without a build tests the
-  old bundle.
+- End-to-end tests: `pnpm run build` first, then `pnpm run e2e`. The suite drives `dist/` and
+  runs no build of its own; `e2e/globalSetup.ts` stops the run if `src/` or `locale/` is newer
+  than the build.
+- A dropdown, tooltip or other element that leaves its own box can be clipped by an ancestor
+  with `overflow: hidden` while its text is still in the document, and Playwright's `:visible`
+  does not notice. Assert its geometry too, as `expectNothingClipsTheMenu` in
+  `e2e/createLanguage.e2e.ts` does.
 
 <!--VITE PLUS START-->
 

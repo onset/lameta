@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import { default as React, useState, useEffect } from "react";
 import { observer } from "mobx-react";
 import ReactTable from "react-table-6";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { File } from "../model/file/File";
 import ffmpeg from "fluent-ffmpeg";
 import ExifReader from "exifreader";
@@ -150,7 +150,7 @@ function roundToOneDecimalPlace(n: number): number {
 function getStatsFromFileAsync(file: File): Promise<Stats> {
   switch (file.type) {
     case "Image":
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         try {
           const ext = Path.extname(file.getActualFilePath()).toLowerCase().replace(/\./g, "");
           if (ext === "bmp") {
@@ -170,38 +170,40 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
           resolve({ error: err.message });
         }
       });
-      break;
 
     case "Audio":
     case "Video":
       return new Promise((resolve, reject) => {
-        const stats: Stats = {};
         try {
           ffmpeg.ffprobe(file.getActualFilePath(), (err, result) => {
             if (err) {
               console.error(`error testing ffprobe on '${file.getActualFilePath()}'`);
               reject(err);
-            } else if (result && result.format && result.format.duration) {
-              stats["Length"] = humanizeDuration(1000 * result.format.duration, {
-                round: true,
-              });
-              stats["Format"] = result.format.format_long_name ?? "";
-              result.streams.forEach((stream) => {
-                processVideoStream(stream, stats);
-              });
-              resolve(stats);
+            } else {
+              resolve(statsFromProbeResult(result));
             }
           });
         } catch (err) {
           reject(err);
         }
       });
-      break;
     default:
       return new Promise((resolve, reject) => {
         reject();
       });
   }
+}
+// ffprobe reports no duration for some files, such as a stream without a
+// container duration; their other stats are still worth showing.
+export function statsFromProbeResult(result: ffmpeg.FfprobeData | undefined): Stats {
+  const stats: Stats = {};
+  const duration = result?.format?.duration;
+  stats["Length"] = duration ? humanizeDuration(1000 * duration, { round: true }) : "N/A";
+  stats["Format"] = result?.format?.format_long_name ?? "";
+  (result?.streams ?? []).forEach((stream) => {
+    processVideoStream(stream, stats);
+  });
+  return stats;
 }
 function processVideoStream(stream: ffmpeg.FfprobeStream, stats: Stats) {
   switch (stream.codec_type) {

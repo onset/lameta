@@ -5,12 +5,10 @@ import temp from "temp";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
-import { i18nUnitTestPrep } from "../other/localization";
 import { ProjectProblems } from "./ProjectProblems";
 
 mobx.configure({ enforceActions: "never" });
 temp.track();
-i18nUnitTestPrep();
 
 function loadEdoloUnderElar(): Project {
   const dir = Path.join(temp.mkdirSync("project problems"), "Edolo sample");

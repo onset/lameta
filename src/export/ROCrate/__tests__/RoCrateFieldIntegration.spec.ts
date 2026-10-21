@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vite-plus/test";
 import {
   fieldDefinitionsOfCurrentConfig,
-  prepareGlobalFieldDefinitionCatalog
+  prepareGlobalFieldDefinitionCatalog,
 } from "../../../model/field/ConfiguredFieldDefinitions";
 
 describe("RO-Crate Field Integration Tests", () => {
@@ -21,16 +21,14 @@ describe("RO-Crate Field Integration Tests", () => {
     expect(sessionFields.find((f) => f.key === "keyword")).toBeDefined();
 
     expect(projectFields.find((f) => f.key === "title")).toBeDefined();
-    expect(
-      projectFields.find((f) => f.key === "projectDescription")
-    ).toBeDefined();
+    expect(projectFields.find((f) => f.key === "projectDescription")).toBeDefined();
     expect(projectFields.find((f) => f.key === "grantId")).toBeDefined();
 
     expect(commonFields.find((f) => f.key === "language")).toBeDefined();
     expect(commonFields.find((f) => f.key === "person")).toBeDefined();
 
     console.log(
-      `Loaded ${sessionFields.length} session fields, ${projectFields.length} project fields, ${commonFields.length} common fields`
+      `Loaded ${sessionFields.length} session fields, ${projectFields.length} project fields, ${commonFields.length} common fields`,
     );
   });
 
@@ -38,15 +36,9 @@ describe("RO-Crate Field Integration Tests", () => {
     // Load real configuration
     prepareGlobalFieldDefinitionCatalog("lameta");
 
-    const genreField = fieldDefinitionsOfCurrentConfig.session.find(
-      (f) => f.key === "genre"
-    );
-    const languageField = fieldDefinitionsOfCurrentConfig.common.find(
-      (f) => f.key === "language"
-    );
-    const keywordField = fieldDefinitionsOfCurrentConfig.session.find(
-      (f) => f.key === "keyword"
-    );
+    const genreField = fieldDefinitionsOfCurrentConfig.session.find((f) => f.key === "genre");
+    const languageField = fieldDefinitionsOfCurrentConfig.common.find((f) => f.key === "language");
+    const keywordField = fieldDefinitionsOfCurrentConfig.session.find((f) => f.key === "keyword");
 
     // Verify these have the actual RO-Crate configuration from fields.json5
     expect(genreField?.rocrate).toBeDefined();
@@ -54,7 +46,7 @@ describe("RO-Crate Field Integration Tests", () => {
     expect(genreField?.rocrate?.array).toBe(true);
     expect(genreField?.rocrate?.template).toEqual({
       "@id": "[v]",
-      "@type": "DefinedTerm"
+      "@type": "DefinedTerm",
     });
 
     expect(languageField?.rocrate).toBeDefined();
@@ -62,7 +54,7 @@ describe("RO-Crate Field Integration Tests", () => {
       "@id": "#language_[code]",
       "@type": "Language",
       code: "[code]",
-      name: "[languageName]"
+      name: "[languageName]",
     });
 
     expect(keywordField?.rocrate).toBeDefined();

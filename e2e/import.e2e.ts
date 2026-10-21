@@ -1,9 +1,8 @@
-import { test, expect as expect, Page } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import fs from "fs";
 import * as Path from "path";
-import { E2eFileList } from "./FileList-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -18,7 +17,7 @@ test.describe("Import Session", () => {
   test.afterAll(async ({}) => {
     await lameta.quit();
   });
-  test("Smoke test", async ({}, testInfo) => {
+  test("Smoke test", async ({}) => {
     await project.goToSessions();
     //const fileList = new E2eFileList(lameta, page, project.projectDirectory);
 
@@ -33,11 +32,11 @@ test.describe("Import Session", () => {
 9/11/2020,,without title,RC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Joe Strummer,Recorder,,,,,,,,
 9/12/2020,Minim�qui�dolore�ex�eu�pariatur�eu�cupidatat�sint�esse�dolore�elit�labore�proident�officia.,something,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Yesterday,This one has a bad date,foobar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-`
+`,
     );
     await lameta.mockShowOpenDialog([csvPath]);
     await page.getByRole("button", { name: "Choose File" }).click();
-    const importButton = await page.getByTestId("import");
+    const importButton = page.getByTestId("import");
     await expect(importButton).toBeEnabled();
     await importButton.click();
 

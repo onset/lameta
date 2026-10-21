@@ -13,104 +13,99 @@ export const knownFileFormats: IFileFormat[] = [
     type: "Session",
     isMediaType: false,
     imdiType: "unused",
-    extensions: "session"
+    extensions: "session",
   },
   {
     type: "Person",
     isMediaType: false,
     imdiType: "unused",
-    extensions: "person"
+    extensions: "person",
   },
   {
     type: "Audio",
     isMediaType: true,
     imdiType: "Audio",
-    extensions:
-      "wav, mp3, wma,ogg,flac, aac, m4a, aiff, aif, au, amr, ra, ram, caf"
+    extensions: "wav, mp3, wma,ogg,flac, aac, m4a, aiff, aif, au, amr, ra, ram, caf",
   },
   {
     type: "Video",
     imdiType: "Video",
     isMediaType: true,
-    extensions: "mts, avi, mov, mp4, mpeg, mpg, avchd, wmv, m4v"
+    extensions: "mts, avi, mov, mp4, mpeg, mpg, avchd, wmv, m4v",
   },
   {
     type: "Image",
     imdiType: "Image",
     isMediaType: true,
-    extensions: "jpg, jpeg, png, tiff, gif, tif, svg, bmp"
+    extensions: "jpg, jpeg, png, tiff, gif, tif, svg, bmp",
   },
   {
     type: "CHAT",
     isMediaType: false,
     imdiType: "CHAT",
-    extensions: "cha"
+    extensions: "cha",
   },
   {
     type: "ELAN",
     isMediaType: false,
     imdiType: "ELAN",
-    extensions: "eaf, pfsx"
+    extensions: "eaf, pfsx",
   },
   {
     type: "Transcriber",
     isMediaType: false,
     imdiType: "Transcriber",
-    extensions: "trs"
+    extensions: "trs",
   },
   {
     type: "Doc",
     isMediaType: false,
     imdiType: "Document",
-    extensions: "pdf, html, htm, doc, docx, txt"
+    extensions: "pdf, html, htm, doc, docx, txt",
   },
 
   {
     type: "Settings",
     isMediaType: false,
     imdiType: "Settings",
-    extensions: "psfx,typ,lng,etf"
+    extensions: "psfx,typ,lng,etf",
   },
   {
     type: "Toolbox",
     isMediaType: false,
     imdiType: "Toolbox",
-    extensions: "tbt"
+    extensions: "tbt",
   },
   {
     type: "Praat",
     isMediaType: false,
     imdiType: "Praat",
-    extensions: "textgrid"
+    extensions: "textgrid",
   },
   { type: "unused", isMediaType: false, imdiType: "XML", extensions: "xml" },
   {
     type: "FLEx",
     isMediaType: false,
     imdiType: "FLEx",
-    extensions: "fwdata, flextext, fwbackup,lift, fwdict, fwnotebook, fwthes"
+    extensions: "fwdata, flextext, fwbackup,lift, fwdict, fwnotebook, fwthes",
   },
   { type: "unused", isMediaType: false, imdiType: "XML", extensions: "xml" },
   {
     type: "Geo",
     isMediaType: false,
     imdiType: "Geographic data",
-    extensions: "kml,kmz"
-  }
+    extensions: "kml,kmz",
+  },
 ];
 
-export function GetFileFormatInfoForPath(
-  path: string
-): IFileFormat | undefined {
+export function GetFileFormatInfoForPath(path: string): IFileFormat | undefined {
   const ext = Path.extname(path).toLowerCase().replace(/\./g, "");
 
   return GetFileFormatInfoForExtension(ext);
 }
-export function GetFileFormatInfoForExtension(
-  ext: string
-): IFileFormat | undefined {
+export function GetFileFormatInfoForExtension(ext: string): IFileFormat | undefined {
   return knownFileFormats.find(
-    (group) => group.extensions.replace(/ /g, "").split(",").indexOf(ext) > -1
+    (group) => group.extensions.replace(/ /g, "").split(",").indexOf(ext) > -1,
   );
 }
 

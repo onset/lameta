@@ -9,16 +9,16 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01T00:00:00Z")
-  })
+    birthtime: new Date("2023-01-01T00:00:00Z"),
+  }),
 }));
 
 vi.mock("../../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 /**
@@ -38,44 +38,40 @@ describe("RoCrateExporter additional fields without context", () => {
     vi.clearAllMocks();
 
     // Mock field definitions - these additional fields have NO rocrate definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      [
-        {
-          key: "title",
-          persist: true,
-          englishLabel: "Session Title",
-          rocrate: {
-            key: "name",
-            template: { name: "[v]" }
-          }
-        } as FieldDefinition,
-        {
-          key: "involvement",
-          persist: true,
-          englishLabel: "Researcher Involvement",
-          isAdditional: true
-          // NO rocrate definition - this field should be excluded
-        } as FieldDefinition,
-        {
-          key: "planningType",
-          persist: true,
-          englishLabel: "Planning Type",
-          isAdditional: true
-          // NO rocrate definition - this field should be excluded
-        } as FieldDefinition,
-        {
-          key: "socialContext",
-          persist: true,
-          englishLabel: "Social Context",
-          isAdditional: true
-          // NO rocrate definition - this field should be excluded
-        } as FieldDefinition
-      ]
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([
+      {
+        key: "title",
+        persist: true,
+        englishLabel: "Session Title",
+        rocrate: {
+          key: "name",
+          template: { name: "[v]" },
+        },
+      } as FieldDefinition,
+      {
+        key: "involvement",
+        persist: true,
+        englishLabel: "Researcher Involvement",
+        isAdditional: true,
+        // NO rocrate definition - this field should be excluded
+      } as FieldDefinition,
+      {
+        key: "planningType",
+        persist: true,
+        englishLabel: "Planning Type",
+        isAdditional: true,
+        // NO rocrate definition - this field should be excluded
+      } as FieldDefinition,
+      {
+        key: "socialContext",
+        persist: true,
+        englishLabel: "Social Context",
+        isAdditional: true,
+        // NO rocrate definition - this field should be excluded
+      } as FieldDefinition,
+    ]);
 
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([]);
 
     // Create mock session
     mockSession = {
@@ -87,20 +83,20 @@ describe("RoCrateExporter additional fields without context", () => {
           key: "involvement",
           englishLabel: "Researcher Involvement",
           persist: true,
-          isAdditional: true
+          isAdditional: true,
         },
         {
           key: "planningType",
           englishLabel: "Planning Type",
           persist: true,
-          isAdditional: true
+          isAdditional: true,
         },
         {
           key: "socialContext",
           englishLabel: "Social Context",
           persist: true,
-          isAdditional: true
-        }
+          isAdditional: true,
+        },
       ],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
@@ -114,18 +110,15 @@ describe("RoCrateExporter additional fields without context", () => {
           getHasValue: vi.fn().mockReturnValue(true),
           forEach: vi.fn(),
           getFieldDefinition: vi.fn().mockImplementation((key: string) => {
-            if (key === "involvement")
-              return { key: "involvement", isAdditional: true };
-            if (key === "planningType")
-              return { key: "planningType", isAdditional: true };
-            if (key === "socialContext")
-              return { key: "socialContext", isAdditional: true };
+            if (key === "involvement") return { key: "involvement", isAdditional: true };
+            if (key === "planningType") return { key: "planningType", isAdditional: true };
+            if (key === "socialContext") return { key: "socialContext", isAdditional: true };
             return undefined;
-          })
-        }
+          }),
+        },
       },
       files: [],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as any;
 
     mockProject = {
@@ -139,8 +132,8 @@ describe("RoCrateExporter additional fields without context", () => {
         {
           key: "archiveConfigurationName",
           englishLabel: "Archive",
-          persist: true
-        }
+          persist: true,
+        },
       ],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
@@ -151,13 +144,13 @@ describe("RoCrateExporter additional fields without context", () => {
         properties: {
           getHasValue: vi.fn().mockReturnValue(true),
           forEach: vi.fn(),
-          getFieldDefinition: vi.fn().mockReturnValue(undefined)
-        }
+          getFieldDefinition: vi.fn().mockReturnValue(undefined),
+        },
       },
       findPerson: vi.fn().mockReturnValue(null),
       authorityLists: {
-        accessChoicesOfCurrentProtocol: []
-      }
+        accessChoicesOfCurrentProtocol: [],
+      },
     } as any;
   });
 
@@ -169,7 +162,7 @@ describe("RoCrateExporter additional fields without context", () => {
 
     // Find the session entity in the graph
     const sessionEntity = graph.find((entity: any) =>
-      entity["@type"]?.includes("RepositoryObject")
+      entity["@type"]?.includes("RepositoryObject"),
     );
 
     expect(sessionEntity).toBeDefined();
@@ -186,7 +179,7 @@ describe("RoCrateExporter additional fields without context", () => {
 
     // Find the session entity in the graph
     const sessionEntity = graph.find((entity: any) =>
-      entity["@type"]?.includes("RepositoryObject")
+      entity["@type"]?.includes("RepositoryObject"),
     );
 
     expect(sessionEntity).toBeDefined();
@@ -203,7 +196,7 @@ describe("RoCrateExporter additional fields without context", () => {
 
     // Find the session entity in the graph
     const sessionEntity = graph.find((entity: any) =>
-      entity["@type"]?.includes("RepositoryObject")
+      entity["@type"]?.includes("RepositoryObject"),
     );
 
     expect(sessionEntity).toBeDefined();
@@ -220,7 +213,7 @@ describe("RoCrateExporter additional fields without context", () => {
 
     // Find the session entity in the graph
     const sessionEntity = graph.find((entity: any) =>
-      entity["@type"]?.includes("RepositoryObject")
+      entity["@type"]?.includes("RepositoryObject"),
     );
 
     expect(sessionEntity).toBeDefined();

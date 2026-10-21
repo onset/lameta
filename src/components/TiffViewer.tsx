@@ -18,7 +18,7 @@ export const TiffViewer: React.FC<ITiffViewerProps> = ({ path, className }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [dimensions, setDimensions] = useState<{
+  const [, setDimensions] = useState<{
     width: number;
     height: number;
   } | null>(null);
@@ -55,9 +55,7 @@ export const TiffViewer: React.FC<ITiffViewerProps> = ({ path, className }) => {
         const height = Math.floor(firstPage.height);
 
         if (!width || !height || width <= 0 || height <= 0) {
-          throw new Error(
-            `Invalid image dimensions: ${firstPage.width}x${firstPage.height}`
-          );
+          throw new Error(`Invalid image dimensions: ${firstPage.width}x${firstPage.height}`);
         }
 
         if (!isMounted) return;
@@ -90,15 +88,13 @@ export const TiffViewer: React.FC<ITiffViewerProps> = ({ path, className }) => {
         setLoading(false);
       } catch (err) {
         if (isMounted) {
-          setError(
-            err instanceof Error ? err.message : "Failed to load TIFF image"
-          );
+          setError(err instanceof Error ? err.message : "Failed to load TIFF image");
           setLoading(false);
         }
       }
     };
 
-    loadTiff();
+    void loadTiff(); // it catches all of its own errors
 
     return () => {
       isMounted = false;

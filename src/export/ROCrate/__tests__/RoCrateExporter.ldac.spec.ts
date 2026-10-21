@@ -19,23 +19,21 @@ const ldac = (term: string) => expandLdacId(term);
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01T00:00:00Z")
-  })
+    birthtime: new Date("2023-01-01T00:00:00Z"),
+  }),
 }));
 
 vi.mock("../../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
-    findOneLanguageNameFromCode_Or_ReturnCode: vi
-      .fn()
-      .mockImplementation((code: string) => {
-        const languageMap: { [key: string]: string } = {
-          etr: "Edolo",
-          tpi: "Tok Pisin",
-          hui: "Huli"
-        };
-        return languageMap[code] || `Language ${code}`;
-      })
-  }
+    findOneLanguageNameFromCode_Or_ReturnCode: vi.fn().mockImplementation((code: string) => {
+      const languageMap: { [key: string]: string } = {
+        etr: "Edolo",
+        tpi: "Tok Pisin",
+        hui: "Huli",
+      };
+      return languageMap[code] || `Language ${code}`;
+    }),
+  },
 }));
 
 describe("RoCrateExporter LDAC Profile Compliance", () => {
@@ -46,23 +44,21 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
   beforeEach(() => {
     // Mock field definitions for LDAC tests
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      [
-        {
-          key: "languages",
-          persist: true,
-          type: "languageChoices",
-          multilingual: false,
-          isCustom: false,
-          showOnAutoForm: true,
-          rocrate: {
-            key: "ldac:subjectLanguage",
-            handler: "languages",
-            array: true
-          }
-        } as FieldDefinition
-      ]
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([
+      {
+        key: "languages",
+        persist: true,
+        type: "languageChoices",
+        multilingual: false,
+        isCustom: false,
+        showOnAutoForm: true,
+        rocrate: {
+          key: "ldac:subjectLanguage",
+          handler: "languages",
+          array: true,
+        },
+      } as FieldDefinition,
+    ]);
 
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
@@ -70,9 +66,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
+            "@type": "Person",
+          },
+        },
       } as FieldDefinition,
       {
         key: "language",
@@ -80,10 +76,10 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           template: {
             "@id": "[code]",
             "@type": "Language",
-            name: "[languageName]"
-          }
-        }
-      } as FieldDefinition
+            name: "[languageName]",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Create enhanced mocks following the original pattern
@@ -99,10 +95,10 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      files: []
+      files: [],
     } as any;
 
     awiPersonId = createPersonId(mockPerson);
@@ -121,14 +117,13 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           rocrate: {
             key: "ldac:subjectLanguage",
             handler: "languages",
-            array: true
-          }
-        } as FieldDefinition
+            array: true,
+          },
+        } as FieldDefinition,
       ],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
-          if (key === "title")
-            return "The story behind how we catch fish with poison bark";
+          if (key === "title") return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -145,46 +140,45 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
             if (key === "languages") return "etr: Edolo;tpi: Tok Pisin";
             return "";
           }),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as any;
 
     mockProject = {
       filePrefix: "Edolo_sample",
       directory: "/project",
       sessions: {
-        items: [mockSession]
+        items: [mockSession],
       },
       findPerson: vi.fn(),
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "description")
-            return "Documentation of the Edolo language";
+          if (key === "description") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       knownFields: [],
       authorityLists: {
-        accessChoicesOfCurrentProtocol: []
-      }
+        accessChoicesOfCurrentProtocol: [],
+      },
     } as any;
 
     // Set up session contributions for LDAC role tests
     mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([
       {
         personReference: "Awi_Heole",
-        role: "speaker"
-      }
+        role: "speaker",
+      },
     ]);
 
     // Set up project person finder
@@ -199,20 +193,20 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         id: "F",
         label: "F: Free to All",
         description: "access is Free to all",
-        ldacAccessCategory: "ldac:OpenAccess"
+        ldacAccessCategory: "ldac:OpenAccess",
       } as any,
       {
         id: "U",
         label: "U: All Registered Users",
         description: "all Users can access (requires registration)",
-        ldacAccessCategory: "ldac:AuthorizedAccess"
+        ldacAccessCategory: "ldac:AuthorizedAccess",
       } as any,
       {
         id: "C",
         label: "C: Community members only",
         description: "only Community members are allowed access",
-        ldacAccessCategory: "ldac:AuthorizedAccess"
-      } as any
+        ldacAccessCategory: "ldac:AuthorizedAccess",
+      } as any,
     ];
 
     // Set up archive configuration for license tests - use non-null assertion
@@ -237,9 +231,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
     expect(Array.isArray(context)).toBe(true);
     const hasLdacPrefix = context.some(
       (entry: any) =>
-        entry &&
-        typeof entry === "object" &&
-        entry.ldac === "https://w3id.org/ldac/terms#"
+        entry && typeof entry === "object" && entry.ldac === "https://w3id.org/ldac/terms#",
     );
     expect(hasLdacPrefix).toBe(true);
   });
@@ -250,21 +242,13 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "#session-ETR009" &&
-          item["@type"].includes("CollectionEvent")
+          item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
       );
 
       expect(sessionEvent).toBeDefined();
-      expect(sessionEvent["@type"]).toEqual([
-        "RepositoryObject",
-        "CollectionEvent"
-      ]);
-      expect(sessionEvent.collectionEventType).toBe(
-        "https://w3id.org/ldac/terms#Session"
-      );
-      expect(sessionEvent.name).toBe(
-        "The story behind how we catch fish with poison bark"
-      );
+      expect(sessionEvent["@type"]).toEqual(["RepositoryObject", "CollectionEvent"]);
+      expect(sessionEvent.collectionEventType).toBe("https://w3id.org/ldac/terms#Session");
+      expect(sessionEvent.name).toBe("The story behind how we catch fish with poison bark");
       expect(sessionEvent.description).toBe("Some guys talking");
       expect(sessionEvent.startDate).toBe("2010-06-06");
     });
@@ -274,8 +258,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "#session-ETR009" &&
-          item["@type"].includes("CollectionEvent")
+          item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
       );
 
       // Should NOT use generic participant property
@@ -284,8 +267,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       // Should use specific LDAC role properties
       expect(sessionEvent["ldac:speaker"]).toEqual([
         {
-          "@id": awiPersonId
-        }
+          "@id": awiPersonId,
+        },
       ]);
     });
 
@@ -295,8 +278,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "#session-ETR009" &&
-          item["@type"].includes("CollectionEvent")
+          item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
       );
 
       // Session CollectionEvent should NOT have hasPart per LAM-103
@@ -308,18 +290,15 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
       // Verify root dataset has pcdm:hasMember pointing to sessions
-      const rootDataset = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
       expect(rootDataset["pcdm:hasMember"]).toContainEqual({
-        "@id": "#session-ETR009"
+        "@id": "#session-ETR009",
       });
 
       // Verify session has pcdm:memberOf pointing back to root collection
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "#session-ETR009" &&
-          item["@type"].includes("CollectionEvent")
+          item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
       );
       expect(sessionEvent["pcdm:memberOf"]).toEqual({ "@id": "./" });
     });
@@ -332,17 +311,14 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "Dr. John Smith";
           return "";
         });
 
       const result = (await getRoCrate(mockProject, mockProject)) as any;
-      const rootDataset = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
 
       expect(rootDataset).toBeDefined();
       expect(rootDataset.author).toBe("Dr. John Smith");
@@ -356,30 +332,27 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "";
           return "";
         });
 
       const result = (await getRoCrate(mockProject, mockProject)) as any;
-      const rootDataset = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
 
       expect(rootDataset).toBeDefined();
       expect(rootDataset.author).toEqual({ "@id": "#unknown-contributor" });
       expect(rootDataset.accountablePerson).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
       expect(rootDataset["dct:rightsHolder"]).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
 
       // Check that the unknown contributor entity exists
       const unknownContributor = result["@graph"].find(
-        (item: any) => item["@id"] === "#unknown-contributor"
+        (item: any) => item["@id"] === "#unknown-contributor",
       );
       expect(unknownContributor).toBeDefined();
       expect(unknownContributor["@type"]).toBe("Person");
@@ -392,30 +365,27 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           // contactPerson returns empty string for missing field
           return "";
         });
 
       const result = (await getRoCrate(mockProject, mockProject)) as any;
-      const rootDataset = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
 
       expect(rootDataset).toBeDefined();
       expect(rootDataset.author).toEqual({ "@id": "#unknown-contributor" });
       expect(rootDataset.accountablePerson).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
       expect(rootDataset["dct:rightsHolder"]).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
 
       // Check that the unknown contributor entity exists
       const unknownContributor = result["@graph"].find(
-        (item: any) => item["@id"] === "#unknown-contributor"
+        (item: any) => item["@id"] === "#unknown-contributor",
       );
       expect(unknownContributor).toBeDefined();
       expect(unknownContributor["@type"]).toBe("Person");
@@ -427,32 +397,29 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "depositor") return "Nick Thieberger";
           return "";
         });
 
       const result = (await getRoCrate(mockProject, mockProject)) as any;
-      const rootDataset = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
 
       // LAM-39: ensure ldac:depositor references a Person entity instead of emitting a bare string property.
       expect(rootDataset).toBeDefined();
       expect(rootDataset["ldac:depositor"]).toEqual({
-        "@id": "#depositor-nick-thieberger"
+        "@id": "#depositor-nick-thieberger",
       });
       expect(rootDataset).not.toHaveProperty("depositor");
 
       const depositorEntity = result["@graph"].find(
-        (item: any) => item["@id"] === "#depositor-nick-thieberger"
+        (item: any) => item["@id"] === "#depositor-nick-thieberger",
       );
 
       expect(depositorEntity).toMatchObject({
         "@type": "Person",
-        name: "Nick Thieberger"
+        name: "Nick Thieberger",
       });
     });
 
@@ -461,30 +428,27 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";
         });
 
       const result = (await getRoCrate(mockProject, mockProject)) as any;
-      const rootDataset = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
 
       // https://linear.app/lameta/issue/LAM-38: archiveConfigurationName is undefined in RO-Crate, so we require holdingArchive.
       expect(rootDataset).toBeDefined();
       expect(rootDataset.holdingArchive).toEqual({
-        "@id": "#publisher-testarchive"
+        "@id": "#publisher-testarchive",
       });
       expect(rootDataset).not.toHaveProperty("archiveConfigurationName");
 
       const holdingArchiveOrg = result["@graph"].find(
-        (item: any) => item["@id"] === "#publisher-testarchive"
+        (item: any) => item["@id"] === "#publisher-testarchive",
       );
       expect(holdingArchiveOrg).toMatchObject({
         "@type": "Organization",
-        name: "TestArchive"
+        name: "TestArchive",
       });
     });
   });
@@ -495,8 +459,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "Dr. John Smith";
           return "";
@@ -505,8 +468,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "#session-ETR009" &&
-          item["@type"].includes("CollectionEvent")
+          item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
       );
 
       expect(sessionEvent).toBeDefined();
@@ -520,8 +482,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "";
           return "";
@@ -530,17 +491,16 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "#session-ETR009" &&
-          item["@type"].includes("CollectionEvent")
+          item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
       );
 
       expect(sessionEvent).toBeDefined();
       expect(sessionEvent.author).toEqual({ "@id": "#unknown-contributor" });
       expect(sessionEvent.accountablePerson).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
       expect(sessionEvent["dct:rightsHolder"]).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
     });
 
@@ -549,8 +509,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "projectDescription")
-            return "Documentation of the Edolo language";
+          if (key === "projectDescription") return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "";
           return "";
@@ -558,23 +517,22 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const result = (await getRoCrate(mockProject, mockSession)) as any;
       const standaloneSession = result["@graph"].find(
-        (item: any) =>
-          item["@id"] === "./" && item["@type"].includes("CollectionEvent")
+        (item: any) => item["@id"] === "./" && item["@type"].includes("CollectionEvent"),
       );
 
       expect(standaloneSession).toBeDefined();
       expect(standaloneSession.author).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
       expect(standaloneSession.accountablePerson).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
       expect(standaloneSession["dct:rightsHolder"]).toEqual({
-        "@id": "#unknown-contributor"
+        "@id": "#unknown-contributor",
       });
 
       const unknownContributor = result["@graph"].find(
-        (item: any) => item["@id"] === "#unknown-contributor"
+        (item: any) => item["@id"] === "#unknown-contributor",
       );
       expect(unknownContributor).toBeDefined();
       expect(unknownContributor.name).toBe("Unknown");
@@ -586,7 +544,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
       const personEntity = result["@graph"].find(
-        (item: any) => item["@id"] === awiPersonId && item["@type"] === "Person"
+        (item: any) => item["@id"] === awiPersonId && item["@type"] === "Person",
       );
 
       expect(personEntity).toBeDefined();
@@ -596,7 +554,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockProject)) as any;
 
       const placeEntity = result["@graph"].find(
-        (item: any) => item["@id"] === "#huya" && item["@type"] === "Place"
+        (item: any) => item["@id"] === "#huya" && item["@type"] === "Place",
       );
 
       expect(placeEntity).toBeDefined();
@@ -604,8 +562,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       const sessionEvent = result["@graph"].find(
         (item: any) =>
-          item["@id"] === "#session-ETR009" &&
-          item["@type"].includes("CollectionEvent")
+          item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
       );
       expect(sessionEvent.location).toEqual({ "@id": "#huya" });
     });
@@ -617,13 +574,13 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Find the license entry (normalized)
       const license = result["@graph"].find(
-        (item: any) => item["@id"] === "#license-testarchive-f"
+        (item: any) => item["@id"] === "#license-testarchive-f",
       );
 
       expect(license).toBeDefined();
       expect(license["@type"]).toBe(ldac("ldac:DataReuseLicense"));
       expect(license["ldac:access"]).toEqual({
-        "@id": ldac("ldac:OpenAccess")
+        "@id": ldac("ldac:OpenAccess"),
       });
       expect(license.description).toContain("TestArchive-specific term");
       expect(license.description).toContain("'F'"); // the stored id/code
@@ -635,8 +592,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title")
-            return "The story behind how we catch fish with poison bark";
+          if (key === "title") return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -650,19 +606,17 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Find the license entry (normalized)
       const license = result["@graph"].find(
-        (item: any) => item["@id"] === "#license-testarchive-u"
+        (item: any) => item["@id"] === "#license-testarchive-u",
       );
 
       expect(license).toBeDefined();
       expect(license["@type"]).toBe(ldac("ldac:DataReuseLicense"));
       expect(license["ldac:access"]).toEqual({
-        "@id": ldac("ldac:AuthorizedAccess")
+        "@id": ldac("ldac:AuthorizedAccess"),
       });
       expect(license.description).toContain("TestArchive-specific term");
       expect(license.description).toContain("'U'"); // the stored id/code
-      expect(license.description).toContain(
-        "'all Users can access (requires registration)'"
-      );
+      expect(license.description).toContain("'all Users can access (requires registration)'");
     });
 
     it("should include LDAC access type definitions in the graph", async () => {
@@ -670,20 +624,20 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Check for LDAC access type definitions
       const accessTypes = result["@graph"].find(
-        (item: any) => item["@id"] === ldac("ldac:AccessTypes")
+        (item: any) => item["@id"] === ldac("ldac:AccessTypes"),
       );
       expect(accessTypes).toBeDefined();
       expect(accessTypes["@type"]).toBe("DefinedTermSet");
       expect(accessTypes.name).toBe("Access Types");
 
       const openAccess = result["@graph"].find(
-        (item: any) => item["@id"] === ldac("ldac:OpenAccess")
+        (item: any) => item["@id"] === ldac("ldac:OpenAccess"),
       );
       expect(openAccess).toBeDefined();
       expect(openAccess["@type"]).toBe("DefinedTerm");
       expect(openAccess.name).toBe("Open Access");
       expect(openAccess.inDefinedTermSet).toEqual({
-        "@id": ldac("ldac:AccessTypes")
+        "@id": ldac("ldac:AccessTypes"),
       });
 
       // LAM-92: ldac:AuthorizedAccess is only included when a session uses it.
@@ -697,7 +651,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       // causing orphaned entity warnings. It's used as @type in licenses,
       // not referenced by @id, so it doesn't need to be defined in-crate.
       const dataReuseLicense = result["@graph"].find(
-        (item: any) => item["@id"] === ldac("ldac:DataReuseLicense")
+        (item: any) => item["@id"] === ldac("ldac:DataReuseLicense"),
       );
       expect(dataReuseLicense).toBeUndefined();
     });
@@ -707,8 +661,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title")
-            return "The story behind how we catch fish with poison bark";
+          if (key === "title") return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -722,12 +675,12 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Find the license entry (normalized - unspecified becomes "public")
       const license = result["@graph"].find(
-        (item: any) => item["@id"] === "#license-testarchive-public"
+        (item: any) => item["@id"] === "#license-testarchive-public",
       );
 
       expect(license).toBeDefined();
       expect(license["ldac:access"]).toEqual({
-        "@id": ldac("ldac:OpenAccess")
+        "@id": ldac("ldac:OpenAccess"),
       });
     });
 
@@ -737,15 +690,14 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         {
           id: "X",
           label: "X: Unknown Access",
-          description: "some access without ldacAccessCategory"
-        }
+          description: "some access without ldacAccessCategory",
+        },
       ];
 
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title")
-            return "The story behind how we catch fish with poison bark";
+          if (key === "title") return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -759,12 +711,12 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Find the license entry (normalized)
       const license = result["@graph"].find(
-        (item: any) => item["@id"] === "#license-testarchive-x"
+        (item: any) => item["@id"] === "#license-testarchive-x",
       );
 
       expect(license).toBeDefined();
       expect(license["ldac:access"]).toEqual({
-        "@id": ldac("ldac:AuthorizedAccess")
+        "@id": ldac("ldac:AuthorizedAccess"),
       });
     });
   });
@@ -774,9 +726,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockSession)) as any;
 
       // Find the main session entry
-      const sessionEntry = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const sessionEntry = result["@graph"].find((item: any) => item["@id"] === "./");
 
       expect(sessionEntry["ldac:subjectLanguage"]).toBeDefined();
       expect(Array.isArray(sessionEntry["ldac:subjectLanguage"])).toBe(true);
@@ -790,9 +740,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       });
 
       // Should have references to both languages
-      const languageIds = sessionEntry["ldac:subjectLanguage"].map(
-        (item: any) => item["@id"]
-      );
+      const languageIds = sessionEntry["ldac:subjectLanguage"].map((item: any) => item["@id"]);
       expect(languageIds).toContain("#language_etr");
       expect(languageIds).toContain("#language_tpi");
     });
@@ -802,8 +750,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
       // Find all language entities
       const languageEntities = result["@graph"].filter(
-        (item: any) =>
-          item["@type"] === "Language" && item["@id"]?.startsWith("#language_")
+        (item: any) => item["@type"] === "Language" && item["@id"]?.startsWith("#language_"),
       );
 
       // Find all referenced language IDs
@@ -841,16 +788,15 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
             key: "inLanguage",
             handler: "languages",
             array: false,
-            template: { "@id": "#language_[v]" }
-          }
-        } as any
+            template: { "@id": "#language_[v]" },
+          },
+        } as any,
       ];
 
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title")
-            return "The story behind how we catch fish with poison bark";
+          if (key === "title") return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -877,9 +823,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockSession)) as any;
 
       // Find the main session entry
-      const sessionEntry = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const sessionEntry = result["@graph"].find((item: any) => item["@id"] === "./");
 
       // The inLanguage should be properly formatted as a string per LDAC profile requirements
       if (sessionEntry["inLanguage"]) {
@@ -909,17 +853,16 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
             template: {
               "@id": "#language_[v]",
               "@type": "Language",
-              name: "[languageName]"
-            }
-          }
-        } as any
+              name: "[languageName]",
+            },
+          },
+        } as any,
       ];
 
       (mockSession.metadataFile as any).getTextProperty = vi
         .fn()
         .mockImplementation((key: string) => {
-          if (key === "title")
-            return "The story behind how we catch fish with poison bark";
+          if (key === "title") return "The story behind how we catch fish with poison bark";
           if (key === "description") return "Some guys talking";
           if (key === "date") return "2010-06-06";
           if (key === "location") return "huya";
@@ -945,9 +888,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       const result = (await getRoCrate(mockProject, mockSession)) as any;
 
       // Find the main session entry
-      const sessionEntry = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const sessionEntry = result["@graph"].find((item: any) => item["@id"] === "./");
 
       // This should be fixed now: values should be objects with proper @id references
       if (sessionEntry["ldac:subjectLanguage"]) {
@@ -964,17 +905,14 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
 
         // Should have separate entries for each language
         expect(sessionEntry["ldac:subjectLanguage"]).toHaveLength(2);
-        const languageIds = sessionEntry["ldac:subjectLanguage"].map(
-          (item: any) => item["@id"]
-        );
+        const languageIds = sessionEntry["ldac:subjectLanguage"].map((item: any) => item["@id"]);
         expect(languageIds).toContain("#language_etr");
         expect(languageIds).toContain("#language_tpi");
       }
 
       // Check that language entities are created and referenced correctly
       const languageEntities = result["@graph"].filter(
-        (item: any) =>
-          item["@type"] === "Language" && item["@id"]?.startsWith("#language_")
+        (item: any) => item["@type"] === "Language" && item["@id"]?.startsWith("#language_"),
       );
 
       expect(languageEntities).toHaveLength(2);
@@ -1010,8 +948,8 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           rocrate: {
             key: "ldac:subjectLanguage",
             handler: "languages",
-            array: true
-          }
+            array: true,
+          },
         } as any,
         {
           key: "workingLanguages",
@@ -1025,9 +963,9 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
             key: "inLanguage",
             handler: "languages",
             array: false,
-            template: { "@id": "#language_[v]" }
-          }
-        } as any
+            template: { "@id": "#language_[v]" },
+          },
+        } as any,
       ];
 
       // Mock empty language fields
@@ -1043,25 +981,19 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
           return "";
         });
 
-      (mockSession.metadataFile as any).properties.getHasValue = vi
-        .fn()
-        .mockReturnValue(false);
+      (mockSession.metadataFile as any).properties.getHasValue = vi.fn().mockReturnValue(false);
 
       (mockSession.metadataFile as any).properties.getTextStringOrEmpty = vi
         .fn()
         .mockReturnValue("");
 
       // Mock getWorkingLanguageCodes to return empty array
-      (mockSession as any).getWorkingLanguageCodes = vi
-        .fn()
-        .mockReturnValue([]);
+      (mockSession as any).getWorkingLanguageCodes = vi.fn().mockReturnValue([]);
 
       const result = (await getRoCrate(mockProject, mockSession)) as any;
 
       // Find the main session entry
-      const sessionEntry = result["@graph"].find(
-        (item: any) => item["@id"] === "./"
-      );
+      const sessionEntry = result["@graph"].find((item: any) => item["@id"] === "./");
 
       // LAM-41 regression: expecting the Lexvo ISO 639-3 URI instead of the
       // legacy #language_und fragment so validators recognise the placeholder.
@@ -1070,16 +1002,16 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(Array.isArray(sessionEntry["ldac:subjectLanguage"])).toBe(true);
       expect(sessionEntry["ldac:subjectLanguage"]).toHaveLength(1);
       expect(sessionEntry["ldac:subjectLanguage"][0]).toEqual({
-        "@id": "https://lexvo.org/id/iso639-3/und"
+        "@id": "https://lexvo.org/id/iso639-3/und",
       });
 
       expect(sessionEntry["inLanguage"]).toBeDefined();
       expect(sessionEntry["inLanguage"]).toEqual({
-        "@id": "https://lexvo.org/id/iso639-3/und"
+        "@id": "https://lexvo.org/id/iso639-3/und",
       });
 
       const undLanguageEntity = result["@graph"].find(
-        (item: any) => item["@id"] === "https://lexvo.org/id/iso639-3/und"
+        (item: any) => item["@id"] === "https://lexvo.org/id/iso639-3/und",
       );
 
       expect(undLanguageEntity).toBeDefined();
@@ -1087,7 +1019,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
       expect(undLanguageEntity.code).toBe("und");
       expect(undLanguageEntity.name).toBe("Undetermined");
       expect(undLanguageEntity.description).toContain(
-        "Language marked as undetermined because no working language was specified in lameta"
+        "Language marked as undetermined because no working language was specified in lameta",
       );
     });
   });

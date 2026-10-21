@@ -12,7 +12,6 @@ import { MappedMatrix, RowImportStatus, MappedRow } from "./MappedMatrix";
 import { IImportMapping } from "./SpreadsheetToMatrix";
 import { Folder, IFolderType } from "../../model/Folder/Folder";
 import { NotifyException } from "../Notify";
-import { runInAction } from "mobx";
 import { Person } from "../../model/Project/Person/Person";
 import { staticLanguageFinder } from "../../languageFinder/LanguageFinder";
 import { IPersonLanguage } from "../../model/PersonLanguage";
@@ -21,20 +20,18 @@ import JSON5 from "json5";
 
 const LingMetaXMap = JSON5.parse(LingMetaXMapRaw) as IImportMapping;
 export const availableSpreadsheetMappings = {
-  LingMetaXMap
+  LingMetaXMap,
 };
 
 export function addImportMatrixToProject(
   project: Project,
   matrix: MappedMatrix,
-  folderType: IFolderType
+  folderType: IFolderType,
 ) {
   try {
     const folders = project.getFolderArrayFromType(folderType);
     folders.unMarkAll(); // new ones will be marked
-    const rows = matrix.rows.filter(
-      (row) => row.importStatus === RowImportStatus.Yes
-    );
+    const rows = matrix.rows.filter((row) => row.importStatus === RowImportStatus.Yes);
     const inMemoryCreationResults = new Array<{
       succeeded: boolean;
       row: MappedRow;
@@ -44,9 +41,7 @@ export function addImportMatrixToProject(
     }>();
 
     for (const row of rows) {
-      inMemoryCreationResults.push(
-        createFolderInMemory(project, row, folderType)
-      );
+      inMemoryCreationResults.push(createFolderInMemory(project, row, folderType));
     }
     // for each folder that was created successfully, finish importing it
     // LAM-111: https://linear.app/lameta/issue/LAM-111/incorrect-filter-imports-failed-folders-in-addimportmatrixtoproject
@@ -107,7 +102,7 @@ export function addImportMatrixToProject(
 export function createFolderInMemory(
   project: Project,
   row: MappedRow,
-  folderType: IFolderType
+  folderType: IFolderType,
 ): {
   succeeded: boolean;
   row: MappedRow;
@@ -127,7 +122,7 @@ export function createFolderInMemory(
       switch (lametaKey) {
         case "custom":
           folder.properties.addCustomProperty(
-            makeCustomField(cell.column.incomingLabel, cell.value)
+            makeCustomField(cell.column.incomingLabel, cell.value),
           );
 
           break;
@@ -149,36 +144,33 @@ export function createFolderInMemory(
           folder.metadataFile!.contributions.push(
             new Contribution(
               person.getIdToUseForReferences(),
-              lookAheadForValue(row, cellIndex, "contribution.role") ??
-                "participant",
-              lookAheadForValue(row, cellIndex, "contribution.comments") ?? ""
+              lookAheadForValue(row, cellIndex, "contribution.role") ?? "participant",
+              lookAheadForValue(row, cellIndex, "contribution.comments") ?? "",
 
               // enhance; comments and date are not part of lingmetax, will be needed if a new format adds them
-            )
+            ),
           );
           break;
         case "date":
           // creating "Date" to get around the deprecation warning we get if we run into, .e.g. "7/27/2022"
-          const dateString: string = moment(new Date(cell.value)).format(
-            "YYYY-MM-DD"
-          );
+          const dateString: string = moment(new Date(cell.value)).format("YYYY-MM-DD");
           const dateField = folder.properties.getValueOrThrow("date");
           dateField.setValueFromString(dateString);
           break;
         case "primaryLanguage":
           processPersonLanguageCell(cell?.value, folder as Person, {
-            primary: true
+            primary: true,
           });
           //console.log(JSON.stringify((folder as Person).languages[0], null, 2));
           break;
         case "mothersLanguage":
           processPersonLanguageCell(cell?.value, folder as Person, {
-            mother: true
+            mother: true,
           });
           break;
         case "fathersLanguage":
           processPersonLanguageCell(cell?.value, folder as Person, {
-            father: true
+            father: true,
           });
           break;
         case "otherLanguages":
@@ -192,18 +184,14 @@ export function createFolderInMemory(
   // if we got this far and we are replacing an existing session or person, move it to the bin
 
   //  console.log(folder.propertyForCheckingId);
-  const id = row.cells.find(
-    (c) => c.column.lametaProperty === folder.propertyForCheckingId
-  )?.value;
+  const id = row.cells.find((c) => c.column.lametaProperty === folder.propertyForCheckingId)?.value;
   if (!id)
     return {
       succeeded: false,
       row,
       createdFolder: folder,
       id: "unknown",
-      message: `Missing ${
-        folder.propertyForCheckingId
-      } on cell: ${JSON.stringify(row)}`
+      message: `Missing ${folder.propertyForCheckingId} on cell: ${JSON.stringify(row)}`,
     };
 
   return {
@@ -211,26 +199,18 @@ export function createFolderInMemory(
     row,
     createdFolder: folder,
     id: id,
-    message: undefined
+    message: undefined,
   };
 }
-export function addImportedFolderToProject(
-  project: Project,
-  folder: Folder,
-  id: string
-) {
-  const previousFolderWithThisId = project.findFolderById(
-    folder.folderType,
-    id
-  );
+export function addImportedFolderToProject(project: Project, folder: Folder, id: string) {
+  const previousFolderWithThisId = project.findFolderById(folder.folderType, id);
   //console.log(previousFolderWithThisId?.displayName);
 
   if (previousFolderWithThisId) {
     // enhance: let's keep the contents of the folder, and just replace or rewrite the metadata file
-    project.deleteFolder(
-      previousFolderWithThisId,
-      true /* immediately, no trash */
-    );
+    // With immediateWithoutTrash, deleteFolder removes the folder before its first await, so the
+    // import below never sees it. deleteFolder reports its own failures and never rejects.
+    void project.deleteFolder(previousFolderWithThisId, true /* immediately, no trash */);
     //console.log(previousFolderWithThisId?.displayName);
   }
   // change the file name from "NewSession" or whatever to the actual id
@@ -246,9 +226,7 @@ export function makeCustomField(key: string, value: string): Field {
     .replace(/[-]+/g, "-");
   // the above is not comprehensive, so let's make sure
   if (!XmlNameValidator.name(safeKey).success) {
-    throw Error(
-      `Lameta cannot handle some character in this custom column name: "${key}"`
-    );
+    throw Error(`Lameta cannot handle some character in this custom column name: "${key}"`);
   }
   const definition: FieldDefinition = {
     key: safeKey,
@@ -258,7 +236,7 @@ export function makeCustomField(key: string, value: string): Field {
     tabIndex: 0,
     isCustom: true,
     showOnAutoForm: false, // we do show it, but in the custom table
-    multilingual: false // REVIEW
+    multilingual: false, // REVIEW
   };
   const customField = Field.fromFieldDefinition(definition);
   customField.setValueFromString(value);
@@ -268,7 +246,7 @@ export function makeCustomField(key: string, value: string): Field {
 function lookAheadForValue(
   row: MappedRow,
   lookToRightOfCellIndex: number,
-  key: string
+  key: string,
 ): string | undefined {
   let r: string | undefined = undefined;
   lookToRightOfCellIndex++;
@@ -287,7 +265,7 @@ function lookAheadForValue(
 export function processPersonLanguageCell(
   cellContent: string,
   person: Person,
-  assignments: { primary?: boolean; mother?: boolean; father?: boolean }
+  assignments: { primary?: boolean; mother?: boolean; father?: boolean },
 ) {
   if (!cellContent) {
     return;
@@ -296,9 +274,7 @@ export function processPersonLanguageCell(
   tokens.forEach((token) => {
     const code = staticLanguageFinder.findCodeFromCodeOrLanguageName(token);
     // do we already have this language for this person?
-    let lang: IPersonLanguage | undefined = person.languages.find(
-      (l) => l.code === code
-    );
+    let lang: IPersonLanguage | undefined = person.languages.find((l) => l.code === code);
     // if not, add it
     if (lang === undefined) {
       lang = { code };
@@ -312,7 +288,6 @@ export function processPersonLanguageCell(
 
     // Bizarrely, if we push before making changes to lang, they are lost, as if
     // the push is making a copy of the object. Which is should only do if it is a primitive.
-    if (!person.languages.find((l) => l.code === lang?.code))
-      person.languages.push(lang);
+    if (!person.languages.find((l) => l.code === lang?.code)) person.languages.push(lang);
   });
 }

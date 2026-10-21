@@ -51,7 +51,7 @@ export class FolderSearchUtilities {
   async expectLastSearch(expectedQuery: string | RegExp) {
     await expect(this.page.getByTestId("folder-search-bar")).toHaveAttribute(
       "data-last-search",
-      expectedQuery
+      expectedQuery,
     );
   }
 
@@ -60,12 +60,9 @@ export class FolderSearchUtilities {
    * @param namePattern The name pattern to match (can be string or regex)
    * @param expectedCount Expected number of matching results (default 1)
    */
-  async expectFolderVisible(
-    namePattern: string | RegExp,
-    expectedCount: number = 1
-  ) {
+  async expectFolderVisible(namePattern: string | RegExp, expectedCount: number = 1) {
     const matchingCells = this.page.getByRole("gridcell", {
-      name: namePattern
+      name: namePattern,
     });
     await expect(matchingCells.first()).toBeVisible();
     if (expectedCount > 1) {
@@ -125,11 +122,9 @@ export class FolderSearchUtilities {
    */
   async clickFolder(namePattern: string | RegExp, index: number = 0) {
     const matchingCells = this.page.getByRole("gridcell", {
-      name: namePattern
+      name: namePattern,
     });
-    await matchingCells
-      .nth(index)
-      .waitFor({ state: "visible", timeout: 10000 });
+    await matchingCells.nth(index).waitFor({ state: "visible", timeout: 10000 });
     await matchingCells.nth(index).click();
   }
 
@@ -155,7 +150,7 @@ export class FolderSearchUtilities {
   async performCompleteSearchTest(
     query: string,
     expectedFolderCount: number,
-    folderNamePattern?: string | RegExp
+    folderNamePattern?: string | RegExp,
   ) {
     // Perform search
     await this.performSearch(query);

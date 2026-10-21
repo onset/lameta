@@ -1,24 +1,20 @@
-import { test, expect as expect, Page } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
-import { E2eFileList } from "./FileList-e2e-helpers";
 import { ContributorsHelper } from "./contributors-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
 let project: E2eProject;
-let fileList: E2eFileList;
 let contributors: ContributorsHelper;
 
-const arrowDownKey =
-  process.platform === "darwin" ? "Meta+ArrowDown" : "Control+ArrowDown";
+const arrowDownKey = process.platform === "darwin" ? "Meta+ArrowDown" : "Control+ArrowDown";
 
 test.describe("Contributors", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
     project = await launchWithProject(lameta, "Contributors");
     page = lameta.page;
-    fileList = new E2eFileList(lameta, page, project.projectDirectory);
     contributors = new ContributorsHelper(page, project);
   });
   test.afterAll(async () => {
@@ -127,9 +123,7 @@ test.describe("Contributors", () => {
       await contributors.addContributor("Focus Test Person");
 
       // Click on the comment textarea
-      const textareas = page.locator(
-        '[data-testid="contributor-comment-textarea"]'
-      );
+      const textareas = page.locator('[data-testid="contributor-comment-textarea"]');
       const textarea = textareas.nth(0);
       await textarea.click();
 
@@ -235,31 +229,17 @@ test.describe("Contributors", () => {
       expect(await contributors.getContributorCount()).toBe(3);
 
       // Verify names
-      expect(await contributors.getContributorName(0)).toContain(
-        "Multi Test Speaker"
-      );
-      expect(await contributors.getContributorName(1)).toContain(
-        "Multi Test Translator"
-      );
-      expect(await contributors.getContributorName(2)).toContain(
-        "Multi Test Researcher"
-      );
+      expect(await contributors.getContributorName(0)).toContain("Multi Test Speaker");
+      expect(await contributors.getContributorName(1)).toContain("Multi Test Translator");
+      expect(await contributors.getContributorName(2)).toContain("Multi Test Researcher");
 
       // Verify roles
-      expect(
-        (await contributors.getContributorRole(0)).toLowerCase()
-      ).toContain("speaker");
-      expect(
-        (await contributors.getContributorRole(1)).toLowerCase()
-      ).toContain("translator");
-      expect(
-        (await contributors.getContributorRole(2)).toLowerCase()
-      ).toContain("researcher");
+      expect((await contributors.getContributorRole(0)).toLowerCase()).toContain("speaker");
+      expect((await contributors.getContributorRole(1)).toLowerCase()).toContain("translator");
+      expect((await contributors.getContributorRole(2)).toLowerCase()).toContain("researcher");
 
       // Verify comments
-      expect(await contributors.getComment(0)).toBe(
-        "Primary speaker for this session"
-      );
+      expect(await contributors.getComment(0)).toBe("Primary speaker for this session");
       expect(await contributors.getComment(1)).toBe("Translated to English");
       expect(await contributors.getComment(2)).toBe("Led the research project");
     });
@@ -283,12 +263,8 @@ test.describe("Contributors", () => {
       await contributors.goToContributorsTab();
 
       // Verify the contributor data persisted
-      expect(await contributors.getContributorName(0)).toContain(
-        "Persist Test Person"
-      );
-      expect(
-        (await contributors.getContributorRole(0)).toLowerCase()
-      ).toContain("speaker");
+      expect(await contributors.getContributorName(0)).toContain("Persist Test Person");
+      expect((await contributors.getContributorRole(0)).toLowerCase()).toContain("speaker");
       expect(await contributors.getComment(0)).toBe("Persistence test comment");
     });
 
@@ -334,12 +310,10 @@ test.describe("Contributors", () => {
           if (contributorName.includes(uniqueName)) {
             foundSession = true;
             // Verify the full contributor data
-            expect(
-              (await contributors.getContributorRole(0)).toLowerCase()
-            ).toContain("researcher");
-            expect(await contributors.getComment(0)).toBe(
-              "Reload test comment"
+            expect((await contributors.getContributorRole(0)).toLowerCase()).toContain(
+              "researcher",
             );
+            expect(await contributors.getComment(0)).toBe("Reload test comment");
           }
         } catch {
           // This session might not have contributors, continue
@@ -364,8 +338,7 @@ test.describe("Contributors", () => {
       await contributors.addContributor("Unicode Test Person");
 
       // Set a comment with various Unicode characters
-      const unicodeComment =
-        "Unicode: 中文 العربية עברית ελληνικά кириллица 日本語 한국어 🎉";
+      const unicodeComment = "Unicode: 中文 العربية עברית ελληνικά кириллица 日本語 한국어 🎉";
       await contributors.setComment(0, unicodeComment);
 
       // Verify the comment
@@ -381,8 +354,7 @@ test.describe("Contributors", () => {
       await contributors.addContributor("Special Chars Person");
 
       // Set a comment with characters that might cause issues in filenames/URLs
-      const specialComment =
-        "Path: /folder/subfolder & file.txt; query=value&other=123";
+      const specialComment = "Path: /folder/subfolder & file.txt; query=value&other=123";
       await contributors.setComment(0, specialComment);
 
       // Verify the comment

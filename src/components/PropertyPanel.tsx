@@ -4,7 +4,7 @@ import { File } from "../model/file/File";
 import { MediaStats } from "./MediaStats";
 import "./PropertyPanel.css";
 import CustomFieldsTable from "./CustomFieldsTable";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import AccessChooser from "./session/AccessChooser";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import { TextFieldEdit } from "./TextFieldEdit";
@@ -17,8 +17,7 @@ interface IProps {
 class PropertyPanel extends React.Component<IProps> {
   public render() {
     const hasAccessField =
-      this.props.file.properties.getHasValue("access") &&
-      this.props.authorityLists;
+      this.props.file.properties.getHasValue("access") && this.props.authorityLists;
 
     return (
       <div className="propertyPanel">
@@ -32,19 +31,14 @@ class PropertyPanel extends React.Component<IProps> {
               />
               {this.props.file.properties.getHasValue("accessDescription") && (
                 <TextFieldEdit
-                  field={this.props.file.properties.getTextField(
-                    "accessDescription"
-                  )}
+                  field={this.props.file.properties.getTextField("accessDescription")}
                 />
               )}
             </div>
           )}
         </div>
         <div className="propertiesColumn customPropertiesColumn">
-          <CustomFieldsTable
-            firstColumnHeaderText={t`Custom Field`}
-            file={this.props.file}
-          />
+          <CustomFieldsTable firstColumnHeaderText={t`Custom Field`} file={this.props.file} />
         </div>
       </div>
     );

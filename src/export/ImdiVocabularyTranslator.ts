@@ -1,10 +1,7 @@
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { collectExportWarning } from "./ExportWarningCollector";
-import {
-  translateGenreToLanguage,
-  translateRoleToLanguage
-} from "../other/localization";
+import { translateGenreToLanguage, translateRoleToLanguage } from "../other/localization";
 
 export type TranslatorFn = (value: string, lang: string) => string | undefined;
 
@@ -29,15 +26,11 @@ export class ImdiVocabularyTranslator {
    */
   getGenreTranslator(): TranslatorFn {
     if (!this.cachedGenreTranslator) {
-      this.cachedGenreTranslator = (
-        value: string,
-        lang: string
-      ): string | undefined => {
-        const projectTranslation =
-          this.project?.vocabularyTranslations?.getGenreTranslation(
-            value,
-            lang
-          );
+      this.cachedGenreTranslator = (value: string, lang: string): string | undefined => {
+        const projectTranslation = this.project?.vocabularyTranslations?.getGenreTranslation(
+          value,
+          lang,
+        );
         return translateGenreToLanguage(value, lang, () => projectTranslation);
       };
     }
@@ -50,12 +43,11 @@ export class ImdiVocabularyTranslator {
    */
   getRoleTranslator(): TranslatorFn {
     if (!this.cachedRoleTranslator) {
-      this.cachedRoleTranslator = (
-        value: string,
-        lang: string
-      ): string | undefined => {
-        const projectTranslation =
-          this.project?.vocabularyTranslations?.getRoleTranslation(value, lang);
+      this.cachedRoleTranslator = (value: string, lang: string): string | undefined => {
+        const projectTranslation = this.project?.vocabularyTranslations?.getRoleTranslation(
+          value,
+          lang,
+        );
         return translateRoleToLanguage(value, lang, () => projectTranslation);
       };
     }
@@ -69,19 +61,13 @@ export class ImdiVocabularyTranslator {
    */
   getExportStringTranslator(): TranslatorFn {
     if (!this.cachedExportStringTranslator) {
-      this.cachedExportStringTranslator = (
-        value: string,
-        lang: string
-      ): string | undefined => {
+      this.cachedExportStringTranslator = (value: string, lang: string): string | undefined => {
         // For English, return the value itself (it's the English text)
         if (lang === "en" || lang === "eng") {
           return value;
         }
         // Otherwise, look up the project translation
-        return this.project?.vocabularyTranslations?.getExportStringTranslation(
-          value,
-          lang
-        );
+        return this.project?.vocabularyTranslations?.getExportStringTranslation(value, lang);
       };
     }
     return this.cachedExportStringTranslator;
@@ -105,7 +91,7 @@ export class ImdiVocabularyTranslator {
           const displayName = slot.autonym || slot.name || slot.label;
           collectExportWarning(
             `Missing ${displayName} translation for genre "${genre}" in session "${session.displayName}". ` +
-              `Add translation in Project > Vocabulary Translations.`
+              `Add translation in Project > Vocabulary Translations.`,
           );
         }
       }
@@ -123,7 +109,7 @@ export class ImdiVocabularyTranslator {
             const displayName = slot.autonym || slot.name || slot.label;
             collectExportWarning(
               `Missing ${displayName} translation for role "${role}" in session "${session.displayName}". ` +
-                `Add translation in Project > Vocabulary Translations.`
+                `Add translation in Project > Vocabulary Translations.`,
             );
           }
         }

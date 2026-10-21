@@ -1,8 +1,8 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
+import { describe, it, expect } from "vite-plus/test";
 import {
   UserSettings,
   getMediaFolderOrEmptyForProjectAndMachine,
-  setMediaFolderOrEmptyForProjectAndMachine
+  setMediaFolderOrEmptyForProjectAndMachine,
 } from "./UserSettings";
 
 describe("Round trips media folder in test environment", () => {
@@ -14,8 +14,6 @@ describe("Round trips media folder in test environment", () => {
   });
   it("normalizePath converts to forward slashes", () => {
     setMediaFolderOrEmptyForProjectAndMachine("foobar", "c:/foo/bar");
-    expect(getMediaFolderOrEmptyForProjectAndMachine("foobar")).toBe(
-      "c:/foo/bar"
-    );
+    expect(getMediaFolderOrEmptyForProjectAndMachine("foobar")).toBe("c:/foo/bar");
   });
 });

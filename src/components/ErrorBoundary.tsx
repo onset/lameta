@@ -14,12 +14,6 @@ interface IProps {
   resetKeys?: unknown[];
 }
 
-interface IState {
-  error: any;
-  hasError: boolean;
-  showError: boolean;
-}
-
 const Notice = (props: FallbackProps) => {
   return (
     <div>

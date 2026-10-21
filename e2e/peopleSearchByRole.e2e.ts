@@ -75,7 +75,7 @@ test.describe("People search by contribution role", () => {
 
     // Wait for tab to be fully active
     await expect(contributionsTab).toHaveAttribute("aria-selected", "true", {
-      timeout: 5000
+      timeout: 5000,
     });
 
     // Wait for loading to complete - contributions table should appear
@@ -90,16 +90,13 @@ test.describe("People search by contribution role", () => {
 
     // Wait for inline highlight mark to appear for the role text in the table
     await expect(
-      contributionsTable.locator('[data-testid="inline-highlight"]').first()
+      contributionsTable.locator('[data-testid="inline-highlight"]').first(),
     ).toBeVisible({ timeout: 10000 });
 
     // Contributions tab should show a highlight indicator (may render slightly later)
     await page.waitForFunction(
-      () =>
-        !!document.querySelector(
-          '[data-testid="person-contributions-tab-highlight"]'
-        ),
-      { timeout: 10000 }
+      () => !!document.querySelector('[data-testid="person-contributions-tab-highlight"]'),
+      { timeout: 10000 },
     );
   });
 });

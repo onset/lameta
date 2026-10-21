@@ -3,5 +3,5 @@
   archiveUsesImdi: false,
   archiveUsesParadisec: false,
   fileNameRules: "ASCII",
-  imdiSchema: "IMDI_3.0.xsd"
+  imdiSchema: "IMDI_3.0.xsd",
 }

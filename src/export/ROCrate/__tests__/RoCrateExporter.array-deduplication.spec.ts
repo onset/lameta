@@ -31,8 +31,8 @@ describe("RO-Crate Array Deduplication", () => {
           { "@id": "file2.pdf" },
           { "@id": "file1.txt" }, // Duplicate
           { "@id": "file3.jpg" },
-          { "@id": "file2.pdf" } // Another duplicate
-        ]
+          { "@id": "file2.pdf" }, // Another duplicate
+        ],
       },
       {
         "@id": "Sessions/session1/",
@@ -40,15 +40,15 @@ describe("RO-Crate Array Deduplication", () => {
         hasPart: [
           { "@id": "audio.wav" },
           { "@id": "transcript.txt" },
-          { "@id": "audio.wav" } // Duplicate
-        ]
+          { "@id": "audio.wav" }, // Duplicate
+        ],
       },
       {
         "@id": "People/Person1/",
         "@type": "Person",
         // No hasPart - should be left unchanged
-        name: "Test Person"
-      }
+        name: "Test Person",
+      },
     ];
 
     const deduplicated = deduplicateHasPartArrays(graphWithDuplicates);
@@ -59,7 +59,7 @@ describe("RO-Crate Array Deduplication", () => {
     expect(rootDataset.hasPart.map((item: any) => item["@id"])).toEqual([
       "file1.txt",
       "file2.pdf",
-      "file3.jpg"
+      "file3.jpg",
     ]);
 
     // Check session
@@ -67,7 +67,7 @@ describe("RO-Crate Array Deduplication", () => {
     expect(session.hasPart).toHaveLength(2); // Should be 2, not 3
     expect(session.hasPart.map((item: any) => item["@id"])).toEqual([
       "audio.wav",
-      "transcript.txt"
+      "transcript.txt",
     ]);
 
     // Check person (no hasPart)
@@ -98,13 +98,13 @@ describe("RO-Crate Array Deduplication", () => {
       {
         "@id": "metadata.json",
         "@type": "CreativeWork",
-        name: "Metadata"
+        name: "Metadata",
       },
       {
         "@id": "#license",
         "@type": "CreativeWork",
-        name: "License"
-      }
+        name: "License",
+      },
     ];
 
     const result = deduplicateHasPartArrays(graphWithoutHasPart);

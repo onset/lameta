@@ -18,10 +18,7 @@ const parseLaunchTestOptions = (): LaunchTestOptions | undefined => {
   if (eq > -1) {
     markerPath = launchArg.substring(eq + 1);
   } else {
-    markerPath = path.join(
-      app.getPath("temp"),
-      `lameta-launch-${process.pid}.txt`
-    );
+    markerPath = path.join(app.getPath("temp"), `lameta-launch-${process.pid}.txt`);
   }
 
   const simulateFail = argv.includes("--simulate-launch-fail");
@@ -53,8 +50,8 @@ export const initLaunchTest = (win: BrowserWindow | null) => {
           phase: "renderer-ready",
           when: new Date().toISOString(),
           pid: process.pid,
-          reason: opts.simulateFail ? "simulate-launch-fail" : undefined
-        })
+          reason: opts.simulateFail ? "simulate-launch-fail" : undefined,
+        }),
       );
     } catch (e) {
       console.error("Failed to write launch marker:", e);
@@ -99,8 +96,8 @@ export const initLaunchTest = (win: BrowserWindow | null) => {
           phase: "preload-error",
           error: String(error),
           when: new Date().toISOString(),
-          pid: process.pid
-        })
+          pid: process.pid,
+        }),
       );
     } catch (e) {
       console.error("Failed to write preload-error marker:", e);

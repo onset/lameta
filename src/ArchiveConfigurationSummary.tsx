@@ -1,15 +1,9 @@
 import * as React from "react";
 import { css } from "@emotion/react";
-import { Trans } from "@lingui/macro";
-import {
-  FieldDefinitionCustomizationRecord,
-  loadAndMergeFieldChoices
-} from "./model/field/ConfiguredFieldDefinitions";
-import { FieldDefinition } from "./model/field/FieldDefinition";
 import { AuthorityLists } from "./model/Project/AuthorityLists/AuthorityLists";
 import { IChoice } from "./model/field/Field";
 
-// a react functional component that takes displays the diffs between the default and the merged configurations
+// Shows the access levels of an archive configuration
 const ArchiveConfigurationSummary: React.FunctionComponent<
   {
     configurationName: string;
@@ -17,29 +11,11 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
     authorityLists: AuthorityLists;
   } & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
-  const [customizations, setCustomizations] = React.useState<
-    FieldDefinitionCustomizationRecord[]
-  >([]);
-
-  React.useEffect(() => {
-    setCustomizations(
-      loadAndMergeFieldChoices(props.configurationName).customizations
-    );
-  }, [props.configurationName]);
-  const projectCustomizations = customizations.filter(
-    (c) => c.area === "project"
-  );
-  const sessionCustomizations = customizations.filter(
-    (c) => c.area === "session"
-  );
-  const personCustomizations = customizations.filter(
-    (c) => c.area === "person"
-  );
   console.log("****", props.configurationName);
 
   const currentConfiguration: { choices: IChoice[] } | undefined =
     props.authorityLists.accessProtocolLists.find(
-      (p) => p.archiveConfigurationName == props.configurationName
+      (p) => p.archiveConfigurationName == props.configurationName,
     );
 
   if (!currentConfiguration) {
@@ -111,162 +87,7 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
           </div>
         )}
       */}
-
-      {/* ELAR doesn't want this visible at all 
-      {(projectCustomizations.length > 0 ||
-        sessionCustomizations.length > 0 ||
-        personCustomizations.length > 0 ||
-        props.configurationChoice.extra?.archiveUsesImdi !== undefined) && (
-        <details
-          css={css`
-            margin-top: 3em;
-            summary {
-              cursor: pointer;
-              font-size: 1.17em;
-              margin-bottom: 0.5em;
-            }
-            h4 {
-              margin-block-start: 0.5em;
-              margin-block-end: 0.25em;
-            }
-            ul {
-              margin-block-start: 0;
-              margin-block-end: 0;
-            }
-          `}
-        >
-          <summary>
-            <Trans>Field Changes</Trans>
-          </summary>
-
-          <h4>Project</h4>
-          <ul>
-            {projectCustomizations.length > 0
-              ? projectCustomizations.map((customization) => (
-                  <div
-                    key={
-                      customization.area +
-                      customization.factoryDefinition.englishLabel
-                    }
-                  >
-                    {describeChange(
-                      customization.area,
-                      customization.factoryDefinition,
-                      customization.newDefinition
-                    )}
-                  </div>
-                ))
-              : "There are no changes in this section."}
-          </ul>
-          <h4>Session</h4>
-          <ul>
-            {sessionCustomizations.length > 0
-              ? sessionCustomizations.map((customization) => (
-                  <>
-                    {describeChange(
-                      customization.area,
-                      customization.factoryDefinition,
-                      customization.newDefinition
-                    )}
-                  </>
-                ))
-              : "There are no changes in this section."}
-          </ul>
-          <h4>Person</h4>
-          <ul>
-            {personCustomizations.length > 0
-              ? personCustomizations.map((customization) => (
-                  <>
-                    {describeChange(
-                      customization.area,
-                      customization.factoryDefinition,
-                      customization.newDefinition
-                    )}
-                  </>
-                ))
-              : "There are no changes in this section."}
-          </ul>
-          {props.configurationChoice.extra?.archiveUsesImdi !== undefined && (
-            <>
-              <h4>Export Settings</h4>
-              <ul>
-                <li>
-                  archiveUsesImdi:{" "}
-                  {String(props.configurationChoice.extra.archiveUsesImdi)}
-                </li>
-              </ul>
-            </>
-          )}
-        </details>
-      )}*/}
     </div>
   );
 };
 export { ArchiveConfigurationSummary };
-
-function describeChange(
-  area: string,
-  factory: FieldDefinition,
-  newDef: FieldDefinition
-): React.ReactNode {
-  const diffs: React.ReactNode[] = [];
-  const label = `${factory.englishLabel}`;
-
-  // Helper to convert visibility values to user-friendly text
-  const visibilityToText = (v: string | undefined): string => {
-    if (v === "always" || v === undefined) return "visible";
-    if (v === "never") return "hidden";
-    return v; // for any other values like "advanced", keep as-is
-  };
-
-  // Visibility
-  const factoryVisibility = factory.visibility || "always";
-  const newDefVisibility = newDef.visibility || "always";
-  if (factoryVisibility !== newDefVisibility) {
-    if (factoryVisibility === "never" && newDefVisibility === "always")
-      diffs.push(
-        <span>{`The ${label} field, which is normally hidden, will be shown.`}</span>
-      );
-    else if (factoryVisibility === "always" && newDefVisibility === "never")
-      diffs.push(
-        <span>{`The ${label} field, which is normally shown, will be hidden.`}</span>
-      );
-    else
-      diffs.push(
-        <span>
-          {`The ${label} field, which is normally ${visibilityToText(
-            factoryVisibility
-          )}, will be ${visibilityToText(newDefVisibility)}.`}
-        </span>
-      );
-  }
-  // Description
-  if (factory.description !== newDef.description) {
-    diffs.push(
-      <span>
-        {`The description of the ${label} field, normally ${
-          factory.description ? `"${factory.description}"` : "empty"
-        }, will be "${newDef.description}".`}
-      </span>
-    );
-  }
-  // Multilingualism
-  if (factory.multilingual !== newDef.multilingual) {
-    diffs.push(
-      <span key={`${label}-${diffs.length}`}>
-        {`The ${label} field, which is normally ${
-          factory.multilingual ? "multilingual" : "single-language"
-        }, will be ${
-          newDef.multilingual ? "multilingual" : "single-language"
-        }.`}
-      </span>
-    );
-  }
-  return (
-    <React.Fragment>
-      {diffs.map((diff, index) => (
-        <div key={index}>{diff}</div>
-      ))}
-    </React.Fragment>
-  );
-}

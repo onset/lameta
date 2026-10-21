@@ -17,7 +17,7 @@ export interface IProps {
 }
 
 const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (props) => {
-  const { searchTerm } = React.useContext(SearchContext);
+  React.useContext(SearchContext);
 
   const options = props.authorityLists.accessChoicesOfCurrentProtocol.map((c: IChoice) => {
     // The choice already has a human-readable label (e.g., "U: open to users")
@@ -72,7 +72,7 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
           ),
         }}
         styles={{
-          control: (styles, state) => ({
+          control: (styles) => ({
             ...styles,
             minHeight: "2em",
             height: "2em",

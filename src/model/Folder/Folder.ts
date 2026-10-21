@@ -1,4 +1,4 @@
-import { File, OtherFile } from "../file/File";
+import { File, kLinkExtensionWithFullStop, OtherFile } from "../file/File";
 import { observable, makeObservable, runInAction } from "mobx";
 import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -23,7 +23,7 @@ import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import filesize from "filesize";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/patientFile";
 import { isMissingCloudPlaceholder } from "../../other/cloudFileStatus";
@@ -34,6 +34,9 @@ import temp from "temp";
 export type IFolderType = "project" | "session" | "person" | "project documents";
 
 // Project, Session, or Person
+/** A copyInOneFileAsync rejection whose cause the user has already been notified of. */
+export class CopyInFailureAlreadyNotified extends Error {}
+
 export abstract class Folder {
   // help with a hard to track down bug where folders are deleted but later something tries to save them.
   public wasDeleted = false;
@@ -143,18 +146,33 @@ export abstract class Folder {
     return new Promise((resolve, reject) => {
       if (["session", "person", "meta"].includes(getExtension(pathToOriginalFile)?.toLowerCase())) {
         NotifyWarning(t`Cannot add files of that type` + ` (${getExtension(pathToOriginalFile)}`);
+        reject(
+          new CopyInFailureAlreadyNotified(`Cannot add files of that type: ${pathToOriginalFile}`),
+        );
         return;
       }
       const n = sanitizeForArchive(newFileName ? newFileName : Path.basename(pathToOriginalFile));
       const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);
-
-      if (fs.existsSync(dest)) {
-        NotifyWarning(t`There is already a file here with the name` + ` (${n})`);
-        return;
-      }
       const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
       const linkInsteadOfCopy = !!mediaFolder && isSubDirectory(mediaFolder, pathToOriginalFile);
+      // the name OtherFile.CreateLinkFile gives the link it writes
+      const linkDest = Path.join(
+        this.directory,
+        Path.basename(pathToOriginalFile) + kLinkExtensionWithFullStop,
+      );
+
+      // A pending copy has no file on disk yet, so look in this.files as well. That also
+      // guarantees that a file at dest after a failed copy is one this call created.
+      if (
+        fs.existsSync(dest) ||
+        this.files.some((x) => x.pathInFolderToLinkFileOrLocalCopy === dest) ||
+        (linkInsteadOfCopy && fs.existsSync(linkDest))
+      ) {
+        NotifyWarning(t`There is already a file here with the name` + ` (${n})`);
+        reject(new CopyInFailureAlreadyNotified(`There is already a file at ${dest}`));
+        return;
+      }
 
       if (linkInsteadOfCopy) {
         const f = OtherFile.CreateLinkFile(
@@ -164,20 +182,29 @@ export abstract class Folder {
         );
 
         this.files.push(f);
+        resolve();
       } else {
         const f = new OtherFile(dest, this.customVocabularies, true);
         f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
         f.copyProgress = t`Copy Requested...`;
+        // CopyManager notifies the user when the copy itself fails, but not when it throws
+        // before starting (e.g. the source vanished).
+        let copyStarted = false;
         window.setTimeout(
           () =>
-            CopyManager.safeAsyncCopyFileWithErrorNotification(
-              pathToOriginalFile,
-              dest,
-              (progress: string) => {
-                f.copyProgress = progress;
-              },
-            )
-              .then((successfulDestinationPath) => {
+            Promise.resolve()
+              .then(() => {
+                const copying = CopyManager.safeAsyncCopyFileWithErrorNotification(
+                  pathToOriginalFile,
+                  dest,
+                  (progress: string) => {
+                    f.copyProgress = progress;
+                  },
+                );
+                copyStarted = true;
+                return copying;
+              })
+              .then(() => {
                 const pendingFile = this.files.find(
                   (x) => x.pathInFolderToLinkFileOrLocalCopy === dest,
                 );
@@ -186,7 +213,7 @@ export abstract class Folder {
                     // not translating for now
                     `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`,
                   );
-                  reject();
+                  reject(new CopyInFailureAlreadyNotified(`No pending file for ${dest}`));
                   return;
                 }
                 pendingFile!.finishLoading();
@@ -202,10 +229,23 @@ export abstract class Folder {
                     error, // not translating for now
                     `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`,
                   );
-                  reject();
+                  reject(new CopyInFailureAlreadyNotified(String(error)));
                   return;
                 }
                 this.files.splice(fileIndex, 1);
+                // don't leave a partial copy behind, or a retry would find "a file already here"
+                try {
+                  fs.removeSync(dest);
+                } catch (removeError) {
+                  console.error(`could not remove partial copy ${dest}: ${String(removeError)}`);
+                }
+                reject(
+                  copyStarted
+                    ? new CopyInFailureAlreadyNotified(String(error))
+                    : error instanceof Error
+                      ? error
+                      : new Error(String(error)),
+                );
               }),
           0,
         );
@@ -219,10 +259,17 @@ export abstract class Folder {
     assert.ok(paths.length > 0, "addFiles given an empty array of files");
     sentryBreadCrumb(`addFiles ${paths.length} files.`);
 
-    await runInAction(async () => {
-      await paths.forEach(async (p: string) => {
-        await this.copyInOneFileAsync(p);
-      });
+    runInAction(() => {
+      for (const p of paths) {
+        // Callers expect the new files to be listed (still copying) when this returns, not
+        // copied.
+        this.copyInOneFileAsync(p).catch((err) => {
+          console.error(`copyInFiles: ${String(err)}`);
+          if (!(err instanceof CopyInFailureAlreadyNotified))
+            // not translating for now
+            NotifyException(err, `lameta could not add ${p}`);
+        });
+      }
     });
   }
   get type(): string {
@@ -238,44 +285,12 @@ export abstract class Folder {
   // exporters (like ROCrate) to distinguish between standard fields and custom fields when processing metadata.
   public knownFields: FieldDefinition[];
 
-  // renaming failures can lead to ____.meta files that don't match anything, they just gum up the works
-
-  private static cleanupZombieMetaFiles(directory: string) {
-    /*** this is ready to go but I'm afraid to pull the trigger
-     
-    const metaFilePaths = glob.sync(Path.join(directory, "*.meta"));
-    metaFilePaths.forEach((metaFilePath) => {
-      const basename = Path.basename(metaFilePath, Path.extname(metaFilePath));
-      const filePathThatWouldMatchTheMetaFileName = Path.join(
-        Path.dirname(metaFilePath),
-        basename
-      );
-      if (!fs.existsSync(filePathThatWouldMatchTheMetaFileName)) {
-        console.log("Removing zombie meta file" + metaFilePath);
-        if (!trash(metaFilePath)) {
-          NotifyWarning(
-            `lameta was not able to put this file in the trash (${metaFilePath})`
-          );
-        } else {
-          NotifyNoBigDeal(
-            `Moved unused lameta meta file to trash because there is no matching file to annotate. ${Path.basename(
-              metaFilePath
-            )}`
-          );
-        }
-      }
-    });
-
-    ****/
-  }
-
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,
     folderMetaDataFile: File,
     customVocabularies: EncounteredVocabularyRegistry,
   ): File[] {
-    Folder.cleanupZombieMetaFiles(directory);
     const files = new Array<File>();
 
     files.push(folderMetaDataFile);
@@ -321,7 +336,7 @@ export abstract class Folder {
         file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          if (!(await asyncTrash(file.metadataFilePath))) {
+          if (!(await asyncTrash(file.metadataFilePath)).succeeded) {
             NotifyError(
               t`lameta was not able to put this file in the trash` + ` (${file.metadataFilePath})`,
             );

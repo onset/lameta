@@ -32,8 +32,6 @@ export interface IRulesFileProblem {
   // which function reported it, and for checkSession, which session's Document
   from: "checkSession" | "checkCorpus" | "checkAcrossSessions";
   sessionId?: string;
-  // a few lines of XML around the node, with the node's own lines marked
-  excerpt?: Array<{ text: string; marked: boolean }>;
 }
 
 export interface IRulesFileError {
@@ -124,50 +122,6 @@ export async function rulesSandboxMain(
     if (doc) sessionDocs.push({ sessionId: s.sessionId, doc });
   }
 
-  const elementOf = (node: Node): Element | undefined => {
-    const n =
-      node.nodeType === 2
-        ? (node as Attr).ownerElement
-        : node.nodeType === 1
-          ? node
-          : node.parentNode;
-    return n && n.nodeType === 1 ? (n as Element) : undefined;
-  };
-  const excerptOf = (node: Node) => {
-    const element = elementOf(node);
-    if (!element) return undefined;
-    const serializer = new XMLSerializer();
-    const clean = (s: string) =>
-      s.replace(/ xmlns(:[\w-]+)?="[^"]*"/g, "").replace(/<!--\s*lameta-source[\s\S]*?-->\s*/g, "");
-    const firstLine = (e: Element) => {
-      const line = clean(serializer.serializeToString(e)).split("\n")[0];
-      return line.length > 100 ? line.substring(0, 99) + "…" : line;
-    };
-    const elementSibling = (e: Element, forward: boolean) => {
-      let n = forward ? e.nextSibling : e.previousSibling;
-      while (n && n.nodeType !== 1) n = forward ? n.nextSibling : n.previousSibling;
-      return n as Element | null;
-    };
-    const lines: Array<{ text: string; marked: boolean }> = [];
-    const parent = element.parentNode;
-    if (parent && parent.nodeType === 1)
-      lines.push({ text: `<${parent.nodeName}>`, marked: false });
-    const before = elementSibling(element, false);
-    if (before) lines.push({ text: "  " + firstLine(before), marked: false });
-    let own = clean(serializer.serializeToString(element)).split("\n");
-    // the first line has no indentation of its own; line the rest up under it
-    const rest = own.slice(1).filter((l) => l.trim() !== "");
-    const indent = Math.min(...rest.map((l) => l.length - l.trimStart().length), 1000);
-    own = [own[0], ...rest.map((l) => "  " + l.substring(indent))];
-    if (own.length > 12) own = [...own.slice(0, 11), "  …"];
-    for (const l of own) lines.push({ text: "  " + l, marked: true });
-    const after = elementSibling(element, true);
-    if (after) lines.push({ text: "  " + firstLine(after), marked: false });
-    if (parent && parent.nodeType === 1)
-      lines.push({ text: `</${parent.nodeName}>`, marked: false });
-    return lines;
-  };
-
   // optional text that a problem may have; an empty one counts as none
   const optionalText = (value: any) =>
     value === undefined || value === null || String(value) === "" ? undefined : String(value);
@@ -201,7 +155,6 @@ export async function rulesSandboxMain(
       target: node ? findLametaSource(node) : undefined,
       from,
       sessionId,
-      excerpt: node ? excerptOf(node) : undefined,
     });
   };
   const call = (

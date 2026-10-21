@@ -1,4 +1,3 @@
-import * as Path from "path";
 import genresData from "../../model/Project/Session/genres.json";
 
 export const LDAC_TERMS_NAMESPACE = "https://w3id.org/ldac/terms#";
@@ -106,9 +105,7 @@ export function createFileId(folder: any, fileName: string): string {
   if (folder.filePrefix !== undefined) {
     if (folder.getAllContributionsToAllFiles !== undefined) {
       // This is a Session
-      return `Sessions/${sanitizeForIri(
-        folder.filePrefix
-      )}/${sanitizedFileName}`;
+      return `Sessions/${sanitizeForIri(folder.filePrefix)}/${sanitizedFileName}`;
     } else if (folder.sessions !== undefined) {
       // This is a Project. Project files (like .sprj) live at the RO-Crate root alongside
       // ro-crate-metadata.json, so they use simple filenames as @id values.
@@ -192,7 +189,7 @@ export function createUnresolvedContributorId(contributorName: string): string {
 export function getVocabularyMapping(
   termId: string,
   vocabularyFile: string,
-  projectTitle?: string
+  projectTitle?: string,
 ): {
   id: string;
   term: string;
@@ -206,9 +203,7 @@ export function getVocabularyMapping(
 
   // If not found, try to find by label (case-insensitive)
   if (!term) {
-    term = vocabularyData.find(
-      (item) => item.label.toLowerCase() === termId.toLowerCase()
-    );
+    term = vocabularyData.find((item) => item.label.toLowerCase() === termId.toLowerCase());
   }
 
   if (!term) {
@@ -218,7 +213,7 @@ export function getVocabularyMapping(
       id: customId,
       term: customId,
       originalTerm: termId,
-      definition: null
+      definition: null,
     };
   }
 
@@ -230,7 +225,7 @@ export function getVocabularyMapping(
       id: expandedLdacId,
       term: expandedLdacId,
       originalTerm: termId,
-      definition: term
+      definition: term,
     };
   }
 
@@ -240,7 +235,7 @@ export function getVocabularyMapping(
     id: customId,
     term: customId,
     originalTerm: termId,
-    definition: term
+    definition: term,
   };
 }
 
@@ -256,12 +251,12 @@ export function createTermDefinition(mapping: {
       "@id": mapping.id,
       "@type": "DefinedTerm",
       name: mapping.definition.label,
-      description: mapping.definition.definition
+      description: mapping.definition.definition,
     };
 
     if (isLdacIdentifier(mapping.id)) {
       result.inDefinedTermSet = {
-        "@id": expandLdacId("ldac:LinguisticGenreTerms")
+        "@id": expandLdacId("ldac:LinguisticGenreTerms"),
       };
     } else {
       result.inDefinedTermSet = { "@id": "#CustomGenreTerms" };
@@ -279,22 +274,19 @@ export function createTermDefinition(mapping: {
       "@type": "DefinedTerm",
       name: cleanName,
       description: `Custom term: ${cleanName}`,
-      inDefinedTermSet: { "@id": "#CustomGenreTerms" }
+      inDefinedTermSet: { "@id": "#CustomGenreTerms" },
     };
   }
 }
 
-export function getTermSets(
-  hasLdacTerms: boolean,
-  hasCustomTerms: boolean
-): any[] {
+export function getTermSets(hasLdacTerms: boolean, hasCustomTerms: boolean): any[] {
   const termSets: any[] = [];
 
   if (hasLdacTerms) {
     termSets.push({
       "@id": expandLdacId("ldac:LinguisticGenreTerms"),
       "@type": "DefinedTermSet",
-      name: "Linguistic Genre Terms"
+      name: "Linguistic Genre Terms",
     });
   }
 
@@ -302,7 +294,7 @@ export function getTermSets(
     termSets.push({
       "@id": "#CustomGenreTerms",
       "@type": "DefinedTermSet",
-      name: "Custom Project Genres"
+      name: "Custom Project Genres",
     });
   }
 
@@ -367,7 +359,7 @@ export function linkContainment(
   options?: {
     skipHasPart?: boolean;
     parentIdOverride?: string;
-  }
+  },
 ): void {
   const parentId = options?.parentIdOverride || parentEntry["@id"];
   const childId = childEntry["@id"];
@@ -376,9 +368,7 @@ export function linkContainment(
     if (!parentEntry.hasPart) {
       parentEntry.hasPart = [];
     }
-    const alreadyPresent = parentEntry.hasPart.some(
-      (item: any) => item["@id"] === childId
-    );
+    const alreadyPresent = parentEntry.hasPart.some((item: any) => item["@id"] === childId);
     if (!alreadyPresent) {
       parentEntry.hasPart.push({ "@id": childId });
     }
@@ -394,9 +384,7 @@ export function linkContainment(
  * @param childIds - Array of @id values for child entities
  * @returns Array of reference objects with @id properties
  */
-export function createHasPartReferences(
-  childIds: string[]
-): { "@id": string }[] {
+export function createHasPartReferences(childIds: string[]): { "@id": string }[] {
   return childIds.map((id) => ({ "@id": id }));
 }
 
@@ -422,9 +410,7 @@ export function addToHasPart(parentEntry: any, childId: string): void {
   if (!parentEntry.hasPart) {
     parentEntry.hasPart = [];
   }
-  const alreadyPresent = parentEntry.hasPart.some(
-    (item: any) => item["@id"] === childId
-  );
+  const alreadyPresent = parentEntry.hasPart.some((item: any) => item["@id"] === childId);
   if (!alreadyPresent) {
     parentEntry.hasPart.push({ "@id": childId });
   }

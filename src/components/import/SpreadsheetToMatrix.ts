@@ -208,7 +208,7 @@ function validateCells(matrix: MappedMatrix, folderType: IFolderType) {
         columnInfo.mappingStatus != "MissingIncomingLabel" &&
         columnInfo.mappingStatus != "Custom"
       ) {
-        const [primary, secondary] = columnInfo.lametaProperty.split(".");
+        const [primary] = columnInfo.lametaProperty.split(".");
         switch (primary) {
           case "contribution":
             cell.importStatus = CellImportStatus.OK; // will be set later in the process

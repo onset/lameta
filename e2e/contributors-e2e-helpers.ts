@@ -1,4 +1,4 @@
-import { Page, expect } from "@playwright/test";
+import { Page } from "@playwright/test";
 import { E2eProject } from "./various-e2e-helpers";
 
 export class ContributorsHelper {
@@ -38,19 +38,22 @@ export class ContributorsHelper {
     const personChoosers = this.page.locator(".PersonChooser");
     const lastChooser = personChoosers.last();
     await lastChooser.click();
-    
+
     // Type the name
     await this.page.keyboard.type(name);
-    
+
     if (createNew) {
       // Press Enter to create a new person with this name
       await this.page.keyboard.press("Enter");
     } else {
       // Wait for dropdown and select the matching option
       await this.page.waitForTimeout(300);
-      await this.page.getByRole("option", { name: new RegExp(name, "i") }).first().click();
+      await this.page
+        .getByRole("option", { name: new RegExp(name, "i") })
+        .first()
+        .click();
     }
-    
+
     // Wait for the UI to update
     await this.page.waitForTimeout(200);
   }
@@ -64,11 +67,11 @@ export class ContributorsHelper {
     const personChoosers = this.page.locator(".PersonChooser");
     const chooser = personChoosers.nth(rowIndex);
     await chooser.click();
-    
+
     // Open dropdown and select
     const arrowDownKey = process.platform === "darwin" ? "Meta+ArrowDown" : "Control+ArrowDown";
     await this.page.keyboard.press(arrowDownKey);
-    
+
     await this.page.getByRole("option", { name }).first().click();
     await this.page.waitForTimeout(200);
   }
@@ -85,10 +88,10 @@ export class ContributorsHelper {
     const rows = this.page.locator(".contributors .rt-tr-group");
     const row = rows.nth(rowIndex);
     const roleCell = row.locator(".rt-td").nth(1);
-    
+
     await roleCell.click();
     await this.page.waitForTimeout(100);
-    
+
     // Select the role from dropdown
     await this.page.getByRole("option", { name: roleName, exact: false }).first().click();
     await this.page.waitForTimeout(200);
@@ -102,7 +105,7 @@ export class ContributorsHelper {
   async setComment(rowIndex: number, comment: string) {
     const textareas = this.page.locator('[data-testid="contributor-comment-textarea"]');
     const textarea = textareas.nth(rowIndex);
-    
+
     await textarea.click();
     await textarea.fill(comment);
     await this.page.waitForTimeout(100);
@@ -116,7 +119,7 @@ export class ContributorsHelper {
   async typeComment(rowIndex: number, text: string) {
     const textareas = this.page.locator('[data-testid="contributor-comment-textarea"]');
     const textarea = textareas.nth(rowIndex);
-    
+
     await textarea.click();
     // Type character by character
     for (const char of text) {
@@ -156,7 +159,7 @@ export class ContributorsHelper {
     const chooser = personChoosers.nth(rowIndex);
     // The selected value is shown in a div with class containing "singleValue"
     const singleValue = chooser.locator('[class*="singleValue"]');
-    return await singleValue.textContent() || "";
+    return (await singleValue.textContent()) || "";
   }
 
   /**
@@ -169,7 +172,7 @@ export class ContributorsHelper {
     // The role is in the second cell
     const roleCell = row.locator(".rt-td").nth(1);
     const singleValue = roleCell.locator('[class*="singleValue"]');
-    return await singleValue.textContent() || "";
+    return (await singleValue.textContent()) || "";
   }
 
   /**
@@ -180,7 +183,7 @@ export class ContributorsHelper {
     const rows = this.page.locator(".contributors .rt-tr-group");
     const row = rows.nth(rowIndex);
     const deleteButton = row.locator(".deleteButton");
-    return await deleteButton.count() > 0;
+    return (await deleteButton.count()) > 0;
   }
 
   /**

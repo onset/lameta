@@ -16,7 +16,7 @@ import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { languageSlotColors } from "../../containers/theme";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 import { FieldDefinition } from "../field/FieldDefinition";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { analyticsEvent } from "../../other/analytics";
 import userSettings from "../../other/UserSettings";
 import {
@@ -40,14 +40,8 @@ import {
 } from "../field/ConfiguredFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
-import {
-  NotifyError,
-  NotifyException,
-  NotifyNoBigDeal,
-  NotifyWarning,
-} from "../../components/Notify";
+import { NotifyError, NotifyException, NotifyWarning } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
-import { capitalCase } from "../../other/case";
 import { IChoice } from "../field/Field";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 import {
@@ -319,7 +313,7 @@ export class Project extends Folder {
     const seenTags = new Set<string>();
     const slots: LanguageSlot[] = [];
 
-    entries.forEach((entry, index) => {
+    entries.forEach((entry) => {
       const parts = entry.split(":");
       const rawCode = parts[0].trim().toLowerCase();
       // Normalize to BCP47 preferred format (2-letter when available)
@@ -391,7 +385,7 @@ export class Project extends Folder {
     return sCurrentProject?.vocabularyTranslations;
   }
 
-  public importIdMatchesThisFolder(id: string): boolean {
+  public importIdMatchesThisFolder(_id: string): boolean {
     throw new Error("Did not expect matchesId on Project");
   }
   public get propertyForCheckingId(): string {
@@ -851,7 +845,6 @@ export class Project extends Folder {
     return dir;
   }
   public makeFolderForImport(folderType: IFolderType): Folder {
-    let dir: string;
     switch (folderType) {
       case "session": {
         const dir = this.getUniqueFolder(
@@ -865,7 +858,6 @@ export class Project extends Folder {
         // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
         analyticsEvent("Create", "Create Session From Import");
         return session;
-        break;
       }
       case "person": {
         const dir = this.getUniqueFolder(
@@ -903,7 +895,7 @@ export class Project extends Folder {
   }
   public duplicateCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex];
-    const { success, metadataFilePath, directory } = duplicateFolder(session);
+    const { success, directory } = duplicateFolder(session);
     if (success) {
       const newSession = Session.fromDirectory(directory, this.customVocabularies);
       newSession.properties.setText("id", Path.basename(directory));
@@ -914,7 +906,7 @@ export class Project extends Folder {
   }
   public duplicateCurrentPerson() {
     const person = this.persons.items[this.persons.selectedIndex];
-    const { success, metadataFilePath, directory } = duplicateFolder(person);
+    const { success, directory } = duplicateFolder(person);
     if (success) {
       const newPerson = this.setupPerson(directory);
       newPerson.properties.setText("name", Path.basename(directory));
@@ -944,7 +936,7 @@ export class Project extends Folder {
     person.properties.setText("name", name ?? Path.basename(dir).replace(/_/g, " "));
     this.persons.items.push(person);
     person.nameMightHaveChanged();
-    person.saveFolderMetaData;
+    person.saveFolderMetaData();
     this.persons.selectedIndex = this.persons.items.length - 1;
     analyticsEvent("Create", "Create Person");
     return person;
@@ -1119,9 +1111,7 @@ export class Project extends Folder {
 
   public deleteCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex] as Session;
-    ShowDeleteDialog(`"${session.id}"`, () => {
-      this.deleteFolder(session);
-    });
+    ShowDeleteDialog(`"${session.id}"`, () => this.deleteFolder(session));
   }
   public deleteMarkedFolders(folderType: IFolderType) {
     const folders = this.getFolderArrayFromType(folderType);
@@ -1136,18 +1126,18 @@ export class Project extends Folder {
       const deletionPromises = new Array<
         Promise<{ succeeded: boolean; path: string; context: Folder }>
       >();
-      originalFolders
-        .filter((s) => s.marked)
-        .forEach((folder) => {
-          folder.beingDeleted = true; // prevent trying to save if lameta loses focus
-          const p = asyncTrashWithContext<Folder>(folder.directory, folder);
-          deletionPromises.push(p);
-        });
+      const markedFolders = originalFolders.filter((s) => s.marked);
+      markedFolders.forEach((folder) => {
+        folder.beingDeleted = true; // prevent trying to save if lameta loses focus
+        const p = asyncTrashWithContext<Folder>(folder.directory, folder);
+        deletionPromises.push(p);
+      });
 
       const deletionPromiseResults = await Promise.allSettled(deletionPromises);
       // for each folder that was deleted, remove it from the array
       runInAction(() => {
-        deletionPromiseResults.forEach((p) => {
+        // deletionPromiseResults[i] is the result for markedFolders[i]
+        deletionPromiseResults.forEach((p, i) => {
           const fp = p as PromiseFulfilledResult<{
             succeeded: boolean;
             path: string;
@@ -1163,6 +1153,8 @@ export class Project extends Folder {
               NotifyWarning(`Could not delete ${folder.directory}`);
             }
           } else {
+            // the folder stays in the list, so it must go on saving its edits
+            markedFolders[i].beingDeleted = false;
             NotifyError(`Unexpected error in deletion promise`); // we do a try catch so it should not be possible to get an unfufilled promise
           }
         });
@@ -1173,9 +1165,10 @@ export class Project extends Folder {
         folders.items
           .filter((s) => s.marked)
           .filter((s) =>
-            deletionPromiseResults.some((r) => isFilled(r) && r.value.path === s.directory),
+            deletionPromiseResults.some(
+              (r) => isFilled(r) && r.value.path === s.directory && r.value.succeeded,
+            ),
           )
-          .filter((s) => deletionPromiseResults.some((r) => isFilled(r) && r.value.succeeded))
           .forEach((folder) => {
             // remove this folder from the array
             folders.items.splice(folders.items.indexOf(folder), 1);
@@ -1202,8 +1195,6 @@ export class Project extends Folder {
   }
 
   public async deleteFolder(folder: Folder, immediateWithoutTrash = false) {
-    const folderType = folder.folderType;
-    folderType;
     try {
       let didDelete = false;
       if (immediateWithoutTrash) {
@@ -1212,7 +1203,7 @@ export class Project extends Folder {
       }
 
       //console.log("deleting " + folder.displayName);
-      else didDelete = await (await asyncTrash(folder.directory)).succeeded;
+      else didDelete = (await asyncTrash(folder.directory)).succeeded;
       if (didDelete) {
         //console.log("Project did delete " + folder.directory);
         const folders = this.getFolderArrayFromType(folder.folderType);
@@ -1289,7 +1280,7 @@ export class Project extends Folder {
       //   this.persons.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
       //   this.persons.items.splice(indexToDelete, 1);
       // }
-      this.deleteFolder(person);
+      return this.deleteFolder(person);
     });
   }
 

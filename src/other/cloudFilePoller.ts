@@ -25,7 +25,7 @@ class CloudFilePoller {
   private tick(): void {
     // Snapshot so a watch() call triggered by updateCloudStatus() can't
     // mutate the set out from under this iteration.
-    for (const file of [...this.watched]) {
+    for (const file of Array.from(this.watched)) {
       file.updateCloudStatus();
       if (file.cloudStatus !== "hydrating") {
         this.watched.delete(file);

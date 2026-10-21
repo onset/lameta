@@ -8,14 +8,14 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import * as mobx from "mobx";
 
 mobx.configure({
-  enforceActions: "never"
+  enforceActions: "never",
 });
 
 temp.track();
 
 const languageFinder = new LanguageFinder(() => ({
   iso639_3: "",
-  englishName: ""
+  englishName: "",
 }));
 
 /**
@@ -46,13 +46,13 @@ describe("Person.wouldCollideWithIdFields", () => {
       `<?xml version="1.0" encoding="utf-8"?>
 <Person>
   <name>${name}</name>
-</Person>`
+</Person>`,
     );
     return Person.fromDirectory(
       personDirectory,
       new EncounteredVocabularyRegistry(),
       () => {},
-      languageFinder
+      languageFinder,
     );
   }
 
@@ -64,13 +64,13 @@ describe("Person.wouldCollideWithIdFields", () => {
 <Person>
   <name>${name}</name>
   <code>${code}</code>
-</Person>`
+</Person>`,
     );
     return Person.fromDirectory(
       personDirectory,
       new EncounteredVocabularyRegistry(),
       () => {},
-      languageFinder
+      languageFinder,
     );
   }
 

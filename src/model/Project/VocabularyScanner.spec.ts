@@ -1,12 +1,11 @@
-import { describe, expect, it, beforeEach, afterEach, vi, beforeAll } from "vite-plus/test";
+import { describe, expect, it, beforeEach, afterEach, beforeAll } from "vite-plus/test";
 import {
   isBuiltInGenre,
   isBuiltInRole,
-  scanProjectForVocabulary,
   updateTranslationsFromScan,
   HARDCODED_EXPORT_GENRES,
   HARDCODED_EXPORT_ROLES,
-  HARDCODED_EXPORT_STRINGS
+  HARDCODED_EXPORT_STRINGS,
 } from "./VocabularyScanner";
 import { VocabularyTranslations } from "./VocabularyTranslations";
 import * as fs from "fs-extra";
@@ -103,7 +102,7 @@ describe("VocabularyScanner", () => {
       fs.removeSync(tempDir);
     });
 
-    it("should add custom genre entries as project source", () => {
+    it("should add custom genre entries", () => {
       const scanResult = {
         customGenres: new Set(["my_custom_genre", "another_custom"]),
         builtInGenresMissingTranslations: new Set<string>(),
@@ -111,7 +110,7 @@ describe("VocabularyScanner", () => {
         builtInRolesMissingTranslations: new Set<string>(),
         exportStrings: new Set<string>(),
         sessionsScanned: 5,
-        peopleScanned: 3
+        peopleScanned: 3,
       };
 
       updateTranslationsFromScan(vocabTranslations, scanResult, testLanguageCodes);
@@ -120,7 +119,7 @@ describe("VocabularyScanner", () => {
       expect(vocabTranslations.hasGenre("another_custom")).toBe(true);
     });
 
-    it("should add built-in genres missing translations as builtin source", () => {
+    it("should add built-in genres missing translations", () => {
       const scanResult = {
         customGenres: new Set<string>(),
         builtInGenresMissingTranslations: new Set(["drama", "narrative"]),
@@ -128,7 +127,7 @@ describe("VocabularyScanner", () => {
         builtInRolesMissingTranslations: new Set<string>(),
         exportStrings: new Set<string>(),
         sessionsScanned: 5,
-        peopleScanned: 3
+        peopleScanned: 3,
       };
 
       updateTranslationsFromScan(vocabTranslations, scanResult, testLanguageCodes);
@@ -145,7 +144,7 @@ describe("VocabularyScanner", () => {
         builtInRolesMissingTranslations: new Set<string>(),
         exportStrings: new Set<string>(),
         sessionsScanned: 5,
-        peopleScanned: 3
+        peopleScanned: 3,
       };
 
       updateTranslationsFromScan(vocabTranslations, scanResult, testLanguageCodes);
@@ -155,7 +154,7 @@ describe("VocabularyScanner", () => {
 
     it("should not overwrite existing translations", () => {
       // Pre-populate with an existing entry
-      vocabTranslations.setGenre("my_genre", "project", { es: "mi género" });
+      vocabTranslations.setGenre("my_genre", "custom", { es: "mi género" });
 
       const scanResult = {
         customGenres: new Set(["my_genre"]),
@@ -164,7 +163,7 @@ describe("VocabularyScanner", () => {
         builtInRolesMissingTranslations: new Set<string>(),
         exportStrings: new Set<string>(),
         sessionsScanned: 5,
-        peopleScanned: 3
+        peopleScanned: 3,
       };
 
       updateTranslationsFromScan(vocabTranslations, scanResult, testLanguageCodes);
@@ -181,7 +180,7 @@ describe("VocabularyScanner", () => {
         builtInRolesMissingTranslations: new Set<string>(),
         exportStrings: new Set<string>(),
         sessionsScanned: 5,
-        peopleScanned: 3
+        peopleScanned: 3,
       };
 
       updateTranslationsFromScan(vocabTranslations, scanResult, testLanguageCodes);
@@ -197,15 +196,20 @@ describe("VocabularyScanner", () => {
         builtInGenresMissingTranslations: new Set<string>(),
         customRoles: new Set<string>(),
         builtInRolesMissingTranslations: new Set<string>(),
-        exportStrings: new Set(["Description Documents", "This bundle contains descriptive documents."]),
+        exportStrings: new Set([
+          "Description Documents",
+          "This bundle contains descriptive documents.",
+        ]),
         sessionsScanned: 5,
-        peopleScanned: 3
+        peopleScanned: 3,
       };
 
       updateTranslationsFromScan(vocabTranslations, scanResult, testLanguageCodes);
 
       expect(vocabTranslations.hasExportString("Description Documents")).toBe(true);
-      expect(vocabTranslations.hasExportString("This bundle contains descriptive documents.")).toBe(true);
+      expect(vocabTranslations.hasExportString("This bundle contains descriptive documents.")).toBe(
+        true,
+      );
     });
   });
 
@@ -213,13 +217,19 @@ describe("VocabularyScanner", () => {
     it("should include bundle titles", () => {
       expect(HARDCODED_EXPORT_STRINGS).toContain("Description Documents");
       expect(HARDCODED_EXPORT_STRINGS).toContain("Other Documents");
-      expect(HARDCODED_EXPORT_STRINGS).toContain("Documentation of consent for the contributors to this collection");
+      expect(HARDCODED_EXPORT_STRINGS).toContain(
+        "Documentation of consent for the contributors to this collection",
+      );
     });
 
     it("should include bundle descriptions", () => {
-      expect(HARDCODED_EXPORT_STRINGS).toContain("This bundle contains descriptive documents about the documentation project.");
+      expect(HARDCODED_EXPORT_STRINGS).toContain(
+        "This bundle contains descriptive documents about the documentation project.",
+      );
       expect(HARDCODED_EXPORT_STRINGS).toContain("This bundle contains other project documents.");
-      expect(HARDCODED_EXPORT_STRINGS).toContain("This bundle contains media demonstrating informed consent for sessions in this collection.");
+      expect(HARDCODED_EXPORT_STRINGS).toContain(
+        "This bundle contains media demonstrating informed consent for sessions in this collection.",
+      );
     });
   });
 

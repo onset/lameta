@@ -56,9 +56,7 @@ export class MainProcessCopyManager {
    * Cancel all active copy jobs
    */
   public static cancelAllCopyJobs(): void {
-    console.log(
-      `[MainProcessCopyManager] Cancelling ${activeJobs.length} active jobs`
-    );
+    console.log(`[MainProcessCopyManager] Cancelling ${activeJobs.length} active jobs`);
     for (const job of activeJobs) {
       job.cancelled = true;
       try {
@@ -95,7 +93,7 @@ export class MainProcessCopyManager {
   public static copyFileRobust(
     sourcePath: string,
     destPath: string,
-    onProgress?: (progress: ICopyProgress) => void
+    onProgress?: (progress: ICopyProgress) => void,
   ): Promise<ICopyResult> {
     // Ensure destination directory exists
     const destDir = Path.dirname(destPath);
@@ -107,7 +105,7 @@ export class MainProcessCopyManager {
     let size = "0 B";
     try {
       size = filesize(fs.statSync(sourcePath).size);
-    } catch (e) {
+    } catch {
       // File might not exist or be inaccessible
     }
 
@@ -123,14 +121,14 @@ export class MainProcessCopyManager {
     return new Promise<ICopyResult>((resolve) => {
       const proc = child_process.spawn(cmd, args, {
         shell: true,
-        detached: true // Allow copy to continue if lameta quits
+        detached: true, // Allow copy to continue if lameta quits
       });
 
       const job: ICopyJob = {
         process: proc,
         destination: destPath,
         progress: "0%",
-        cancelled: false
+        cancelled: false,
       };
       activeJobs.push(job);
 
@@ -145,7 +143,7 @@ export class MainProcessCopyManager {
             onProgress({
               destination: destPath,
               progress: matches[0],
-              fileName
+              fileName,
             });
           }
         }
@@ -162,7 +160,7 @@ export class MainProcessCopyManager {
         resolve({
           success: false,
           destination: destPath,
-          error: err.message
+          error: err.message,
         });
       });
 
@@ -173,7 +171,7 @@ export class MainProcessCopyManager {
           resolve({
             success: false,
             destination: destPath,
-            error: "Copy cancelled"
+            error: "Copy cancelled",
           });
           return;
         }
@@ -184,13 +182,13 @@ export class MainProcessCopyManager {
           resolve({
             success: false,
             destination: destPath,
-            error: msg
+            error: msg,
           });
         } else {
           console.log(`[MainProcessCopyManager] Finished copying ${fileName}`);
           resolve({
             success: true,
-            destination: destPath
+            destination: destPath,
           });
         }
       });
@@ -211,7 +209,7 @@ export class MainProcessCopyManager {
     sourcePath: string,
     destPath: string,
     onProgress?: (progress: ICopyProgress) => void,
-    sizeThresholdBytes: number = 10 * 1024 * 1024 // 10MB
+    sizeThresholdBytes: number = 10 * 1024 * 1024, // 10MB
   ): Promise<ICopyResult> {
     const fileName = Path.basename(sourcePath);
 
@@ -224,7 +222,7 @@ export class MainProcessCopyManager {
       return {
         success: false,
         destination: destPath,
-        error: `Cannot access source file: ${err.message}`
+        error: `Cannot access source file: ${err.message}`,
       };
     }
 
@@ -242,7 +240,7 @@ export class MainProcessCopyManager {
           onProgress({
             destination: destPath,
             progress: "100%",
-            fileName
+            fileName,
           });
         }
 
@@ -251,7 +249,7 @@ export class MainProcessCopyManager {
         return {
           success: false,
           destination: destPath,
-          error: err.message
+          error: err.message,
         };
       }
     }

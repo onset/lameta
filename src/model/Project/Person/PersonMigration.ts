@@ -8,7 +8,7 @@ import { runInAction } from "mobx";
 // see https://trello.com/c/f6hVbGoY and https://trello.com/c/zWaSIuSj
 export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
   properties: FieldSet,
-  languages: IPersonLanguage[]
+  languages: IPersonLanguage[],
 ) {
   // we don't try merging in the old fields; if we already have this modern languages list, then we
   // ignore the new fields.
@@ -20,7 +20,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
         code: primary.text,
         primary: true,
         mother: false,
-        father: false
+        father: false,
       });
     properties.remove("primaryLanguage");
     let x = properties.getTextFieldOrUndefined("mothersLanguage");
@@ -33,7 +33,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
           code: x.text,
           primary: false,
           mother: true,
-          father: false
+          father: false,
         });
       }
     }
@@ -49,7 +49,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
           code: x.text,
           primary: false,
           mother: false,
-          father: true
+          father: true,
         });
       }
     }
@@ -64,7 +64,7 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
             code: x.text,
             primary: false,
             mother: false,
-            father: false
+            father: false,
           });
         }
       }
@@ -72,17 +72,14 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
     }
 
     // preserve contents of the legacy primaryLanguageLearnedIn field which was labeled as "detail" in some versions.
-    const legacyLearnedin = properties.getTextFieldOrUndefined(
-      "primaryLanguageLearnedIn"
-    );
+    const legacyLearnedin = properties.getTextFieldOrUndefined("primaryLanguageLearnedIn");
     if (legacyLearnedin && legacyLearnedin.text) {
       if (primary && primary.text) {
-        const primaryLanguageName =
-          staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-            primary.text
-          );
+        const primaryLanguageName = staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+          primary.text,
+        );
         const d = properties.getTextStringOrEmpty("description");
-        const descriptionToAdd = `${primaryLanguageName} learned in ${legacyLearnedin}.`;
+        const descriptionToAdd = `${primaryLanguageName} learned in ${legacyLearnedin.text}.`;
         // if they are going back and forth with SayMore, we might already have this text. In which case do not add it again.
         if (d.indexOf(descriptionToAdd) === -1) {
           properties.setText("description", `${d} ${descriptionToAdd}`.trim());
@@ -93,45 +90,33 @@ export function migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLangua
 }
 
 // Note: this migration happened a couple months before we switched to the new PersonLanguages structure
-export function migrateLegacyPersonLanguagesFromNameToCode(
-  properties: FieldSet
-) {
+export function migrateLegacyPersonLanguagesFromNameToCode(properties: FieldSet) {
   // const x = properties.getTextStringOrEmpty("fathersLanguage"); //??
   // console.log("fl: " + x);
-  ["primaryLanguage", "fathersLanguage", "mothersLanguage"].forEach(
-    (fieldName) =>
-      migrateOnePersonLanguageFromNameToCode(
-        properties.getTextFieldOrUndefined(fieldName)
-      )
+  ["primaryLanguage", "fathersLanguage", "mothersLanguage"].forEach((fieldName) =>
+    migrateOnePersonLanguageFromNameToCode(properties.getTextFieldOrUndefined(fieldName)),
   );
   for (let i = 0; i < maxOtherLanguages; i++) {
-    migrateOnePersonLanguageFromNameToCode(
-      properties.getTextFieldOrUndefined("otherLanguage" + i)
-    );
+    migrateOnePersonLanguageFromNameToCode(properties.getTextFieldOrUndefined("otherLanguage" + i));
   }
 }
 // Note: this migration happened a couple months before we switched to the new PersonLanguages structure
 // public and static to make it easier to unit test
-export function migrateOnePersonLanguageFromNameToCode(
-  field: Field | undefined
-) {
+export function migrateOnePersonLanguageFromNameToCode(field: Field | undefined) {
   try {
     if (!field) return;
     const nameOrCode = field.text;
     if (!nameOrCode) {
       return; // leave it alone
     }
-    const foundCode =
-      staticLanguageFinder.findCodeFromCodeOrLanguageName(nameOrCode);
+    const foundCode = staticLanguageFinder.findCodeFromCodeOrLanguageName(nameOrCode);
     const valueToUse = foundCode === "und" ? nameOrCode : foundCode;
     return field.setValueFromString(valueToUse);
 
     //console.log(`Migrate person lang ${key}:${nameOrCode} --> ${code}`);
   } catch (err) {
     const ex = err as Error;
-    ex.message = `${err} (migrateOnePersonLanguage: nameOrCode = '${
-      field!.text
-    }')`;
+    ex.message = `${err} (migrateOnePersonLanguage: nameOrCode = '${field!.text}')`;
     throw ex;
   }
 }

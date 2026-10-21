@@ -27,7 +27,7 @@ export class FolderGroup {
       selectedIndex: observable,
       filteredItems: observable,
       searchResetCounter: observable,
-      searchTerm: observable
+      searchTerm: observable,
     });
 
     this.items = new Array<Folder>();

@@ -1,11 +1,5 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
-import {
-  computeMergedCatalog,
-  makeFieldDefinitionCatalog,
-  prepareGlobalFieldDefinitionCatalog,
-} from "./ConfiguredFieldDefinitions";
-import exp from "constants";
-import { ensurePluginOrder } from "react-table";
+import { describe, it, expect } from "vite-plus/test";
+import { computeMergedCatalog, makeFieldDefinitionCatalog } from "./ConfiguredFieldDefinitions";
 
 describe("computeMergedCatalog", () => {
   it("should merge the properties of the choice into the field definition, overriding the defaults", () => {
@@ -20,7 +14,7 @@ describe("computeMergedCatalog", () => {
         { key: "region", show: "never" },
       ],
     };
-    const { mergedCatalog } = computeMergedCatalog(ourCatalog);
+    const mergedCatalog = computeMergedCatalog(ourCatalog);
     expect(mergedCatalog.project.find((f) => f.key == "title")).toEqual({
       key: "title",
       //englishLabel: "Project ID", // changed to Project ID at ELAR request Dec 2019
@@ -50,8 +44,8 @@ describe("computeMergedCatalog", () => {
       ],
     };
 
-    // todo I don't know why this fails even though the exception is being thrown
-    // expect(computeMergedCatalog(ourCatalog)).toThrow();
+    expect(() => computeMergedCatalog(ourCatalog)).toThrow();
+    expect(() => computeMergedCatalog({ project: [ourCatalog.project[0]] })).not.toThrow();
   });
 });
 

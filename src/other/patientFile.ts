@@ -6,9 +6,8 @@ import {
   NotifyFileAccessProblem,
   NotifyNoBigDeal,
   NotifyRenameProblem,
-  NotifyWarning,
 } from "../components/Notify";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 /* Do what we can to co-exist with things like antivirus scanners and file-sync
     services that can temporarily lock files. On Windows (only), a process
@@ -85,7 +84,7 @@ export class PatientFS {
             t`Restart lameta and do the rename before playing the video again.`,
         );
       } else {
-        NotifyRenameProblem(err, from);
+        NotifyRenameProblem(err);
       }
       throw err;
     }

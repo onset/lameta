@@ -11,12 +11,12 @@ vi.mock("fs-extra", () => ({
   remove: vi.fn(),
   writeJson: vi.fn(),
   writeFile: vi.fn(),
-  stat: vi.fn()
+  stat: vi.fn(),
 }));
 
 // Mock the RoCrateExporter
 vi.mock("../RoCrateExporter", () => ({
-  getRoCrate: vi.fn()
+  getRoCrate: vi.fn(),
 }));
 
 // Mock Path.join to return predictable paths
@@ -24,7 +24,7 @@ vi.mock("path", async () => {
   const actual = await vi.importActual("path");
   return {
     ...actual,
-    join: vi.fn((...args: string[]) => args.join("/"))
+    join: vi.fn((...args: string[]) => args.join("/")),
   };
 });
 
@@ -41,9 +41,9 @@ describe("writeROCrateFile", () => {
       {
         "@type": "CreativeWork",
         "@id": "ro-crate-metadata.json",
-        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" }
-      }
-    ]
+        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
+      },
+    ],
   };
 
   beforeEach(() => {
@@ -51,7 +51,7 @@ describe("writeROCrateFile", () => {
 
     // Create a minimal mock project
     mockProject = {
-      directory: mockProjectDirectory
+      directory: mockProjectDirectory,
     } as Project;
 
     // Setup default mock implementations
@@ -73,18 +73,13 @@ describe("writeROCrateFile", () => {
 
       await writeROCrateFile(mockProject);
 
-      expect(Path.join).toHaveBeenCalledWith(
-        mockProjectDirectory,
-        "ro-crate-metadata.json"
-      );
+      expect(Path.join).toHaveBeenCalledWith(mockProjectDirectory, "ro-crate-metadata.json");
       expect(mockFs.pathExists).toHaveBeenCalledWith(expectedRoCrateFilePath);
       expect(mockFs.remove).not.toHaveBeenCalled();
       expect(mockGetRoCrate).toHaveBeenCalledWith(mockProject, mockProject);
-      expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expectedRoCrateFilePath,
-        mockRoCrateData,
-        { spaces: 2 }
-      );
+      expect(mockFs.writeJson).toHaveBeenCalledWith(expectedRoCrateFilePath, mockRoCrateData, {
+        spaces: 2,
+      });
     });
 
     it("should replace existing RO-Crate file when one exists", async () => {
@@ -95,54 +90,45 @@ describe("writeROCrateFile", () => {
       expect(mockFs.pathExists).toHaveBeenCalledWith(expectedRoCrateFilePath);
       expect(mockFs.remove).toHaveBeenCalledWith(expectedRoCrateFilePath);
       expect(mockGetRoCrate).toHaveBeenCalledWith(mockProject, mockProject);
-      expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expectedRoCrateFilePath,
-        mockRoCrateData,
-        { spaces: 2 }
-      );
+      expect(mockFs.writeJson).toHaveBeenCalledWith(expectedRoCrateFilePath, mockRoCrateData, {
+        spaces: 2,
+      });
     });
 
     it("should format JSON with 2 spaces indentation", async () => {
       await writeROCrateFile(mockProject);
 
-      expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expectedRoCrateFilePath,
-        mockRoCrateData,
-        { spaces: 2 }
-      );
+      expect(mockFs.writeJson).toHaveBeenCalledWith(expectedRoCrateFilePath, mockRoCrateData, {
+        spaces: 2,
+      });
     });
 
     it("should handle complex RO-Crate data structure", async () => {
       const complexRoCrateData = {
-        "@context": [
-          "https://w3id.org/ro/crate/1.2/context",
-          { "@vocab": "http://schema.org/" }
-        ],
+        "@context": ["https://w3id.org/ro/crate/1.2/context", { "@vocab": "http://schema.org/" }],
         "@graph": [
           {
             "@type": "CreativeWork",
             "@id": "ro-crate-metadata.json",
             conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
-            about: { "@id": "./" }
+            about: { "@id": "./" },
           },
           {
             "@type": "Dataset",
             "@id": "./",
             name: "Test Project",
-            description: "A test project for RO-Crate"
-          }
-        ]
+            description: "A test project for RO-Crate",
+          },
+        ],
       };
 
       mockGetRoCrate.mockResolvedValue(complexRoCrateData);
 
       await writeROCrateFile(mockProject);
 
-      expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expectedRoCrateFilePath,
-        complexRoCrateData,
-        { spaces: 2 }
-      );
+      expect(mockFs.writeJson).toHaveBeenCalledWith(expectedRoCrateFilePath, complexRoCrateData, {
+        spaces: 2,
+      });
     });
 
     it("should return the generated RO-Crate data", async () => {
@@ -154,9 +140,7 @@ describe("writeROCrateFile", () => {
 
   describe("when project is invalid", () => {
     it("should throw error when project is null", async () => {
-      await expect(writeROCrateFile(null as any)).rejects.toThrow(
-        "No valid project provided"
-      );
+      await expect(writeROCrateFile(null as any)).rejects.toThrow("No valid project provided");
 
       expect(mockFs.pathExists).not.toHaveBeenCalled();
       expect(mockFs.remove).not.toHaveBeenCalled();
@@ -165,9 +149,7 @@ describe("writeROCrateFile", () => {
     });
 
     it("should throw error when project is undefined", async () => {
-      await expect(writeROCrateFile(undefined as any)).rejects.toThrow(
-        "No valid project provided"
-      );
+      await expect(writeROCrateFile(undefined as any)).rejects.toThrow("No valid project provided");
 
       expect(mockFs.pathExists).not.toHaveBeenCalled();
       expect(mockFs.remove).not.toHaveBeenCalled();
@@ -179,7 +161,7 @@ describe("writeROCrateFile", () => {
       const projectWithoutDirectory = { directory: null } as any;
 
       await expect(writeROCrateFile(projectWithoutDirectory)).rejects.toThrow(
-        "No valid project provided"
+        "No valid project provided",
       );
 
       expect(mockFs.pathExists).not.toHaveBeenCalled();
@@ -192,7 +174,7 @@ describe("writeROCrateFile", () => {
       const projectWithoutDirectory = {} as Project;
 
       await expect(writeROCrateFile(projectWithoutDirectory)).rejects.toThrow(
-        "No valid project provided"
+        "No valid project provided",
       );
 
       expect(mockFs.pathExists).not.toHaveBeenCalled();
@@ -207,9 +189,7 @@ describe("writeROCrateFile", () => {
       const fsError = new Error("Permission denied");
       mockFs.pathExists.mockRejectedValue(fsError);
 
-      await expect(writeROCrateFile(mockProject)).rejects.toThrow(
-        "Permission denied"
-      );
+      await expect(writeROCrateFile(mockProject)).rejects.toThrow("Permission denied");
 
       expect(mockFs.pathExists).toHaveBeenCalledWith(expectedRoCrateFilePath);
       expect(mockFs.remove).not.toHaveBeenCalled();
@@ -222,9 +202,7 @@ describe("writeROCrateFile", () => {
       const fsError = new Error("Failed to remove file");
       mockFs.remove.mockRejectedValue(fsError);
 
-      await expect(writeROCrateFile(mockProject)).rejects.toThrow(
-        "Failed to remove file"
-      );
+      await expect(writeROCrateFile(mockProject)).rejects.toThrow("Failed to remove file");
 
       expect(mockFs.pathExists).toHaveBeenCalledWith(expectedRoCrateFilePath);
       expect(mockFs.remove).toHaveBeenCalledWith(expectedRoCrateFilePath);
@@ -236,9 +214,7 @@ describe("writeROCrateFile", () => {
       const exporterError = new Error("Failed to generate RO-Crate");
       mockGetRoCrate.mockRejectedValue(exporterError);
 
-      await expect(writeROCrateFile(mockProject)).rejects.toThrow(
-        "Failed to generate RO-Crate"
-      );
+      await expect(writeROCrateFile(mockProject)).rejects.toThrow("Failed to generate RO-Crate");
 
       expect(mockFs.pathExists).toHaveBeenCalledWith(expectedRoCrateFilePath);
       expect(mockGetRoCrate).toHaveBeenCalledWith(mockProject, mockProject);
@@ -249,17 +225,13 @@ describe("writeROCrateFile", () => {
       const fsError = new Error("Failed to write file");
       mockFs.writeJson.mockRejectedValue(fsError);
 
-      await expect(writeROCrateFile(mockProject)).rejects.toThrow(
-        "Failed to write file"
-      );
+      await expect(writeROCrateFile(mockProject)).rejects.toThrow("Failed to write file");
 
       expect(mockFs.pathExists).toHaveBeenCalledWith(expectedRoCrateFilePath);
       expect(mockGetRoCrate).toHaveBeenCalledWith(mockProject, mockProject);
-      expect(mockFs.writeJson).toHaveBeenCalledWith(
-        expectedRoCrateFilePath,
-        mockRoCrateData,
-        { spaces: 2 }
-      );
+      expect(mockFs.writeJson).toHaveBeenCalledWith(expectedRoCrateFilePath, mockRoCrateData, {
+        spaces: 2,
+      });
     });
   });
 
@@ -291,7 +263,7 @@ describe("writeROCrateFile", () => {
         "pathExists",
         "remove",
         "getRoCrate",
-        "writeJson"
+        "writeJson",
       ]);
     });
 
@@ -313,12 +285,7 @@ describe("writeROCrateFile", () => {
 
       await writeROCrateFile(mockProject);
 
-      expect(callOrder).toEqual([
-        "pathExists",
-        "pathExists",
-        "getRoCrate",
-        "writeJson"
-      ]);
+      expect(callOrder).toEqual(["pathExists", "pathExists", "getRoCrate", "writeJson"]);
       expect(mockFs.remove).not.toHaveBeenCalled();
     });
   });

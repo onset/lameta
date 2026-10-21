@@ -1,19 +1,11 @@
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
-import React, { useEffect, useState } from "react";
-import { observer } from "mobx-react";
+import React, { useState } from "react";
 import { Field } from "../../../model/field/Field";
 
-import {
-  LanguageFinder,
-  Language
-} from "../../../languageFinder/LanguageFinder";
+import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
-const femaleSelected: string = "assets/Female_Selected.png";
-const femaleNotSelected: string = "assets/Female_NotSelected.png";
-const maleSelected: string = "assets/Male_Selected.png";
-const maleNotSelected: string = "assets/Male_NotSelected.png";
 
 export interface IProps {
   language: Field;
@@ -23,10 +15,7 @@ export interface IProps {
   languageFinder: LanguageFinder;
 }
 
-export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (
-  props
-) => {
-  const [tooltip, setTooltip] = useState("");
+export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (props) => {
   const [validationClass, setValidationClass] = useState("");
   const updateValidationClass = (lang) => {
     if (
@@ -34,9 +23,7 @@ export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (
       props.languageFinder.findOne639_3CodeFromName(lang, "und") !== "und"
     ) {
       setValidationClass("");
-      setTooltip("");
     } else {
-      setTooltip(`lameta does not recognize the Language name '${lang}'`);
       setValidationClass("languageNotRecognized");
     }
   };
@@ -58,13 +45,6 @@ export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (
         onChange={(v) => props.language.setValueFromString(v)}
         className={"language-name " + validationClass}
       />
-      {/* <TextFieldEdit
-        className={"language-name " + validationClass}
-        hideLabel={true}
-        field={props.language}
-        tooltip={tooltip}
-        onBlurWithValue={updateValidationClass}
-      /> */}
       {/* <ParentButton
         childLanguage={props.language}
         parentLanguage={props.motherLanguage}

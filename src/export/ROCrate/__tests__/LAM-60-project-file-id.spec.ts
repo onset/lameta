@@ -5,8 +5,8 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
@@ -18,8 +18,8 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01")
-  })
+    birthtime: new Date("2023-01-01"),
+  }),
 }));
 
 describe("LAM-60: Project file (@id for .sprj) should be root-relative", () => {
@@ -27,29 +27,25 @@ describe("LAM-60: Project file (@id for .sprj) should be root-relative", () => {
 
   beforeEach(() => {
     // Mock field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
         key: "person",
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Person",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Mock the project metadata file (.sprj)
     const mockProjectFile = {
       getActualFilePath: () => "/projects/hewya/hewya.sprj",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "hewya.sprj"
+      pathInFolderToLinkFileOrLocalCopy: "hewya.sprj",
     } as any;
 
     mockProject = {
@@ -64,12 +60,12 @@ describe("LAM-60: Project file (@id for .sprj) should be root-relative", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [mockProjectFile],
       knownFields: [],
-      authorityLists: { accessChoicesOfCurrentProtocol: [] }
+      authorityLists: { accessChoicesOfCurrentProtocol: [] },
     } as any;
 
     // Set up prototypes
@@ -84,9 +80,7 @@ describe("LAM-60: Project file (@id for .sprj) should be root-relative", () => {
     // have knownFields and files properties, resulting in People/<prefix>/<file> paths.
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
-    const projectFile = result["@graph"].find(
-      (item: any) => item.name === "hewya.sprj"
-    );
+    const projectFile = result["@graph"].find((item: any) => item.name === "hewya.sprj");
 
     expect(projectFile).toBeDefined();
     expect(projectFile["@id"]).toBe("hewya.sprj");
@@ -95,9 +89,7 @@ describe("LAM-60: Project file (@id for .sprj) should be root-relative", () => {
     expect(projectFile["@id"]).not.toBe("People/hewya/hewya.sprj");
 
     // Also verify that the root dataset's hasPart references it correctly
-    const rootDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
+    const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
     expect(rootDataset.hasPart).toContainEqual({ "@id": "hewya.sprj" });
   });
 });

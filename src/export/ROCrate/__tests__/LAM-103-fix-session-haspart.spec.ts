@@ -27,16 +27,16 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01T00:00:00Z")
-  })
+    birthtime: new Date("2023-01-01T00:00:00Z"),
+  }),
 }));
 
 vi.mock("../../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
@@ -44,21 +44,15 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
   let mockSession: Session;
 
   beforeEach(() => {
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([]);
 
     // Create mock files with all needed methods
     const createMockFile = (name: string) => ({
       getActualFilePath: () => `/project/Sessions/${name}`,
       getModifiedDate: () => new Date("2023-06-01T00:00:00Z"),
-      getTextProperty: vi.fn().mockReturnValue("")
+      getTextProperty: vi.fn().mockReturnValue(""),
     });
 
     // Mock session with multiple files
@@ -75,36 +69,35 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
         properties: {
           forEach: vi.fn(),
           getHasValue: vi.fn().mockReturnValue(false),
-          getTextStringOrEmpty: vi.fn().mockReturnValue("")
-        }
+          getTextStringOrEmpty: vi.fn().mockReturnValue(""),
+        },
       },
       knownFields: [],
       files: [
         createMockFile("ETR008/ETR008.session"),
         createMockFile("ETR008/ETR008_Audio.wav"),
-        createMockFile("ETR008/ETR008_Video.mp4")
+        createMockFile("ETR008/ETR008_Video.mp4"),
       ],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as unknown as Session;
 
     mockProject = {
       filePrefix: "TestProject",
       directory: "/project",
       sessions: {
-        items: [mockSession]
+        items: [mockSession],
       },
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "projectDescription")
-            return "Test project description";
+          if (key === "projectDescription") return "Test project description";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";
         }),
         properties: {
           forEach: vi.fn(),
-          getHasValue: vi.fn().mockReturnValue(false)
-        }
+          getHasValue: vi.fn().mockReturnValue(false),
+        },
       },
       knownFields: [],
       files: [],
@@ -115,12 +108,12 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
             id: "public",
             label: "public",
             description: "Public access",
-            ldacAccessCategory: "ldac:OpenAccess"
-          }
-        ]
+            ldacAccessCategory: "ldac:OpenAccess",
+          },
+        ],
       },
       descriptionFolder: { files: [] },
-      otherDocsFolder: { files: [] }
+      otherDocsFolder: { files: [] },
     } as unknown as Project;
 
     // Set up correct prototypes for instanceof checks
@@ -140,9 +133,7 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const sessionEvent = graph.find(
-      (item: any) => item["@id"] === "#session-ETR008"
-    );
+    const sessionEvent = graph.find((item: any) => item["@id"] === "#session-ETR008");
 
     expect(sessionEvent).toBeDefined();
 
@@ -158,9 +149,7 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const sessionDir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR008/"
-    );
+    const sessionDir = graph.find((item: any) => item["@id"] === "Sessions/ETR008/");
 
     expect(sessionDir).toBeDefined();
     expect(sessionDir.hasPart).toBeDefined();
@@ -180,12 +169,8 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const sessionEvent = graph.find(
-      (item: any) => item["@id"] === "#session-ETR008"
-    );
-    const sessionDir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR008/"
-    );
+    const sessionEvent = graph.find((item: any) => item["@id"] === "#session-ETR008");
+    const sessionDir = graph.find((item: any) => item["@id"] === "Sessions/ETR008/");
 
     // CollectionEvent should have subjectOf pointing to Dataset
     expect(sessionEvent.subjectOf).toEqual({ "@id": "Sessions/ETR008/" });
@@ -203,9 +188,7 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
 
     // Find all session files
     const sessionFiles = graph.filter(
-      (item: any) =>
-        item["@id"]?.startsWith("Sessions/ETR008/") &&
-        !item["@id"]?.endsWith("/")
+      (item: any) => item["@id"]?.startsWith("Sessions/ETR008/") && !item["@id"]?.endsWith("/"),
     );
 
     expect(sessionFiles.length).toBe(3);
@@ -227,7 +210,7 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
 
     expect(rootDataset).toBeDefined();
     expect(rootDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "#session-ETR008"
+      "@id": "#session-ETR008",
     });
   });
 
@@ -244,12 +227,12 @@ describe("LAM-103: Session CollectionEvent should not have hasPart", () => {
 
     // pcdm:hasMember should include Sessions/ directory Dataset
     expect(rootDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "Sessions/"
+      "@id": "Sessions/",
     });
 
     // hasPart should NOT include Sessions/ or session CollectionEvents
     const hasSessionInHasPart = rootDataset.hasPart?.some(
-      (p: any) => p["@id"] === "Sessions/" || p["@id"] === "#session-ETR008"
+      (p: any) => p["@id"] === "Sessions/" || p["@id"] === "#session-ETR008",
     );
     expect(hasSessionInHasPart).toBeFalsy();
   });

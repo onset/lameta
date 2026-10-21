@@ -4,8 +4,7 @@ import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 
 // A rules file checks the metadata that lameta exports for an archive and reports
 // problems for the problems sidebar. Any archive configuration can have one, at
-// archive-configurations/<configuration name>/rules.js; it is optional. The user can
-// also choose a local rules file per configuration (UserSettings.getProblemRulesFile).
+// archive-configurations/<configuration name>/rules.js; it is optional.
 // It runs in a sandbox with no Node and no network (see rulesSandbox.ts), so it can
 // use nothing but the standard DOM.
 //
@@ -26,14 +25,11 @@ import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 //
 // where only `message` is required; IReportedProblem below says what each one is.
 
-export const kRulesFileName = "rules.js";
-export const kRulesFileInterfaceVersion = 1;
-
-// The export formats that rules can check.
+// IMDI is the only format that rules can check (rulesSandboxMain.ts refuses others).
 // A JSON format such as RO-Crate cannot carry lameta-source comments, so adding one
 // needs a different way for a reported problem to say where it is than `node`.
-export const kSupportedRulesFormats = ["imdi"] as const;
-export type RulesFormat = (typeof kSupportedRulesFormats)[number];
+
+export const kRulesFileName = "rules.js";
 
 export type ProblemSeverity = "error" | "warning";
 
@@ -68,32 +64,6 @@ export interface IReportedProblem {
   // Any node of the Document the check was given. findLametaSource() in
   // export/lametaSourceComment.ts maps it to the place in lameta to fix it.
   node?: Node;
-}
-
-// Why the rules cannot be used with the current archive configuration, if they can't.
-export type RulesFileUnsupported =
-  | { reason: "archive-does-not-use-imdi" }
-  | { reason: "format"; format: string }
-  | { reason: "interface-version"; interfaceVersion: number };
-
-// `declaration` is what the rules file says about itself; it is undefined until the
-// file has been loaded.
-export function getRulesFileUnsupported(
-  archiveUsesImdi: boolean,
-  declaration?: Pick<IRulesFileModule, "interfaceVersion" | "format">,
-): RulesFileUnsupported | undefined {
-  if (declaration && declaration.interfaceVersion !== kRulesFileInterfaceVersion) {
-    return {
-      reason: "interface-version",
-      interfaceVersion: declaration.interfaceVersion,
-    };
-  }
-  if (declaration && !(kSupportedRulesFormats as readonly string[]).includes(declaration.format)) {
-    return { reason: "format", format: declaration.format };
-  }
-  // IMDI is the only format so far, so an archive that doesn't take IMDI can't be checked
-  if (!archiveUsesImdi) return { reason: "archive-does-not-use-imdi" };
-  return undefined;
 }
 
 // The rules file that comes with lameta for this archive configuration, if it has one.

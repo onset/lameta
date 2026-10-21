@@ -5,7 +5,7 @@ We use Crowdin.com for crowdsourced translation, [lingui](https://lingui.js.org/
 - **Crowdin project:** 324607 ("laMeta", identifier `saymorex`). One project, two areas:
   - **Project ROOT = lameta v2.** The `V2` branch of this repo syncs there (old layout: `messages.po` + `fields/choices/tips.csv`). **Do not upload to, change, or delete anything at the Crowdin root from V3 tooling** — v2 is still shipping.
   - **Crowdin branch `V3` = this repo.** `vp run strings:sync` uploads/downloads with `-b V3`. Exactly six files live there: `messages.po`, `fields.po`, `vocabularies.po`, `accessProtocols.csv`, `genres.csv`, `roles.csv`.
-- **Duplicate sharing:** the project setting "hide duplicates" means any V3 string whose English text also exists at the root is hidden in the editor and automatically inherits the root's translation. That is how v2's translation work flows into v3 for free. It also means per-file "translated %" on Crowdin only counts *visible* strings — use `pnpm exec tsx scripts/crowdin/report.ts V3` for the real picture.
+- **Duplicate sharing:** the project setting "hide duplicates" means any V3 string whose English text also exists at the root is hidden in the editor and automatically inherits the root's translation. That is how v2's translation work flows into v3 for free. It also means per-file "translated %" on Crowdin only counts _visible_ strings — use `pnpm exec tsx scripts/crowdin/report.ts V3` for the real picture.
 - **Language codes and folders match**: `locale/{es,fr,ru,id,fa,pt-BR,zh-CN}/`. `crowdin.yml` has a `languages_mapping` that forces the downloads for pt-BR and zh-CN into those exact folder names (Crowdin's default two-letter scheme would produce `pt/` and `zh/` — that caused years of confusion and a runtime folder remap that has been removed).
 - The English catalogs (`locale/en/*.po`) are the source of truth for what strings exist; translations live on Crowdin and are pulled into the per-language folders.
 
@@ -13,20 +13,15 @@ We use Crowdin.com for crowdsourced translation, [lingui](https://lingui.js.org/
 
 Lingui is used for all the hard-coded UI elements. Use macros which lingui can find, so it can put them in the string catalog:
 
-```xml
-<Trans>Description Documents</Trans>
-```
-
-or
-
-```xml
-<Trans id="project.DescriptionDocuments">Description Documents</Trans>
+```tsx
+import { Trans } from "@lingui/react/macro";
+<Trans>Description Documents</Trans>;
 ```
 
 or
 
 ```ts
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 t`A simple string using the t macro`;
 ```
 
@@ -34,58 +29,44 @@ t`A simple string using the t macro`;
 t`Today is ${weather}`;
 ```
 
-which will appear to the translator as "Today is {weather}". I.e., without the $. See [more examples](https://lingui.js.org/ref/macro.html#examples-of-js-macros)
+which will appear to the translator as "Today is {weather}". I.e., without the $. To give a placeholder a name of your choosing, write `` t`Linked to ${{ p: path }}` ``, which appears as "Linked to {p}". See [more examples](https://lingui.dev/ref/macro).
 
-or
-
-```ts
-{
-  this.i18n._("project.DescriptionDocuments", {}, { defaults: "Description Documents" });
-}
-```
-
-This format uses our own wrapper. Note that you still have to include the comment part for the lingui scanner to find it.
-
-```ts
-{
-  translateMessage(/*i18n*/ { id: "Today is {d}", values{d:"sunny"} });
-}
-```
+The macros are compiled by `@lingui/vite-plugin` (in `vite.config.ts` and `vitest.config.js`). There is no Babel step.
 
 # Our own extractor for json5 files
 
-Our `strings:extract-json` script extracts the translatable fields from all the json5 files (`archive-configurations/**/fields.json5` and `vocabularies.json5`). It creates english `.po` files (`locale/en/fields.po`, `locale/en/vocabularies.po`), which then go to Crowdin. Crowdin gives back the po files for all the languages, and `lingui compile` creates `.js` catalogs of all of them, which we load up in `localization.ts`.
+Our `strings:extract-json` script extracts the translatable fields from all the json5 files (`archive-configurations/**/fields.json5` and `vocabularies.json5`). It creates english `.po` files (`locale/en/fields.po`, `locale/en/vocabularies.po`), which then go to Crowdin. Crowdin gives back the po files for all the languages. `localization.ts` imports them, and the Lingui Vite plugin compiles them as part of the build. The app looks these strings up by their English text, so `lingui.vite.config.ts` reads these two catalogs keyed by msgid.
+
+`lingui.config.ts`, which `lingui extract` reads, lists only the `messages` catalog, so `lingui extract` never touches `fields.po` or `vocabularies.po`.
 
 # Steps to Syncing
 
 ## 1) Build the string catalog
 
-`vp run strings:extract` reads .linguirc to know what files to include. It creates `po` files. (Order matters internally: the lingui extract runs first because it overwrites fields.po, then the json extractor.)
+`vp run strings:extract` runs `lingui extract`, which reads `lingui.config.ts` to know what files to scan and updates `locale/*/messages.po`, then the json extractor, which writes `locale/en/fields.po` and `locale/en/vocabularies.po`. Each half is safe to run alone.
 
 ## 2) Sync with Crowdin
 
 `vp run strings:sync` will send everything to the **V3 branch** and pull the translations back. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
 
-## 3) Let lingui create its js files (`messages.js`, `fields.js`, etc.)
+There is no compile step: `vp build` and `vp dev` compile the `.po` files they import.
 
-`vp run strings:compile`
-
-Running all three twice in a row should produce **zero git churn** — if it doesn't, something is misconfigured; check `crowdin.yml`'s `languages_mapping` first.
+Running both twice in a row should produce **zero git churn** — if it doesn't, something is misconfigured; check `crowdin.yml`'s `languages_mapping` first.
 
 # Tooling in scripts/crowdin/
 
 Run any of these with `pnpm exec tsx scripts/crowdin/<name>.ts`. They authenticate with LAMETA_CROWDIN_TOKEN.
 
-| script | what it does |
-| --- | --- |
-| `report.ts V3` (or `--root`) | read-only: files on a branch, string counts incl. hidden, per-language translated counts. Use this to see the true state — the Crowdin UI hides duplicate strings. |
-| `po-stats.ts` | local: msgid / filled-msgstr counts for every `locale/*/` catalog. `--compare <dirA> <dirB>` proves dirA's translations all exist in dirB. |
-| `backup.ts` | downloads EVERYTHING (TM as TMX, glossary, full builds of root+V3, every source file, per-file per-language exports, string dumps with ids/hidden flags) into `crowdin-backup/<date>/`. **Run it and commit the result before any risky Crowdin operation.** Crowdin has no undo. |
-| `export-translation.ts <branch> <file> <lang>` | read-only single-file translation export with msgstr count. |
-| `merge-csv-translations.ts` | one-time (2026-07, kept for reference): folded Crowdin-root CSV edits into locale/*.csv. |
-| `build-recovered-translations.ts` + `crowdin-staging.yml` | one-time: recovered v2 translations into V3 by exact-English matching; only ever fills strings that are empty on the branch. |
-| `delete-v3-junk.ts` | one-time: removed the three 2023 leftover CSVs from the V3 branch (dry-run by default, `--force` to delete; structurally cannot touch root files). |
-| `classify-stale.ts` | one-time: proved locale/pt & locale/zh were safe to delete. |
+| script                                                    | what it does                                                                                                                                                                                                                                                                      |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `report.ts V3` (or `--root`)                              | read-only: files on a branch, string counts incl. hidden, per-language translated counts. Use this to see the true state — the Crowdin UI hides duplicate strings.                                                                                                                |
+| `po-stats.ts`                                             | local: msgid / filled-msgstr counts for every `locale/*/` catalog. `--compare <dirA> <dirB>` proves dirA's translations all exist in dirB.                                                                                                                                        |
+| `backup.ts`                                               | downloads EVERYTHING (TM as TMX, glossary, full builds of root+V3, every source file, per-file per-language exports, string dumps with ids/hidden flags) into `crowdin-backup/<date>/`. **Run it and commit the result before any risky Crowdin operation.** Crowdin has no undo. |
+| `export-translation.ts <branch> <file> <lang>`            | read-only single-file translation export with msgstr count.                                                                                                                                                                                                                       |
+| `merge-csv-translations.ts`                               | one-time (2026-07, kept for reference): folded Crowdin-root CSV edits into locale/*.csv.                                                                                                                                                                                          |
+| `build-recovered-translations.ts` + `crowdin-staging.yml` | one-time: recovered v2 translations into V3 by exact-English matching; only ever fills strings that are empty on the branch.                                                                                                                                                      |
+| `delete-v3-junk.ts`                                       | one-time: removed the three 2023 leftover CSVs from the V3 branch (dry-run by default, `--force` to delete; structurally cannot touch root files).                                                                                                                                |
+| `classify-stale.ts`                                       | one-time: proved locale/pt & locale/zh were safe to delete.                                                                                                                                                                                                                       |
 
 The full story of the 2026-07 v2→v3 sort-out (what was migrated, how, and the audit trail) is in `crowdin-backup/2026-07-09/reports/`.
 
@@ -103,9 +84,9 @@ In lameta 1 and 2, we used a combination of linguijs for code strings and our ow
 
 1. In Crowdin:settings:translations:Target Languages, add the language. That will make it available for translation.
 
-1. To .linguirc, add the code to `locales`. When translations come back from crowdin, that will create the directory for this locale, and this entry will cause lingui to read the correct directory.
+1. In `lingui.config.ts`, add the code to `locales`. When translations come back from crowdin, that will create the directory for this locale, and this entry will cause lingui to read the correct directory.
 
-1. Check `crowdin.yml`: if Crowdin's two-letter code for the new language differs from the code you used in .linguirc, add an override to each `languages_mapping` (this is why pt-BR and zh-CN are listed there).
+1. Check `crowdin.yml`: if Crowdin's two-letter code for the new language differs from the code you used in `lingui.config.ts`, add an override to each `languages_mapping` (this is why pt-BR and zh-CN are listed there).
 
 1. For each csv: a) add a column for the new language b) add the language to the scheme in crowdin.yml c) in Crowdin:Content, do a "change scheme" (NOT "update"!!!!) and choose your local copy of the csv. For the new column, choose the language.
 

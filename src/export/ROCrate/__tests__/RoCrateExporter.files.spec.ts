@@ -5,15 +5,14 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";
 import { Person } from "../../../model/Project/Person/Person";
-import { File } from "../../../model/file/File";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 import { createPersonId } from "../RoCrateUtils";
@@ -22,8 +21,8 @@ import { createPersonId } from "../RoCrateUtils";
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01")
-  })
+    birthtime: new Date("2023-01-01"),
+  }),
 }));
 
 describe("RoCrateExporter file handling", () => {
@@ -34,44 +33,42 @@ describe("RoCrateExporter file handling", () => {
 
   beforeEach(() => {
     // Mock field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
         key: "person",
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Person",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Mock files with different types
     const mockAudioFile = {
       getActualFilePath: () => "/sessions/ETR009/ETR009_Careful.mp3",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "ETR009_Careful.mp3"
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Careful.mp3",
     } as any;
 
     const mockVideoFile = {
       getActualFilePath: () => "/sessions/ETR009/ETR009_Tiny.mp4",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "ETR009_Tiny.mp4"
+      pathInFolderToLinkFileOrLocalCopy: "ETR009_Tiny.mp4",
     } as any;
 
     const mockImageFile = {
       getActualFilePath: () => "/people/Awi_Heole/Awi_Heole_Photo.JPG",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole_Photo.JPG"
+      pathInFolderToLinkFileOrLocalCopy: "Awi_Heole_Photo.JPG",
     } as any;
 
     const mockXmlFile = {
       getActualFilePath: () => "/sessions/ETR009/ETR009.xml",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "ETR009.xml"
+      pathInFolderToLinkFileOrLocalCopy: "ETR009.xml",
     } as any;
 
     // Mock person
@@ -87,10 +84,10 @@ describe("RoCrateExporter file handling", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      files: [mockImageFile]
+      files: [mockImageFile],
     } as any;
 
     // Mock session
@@ -102,16 +99,16 @@ describe("RoCrateExporter file handling", () => {
         getTextProperty: vi.fn().mockReturnValue(""),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [mockAudioFile, mockVideoFile, mockXmlFile],
       getAllContributionsToAllFiles: vi.fn().mockReturnValue([
         {
           personReference: "Awi_Heole",
-          role: "speaker"
-        }
-      ])
+          role: "speaker",
+        },
+      ]),
     } as any;
 
     mockProject = {
@@ -126,12 +123,12 @@ describe("RoCrateExporter file handling", () => {
         getTextProperty: vi.fn().mockReturnValue(""),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       knownFields: [],
-      authorityLists: { accessChoicesOfCurrentProtocol: [] }
+      authorityLists: { accessChoicesOfCurrentProtocol: [] },
     } as any;
 
     // Set up prototypes
@@ -146,22 +143,22 @@ describe("RoCrateExporter file handling", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const audioFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3",
     );
     expect(audioFile["@type"]).toEqual(["File", "AudioObject"]);
 
     const videoFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Tiny.mp4",
     );
     expect(videoFile["@type"]).toEqual(["File", "VideoObject"]);
 
     const imageFile = result["@graph"].find(
-      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG",
     );
     expect(imageFile["@type"]).toEqual(["File", "ImageObject"]);
 
     const xmlFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml",
     );
     // https://linear.app/lameta/issue/LAM-54: even plain XML exports must be typed as File for RO-Crate compliance
     // https://linear.app/lameta/issue/LAM-69: non-media files only need "File" type (CreativeWork is not necessary)
@@ -172,17 +169,17 @@ describe("RoCrateExporter file handling", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const audioFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009_Careful.mp3",
     );
     expect(audioFile.role).toBeUndefined();
 
     const xmlFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml"
+      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.xml",
     );
     expect(xmlFile.role).toBeUndefined();
 
     const imageFile = result["@graph"].find(
-      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG"
+      (item: any) => item["@id"] === "People/Awi_Heole/Awi_Heole_Photo.JPG",
     );
     expect(imageFile.role).toBeUndefined();
   });
@@ -196,25 +193,21 @@ describe("RoCrateExporter file handling", () => {
 
     // The session CollectionEvent should NOT have hasPart
     const sessionEvent = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "#session-ETR009" &&
-        item["@type"].includes("CollectionEvent")
+      (item: any) => item["@id"] === "#session-ETR009" && item["@type"].includes("CollectionEvent"),
     );
     expect(sessionEvent.hasPart).toBeUndefined();
 
     // Files should be in the session directory Dataset
-    const sessionDir = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/ETR009/"
-    );
+    const sessionDir = result["@graph"].find((item: any) => item["@id"] === "Sessions/ETR009/");
     expect(sessionDir).toBeDefined();
     expect(sessionDir.hasPart).toContainEqual({
-      "@id": "Sessions/ETR009/ETR009_Careful.mp3"
+      "@id": "Sessions/ETR009/ETR009_Careful.mp3",
     });
     expect(sessionDir.hasPart).toContainEqual({
-      "@id": "Sessions/ETR009/ETR009_Tiny.mp4"
+      "@id": "Sessions/ETR009/ETR009_Tiny.mp4",
     });
     expect(sessionDir.hasPart).toContainEqual({
-      "@id": "Sessions/ETR009/ETR009.xml"
+      "@id": "Sessions/ETR009/ETR009.xml",
     });
   });
 
@@ -226,7 +219,7 @@ describe("RoCrateExporter file handling", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const personEntity = result["@graph"].find(
-      (item: any) => item["@id"] === awiPersonId && item["@type"] === "Person"
+      (item: any) => item["@id"] === awiPersonId && item["@type"] === "Person",
     );
 
     expect(personEntity).toBeDefined();
@@ -234,7 +227,7 @@ describe("RoCrateExporter file handling", () => {
       ? personEntity.image
       : [personEntity.image].filter(Boolean);
     expect(images).toContainEqual({
-      "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG"
+      "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG",
     });
   });
 
@@ -248,31 +241,29 @@ describe("RoCrateExporter file handling", () => {
   it("should include person files in People/ dataset hasPart via intermediate dataset", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
-    const peopleDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "People/"
-    );
+    const peopleDataset = result["@graph"].find((item: any) => item["@id"] === "People/");
 
     expect(peopleDataset).toBeDefined();
     expect(peopleDataset["@type"]).toBe("Dataset");
 
     // LAM-98: The People/ dataset now references intermediate per-person datasets
     expect(peopleDataset.hasPart).toContainEqual({
-      "@id": "People/Awi_Heole/"
+      "@id": "People/Awi_Heole/",
     });
 
     // The intermediate dataset uses 'about' to reference the person, and 'hasPart' for files
     const personFilesDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "People/Awi_Heole/"
+      (item: any) => item["@id"] === "People/Awi_Heole/",
     );
     expect(personFilesDataset).toBeDefined();
     expect(personFilesDataset["@type"]).toBe("Dataset");
     // Person is referenced via 'about' (not hasPart - a person is not "part of" a dataset)
     expect(personFilesDataset.about).toEqual({
-      "@id": awiPersonId
+      "@id": awiPersonId,
     });
     // Files are in hasPart
     expect(personFilesDataset.hasPart).toContainEqual({
-      "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG"
+      "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG",
     });
   });
 });

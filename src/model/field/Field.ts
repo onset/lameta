@@ -32,12 +32,12 @@ export enum FieldType {
   Language,
   PersonLanguageList,
   Function,
-  Boolean
+  Boolean,
 }
 export enum FieldVisibility {
   Always,
   IfNotEmpty,
-  Never
+  Never,
 }
 
 // REVIEW: Why doesn't a field just store it's definition? Why all this copying? (for now, added definition)
@@ -100,7 +100,7 @@ export class Field {
       FieldVisibility.Always, //todo
       definition.persist ?? true,
       choices,
-      definition.cssClass
+      definition.cssClass,
     );
     // if (definition.showOnAutoForm === undefined) {
     //   definition.showOnAutoForm = true;
@@ -117,13 +117,13 @@ export class Field {
     visibility: FieldVisibility = FieldVisibility.Always,
     persist: boolean = true,
     choices: string[] = [],
-    cssClass?: string
+    cssClass?: string,
     // imdiRange?: string,
     // imdiIsClosedVocabulary?: boolean
   ) {
     makeObservable(this, {
       // @ts-expect-error I don't want to make this public, I only want to make it observable by mobx
-      textHolder: observable
+      textHolder: observable,
     });
 
     this.key = key;
@@ -159,10 +159,7 @@ export class Field {
     //   this.type === FieldType.Date,
     // "SHOULDN'T " + key + " BE A DATE?"
     //);
-    if (
-      this.key.toLowerCase().indexOf("date") > -1 &&
-      this.type !== FieldType.Date
-    ) {
+    if (this.key.toLowerCase().indexOf("date") > -1 && this.type !== FieldType.Date) {
       console.log("***" + key + " should be a date? ");
     }
   }
@@ -181,7 +178,7 @@ export class Field {
 
   public get labelOfValue(): string {
     const complexChoice = this.definition.complexChoices?.find(
-      (c) => c.id.toLowerCase() === this.text.toLowerCase()
+      (c) => c.id.toLowerCase() === this.text.toLowerCase(),
     );
     if (complexChoice) {
       return complexChoice.label;
@@ -200,18 +197,10 @@ export class Field {
    * If the field contains slash syntax and this is a multilingual field,
    * automatically converts to tagged format before setting the value.
    */
-  public setTextAxis(
-    tag: string,
-    textForAxis: string,
-    allLanguageTags?: string[]
-  ): void {
+  public setTextAxis(tag: string, textForAxis: string, allLanguageTags?: string[]): void {
     // If this field looks like slash syntax and we have language tags,
     // convert it to tagged format first (implicit confirmation by editing)
-    if (
-      this.looksLikeSlashSyntax() &&
-      allLanguageTags &&
-      allLanguageTags.length > 0
-    ) {
+    if (this.looksLikeSlashSyntax() && allLanguageTags && allLanguageTags.length > 0) {
       this.commitSlashSyntaxConversion(allLanguageTags);
     }
     this.textHolder.setTextAxis(tag, textForAxis);
@@ -220,10 +209,7 @@ export class Field {
    * Permanently convert slash syntax to tagged format.
    */
   public commitSlashSyntaxConversion(languageTags: string[]): boolean {
-    return this.textHolder.commitSlashSyntaxConversion(
-      languageTags,
-      this.isCommaSeparated
-    );
+    return this.textHolder.commitSlashSyntaxConversion(languageTags, this.isCommaSeparated);
   }
   public getTextAxis(tag: string): string {
     return this.textHolder.getTextAxis(tag);
@@ -234,11 +220,7 @@ export class Field {
    * provided language tags order. Otherwise falls back to normal getTextAxis.
    */
   public getTextAxisVirtual(tag: string, languageTags: string[]): string {
-    return this.textHolder.getTextAxisVirtual(
-      tag,
-      languageTags,
-      this.isCommaSeparated
-    );
+    return this.textHolder.getTextAxisVirtual(tag, languageTags, this.isCommaSeparated);
   }
   /**
    * Check if the stored text looks like slash syntax that could be
@@ -255,23 +237,12 @@ export class Field {
    * segments in slash syntax.
    */
   public getEffectiveSlotTags(metadataSlotTags: string[]): string[] {
-    return this.textHolder.getEffectiveSlotTags(
-      metadataSlotTags,
-      this.isCommaSeparated
-    );
+    return this.textHolder.getEffectiveSlotTags(metadataSlotTags, this.isCommaSeparated);
   }
   public getTextForSimpleDisplay(): string {
-    return this.textHolder.getFirstNonEmptyText([
-      "en",
-      "es",
-      "fr",
-      "id",
-      "pt",
-      "zh"
-    ]); // enhance just hard coded for now
+    return this.textHolder.getFirstNonEmptyText(["en", "es", "fr", "id", "pt", "zh"]); // enhance just hard coded for now
   }
   public isEmpty(): boolean {
-    const test = this.textHolder.getSerialized();
     return this.textHolder.getSerialized().length === 0;
   }
 
@@ -294,7 +265,7 @@ export class Field {
       } else {
         //TODO Log a problem where users can see it
         console.log(
-          `Warning: the field ${this.definition.englishLabel} is a choice list but the value "${s}" is not one of the choices in this version. There are ${this.choices.length} choices.`
+          `Warning: the field ${this.definition.englishLabel} is a choice list but the value "${s}" is not one of the choices in this version. There are ${this.choices.length} choices.`,
         );
         //console.log(this.choices.join(","));
         this.text = s;
@@ -366,7 +337,7 @@ export class Field {
     ) {
       return DateFns.differenceInCalendarYears(
         referenceDate,
-        DateFns.parseISO(this.text)
+        DateFns.parseISO(this.text),
       ).toString();
       // const referenceMoment = moment(referenceDate);
       // const birthMoment = moment(this.text);
@@ -394,7 +365,7 @@ export class Field {
       case FieldType.PersonLanguageList:
         return {
           type: "personLanguageList",
-          value: Field.escapeSpecialChars(this.text)
+          value: Field.escapeSpecialChars(this.text),
         };
       default:
         throw new Error("stringify() Unexpected type " + this.type);
@@ -426,14 +397,12 @@ export class Field {
 
     const v = this.text.toLowerCase();
     if (v) {
-      if (
-        !this.definition.complexChoices?.find((c) => c.id.toLowerCase() === v)
-      ) {
+      if (!this.definition.complexChoices?.find((c) => c.id.toLowerCase() === v)) {
         const newChoice = {
           id: v,
           label: this.text,
           description: "",
-          source: "custom"
+          source: "custom",
         };
         this.definition.complexChoices?.push(newChoice);
       }
@@ -444,19 +413,12 @@ export class Field {
 export class HasConsentField extends Field {
   private person: Person;
   constructor(person: Person) {
-    super(
-      "hasConsent",
-      FieldType.Function,
-      "Consent",
-      undefined,
-      undefined,
-      false
-    );
+    super("hasConsent", FieldType.Function, "Consent", undefined, undefined, false);
     this.person = person;
     this.definition = new FieldDefinition({
       key: "hasConsent",
       englishLabel: "Consent",
-      persist: false
+      persist: false,
     });
   }
   public hasConsent(): boolean {
@@ -466,19 +428,12 @@ export class HasConsentField extends Field {
 export class PersonDisplayNameField extends Field {
   private person: Person;
   constructor(person: Person) {
-    super(
-      "displayName",
-      FieldType.Function,
-      "Person",
-      undefined,
-      undefined,
-      false
-    );
+    super("displayName", FieldType.Function, "Person", undefined, undefined, false);
     this.person = person;
     this.definition = new FieldDefinition({
       key: "displayName",
       englishLabel: "Person",
-      persist: false
+      persist: false,
     });
   }
   public get text(): string {

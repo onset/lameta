@@ -4,7 +4,6 @@ import {
   createMockProject,
   createMockSession,
 } from "./test-utils/rocrate-test-setup";
-import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 
 // Setup all common mocks before imports
 setupCommonMocks();

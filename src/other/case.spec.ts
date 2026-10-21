@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
+import { describe, it, expect } from "vite-plus/test";
 import { capitalCase, sentenceCaseUnlessAcronym } from "./case";
 
 describe("capitalCase tests", () => {
@@ -24,9 +24,7 @@ describe("safeSentenceCase tests", () => {
   it("does not capitalize some known mixed-case things", () => {
     expect(sentenceCaseUnlessAcronym("FLEx")).toBe("FLEx");
     expect(sentenceCaseUnlessAcronym("FLEx project")).toBe("FLEx project");
-    expect(sentenceCaseUnlessAcronym("the FLEx Project")).toBe(
-      "The FLEx project"
-    );
+    expect(sentenceCaseUnlessAcronym("the FLEx Project")).toBe("The FLEx project");
   });
 
   it("does not capitalize acronyms", () => {

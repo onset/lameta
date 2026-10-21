@@ -29,23 +29,23 @@ class RoleChooser extends React.Component<IProps> {
   public render() {
     // Access vocabulary translations here in render so MobX tracks changes
     const vocabularyTranslations = Project.getVocabularyTranslations();
-    
+
     // Read revision to subscribe to changes - when translations are updated,
     // revision changes and MobX will re-render this component
     // oxlint-disable-next-line @typescript-eslint/no-unused-vars
     const _revision = vocabularyTranslations?.revision ?? 0;
-    
+
     // Helper function to translate roles including project-level translations
     // Defined inside render so it uses current translations
     const translateRoleWithProjectTranslations = (
       role: string,
-      lang: string
+      lang: string,
     ): string | undefined => {
-      return translateRoleToLanguage(role, lang, (value, langCode) => 
-        vocabularyTranslations?.getRoleTranslation(value, langCode)
+      return translateRoleToLanguage(role, lang, (value, langCode) =>
+        vocabularyTranslations?.getRoleTranslation(value, langCode),
       );
     };
-    
+
     const choices = this.props.choices ? this.props.choices : [];
 
     const options = choices.map((c) => {
@@ -53,12 +53,12 @@ class RoleChooser extends React.Component<IProps> {
       return {
         value: c.id, // snake case, matching olac-roles.xml
         label,
-        title: c.description
+        title: c.description,
       };
     });
     const currentValueWrappedForSelect = {
       value: this.props.contribution.role,
-      label: titleCase(translateRole(this.props.contribution.role))
+      label: titleCase(translateRole(this.props.contribution.role)),
     };
     const searchTerm = (this.context && (this.context as any).searchTerm) || "";
     const labelText = currentValueWrappedForSelect.label || "";
@@ -66,16 +66,14 @@ class RoleChooser extends React.Component<IProps> {
     const roleId = this.props.contribution.role;
     const { content: tooltipContent, hasMissing } = buildTranslationTooltip(
       roleId,
-      translateRoleWithProjectTranslations
+      translateRoleWithProjectTranslations,
     );
     return (
       <ReactSelectClass
         name={"select role"}
         value={currentValueWrappedForSelect}
         onChange={(s: any) => {
-          this.props.contribution.role = (
-            s && s.value ? s.value : ""
-          ) as string;
+          this.props.contribution.role = (s && s.value ? s.value : "") as string;
           this.setState({});
         }}
         options={options}
@@ -123,7 +121,7 @@ class RoleChooser extends React.Component<IProps> {
                 </span>
               </components.SingleValue>
             );
-          }
+          },
         }}
       />
     );

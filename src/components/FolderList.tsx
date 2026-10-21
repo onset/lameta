@@ -1,4 +1,3 @@
-import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
 import * as React from "react";
@@ -13,7 +12,7 @@ import "./FolderList.css";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { SearchContext } from "./SearchContext";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import HighlightSearchTerm from "./HighlightSearchTerm";
@@ -46,7 +45,7 @@ class FolderList extends React.Component<IProps, any> {
     };
   }
 
-  componentDidUpdate(prevProps: IProps) {
+  componentDidUpdate() {
     // no-op now; reset handled in getDerivedStateFromProps to avoid relying on mutable prop object reference
   }
 
@@ -86,13 +85,13 @@ class FolderList extends React.Component<IProps, any> {
     this.props.folders.items.map((folder) => {
       // Access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
       // when the user does something that causes a rename.
-      const dummy = folder.displayName;
+      void folder.displayName;
       if (folder instanceof Session) {
-        const dummyId = folder.properties.getTextStringOrEmpty("id");
-        const dummyChecked = folder.marked;
+        folder.properties.getTextStringOrEmpty("id");
+        void folder.marked;
       } else if (folder instanceof Person) {
-        const dummyId = folder.properties.getTextStringOrEmpty("name");
-        const dummyChecked = folder.marked;
+        folder.properties.getTextStringOrEmpty("name");
+        void folder.marked;
       }
       // Similarly, the Person consent mark is derived from having some child file that has the word "Consent" in the file name.
       // We explicitly do something with each file name, so that mobx will know it should re-run the render function
@@ -107,10 +106,9 @@ class FolderList extends React.Component<IProps, any> {
     });
 
     // Access normalized search term from context (hooks not allowed in class component)
-    const searchTerm: string = (this.context && (this.context as any).searchTerm) || "";
     const highlightIfMatch = (text: string) => <HighlightSearchTerm text={text} />;
 
-    const columns = this.props.columns.map((key, index) => {
+    const columns = this.props.columns.map((key) => {
       const header =
         key === "checked" ? (
           <input
@@ -243,10 +241,10 @@ class FolderList extends React.Component<IProps, any> {
               : this.props.folders.items
             ).length
           } // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
-          getTrProps={(state: any, rowInfo: any, column: any) => {
+          getTrProps={(state: any, rowInfo: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
-              onClick: (e: any, x: any) => {
+              onClick: () => {
                 // Save current selection before changing. This must never abort
                 // the selection change: if saving the outgoing folder throws
                 // (e.g. its folder vanished from disk externally), we still want
@@ -289,7 +287,7 @@ class FolderList extends React.Component<IProps, any> {
   private getStatusIcon(status: string) {
     try {
       return `assets/status-${status}.png`;
-    } catch (e) {
+    } catch {
       // there is some status this version doesn't understand
       return "assets/warning.png";
     }

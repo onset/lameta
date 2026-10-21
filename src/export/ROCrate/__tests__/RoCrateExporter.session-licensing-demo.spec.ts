@@ -5,8 +5,8 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
@@ -24,12 +24,8 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
 
   beforeEach(() => {
     // Mock the field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([]);
 
     // Mock project
     mockProject = {
@@ -40,32 +36,31 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
             id: "public",
             label: "public",
             description: "Open access",
-            ldacAccessCategory: "ldac:OpenAccess"
+            ldacAccessCategory: "ldac:OpenAccess",
           },
           {
             id: "restricted",
             label: "restricted",
             description: "Restricted access",
-            ldacAccessCategory: "ldac:AuthorizedAccess"
-          }
-        ]
+            ldacAccessCategory: "ldac:AuthorizedAccess",
+          },
+        ],
       },
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "archiveConfigurationName") return "DemoArchive";
           if (key === "title") return "Demo Project with Multiple Sessions";
-          if (key === "description")
-            return "A project demonstrating session-specific licensing";
+          if (key === "description") return "A project demonstrating session-specific licensing";
           return "";
         }),
         properties: {
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       knownFields: [],
       files: [],
       sessions: { items: [] },
-      findPerson: vi.fn()
+      findPerson: vi.fn(),
     } as any;
 
     // Mock first session with public access
@@ -76,17 +71,16 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Public Session";
-          if (key === "description")
-            return "This session is publicly accessible";
+          if (key === "description") return "This session is publicly accessible";
           if (key === "access") return "public";
           return "";
         }),
         properties: {
           getHasValue: vi.fn(() => false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as any;
 
     // Mock second session with restricted access
@@ -97,17 +91,16 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Restricted Session";
-          if (key === "description")
-            return "This session has restricted access";
+          if (key === "description") return "This session has restricted access";
           if (key === "access") return "restricted";
           return "";
         }),
         properties: {
           getHasValue: vi.fn(() => false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as any;
 
     // Add sessions to project
@@ -121,26 +114,22 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
     console.log("Full graph:", JSON.stringify(result["@graph"], null, 2));
 
     // Check that project references both sessions
-    const projectDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
+    const projectDataset = result["@graph"].find((item: any) => item["@id"] === "./");
     expect(projectDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "#session-public_session"
+      "@id": "#session-public_session",
     });
     expect(projectDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "#session-restricted_session"
+      "@id": "#session-restricted_session",
     });
 
     // Find the session events - both should be in the graph
     const publicSession = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "#session-public_session" &&
-        item["@type"].includes("CollectionEvent")
+        item["@id"] === "#session-public_session" && item["@type"].includes("CollectionEvent"),
     );
     const restrictedSession = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "#session-restricted_session" &&
-        item["@type"].includes("CollectionEvent")
+        item["@id"] === "#session-restricted_session" && item["@type"].includes("CollectionEvent"),
     );
 
     // Both sessions should exist in the graph
@@ -149,10 +138,10 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
 
     // Find licenses for each session (normalized)
     const publicLicense = result["@graph"].find(
-      (item: any) => item["@id"] === "#license-demoarchive-public"
+      (item: any) => item["@id"] === "#license-demoarchive-public",
     );
     const restrictedLicense = result["@graph"].find(
-      (item: any) => item["@id"] === "#license-demoarchive-restricted"
+      (item: any) => item["@id"] === "#license-demoarchive-restricted",
     );
 
     // Both licenses should exist
@@ -161,10 +150,10 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
 
     // They should have different access types
     expect(publicLicense["ldac:access"]).toEqual({
-      "@id": ldac("ldac:OpenAccess")
+      "@id": ldac("ldac:OpenAccess"),
     });
     expect(restrictedLicense["ldac:access"]).toEqual({
-      "@id": ldac("ldac:AuthorizedAccess")
+      "@id": ldac("ldac:AuthorizedAccess"),
     });
 
     // They should have different descriptions
@@ -173,20 +162,20 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
 
     // Sessions should reference their normalized licenses
     expect(publicSession.license).toEqual({
-      "@id": "#license-demoarchive-public"
+      "@id": "#license-demoarchive-public",
     });
     expect(restrictedSession.license).toEqual({
-      "@id": "#license-demoarchive-restricted"
+      "@id": "#license-demoarchive-restricted",
     });
 
     // Project should have its own collection-level license (required by RO-Crate spec)
     expect(projectDataset.license).toEqual({
-      "@id": "#collection-license"
+      "@id": "#collection-license",
     });
 
     // Find the collection license definition in the graph
     const collectionLicense = result["@graph"].find(
-      (item: any) => item["@id"] === "#collection-license"
+      (item: any) => item["@id"] === "#collection-license",
     );
     expect(collectionLicense).toBeDefined();
     expect(collectionLicense["@type"]).toBe(ldac("ldac:DataReuseLicense"));
@@ -194,7 +183,7 @@ describe("RoCrateExporter Session-Specific Licensing Demo", () => {
 
     // Count the total number of session events in the graph
     const sessionEvents = result["@graph"].filter(
-      (item: any) => item["@type"] && item["@type"].includes("CollectionEvent")
+      (item: any) => item["@type"] && item["@type"].includes("CollectionEvent"),
     );
     expect(sessionEvents).toHaveLength(2);
   });

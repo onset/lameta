@@ -1,31 +1,31 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 class SessionContributorFixer {
   constructor(baseDir, jsonDataPath) {
     this.baseDir = baseDir;
-    this.jsonData = JSON.parse(fs.readFileSync(jsonDataPath, 'utf-8'));
+    this.jsonData = JSON.parse(fs.readFileSync(jsonDataPath, "utf-8"));
   }
 
   escapeXml(str) {
     if (str === null || str === undefined) {
-      return '';
+      return "";
     }
     return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   fixSessionContributors() {
-    const sessionsDir = path.join(this.baseDir, 'Sessions');
-    
+    const sessionsDir = path.join(this.baseDir, "Sessions");
+
     if (!fs.existsSync(sessionsDir)) {
-      console.error('Sessions directory not found:', sessionsDir);
+      console.error("Sessions directory not found:", sessionsDir);
       return;
     }
 
@@ -35,11 +35,11 @@ class SessionContributorFixer {
       this.fixSessionContributor(session);
     }
 
-    console.log('✅ Session contributor fix complete!');
+    console.log("✅ Session contributor fix complete!");
   }
 
   fixSessionContributor(sessionData) {
-    const sessionDir = path.join(this.baseDir, 'Sessions', sessionData.id);
+    const sessionDir = path.join(this.baseDir, "Sessions", sessionData.id);
     const sessionFilePath = path.join(sessionDir, `${sessionData.id}.session`);
 
     if (!fs.existsSync(sessionFilePath)) {
@@ -48,17 +48,19 @@ class SessionContributorFixer {
     }
 
     // Read current session file
-    let sessionContent = fs.readFileSync(sessionFilePath, 'utf-8');
+    let sessionContent = fs.readFileSync(sessionFilePath, "utf-8");
 
     // Generate correct contributions XML
     const contributionsXml = sessionData.contributions
-      .map(contrib => `    <Contribution>
+      .map(
+        (contrib) => `    <Contribution>
       <name>${this.escapeXml(contrib.personName)}</name>
       <role>${this.escapeXml(contrib.role)}</role>
       <date>0001-01-01</date>
       <comments />
-    </Contribution>`)
-      .join('\n');
+    </Contribution>`,
+      )
+      .join("\n");
 
     // Replace the contributions section
     const newContributionsSection = `  <Contributions>
@@ -70,7 +72,7 @@ ${contributionsXml}
     sessionContent = sessionContent.replace(contributionsPattern, newContributionsSection);
 
     // Write back the corrected file
-    fs.writeFileSync(sessionFilePath, sessionContent, 'utf-8');
+    fs.writeFileSync(sessionFilePath, sessionContent, "utf-8");
 
     console.log(`✅ Fixed contributors for session: ${sessionData.id}`);
   }
@@ -80,8 +82,10 @@ ${contributionsXml}
 if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.length < 2) {
-    console.log('Usage: node fix-session-contributors.js <target-directory> <json-data-file>');
-    console.log('Example: node fix-session-contributors.js "C:\\dev\\lameta\\sample data\\Large Sample" kurbin-large-expansion.json');
+    console.log("Usage: node fix-session-contributors.js <target-directory> <json-data-file>");
+    console.log(
+      'Example: node fix-session-contributors.js "C:\\dev\\lameta\\sample data\\Large Sample" kurbin-large-expansion.json',
+    );
     process.exit(1);
   }
 

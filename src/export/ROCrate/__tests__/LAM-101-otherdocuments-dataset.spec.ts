@@ -24,57 +24,50 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01T00:00:00Z")
-  })
+    birthtime: new Date("2023-01-01T00:00:00Z"),
+  }),
 }));
 
 vi.mock("../../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 describe("LAM-101: OtherDocuments Dataset", () => {
   let mockProject: Project;
 
   beforeEach(() => {
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([]);
 
     // Create mock files for OtherDocuments folder
     const createMockFile = (name: string) => ({
       getActualFilePath: () => `/project/OtherDocuments/${name}`,
       getModifiedDate: () => new Date("2023-06-01T00:00:00Z"),
-      getTextProperty: vi.fn().mockReturnValue("")
+      getTextProperty: vi.fn().mockReturnValue(""),
     });
 
     mockProject = {
       filePrefix: "TestProject",
       directory: "/project",
       sessions: {
-        items: []
+        items: [],
       },
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "projectDescription")
-            return "Test project description";
+          if (key === "projectDescription") return "Test project description";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";
         }),
         properties: {
           forEach: vi.fn(),
-          getHasValue: vi.fn().mockReturnValue(false)
-        }
+          getHasValue: vi.fn().mockReturnValue(false),
+        },
       },
       knownFields: [],
       files: [],
@@ -85,18 +78,18 @@ describe("LAM-101: OtherDocuments Dataset", () => {
             id: "public",
             label: "public",
             description: "Public access",
-            ldacAccessCategory: "ldac:OpenAccess"
-          }
-        ]
+            ldacAccessCategory: "ldac:OpenAccess",
+          },
+        ],
       },
       descriptionFolder: { files: [] },
       otherDocsFolder: {
         files: [
           createMockFile("Letter_from_Jan.txt"),
           createMockFile("Project_Notes.docx"),
-          createMockFile("Budget.pdf")
-        ]
-      }
+          createMockFile("Budget.pdf"),
+        ],
+      },
     } as unknown as Project;
 
     // Set up correct prototype for instanceof check
@@ -111,9 +104,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const otherDocsDataset = graph.find(
-      (item: any) => item["@id"] === "OtherDocuments/"
-    );
+    const otherDocsDataset = graph.find((item: any) => item["@id"] === "OtherDocuments/");
 
     expect(otherDocsDataset).toBeDefined();
     expect(otherDocsDataset["@type"]).toBe("Dataset");
@@ -129,7 +120,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
 
     expect(rootEntity).toBeDefined();
     expect(rootEntity["pcdm:hasMember"]).toContainEqual({
-      "@id": "OtherDocuments/"
+      "@id": "OtherDocuments/",
     });
   });
 
@@ -140,8 +131,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     const rootEntity = graph.find((item: any) => item["@id"] === "./");
 
     // Individual files should NOT be in root's pcdm:hasMember or hasPart
-    const hasMemberIds =
-      rootEntity["pcdm:hasMember"]?.map((p: any) => p["@id"]) || [];
+    const hasMemberIds = rootEntity["pcdm:hasMember"]?.map((p: any) => p["@id"]) || [];
     expect(hasMemberIds).not.toContain("OtherDocuments/Letter_from_Jan.txt");
     expect(hasMemberIds).not.toContain("OtherDocuments/Project_Notes.docx");
     expect(hasMemberIds).not.toContain("OtherDocuments/Budget.pdf");
@@ -151,9 +141,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const otherDocsDataset = graph.find(
-      (item: any) => item["@id"] === "OtherDocuments/"
-    );
+    const otherDocsDataset = graph.find((item: any) => item["@id"] === "OtherDocuments/");
 
     expect(otherDocsDataset).toBeDefined();
     expect(otherDocsDataset.hasPart).toBeDefined();
@@ -168,9 +156,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const otherDocsDataset = graph.find(
-      (item: any) => item["@id"] === "OtherDocuments/"
-    );
+    const otherDocsDataset = graph.find((item: any) => item["@id"] === "OtherDocuments/");
 
     expect(otherDocsDataset["pcdm:memberOf"]).toEqual({ "@id": "./" });
   });
@@ -180,14 +166,12 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     const graph = result["@graph"];
 
     const letterFile = graph.find(
-      (item: any) => item["@id"] === "OtherDocuments/Letter_from_Jan.txt"
+      (item: any) => item["@id"] === "OtherDocuments/Letter_from_Jan.txt",
     );
     const notesFile = graph.find(
-      (item: any) => item["@id"] === "OtherDocuments/Project_Notes.docx"
+      (item: any) => item["@id"] === "OtherDocuments/Project_Notes.docx",
     );
-    const budgetFile = graph.find(
-      (item: any) => item["@id"] === "OtherDocuments/Budget.pdf"
-    );
+    const budgetFile = graph.find((item: any) => item["@id"] === "OtherDocuments/Budget.pdf");
 
     expect(letterFile).toBeDefined();
     expect(letterFile.isPartOf).toEqual({ "@id": "OtherDocuments/" });
@@ -203,9 +187,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const otherDocsDataset = graph.find(
-      (item: any) => item["@id"] === "OtherDocuments/"
-    );
+    const otherDocsDataset = graph.find((item: any) => item["@id"] === "OtherDocuments/");
 
     expect(otherDocsDataset.license).toBeDefined();
     expect(otherDocsDataset.license).toEqual({ "@id": "#collection-license" });
@@ -271,37 +253,29 @@ describe("LAM-101: OtherDocuments Dataset", () => {
 
     // Verify OtherDocuments/ and files are reachable
     expect(reachableFromRoot.has("OtherDocuments/")).toBe(true);
-    expect(reachableFromRoot.has("OtherDocuments/Letter_from_Jan.txt")).toBe(
-      true
-    );
-    expect(reachableFromRoot.has("OtherDocuments/Project_Notes.docx")).toBe(
-      true
-    );
+    expect(reachableFromRoot.has("OtherDocuments/Letter_from_Jan.txt")).toBe(true);
+    expect(reachableFromRoot.has("OtherDocuments/Project_Notes.docx")).toBe(true);
     expect(reachableFromRoot.has("OtherDocuments/Budget.pdf")).toBe(true);
   });
 
   it("should NOT create OtherDocuments/ Dataset if folder is empty", async () => {
     // Create a project with empty otherDocsFolder
-    const emptyProject = {
-      ...mockProject,
-      otherDocsFolder: { files: [] }
-    } as unknown as Project;
-    Object.setPrototypeOf(emptyProject, Project.prototype);
+    // copy the mock's own fields onto a plain object first: Project has getter-only properties
+    const emptyProject = Object.setPrototypeOf(
+      Object.assign({}, mockProject, { otherDocsFolder: { files: [] } }),
+      Project.prototype,
+    ) as Project;
 
     const result = (await getRoCrate(emptyProject, emptyProject)) as any;
     const graph = result["@graph"];
 
-    const otherDocsDataset = graph.find(
-      (item: any) => item["@id"] === "OtherDocuments/"
-    );
+    const otherDocsDataset = graph.find((item: any) => item["@id"] === "OtherDocuments/");
 
     expect(otherDocsDataset).toBeUndefined();
 
     // Root should not have OtherDocuments/ in hasPart
     const rootEntity = graph.find((item: any) => item["@id"] === "./");
-    const hasOtherDocsRef = rootEntity.hasPart.some(
-      (p: any) => p["@id"] === "OtherDocuments/"
-    );
+    const hasOtherDocsRef = rootEntity.hasPart.some((p: any) => p["@id"] === "OtherDocuments/");
     expect(hasOtherDocsRef).toBe(false);
   });
 });

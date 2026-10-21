@@ -1,4 +1,3 @@
-import { capitalCase } from "../../other/case";
 import { IChoice } from "./Field";
 
 export class FieldDefinition {

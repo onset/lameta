@@ -22,16 +22,16 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01T00:00:00Z")
-  })
+    birthtime: new Date("2023-01-01T00:00:00Z"),
+  }),
 }));
 
 vi.mock("../../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships", () => {
@@ -40,21 +40,15 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
   let mockSession2: Session;
 
   beforeEach(() => {
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([]);
 
     // Create mock file with all needed methods
     const createMockFile = (name: string) => ({
       getActualFilePath: () => `/project/Sessions/${name}`,
       getModifiedDate: () => new Date("2023-06-01T00:00:00Z"),
-      getTextProperty: vi.fn().mockReturnValue("")
+      getTextProperty: vi.fn().mockReturnValue(""),
     });
 
     // Mock sessions
@@ -71,12 +65,12 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
         properties: {
           forEach: vi.fn(),
           getHasValue: vi.fn().mockReturnValue(false),
-          getTextStringOrEmpty: vi.fn().mockReturnValue("")
-        }
+          getTextStringOrEmpty: vi.fn().mockReturnValue(""),
+        },
       },
       knownFields: [],
       files: [createMockFile("ETR008/ETR008.session")],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as unknown as Session;
 
     mockSession2 = {
@@ -92,35 +86,31 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
         properties: {
           forEach: vi.fn(),
           getHasValue: vi.fn().mockReturnValue(false),
-          getTextStringOrEmpty: vi.fn().mockReturnValue("")
-        }
+          getTextStringOrEmpty: vi.fn().mockReturnValue(""),
+        },
       },
       knownFields: [],
-      files: [
-        createMockFile("ETR009/ETR009.session"),
-        createMockFile("ETR009/ETR009_Audio.mp3")
-      ],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      files: [createMockFile("ETR009/ETR009.session"), createMockFile("ETR009/ETR009_Audio.mp3")],
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as unknown as Session;
 
     mockProject = {
       filePrefix: "TestProject",
       directory: "/project",
       sessions: {
-        items: [mockSession1, mockSession2]
+        items: [mockSession1, mockSession2],
       },
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "projectDescription")
-            return "Test project description";
+          if (key === "projectDescription") return "Test project description";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";
         }),
         properties: {
           forEach: vi.fn(),
-          getHasValue: vi.fn().mockReturnValue(false)
-        }
+          getHasValue: vi.fn().mockReturnValue(false),
+        },
       },
       knownFields: [],
       files: [],
@@ -131,12 +121,12 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
             id: "public",
             label: "public",
             description: "Public access",
-            ldacAccessCategory: "ldac:OpenAccess"
-          }
-        ]
+            ldacAccessCategory: "ldac:OpenAccess",
+          },
+        ],
       },
       descriptionFolder: { files: [] },
-      otherDocsFolder: { files: [] }
+      otherDocsFolder: { files: [] },
     } as unknown as Project;
 
     // Set up correct prototypes for instanceof checks
@@ -157,12 +147,8 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const session1Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR008/"
-    );
-    const session2Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR009/"
-    );
+    const session1Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR008/");
+    const session2Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR009/");
 
     expect(session1Dir).toBeDefined();
     expect(session1Dir.about).toEqual({ "@id": "#session-ETR008" });
@@ -179,12 +165,8 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const session1Event = graph.find(
-      (item: any) => item["@id"] === "#session-ETR008"
-    );
-    const session2Event = graph.find(
-      (item: any) => item["@id"] === "#session-ETR009"
-    );
+    const session1Event = graph.find((item: any) => item["@id"] === "#session-ETR008");
+    const session2Event = graph.find((item: any) => item["@id"] === "#session-ETR009");
 
     expect(session1Event).toBeDefined();
     expect(session1Event.subjectOf).toEqual({ "@id": "Sessions/ETR008/" });
@@ -235,19 +217,15 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
     const graph = result["@graph"];
 
     const rootEntity = graph.find((item: any) => item["@id"] === "./");
-    const sessionsDataset = graph.find(
-      (item: any) => item["@id"] === "Sessions/"
-    );
-    const session1Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR008/"
-    );
+    const sessionsDataset = graph.find((item: any) => item["@id"] === "Sessions/");
+    const session1Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR008/");
 
     // Root -> Sessions/ via pcdm:hasMember
     expect(rootEntity["pcdm:hasMember"]).toContainEqual({ "@id": "Sessions/" });
 
     // Sessions/ -> Sessions/ETR008/ via pcdm:hasMember
     expect(sessionsDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "Sessions/ETR008/"
+      "@id": "Sessions/ETR008/",
     });
 
     // Sessions/ETR008/ -> Sessions/ via pcdm:memberOf
@@ -261,9 +239,7 @@ describe("LAM-100: Session Dataset/CollectionEvent subjectOf/about relationships
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const session2Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR009/"
-    );
+    const session2Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR009/");
 
     expect(session2Dir).toBeDefined();
     expect(session2Dir.hasPart).toBeDefined();

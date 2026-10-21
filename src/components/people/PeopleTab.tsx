@@ -4,7 +4,8 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import { Project } from "../../model/Project/Project";
 import { File } from "../../model/file/File";
 import "./PeopleTab.css";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import ComponentTab from "../componentTab/ComponentTab";
 interface IProps {
   project: Project;
@@ -19,10 +20,10 @@ export const PeopleTab = observer(
         <button
           key="newPerson"
           data-testid="new-person-button"
-          onClick={(e) => this.props.project.addPerson()}
+          onClick={() => this.props.project.addPerson()}
         >
           <Trans>New Person</Trans>
-        </button>
+        </button>,
       );
       const fileListButtons = [
         {
@@ -30,8 +31,8 @@ export const PeopleTab = observer(
           enabled: (selectedFile: File) => selectedFile.canRenameForConsent(),
           onClick: (f) => {
             (f as File).renameForConsent();
-          }
-        }
+          },
+        },
       ];
 
       return (
@@ -59,5 +60,5 @@ export const PeopleTab = observer(
         </ComponentTab>
       );
     }
-  }
+  },
 );

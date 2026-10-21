@@ -15,10 +15,8 @@ interface OptionData {
   source?: string;
 }
 
-export const OptionWithTooltip = (
-  props: OptionProps<OptionData, false, GroupBase<OptionData>>
-) => {
-  const { searchTerm } = React.useContext(SearchContext);
+export const OptionWithTooltip = (props: OptionProps<OptionData, false, GroupBase<OptionData>>) => {
+  React.useContext(SearchContext);
   const {
     cx,
     data,
@@ -28,7 +26,7 @@ export const OptionWithTooltip = (
     isSelected,
     innerRef,
     innerProps,
-    getStyles
+    getStyles,
   } = props;
   return (
     <Tooltip
@@ -46,16 +44,16 @@ export const OptionWithTooltip = (
           backgroundColor: props.isFocused ? lameta_orange : "white",
           fontWeight: props.isSelected ? "bold" : "normal",
           fontStyle: props.data.source === "custom" ? "italic" : "normal",
-          color: "black"
+          color: "black",
         }}
         className={cx(
           {
             option: true,
             "option--is-disabled": isDisabled,
             "option--is-focused": isFocused,
-            "option--is-selected": isSelected
+            "option--is-selected": isSelected,
           },
-          className
+          className,
         )}
         ref={innerRef}
       >

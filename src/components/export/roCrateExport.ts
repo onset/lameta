@@ -13,9 +13,7 @@ export const runRoCrateValidation = async (roCrateData: any): Promise<void> => {
 
   const displayedErrors = result.errors.slice(0, 10);
   const extraCount = result.errors.length - displayedErrors.length;
-  const detailLines = displayedErrors.map(
-    (error, index) => `${index + 1}. ${error}`
-  );
+  const detailLines = displayedErrors.map((error, index) => `${index + 1}. ${error}`);
 
   if (extraCount > 0) {
     detailLines.push(`…and ${extraCount} more.`);
@@ -27,7 +25,7 @@ export const runRoCrateValidation = async (roCrateData: any): Promise<void> => {
     `RO-Crate validation failed (${result.errors.length} issue${
       result.errors.length === 1 ? "" : "s"
     })`,
-    ...detailLines
+    ...detailLines,
   ].join("\n");
 
   throw new Error(message);

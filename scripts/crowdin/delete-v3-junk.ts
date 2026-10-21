@@ -26,7 +26,7 @@ async function main() {
   }
   if (toDelete.length !== JUNK_NAMES.length) {
     throw new Error(
-      `expected exactly ${JUNK_NAMES.length} V3-branch junk files, found ${toDelete.length}: ${toDelete.map((f) => f.path)}`
+      `expected exactly ${JUNK_NAMES.length} V3-branch junk files, found ${toDelete.length}: ${toDelete.map((f) => f.path).join(", ")}`,
     );
   }
   for (const f of toDelete) {
@@ -34,7 +34,9 @@ async function main() {
       await api(`/projects/${PROJECT_ID}/files/${f.id}`, { method: "DELETE" });
       console.log(`DELETED ${f.path} (id ${f.id})`);
     } else {
-      console.log(`would delete ${f.path} (id ${f.id}, branchId ${f.branchId}) — rerun with --force`);
+      console.log(
+        `would delete ${f.path} (id ${f.id}, branchId ${f.branchId}) — rerun with --force`,
+      );
     }
   }
 }

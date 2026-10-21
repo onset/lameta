@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
+import { describe, it, expect } from "vite-plus/test";
 import { validateImdiAsyncInternal } from "./validateImdi";
 import { XMLValidationResult } from "xmllint-wasm";
 const appPath = ""; // in test environment this is just the root, so the schemas are in schemas/IMDI_3.0.xsd
@@ -94,10 +94,7 @@ describe("validateImdiAsyncInternal", () => {
   </opex:DescriptiveMetadata>
 </opex:OPEXMetadata>`;
 
-    const result = await validateImdiAsyncInternal(
-      appPath,
-      invalidOpexValidImdi
-    );
+    const result = await validateImdiAsyncInternal(appPath, invalidOpexValidImdi);
 
     // Should fail because OPEX structure is invalid (Properties before Transfer)
     expectInvalid(result);
@@ -154,11 +151,7 @@ describe("validateImdiAsyncInternal with ELAR schema", () => {
       </Session>
     </METATRANSCRIPT>`;
 
-    const result = await validateImdiAsyncInternal(
-      appPath,
-      imdiContents,
-      "IMDI_3.0_elar.xsd"
-    );
+    const result = await validateImdiAsyncInternal(appPath, imdiContents, "IMDI_3.0_elar.xsd");
     expectValid(result);
   });
 

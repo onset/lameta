@@ -36,7 +36,7 @@ async function switchProjectToELAR(project: E2eProject, page: Page) {
   await page.getByRole("option", { name: "ELAR" }).click();
   await page.locator("button:has-text('Change')").click();
   await page.waitForSelector('[data-testid="project-tab"]', {
-    timeout: 10000
+    timeout: 10000,
   });
 }
 
@@ -47,11 +47,7 @@ test.describe("Vocabulary Translations Tab", () => {
 
   async function startProject(archiveConfig?: string) {
     lameta = new LametaE2ERunner();
-    project = await launchWithProject(
-      lameta,
-      "Test Vocab Translations",
-      archiveConfig
-    );
+    project = await launchWithProject(lameta, "Test Vocab Translations", archiveConfig);
     page = lameta.page;
   }
 
@@ -70,7 +66,7 @@ test.describe("Vocabulary Translations Tab", () => {
 
     // The vocabulary translations tab should not be visible at all
     await expect(
-      page.locator('[data-testid="project-vocabulary-translations-tab"]')
+      page.locator('[data-testid="project-vocabulary-translations-tab"]'),
     ).not.toBeVisible();
   });
 
@@ -86,9 +82,7 @@ test.describe("Vocabulary Translations Tab", () => {
     // Should see the main panel with genres sections (auto-scan happens on load)
     await page.waitForTimeout(2000); // Wait for auto-scan
     await expect(
-      page.getByText(
-        /The columns here are based on your project's metadata languages/i
-      )
+      page.getByText(/The columns here are based on your project's metadata languages/i),
     ).toBeVisible();
   });
 
@@ -161,10 +155,7 @@ test.describe("Vocabulary Translations Tab", () => {
 
       // The translation should still be there
       const genreRowAgain = page.locator("tr", { hasText: /my-test-genre/i });
-      const inputValue = await genreRowAgain
-        .locator('input[type="text"]')
-        .first()
-        .inputValue();
+      const inputValue = await genreRowAgain.locator('input[type="text"]').first().inputValue();
       expect(inputValue).toBe("mi género de prueba");
     }
   });
@@ -215,9 +206,7 @@ test.describe("Vocabulary Translations Tab", () => {
     await expect(genreRow).toBeVisible();
 
     // Find the non-English translation input (first editable input in the row)
-    const translationInputs = genreRow.locator(
-      'input[type="text"]:not([disabled])'
-    );
+    const translationInputs = genreRow.locator('input[type="text"]:not([disabled])');
     const spanishInput = translationInputs.first();
     await spanishInput.fill("Foo bar en español");
     await spanishInput.blur();
@@ -237,9 +226,7 @@ test.describe("Vocabulary Translations Tab", () => {
     await page.keyboard.press("Escape");
 
     // The warning icon should now be gone since all translations are complete
-    const warningIconAfter = genreFieldAfter.locator(
-      'svg[data-testid="WarningIcon"]'
-    );
+    const warningIconAfter = genreFieldAfter.locator('svg[data-testid="WarningIcon"]');
     await expect(warningIconAfter).not.toBeVisible({ timeout: 10000 });
   });
 });

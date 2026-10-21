@@ -20,7 +20,6 @@ import { Project } from "../model/Project/Project";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { validateImdiAsyncInternal } from "../mainProcess/validateImdi";
 import { Session } from "../model/Project/Session/Session";
-import * as Path from "path";
 
 // Number of iterations for timing measurements
 const TIMING_ITERATIONS = 10;
@@ -28,7 +27,7 @@ const TIMING_ITERATIONS = 10;
 // Timing helper
 const measureTime = async <T>(
   fn: () => Promise<T> | T,
-  iterations: number = 1
+  iterations: number = 1,
 ): Promise<{ result: T; avgMs: number; totalMs: number }> => {
   const start = performance.now();
   let result: T;
@@ -51,7 +50,10 @@ describe("IMDI Export Performance Profiling", () => {
     // Create a project with realistic data
     project = Project.fromDirectory(projectDir);
     project.properties.setText("title", "Performance Test Project");
-    project.properties.setText("projectDescription", "A test project for measuring IMDI export performance");
+    project.properties.setText(
+      "projectDescription",
+      "A test project for measuring IMDI export performance",
+    );
     project.properties.setText("country", "United States");
     project.properties.setText("continent", "North America");
 
@@ -59,7 +61,10 @@ describe("IMDI Export Performance Profiling", () => {
     session = project.addSession();
     session.properties.setText("id", "PERF-TEST-001");
     session.properties.setText("title", "Performance Test Session");
-    session.properties.setText("description", "A session with realistic metadata for performance testing. This description is intentionally longer to simulate real-world usage patterns where researchers include detailed notes about the session content, participants, and context.");
+    session.properties.setText(
+      "description",
+      "A session with realistic metadata for performance testing. This description is intentionally longer to simulate real-world usage patterns where researchers include detailed notes about the session content, participants, and context.",
+    );
     session.properties.setText("date", "2024-01-15");
     session.properties.setText("genre", "narrative");
     session.properties.setText("location", "Test Location");
@@ -79,7 +84,7 @@ describe("IMDI Export Performance Profiling", () => {
     it("measures time to generate session IMDI XML", async () => {
       const { avgMs, totalMs } = await measureTime(
         () => ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project),
-        TIMING_ITERATIONS
+        TIMING_ITERATIONS,
       );
 
       console.log(`\n📊 Session XML Generation (${TIMING_ITERATIONS} iterations):`);
@@ -96,7 +101,7 @@ describe("IMDI Export Performance Profiling", () => {
 
       const { avgMs, totalMs } = await measureTime(
         () => ImdiGenerator.generateCorpus(IMDIMode.RAW_IMDI, project, childrenSubpaths),
-        TIMING_ITERATIONS
+        TIMING_ITERATIONS,
       );
 
       console.log(`\n📊 Corpus XML Generation (${TIMING_ITERATIONS} iterations):`);
@@ -109,7 +114,7 @@ describe("IMDI Export Performance Profiling", () => {
     it("measures time to generate OPEX-wrapped session XML", async () => {
       const { avgMs, totalMs } = await measureTime(
         () => ImdiGenerator.generateSession(IMDIMode.OPEX, session, project),
-        TIMING_ITERATIONS
+        TIMING_ITERATIONS,
       );
 
       console.log(`\n📊 OPEX Session XML Generation (${TIMING_ITERATIONS} iterations):`);
@@ -127,13 +132,15 @@ describe("IMDI Export Performance Profiling", () => {
 
     beforeAll(() => {
       sessionImdiXml = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project);
-      corpusImdiXml = ImdiGenerator.generateCorpus(IMDIMode.RAW_IMDI, project, ["test/Session1.imdi"]);
+      corpusImdiXml = ImdiGenerator.generateCorpus(IMDIMode.RAW_IMDI, project, [
+        "test/Session1.imdi",
+      ]);
     });
 
     it("measures time to validate session IMDI XML", async () => {
       const { avgMs, totalMs, result } = await measureTime(
         () => validateImdiAsyncInternal(appPath, sessionImdiXml),
-        TIMING_ITERATIONS
+        TIMING_ITERATIONS,
       );
 
       console.log(`\n📊 Session XML Validation (${TIMING_ITERATIONS} iterations):`);
@@ -157,7 +164,7 @@ describe("IMDI Export Performance Profiling", () => {
     it("measures time to validate corpus IMDI XML", async () => {
       const { avgMs, totalMs, result } = await measureTime(
         () => validateImdiAsyncInternal(appPath, corpusImdiXml),
-        TIMING_ITERATIONS
+        TIMING_ITERATIONS,
       );
 
       console.log(`\n📊 Corpus XML Validation (${TIMING_ITERATIONS} iterations):`);
@@ -173,7 +180,7 @@ describe("IMDI Export Performance Profiling", () => {
 
       const { avgMs, totalMs, result } = await measureTime(
         () => validateImdiAsyncInternal(appPath, opexXml),
-        TIMING_ITERATIONS
+        TIMING_ITERATIONS,
       );
 
       console.log(`\n📊 OPEX XML Validation (${TIMING_ITERATIONS} iterations):`);
@@ -242,14 +249,14 @@ describe("IMDI Export Performance Profiling", () => {
       // Measure generation
       const genTime = await measureTime(
         () => ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project),
-        TIMING_ITERATIONS
+        TIMING_ITERATIONS,
       );
 
       // Measure validation
       const xml = genTime.result;
       const valTime = await measureTime(
         () => validateImdiAsyncInternal(appPath, xml),
-        TIMING_ITERATIONS
+        TIMING_ITERATIONS,
       );
 
       const totalAvg = genTime.avgMs + valTime.avgMs;

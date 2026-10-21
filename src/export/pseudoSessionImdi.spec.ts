@@ -1,25 +1,17 @@
-import { describe, it, beforeAll, beforeEach, afterEach } from "vite-plus/test";
+import { describe, it, beforeEach, afterEach } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
-import {
-  setResultXml,
-  xexpect as expect,
-  count,
-  value,
-  printResultXml
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect, count, value } from "../other/xmlUnitTestUtils";
 import temp from "temp";
-import { Folder } from "../model/Folder/Folder";
-import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import {
   SetOtherConfigurationSettings,
   GetOtherConfigurationSettings,
-  resetOtherConfigurationSettings
+  resetOtherConfigurationSettings,
 } from "../model/Project/OtherConfigurationSettings";
 import * as mobx from "mobx";
 
 mobx.configure({
-  enforceActions: "never"
+  enforceActions: "never",
 });
 
 temp.track();
@@ -45,35 +37,25 @@ describe("Pseudo-session IMDI for project documents", () => {
 
   describe("Genre", () => {
     it("should have genre set to 'Collection description' by default", () => {
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
-      expect("//Session/MDGroup/Content/Genre").toMatch(
-        "Collection description"
-      );
+      expect("//Session/MDGroup/Content/Genre").toMatch("Collection description");
     });
 
     it("should allow custom genre to be specified", () => {
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "OtherDocuments",
         project.descriptionFolder,
         "Custom Genre",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
@@ -84,59 +66,47 @@ describe("Pseudo-session IMDI for project documents", () => {
       // Set up ELAR schema which supports multilingual vocabulary
       SetOtherConfigurationSettings({
         ...GetOtherConfigurationSettings(),
-        imdiSchema: "IMDI_3.0_elar.xsd"
+        imdiSchema: "IMDI_3.0_elar.xsd",
       });
       // Set up multiple metadata languages
       project.properties.setText("metadataLanguages", "en:English;es:Spanish");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       // Should have Genre elements with LanguageId attributes for each metadata language
-      expect(count("//Session/MDGroup/Content/Genre")).toBeGreaterThanOrEqual(
-        1
-      );
+      expect(count("//Session/MDGroup/Content/Genre")).toBeGreaterThanOrEqual(1);
       // At minimum, English should be present
-      expect(
-        "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
-      ).toMatch("Collection description");
+      expect("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']").toMatch(
+        "Collection description",
+      );
     });
 
     it("should output only one Genre element without LanguageId for standard IMDI 3.0 schema", () => {
       // Use standard IMDI schema (not ELAR)
       SetOtherConfigurationSettings({
         ...GetOtherConfigurationSettings(),
-        imdiSchema: "IMDI_3.0.xsd"
+        imdiSchema: "IMDI_3.0.xsd",
       });
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       // Should have exactly one Genre element
       expect(count("//Session/MDGroup/Content/Genre")).toBe(1);
-      expect("//Session/MDGroup/Content/Genre").toMatch(
-        "Collection description"
-      );
+      expect("//Session/MDGroup/Content/Genre").toMatch("Collection description");
       // Should NOT have LanguageId attribute
       expect(count("//Session/MDGroup/Content/Genre[@LanguageId]")).toBe(0);
     });
@@ -146,38 +116,28 @@ describe("Pseudo-session IMDI for project documents", () => {
     it("should include project title", () => {
       project.properties.setText("title", "Test Language Documentation");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
-      expect("//Session/MDGroup/Project/Title").toMatch(
-        "Test Language Documentation"
-      );
+      expect("//Session/MDGroup/Project/Title").toMatch("Test Language Documentation");
     });
 
     it("should include project name from name", () => {
       project.properties.setText("name", "My Project Name");
       project.properties.setText("title", "My Project Title");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
@@ -188,16 +148,12 @@ describe("Pseudo-session IMDI for project documents", () => {
       project.properties.setText("name", "");
       project.properties.setText("title", "Fallback Project Title");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
@@ -208,25 +164,21 @@ describe("Pseudo-session IMDI for project documents", () => {
     it("should include project description as sibling of Contact", () => {
       project.properties.setText(
         "projectDescription",
-        "This project documents an endangered language"
+        "This project documents an endangered language",
       );
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       // Description should be a direct child of Project, not inside Contact
       expect("//Session/MDGroup/Project/Description").toMatch(
-        "This project documents an endangered language"
+        "This project documents an endangered language",
       );
       // Verify it's NOT inside Contact
       expect(count("//Session/MDGroup/Project/Contact/Description")).toBe(0);
@@ -235,16 +187,12 @@ describe("Pseudo-session IMDI for project documents", () => {
     it("should include project id from grantId", () => {
       project.properties.setText("grantId", "IGS1042");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
@@ -254,129 +202,96 @@ describe("Pseudo-session IMDI for project documents", () => {
     it("should include contact name", () => {
       project.properties.setText("contactPerson", "Celeste Escobar");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
-      expect("//Session/MDGroup/Project/Contact/Name").toMatch(
-        "Celeste Escobar"
-      );
+      expect("//Session/MDGroup/Project/Contact/Name").toMatch("Celeste Escobar");
     });
   });
 
   describe("Languages", () => {
     it("should include subject languages from project", () => {
-      project.properties.setText(
-        "SubjectLanguages",
-        "spa:Spanish;por:Portuguese"
-      );
+      project.properties.setText("SubjectLanguages", "spa:Spanish;por:Portuguese");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       expect(count("//Session/MDGroup/Content/Languages/Language")).toBe(2);
-      expect("//Session/MDGroup/Content/Languages/Language[1]/Id").toMatch(
-        "ISO639-3:spa"
+      expect("//Session/MDGroup/Content/Languages/Language[1]/Id").toMatch("ISO639-3:spa");
+      expect("//Session/MDGroup/Content/Languages/Language[1]/Name").toMatch("Spanish");
+      expect("//Session/MDGroup/Content/Languages/Language[1]/Description").toMatch(
+        "Subject Language",
       );
-      expect("//Session/MDGroup/Content/Languages/Language[1]/Name").toMatch(
-        "Spanish"
-      );
-      expect(
-        "//Session/MDGroup/Content/Languages/Language[1]/Description"
-      ).toMatch("Subject Language");
     });
 
     it("should include working languages from project", () => {
       project.properties.setText("WorkingLanguages", "eng:English");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       expect(count("//Session/MDGroup/Content/Languages/Language")).toBe(1);
-      expect("//Session/MDGroup/Content/Languages/Language[1]/Id").toMatch(
-        "ISO639-3:eng"
+      expect("//Session/MDGroup/Content/Languages/Language[1]/Id").toMatch("ISO639-3:eng");
+      expect("//Session/MDGroup/Content/Languages/Language[1]/Description").toMatch(
+        "Working Language",
       );
-      expect(
-        "//Session/MDGroup/Content/Languages/Language[1]/Description"
-      ).toMatch("Working Language");
     });
 
     it("should include both subject and working languages", () => {
       project.properties.setText("SubjectLanguages", "spa:Spanish");
       project.properties.setText("WorkingLanguages", "eng:English");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       expect(count("//Session/MDGroup/Content/Languages/Language")).toBe(2);
       // Subject language first
-      expect(
-        "//Session/MDGroup/Content/Languages/Language[1]/Description"
-      ).toMatch("Subject Language");
+      expect("//Session/MDGroup/Content/Languages/Language[1]/Description").toMatch(
+        "Subject Language",
+      );
       // Working language second
-      expect(
-        "//Session/MDGroup/Content/Languages/Language[2]/Description"
-      ).toMatch("Working Language");
+      expect("//Session/MDGroup/Content/Languages/Language[2]/Description").toMatch(
+        "Working Language",
+      );
     });
 
     it("should include metadata languages as Keys", () => {
       project.properties.setText("metadataLanguages", "en:English;es:Spanish");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
-      expect(
-        count("//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']")
-      ).toBe(2);
+      expect(count("//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']")).toBe(2);
     });
   });
 
@@ -384,73 +299,59 @@ describe("Pseudo-session IMDI for project documents", () => {
     it("should include actor with Researcher role from collection steward", () => {
       project.properties.setText("collectionSteward", "Dr. Jane Smith");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       expect(count("//Session/MDGroup/Actors/Actor")).toBe(1);
       expect("//Session/MDGroup/Actors/Actor/Role").toMatch("Researcher");
       expect("//Session/MDGroup/Actors/Actor/Name").toMatch("Dr. Jane Smith");
-      expect("//Session/MDGroup/Actors/Actor/FullName").toMatch(
-        "Dr. Jane Smith"
-      );
+      expect("//Session/MDGroup/Actors/Actor/FullName").toMatch("Dr. Jane Smith");
     });
 
     it("should output multilingual Researcher role when using ELAR schema", () => {
       // Set up ELAR schema which supports multilingual vocabulary
       SetOtherConfigurationSettings({
         ...GetOtherConfigurationSettings(),
-        imdiSchema: "IMDI_3.0_elar.xsd"
+        imdiSchema: "IMDI_3.0_elar.xsd",
       });
       // Set up multiple metadata languages
       project.properties.setText("metadataLanguages", "en:English;es:Spanish");
       project.properties.setText("collectionSteward", "Dr. Jane Smith");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       // Should have Role elements with LanguageId attributes for each metadata language
-      expect(
-        "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:eng']"
-      ).toMatch("Researcher");
+      expect("//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:eng']").toMatch(
+        "Researcher",
+      );
       // Spanish translation should come from built-in roles.csv
-      expect(
-        "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:spa']"
-      ).toMatch("Investigador");
+      expect("//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:spa']").toMatch(
+        "Investigador",
+      );
     });
 
     it("should not include actor if collection steward is empty", () => {
       project.properties.setText("collectionSteward", "");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
@@ -460,16 +361,12 @@ describe("Pseudo-session IMDI for project documents", () => {
     it("should include all required actor fields", () => {
       project.properties.setText("collectionSteward", "Dr. Jane Smith");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.descriptionFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.descriptionFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "DescriptionDocuments",
         project.descriptionFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
@@ -496,31 +393,21 @@ describe("Pseudo-session IMDI for project documents", () => {
       project.properties.setText("SubjectLanguages", "fra:French");
       project.properties.setText("title", "French Documentation Project");
 
-      const generator = new ImdiGenerator(
-        IMDIMode.RAW_IMDI,
-        project.otherDocsFolder,
-        project
-      );
+      const generator = new ImdiGenerator(IMDIMode.RAW_IMDI, project.otherDocsFolder, project);
       const xml = generator.makePseudoSessionImdiForOtherFolder(
         "OtherDocuments",
         project.otherDocsFolder,
         "Collection description",
-        true // omitNamespaces for testing
+        true, // omitNamespaces for testing
       );
       setResultXml(xml);
 
       expect("//Session/Name").toMatch("OtherDocuments");
-      expect("//Session/MDGroup/Content/Genre").toMatch(
-        "Collection description"
-      );
-      expect("//Session/MDGroup/Content/Languages/Language/Id").toMatch(
-        "ISO639-3:fra"
-      );
+      expect("//Session/MDGroup/Content/Genre").toMatch("Collection description");
+      expect("//Session/MDGroup/Content/Languages/Language/Id").toMatch("ISO639-3:fra");
       expect("//Session/MDGroup/Actors/Actor/Role").toMatch("Researcher");
       expect("//Session/MDGroup/Actors/Actor/Name").toMatch("Dr. John Doe");
-      expect("//Session/MDGroup/Project/Title").toMatch(
-        "French Documentation Project"
-      );
+      expect("//Session/MDGroup/Project/Title").toMatch("French Documentation Project");
     });
   });
 });

@@ -2,8 +2,8 @@ import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 import DeleteIcon from "@mui/icons-material/Delete";
 import * as React from "react";
-import { Trans } from "@lingui/macro";
-import { t } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import { lameta_orange } from "../../containers/theme";
 import { runInAction } from "mobx";
 import {
@@ -11,29 +11,29 @@ import {
   DialogCancelButton,
   DialogMiddle,
   DialogTitle,
-  LametaDialog
+  LametaDialog,
 } from "../LametaDialog";
 import { Button } from "@mui/material";
+import { NotifyException } from "../Notify";
 
 let staticShowDeleteDialog: (
   descriptionOfWhatWillBeDeleted: string,
-  asyncDeletionFunction: () => void
+  asyncDeletionFunction: () => void | Promise<void>,
 ) => void = () => {};
 export { staticShowDeleteDialog as ShowDeleteDialog };
 
 enum Mode {
   closed = 0,
   confirming = 1,
-  deleting = 2
+  deleting = 2,
 }
 export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
   const [mode, setMode] = React.useState<Mode>(Mode.closed);
-  const [deletionAction, setDeletionAction] = React.useState<() => void>(
-    () => () => {}
+  const [deletionAction, setDeletionAction] = React.useState<() => void | Promise<void>>(
+    () => () => {},
   );
-  const [descriptionOfWhatWillBeDeleted, setDescriptionOfWhatWillBeDeleted] =
-    React.useState("__");
-  staticShowDeleteDialog = (description: string, deleteAction: () => void) => {
+  const [descriptionOfWhatWillBeDeleted, setDescriptionOfWhatWillBeDeleted] = React.useState("__");
+  staticShowDeleteDialog = (description: string, deleteAction: () => void | Promise<void>) => {
     setDescriptionOfWhatWillBeDeleted(description);
     setMode(Mode.confirming);
     setDeletionAction(() => deleteAction);
@@ -69,9 +69,7 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
       //   height: calc(100% - 100px);
       // `}
     >
-      <DialogTitle
-        title={mode === Mode.deleting ? t`Deleting...` : t`Confirm Delete`}
-      />
+      <DialogTitle title={mode === Mode.deleting ? t`Deleting...` : t`Confirm Delete`} />
       <DialogMiddle>
         <div
           css={css`
@@ -87,9 +85,7 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
             // `}
           /> */}
           {/* <div> */}
-          <Trans>
-            {descriptionOfWhatWillBeDeleted} will be moved to the Trash
-          </Trans>
+          <Trans>{descriptionOfWhatWillBeDeleted} will be moved to the Trash</Trans>
           {/* </div> */}
         </div>
       </DialogMiddle>
@@ -113,13 +109,14 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
                 //const action = deletionAction; //review
                 setMode(Mode.deleting);
                 window.setTimeout(() => {
-                  try {
-                    runInAction(async () => {
-                      await deletionAction();
+                  runInAction(async () => {
+                    await deletionAction();
+                  })
+                    .catch((err) => NotifyException(err as Error))
+                    .finally(() => {
                       setDeletionAction(() => {});
                       setMode(Mode.closed);
                     });
-                  } catch (error) {}
                 }, 100);
               }}
             >

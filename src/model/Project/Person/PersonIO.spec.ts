@@ -5,25 +5,20 @@ import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry"
 import { PersonMetadataFile } from "./Person";
 import {
   LanguageFinder,
-  setupLanguageFinderForTests
+  setupLanguageFinderForTests,
 } from "../../../languageFinder/LanguageFinder";
 
-import {
-  setResultXml,
-  xexpect as expect,
-  count,
-  value
-} from "../../../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect } from "../../../other/xmlUnitTestUtils";
 
 import * as mobx from "mobx";
 mobx.configure({
-  enforceActions: "never"
+  enforceActions: "never",
 });
 let personDirectory;
 let personId;
-const languageFinder = new LanguageFinder(() => ({
+new LanguageFinder(() => ({
   iso639_3: "",
-  englishName: ""
+  englishName: "",
 }));
 
 describe("Person Languages Read", () => {
@@ -41,7 +36,7 @@ describe("Person Languages Read", () => {
   it("can read two languages and keeps them in the order given", () => {
     const p = GetPersonFileWithOneTag(
       "languages",
-      '<language tag="foo"/><language tag="etr" primary="true" mother="true"/>'
+      '<language tag="foo"/><language tag="etr" primary="true" mother="true"/>',
     );
     expect(p.languages.length).toBe(2);
     expect(p.languages[1].primary).toBe(true);
@@ -62,43 +57,28 @@ describe("Person Languages Read", () => {
   });
   it("does not do migration if there are languages", () => {
     const p = GetPersonFileWithContents(
-      '<languages><language tag="foo"/></languages><primaryLanguage>fr</primaryLanguage>'
+      '<languages><language tag="foo"/></languages><primaryLanguage>fr</primaryLanguage>',
     );
     expect(p.languages.length).toBe(1);
     expect(p.languages[0].code).toBe("foo");
   });
 
   it("should output languages element", () => {
-    const f = new PersonMetadataFile(
-      personDirectory,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new PersonMetadataFile(personDirectory, new EncounteredVocabularyRegistry());
     f.languages.push({ code: "foo" });
     setResultXml(f.getXml());
     expect("Person/languages").toHaveCount(1);
     expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
   });
   it("should output correct defaults for a language", () => {
-    const f = new PersonMetadataFile(
-      personDirectory,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new PersonMetadataFile(personDirectory, new EncounteredVocabularyRegistry());
     f.languages.push({ code: "foo" });
     setResultXml(f.getXml());
     expect("Person/languages").toHaveCount(1);
     expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
-    expect("Person/languages/language[1]").toHaveAttributeValue(
-      "mother",
-      "false"
-    );
-    expect("Person/languages/language[1]").toHaveAttributeValue(
-      "father",
-      "false"
-    );
-    expect("Person/languages/language[1]").toHaveAttributeValue(
-      "primary",
-      "false"
-    );
+    expect("Person/languages/language[1]").toHaveAttributeValue("mother", "false");
+    expect("Person/languages/language[1]").toHaveAttributeValue("father", "false");
+    expect("Person/languages/language[1]").toHaveAttributeValue("primary", "false");
   });
   it("should output deprecated xml fields for person languages for use by saymore", () => {
     /*   <primaryLanguage type="string">etr</primaryLanguage>
@@ -109,27 +89,24 @@ describe("Person Languages Read", () => {
   <mothersLanguage type="string">etr</mothersLanguage>
   */
 
-    const f = new PersonMetadataFile(
-      personDirectory,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new PersonMetadataFile(personDirectory, new EncounteredVocabularyRegistry());
     f.languages.push({
       code: "fra",
       mother: false,
       father: true,
-      primary: true
+      primary: true,
     });
     f.languages.push({
       code: "spa",
       mother: true,
       father: false,
-      primary: false
+      primary: false,
     });
     f.languages.push({
       code: "qaa",
       mother: true, // but we should only output the first one
       father: true, // but we should only output the first one
-      primary: true // but we should only output the first one
+      primary: true, // but we should only output the first one
     });
     const x = f.getXml();
     setResultXml(x);
@@ -145,42 +122,27 @@ describe("Person Languages Read", () => {
   });
 
   it("should output all the fields of a language", () => {
-    const f = new PersonMetadataFile(
-      personDirectory,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new PersonMetadataFile(personDirectory, new EncounteredVocabularyRegistry());
     f.languages.push({
       code: "foo",
       mother: true,
       father: true,
-      primary: true
+      primary: true,
     });
     setResultXml(f.getXml());
     expect("Person/languages/language").toHaveCount(1);
     expect("Person/languages/language[1]").toHaveAttributeValue("tag", "foo");
-    expect("Person/languages/language[1]").toHaveAttributeValue(
-      "mother",
-      "true"
-    );
-    expect("Person/languages/language[1]").toHaveAttributeValue(
-      "father",
-      "true"
-    );
-    expect("Person/languages/language[1]").toHaveAttributeValue(
-      "primary",
-      "true"
-    );
+    expect("Person/languages/language[1]").toHaveAttributeValue("mother", "true");
+    expect("Person/languages/language[1]").toHaveAttributeValue("father", "true");
+    expect("Person/languages/language[1]").toHaveAttributeValue("primary", "true");
   });
 });
 
-function GetPersonFileWithOneTag(
-  tag: string,
-  content: string
-): PersonMetadataFile {
+function GetPersonFileWithOneTag(tag: string, content: string): PersonMetadataFile {
   fs.writeFileSync(
     Path.join(personDirectory, personId + ".person"),
     `<?xml version="1.0" encoding="utf-8"?>
-  <Person><${tag}>${content}</${tag}></Person>`
+  <Person><${tag}>${content}</${tag}></Person>`,
   );
   const r = new EncounteredVocabularyRegistry();
   return new PersonMetadataFile(personDirectory, r);
@@ -189,10 +151,7 @@ function GetPersonFileWithContents(content: string): PersonMetadataFile {
   fs.writeFileSync(
     Path.join(personDirectory, personId + ".person"),
     `<?xml version="1.0" encoding="utf-8"?>
-  <Person>${content}</Person>`
+  <Person>${content}</Person>`,
   );
-  return new PersonMetadataFile(
-    personDirectory,
-    new EncounteredVocabularyRegistry()
-  );
+  return new PersonMetadataFile(personDirectory, new EncounteredVocabularyRegistry());
 }

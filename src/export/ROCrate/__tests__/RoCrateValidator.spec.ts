@@ -15,16 +15,14 @@ import { RoCrateLanguages } from "../RoCrateLanguages";
 // Mock the staticLanguageFinder
 vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
-    findOneLanguageNameFromCode_Or_ReturnCode: vi
-      .fn()
-      .mockImplementation((code: string) => {
-        const languageMap: { [key: string]: string } = {
-          etr: "Edolo",
-          und: "Undetermined"
-        };
-        return languageMap[code.toLowerCase()] || code;
-      })
-  }
+    findOneLanguageNameFromCode_Or_ReturnCode: vi.fn().mockImplementation((code: string) => {
+      const languageMap: { [key: string]: string } = {
+        etr: "Edolo",
+        und: "Undetermined",
+      };
+      return languageMap[code.toLowerCase()] || code;
+    }),
+  },
 }));
 
 describe("RoCrateValidator", () => {
@@ -35,7 +33,7 @@ describe("RoCrateValidator", () => {
     "@id": "ro-crate-metadata.json",
     "@type": "CreativeWork",
     about: { "@id": "./" },
-    conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" }
+    conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
   });
 
   const createValidDataset = (overrides: Record<string, any> = {}) => ({
@@ -50,12 +48,10 @@ describe("RoCrateValidator", () => {
     publisher: [{ "@id": "#org" }],
     datePublished: "2024-01-01",
     "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
-    ...overrides
+    ...overrides,
   });
 
-  const createValidRepositoryObject = (
-    overrides: Record<string, any> = {}
-  ) => ({
+  const createValidRepositoryObject = (overrides: Record<string, any> = {}) => ({
     // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1
     // RepositoryObject (session) IDs now use fragment identifiers.
     "@id": "#session-ETR001",
@@ -63,7 +59,7 @@ describe("RoCrateValidator", () => {
     name: ["Session"],
     inLanguage: [{ "@id": "#language_etr" }],
     "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
-    ...overrides
+    ...overrides,
   });
 
   beforeEach(() => {
@@ -85,15 +81,15 @@ describe("RoCrateValidator", () => {
             "@type": "AudioObject",
             name: "Audio file",
             license: { "@id": "#license-open" },
-            encodingFormat: "audio/wav"
+            encodingFormat: "audio/wav",
           },
           {
             "@id": "#language_etr",
             "@type": "Language",
             code: "etr",
-            name: "Edolo"
-          }
-        ]
+            name: "Edolo",
+          },
+        ],
       };
 
       const result = validator.validate(validRoCrate);
@@ -110,28 +106,26 @@ describe("RoCrateValidator", () => {
 
     it("should fail for missing @graph", () => {
       const invalidRoCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2/context"]
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
       };
 
       const result = validator.validate(invalidRoCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("@graph array")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("@graph array"));
     });
 
     it("should fail for root collection without ldac:subjectLanguage", () => {
       const invalidRoCrate = {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
-        "@graph": [createValidDataset({ "ldac:subjectLanguage": undefined })]
+        "@graph": [createValidDataset({ "ldac:subjectLanguage": undefined })],
       };
 
       const result = validator.validate(invalidRoCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Root Collection is missing required ldac:subjectLanguage property"
+        "Root Collection is missing required ldac:subjectLanguage property",
       );
     });
 
@@ -140,15 +134,15 @@ describe("RoCrateValidator", () => {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           createValidDataset(),
-          createValidRepositoryObject({ "ldac:subjectLanguage": undefined })
-        ]
+          createValidRepositoryObject({ "ldac:subjectLanguage": undefined }),
+        ],
       };
 
       const result = validator.validate(invalidRoCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Object #session-ETR001 is missing required ldac:subjectLanguage property"
+        "Object #session-ETR001 is missing required ldac:subjectLanguage property",
       );
     });
 
@@ -157,31 +151,27 @@ describe("RoCrateValidator", () => {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
         "@graph": [
           createValidDataset({
-            "ldac:subjectLanguage": { "@id": "#language_etr" }
-          })
-        ]
+            "ldac:subjectLanguage": { "@id": "#language_etr" },
+          }),
+        ],
       };
 
       const result = validator.validate(invalidRoCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "Root Collection ldac:subjectLanguage must be an array"
-      );
+      expect(result.errors).toContain("Root Collection ldac:subjectLanguage must be an array");
     });
 
     it("should fail for empty ldac:subjectLanguage array", () => {
       const invalidRoCrate = {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
-        "@graph": [createValidDataset({ "ldac:subjectLanguage": [] })]
+        "@graph": [createValidDataset({ "ldac:subjectLanguage": [] })],
       };
 
       const result = validator.validate(invalidRoCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "Root Collection ldac:subjectLanguage array is empty"
-      );
+      expect(result.errors).toContain("Root Collection ldac:subjectLanguage array is empty");
     });
 
     it("should enforce LDAC required properties on Dataset", () => {
@@ -189,7 +179,7 @@ describe("RoCrateValidator", () => {
       delete (datasetMissingName as any).name;
       const invalidRoCrate = {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
-        "@graph": [datasetMissingName]
+        "@graph": [datasetMissingName],
       };
 
       const result = validator.validate(invalidRoCrate);
@@ -197,10 +187,7 @@ describe("RoCrateValidator", () => {
       expect(result.isValid).toBe(false);
       const hasNameError = result.errors.some((error) => {
         const targets = ["(Dataset)", "(RepositoryCollection)"];
-        return (
-          targets.some((target) => error.includes(target)) &&
-          error.includes("name property")
-        );
+        return targets.some((target) => error.includes(target)) && error.includes("name property");
       });
       expect(hasNameError).toBe(true);
     });
@@ -214,8 +201,8 @@ describe("RoCrateValidator", () => {
             const objectMissingLanguage = createValidRepositoryObject();
             delete (objectMissingLanguage as any).inLanguage;
             return objectMissingLanguage;
-          })()
-        ]
+          })(),
+        ],
       };
 
       const result = validator.validate(invalidRoCrate);
@@ -223,23 +210,17 @@ describe("RoCrateValidator", () => {
       expect(result.isValid).toBe(false);
       expect(
         result.errors.some(
-          (error) =>
-            error.includes("(RepositoryObject)") &&
-            error.includes("inLanguage property")
-        )
+          (error) => error.includes("(RepositoryObject)") && error.includes("inLanguage property"),
+        ),
       ).toBe(true);
     });
 
     it("should honor alias mapping for ldac subject language URIs", () => {
       const dataset = createValidDataset() as Record<string, any>;
-      dataset["https://w3id.org/ldac/terms#subjectLanguage"] =
-        dataset["ldac:subjectLanguage"];
+      dataset["https://w3id.org/ldac/terms#subjectLanguage"] = dataset["ldac:subjectLanguage"];
       delete dataset["ldac:subjectLanguage"];
 
-      const repositoryObject = createValidRepositoryObject() as Record<
-        string,
-        any
-      >;
+      const repositoryObject = createValidRepositoryObject() as Record<string, any>;
       repositoryObject["https://w3id.org/ldac/terms#subjectLanguage"] =
         repositoryObject["ldac:subjectLanguage"];
       delete repositoryObject["ldac:subjectLanguage"];
@@ -254,15 +235,15 @@ describe("RoCrateValidator", () => {
             "@id": "Sessions/ETR001/audio.wav",
             "@type": "AudioObject",
             name: "Audio file",
-            license: { "@id": "#license-open" }
+            license: { "@id": "#license-open" },
           },
           {
             "@id": "#language_etr",
             "@type": "Language",
             code: "etr",
-            name: "Edolo"
-          }
-        ]
+            name: "Edolo",
+          },
+        ],
       };
 
       const result = validator.validate(validRoCrate);
@@ -273,13 +254,12 @@ describe("RoCrateValidator", () => {
 
     it("should match required properties when using full dct URIs", () => {
       const dataset = createValidDataset() as Record<string, any>;
-      dataset["http://purl.org/dc/terms/rightsHolder"] =
-        dataset["dct:rightsHolder"];
+      dataset["http://purl.org/dc/terms/rightsHolder"] = dataset["dct:rightsHolder"];
       delete dataset["dct:rightsHolder"];
 
       const validRoCrate = {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
-        "@graph": [createMetadataDescriptor(), dataset]
+        "@graph": [createMetadataDescriptor(), dataset],
       };
 
       const result = validator.validate(validRoCrate);
@@ -300,7 +280,7 @@ describe("ensureSubjectLanguage", () => {
   it("should add ldac:subjectLanguage if missing", () => {
     const entity: any = {
       "@id": "./",
-      "@type": "Dataset"
+      "@type": "Dataset",
     };
 
     ensureSubjectLanguage(entity, rocrateLanguages);
@@ -309,7 +289,7 @@ describe("ensureSubjectLanguage", () => {
     // of the legacy #language_und fragment.
     // https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
     expect(entity["ldac:subjectLanguage"]).toEqual([
-      { "@id": "https://lexvo.org/id/iso639-3/und" }
+      { "@id": "https://lexvo.org/id/iso639-3/und" },
     ]);
   });
 
@@ -317,48 +297,42 @@ describe("ensureSubjectLanguage", () => {
     const entity: any = {
       "@id": "./",
       "@type": "Dataset",
-      "ldac:subjectLanguage": { "@id": "#language_etr" }
+      "ldac:subjectLanguage": { "@id": "#language_etr" },
     };
 
     ensureSubjectLanguage(entity, rocrateLanguages);
 
-    expect(entity["ldac:subjectLanguage"]).toEqual([
-      { "@id": "#language_etr" }
-    ]);
+    expect(entity["ldac:subjectLanguage"]).toEqual([{ "@id": "#language_etr" }]);
   });
 
   it("should add default language if array is empty", () => {
     const entity: any = {
       "@id": "./",
       "@type": "Dataset",
-      "ldac:subjectLanguage": []
+      "ldac:subjectLanguage": [],
     };
 
     ensureSubjectLanguage(entity, rocrateLanguages, ["etr"]);
 
-    expect(entity["ldac:subjectLanguage"]).toEqual([
-      { "@id": "#language_etr" }
-    ]);
+    expect(entity["ldac:subjectLanguage"]).toEqual([{ "@id": "#language_etr" }]);
   });
 
   it("should not modify existing non-empty array", () => {
     const entity: any = {
       "@id": "./",
       "@type": "Dataset",
-      "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
+      "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
     };
 
     ensureSubjectLanguage(entity, rocrateLanguages);
 
-    expect(entity["ldac:subjectLanguage"]).toEqual([
-      { "@id": "#language_etr" }
-    ]);
+    expect(entity["ldac:subjectLanguage"]).toEqual([{ "@id": "#language_etr" }]);
   });
 
   it("should track language usage", () => {
     const entity: any = {
       "@id": "#session-ETR001",
-      "@type": ["CollectionEvent"]
+      "@type": ["CollectionEvent"],
     };
 
     ensureSubjectLanguage(entity, rocrateLanguages, ["etr"]);

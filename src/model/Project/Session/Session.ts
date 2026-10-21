@@ -9,7 +9,7 @@ import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
 import { titleCase } from "title-case";
 import { runInAction } from "mobx";
 import { i18n as appI18n } from "../../../other/localization";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { normalizeContinentValueForAmericasOnly } from "../ContinentMigration";
 
 export class Session extends Folder {
@@ -41,7 +41,7 @@ export class Session extends Folder {
     directory: string,
     metadataFile: FolderMetadataFile,
     files: File[],
-    customVocabularies: EncounteredVocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry,
   ) {
     super(directory, metadataFile, files, customVocabularies);
     // we used to not store the name, relying instead on the folder name.
@@ -50,25 +50,17 @@ export class Session extends Folder {
     if (this.properties.getTextStringOrEmpty("id") === "") {
       this.properties.setText("id", Path.basename(directory));
     }
-    this.currentFileNameBase = sanitizeForArchive(
-      this.properties.getTextStringOrEmpty("id")
-    );
+    this.currentFileNameBase = sanitizeForArchive(this.properties.getTextStringOrEmpty("id"));
     this.knownFields = fieldDefinitionsOfCurrentConfig.session; // for csv export
 
     // default to the project's content language
     if (this.properties.getTextStringOrEmpty("languages") === "") {
-      this.properties.setText(
-        "languages",
-        Project.getDefaultSubjectLanguages()
-      );
+      this.properties.setText("languages", Project.getDefaultSubjectLanguages());
     }
 
     // default to the project's working language
     if (this.properties.getTextStringOrEmpty("workingLanguages") === "") {
-      this.properties.setText(
-        "workingLanguages",
-        Project.getDefaultWorkingLanguages()
-      );
+      this.properties.setText("workingLanguages", Project.getDefaultWorkingLanguages());
     }
     this.migrateFromPreviousVersions();
   }
@@ -81,15 +73,11 @@ export class Session extends Folder {
     this.migrateContinentChoices();
   }
   private migrateOneField(migrationSource, migrationTarget) {
-    const valueToMove = this.properties
-      .getTextStringOrEmpty(migrationSource)
-      .trim();
+    const valueToMove = this.properties.getTextStringOrEmpty(migrationSource).trim();
     if (valueToMove.length > 0) {
-      const currentTargetValue = this.properties
-        .getTextStringOrEmpty(migrationTarget)
-        .trim();
+      const currentTargetValue = this.properties.getTextStringOrEmpty(migrationTarget).trim();
       const newTargetValue = `${currentTargetValue} ${titleCase(
-        migrationSource
+        migrationSource,
       )}: ${valueToMove}`.trim();
       //console.log(`After migration '${migrationTarget}' = '${newTargetValue}'`);
       this.properties.setText(migrationTarget, newTargetValue);
@@ -98,12 +86,11 @@ export class Session extends Folder {
   }
 
   private migrateContinentChoices() {
-    const currentValue =
-      this.properties.getTextStringOrEmpty("locationContinent");
+    const currentValue = this.properties.getTextStringOrEmpty("locationContinent");
     const normalizedValue = normalizeContinentValueForAmericasOnly(
       fieldDefinitionsOfCurrentConfig.session,
       "locationContinent",
-      currentValue
+      currentValue,
     );
     if (normalizedValue !== currentValue) {
       this.properties.setText("locationContinent", normalizedValue);
@@ -111,25 +98,16 @@ export class Session extends Folder {
   }
   public static fromDirectory(
     directory: string,
-    customVocabularies: EncounteredVocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry,
   ): Session {
     const metadataFile = new SessionMetadataFile(directory, customVocabularies);
     //metadataFile.addTextProperty("status", "", /*persist*/ true, false, false);
 
-    const files = this.loadChildFiles(
-      directory,
-      metadataFile,
-      customVocabularies
-    );
+    const files = this.loadChildFiles(directory, metadataFile, customVocabularies);
 
     //start autosave mobx.autorunAsync(() => this.save(),    10 * 1000 /* min 10 seconds in between */  );
 
-    const session = new Session(
-      directory,
-      metadataFile,
-      files,
-      customVocabularies
-    );
+    const session = new Session(directory, metadataFile, files, customVocabularies);
     session.handleLegacyParticipants();
     return session;
   }
@@ -146,15 +124,9 @@ export class Session extends Folder {
       .map((s) => s.trim())
       .filter((s) => s);
     legacyParticipantNames.forEach((name: string) => {
-      if (
-        !this.metadataFile!.contributions.find(
-          (c) => c.personReference === name
-        )
-      ) {
+      if (!this.metadataFile!.contributions.find((c) => c.personReference === name)) {
         runInAction(() =>
-          this.metadataFile!.contributions.push(
-            new Contribution(name, "participant", "")
-          )
+          this.metadataFile!.contributions.push(new Contribution(name, "participant", "")),
         );
       }
     });
@@ -182,18 +154,12 @@ export class Session extends Folder {
   // the rule we inherited from SM Classic is that if a Person has something
   // in the "code" field, then that acts as the display name and id around
   // the whole system.
-  public updateSessionReferencesToPersonWhenIdChanges(
-    oldId: string,
-    newId: string
-  ): void {
+  public updateSessionReferencesToPersonWhenIdChanges(oldId: string, newId: string): void {
     const oldNameNormalized = this.normalizeNameReference(oldId);
     this.files.forEach((f) =>
       f.contributions
-        .filter(
-          (c) =>
-            this.normalizeNameReference(c.personReference) === oldNameNormalized
-        )
-        .forEach((c) => (c.personReference = newId))
+        .filter((c) => this.normalizeNameReference(c.personReference) === oldNameNormalized)
+        .forEach((c) => (c.personReference = newId)),
     );
 
     //In addition to being listed in the contributors list for one of the constituent files,
@@ -226,14 +192,13 @@ export class Session extends Folder {
             !contributionsToList.some(
               (existingContribution) =>
                 existingContribution.personReference.toLowerCase() ===
-                  c.personReference.toLowerCase() &&
-                existingContribution.role === c.role
+                  c.personReference.toLowerCase() && existingContribution.role === c.role,
             )
           ) {
             contributionsToList.push(c);
           }
         }
-      })
+      }),
     );
 
     //In addition to being listed in the contributors list for one of the constituent files,
@@ -274,10 +239,7 @@ export class Session extends Folder {
   public getLanguageCodes(fieldKey: string): string[] {
     // Defensive check for mock objects in tests that may not have all methods implemented
     // TODO: Improve test mocks to include all required methods instead of this runtime check
-    if (
-      !this.properties ||
-      typeof this.properties.getTextStringOrEmpty !== "function"
-    ) {
+    if (!this.properties || typeof this.properties.getTextStringOrEmpty !== "function") {
       return [];
     }
     return this.properties
@@ -315,9 +277,7 @@ export class Session extends Folder {
       }
     });
     contributors.forEach((c) => {
-      if (
-        !existingPersonIds.some((id) => id.toLowerCase() == c.toLowerCase())
-      ) {
+      if (!existingPersonIds.some((id) => id.toLowerCase() == c.toLowerCase())) {
         const roles = contributorRoles.get(c)!.join(", ");
         violations.push(`${c} (${roles})`);
       }
@@ -325,18 +285,15 @@ export class Session extends Folder {
     if (violations.length === 0) return "";
     else {
       const s = appI18n._(
-        t`lameta could not find a matching Person for the following contributors: `
+        t`lameta could not find a matching Person for the following contributors:`,
       );
-      return "\n\n" + s + violations.join(", ");
+      return "\n\n" + s + " " + violations.join(", ");
     }
   }
 }
 
 export class SessionMetadataFile extends FolderMetadataFile {
-  constructor(
-    directory: string,
-    customVocabularies: EncounteredVocabularyRegistry
-  ) {
+  constructor(directory: string, customVocabularies: EncounteredVocabularyRegistry) {
     FolderMetadataFile.loadDefaultConfigIfInUnitTest();
     super(
       directory,
@@ -344,7 +301,7 @@ export class SessionMetadataFile extends FolderMetadataFile {
       true,
       ".session",
       fieldDefinitionsOfCurrentConfig.session,
-      customVocabularies
+      customVocabularies,
     );
 
     this.finishLoading();

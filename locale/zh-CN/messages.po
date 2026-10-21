@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-10-21 01:36\n"
+"PO-Revision-Date: 2026-10-21 16:28\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -20,6 +20,9 @@ msgstr ""
 
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr "\"{0}\"中有一个或多个字符不被允许。需要先修改该文件夹的名称以解决这个问题。"
+
+msgid "(scanned {sessionsScanned} sessions and {peopleScanned} people)"
+msgstr ""
 
 msgid "A file with the same name already exists at that location."
 msgstr "当前位置中已存在同名文件。"
@@ -397,9 +400,6 @@ msgstr "隐藏其他"
 msgid "Hide Problems"
 msgstr ""
 
-msgid "Hide XML"
-msgstr ""
-
 msgid "Hide lameta"
 msgstr "隐藏lameta"
 
@@ -486,6 +486,10 @@ msgstr "标记以便导出或删除"
 
 msgid "Media Folder"
 msgstr "媒体文件夹"
+
+#. js-lingui-explicit-id
+msgid "Media Folder Settings"
+msgstr ""
 
 msgid "Media Folder Settings..."
 msgstr "媒体文件夹设置..."
@@ -691,9 +695,6 @@ msgstr "角色"
 msgid "Roles"
 msgstr ""
 
-msgid "Rules file:"
-msgstr ""
-
 msgid "Save As"
 msgstr "另存为"
 
@@ -702,12 +703,6 @@ msgstr "保存中"
 
 msgid "Saving before rename..."
 msgstr "重命名前保存中..."
-
-msgid "Scan complete"
-msgstr ""
-
-msgid "Scan failed"
-msgstr ""
 
 msgid "Scanning..."
 msgstr ""
@@ -754,9 +749,6 @@ msgstr ""
 msgid "Show Release Notes"
 msgstr "显示更新日志"
 
-msgid "Show XML"
-msgstr ""
-
 msgid "Show export"
 msgstr "显示导出"
 
@@ -793,14 +785,8 @@ msgstr "抱歉，不允许使用斜线"
 msgid "Start Screen"
 msgstr "开始界面"
 
-msgid "Starting scan..."
-msgstr ""
-
 msgid "Status"
 msgstr "状态"
-
-msgid "Stop using this file"
-msgstr ""
 
 msgid "Stop waiting"
 msgstr ""
@@ -889,12 +875,6 @@ msgstr ""
 msgid "This project appears to use \"/\" to store multiple languages within a single field. In this version of lameta, we have a better approach in which lameta knows which languages are used in a field. After you have selected the appropriate metadata languages above and arranged them in the correct order, all multilingual fields in Project, Sessions, and People should display with the correct language tags. Once you have confirmed that everything appears as expected, click the button below to apply these changes permanently."
 msgstr ""
 
-msgid "This rules file checks \"{0}\", which lameta does not support yet."
-msgstr ""
-
-msgid "This rules file was written for a different version of lameta (interface version {0})."
-msgstr ""
-
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
 msgstr "此设置对您在此计算机上使用的账户是唯一的。 另一台计算机上的同事需要将此值设定为他们计算机上正确的位置。"
 
@@ -915,12 +895,6 @@ msgstr ""
 
 msgid "Update available"
 msgstr "有可用更新"
-
-msgid "Use a different file…"
-msgstr ""
-
-msgid "Use the built-in file"
-msgstr ""
 
 msgid "Use this for a language that has no ISO 639-3 code. Give the language a name, and a code between qaa and qtz."
 msgstr ""
@@ -946,17 +920,14 @@ msgstr "查看更新日志"
 msgid "Vocabulary scan failed"
 msgstr ""
 
+msgid "Vocabulary scan failed: {scanError}"
+msgstr ""
+
 msgid "Waiting"
 msgstr ""
 
 msgid "Warning"
 msgstr ""
-
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
-"restarting your computer, please report the problem to\n"
-"https://github.com/onset/lameta/issues."
-msgstr "我们没有针对此错误的具体提示。如果您无法通过重启计算机来解决该问题，请将问题报告至https://github.com/onset/lameta/issues。"
 
 msgid "What would you like to call this project?"
 msgstr "您想给这个项目起什么名字？"
@@ -996,9 +967,6 @@ msgstr ""
 msgid "add at least {minItems}."
 msgstr ""
 
-msgid "built in"
-msgstr ""
-
 msgid "choose..."
 msgstr "选择..."
 
@@ -1034,9 +1002,6 @@ msgstr "lameta允许您指定一个\"媒体文件夹\"。当您添加的文件�
 msgid "lameta and SayMore Project Files"
 msgstr "lameta和SayMore项目文件"
 
-msgid "lameta can only check IMDI so far, and the {configurationLabel} archive configuration does not use IMDI."
-msgstr ""
-
 msgid "lameta cannot export files while files are still being copied in."
 msgstr "当文件仍在复制时，lameta无法导出文件。"
 
@@ -1053,6 +1018,9 @@ msgid "lameta couldn't download 1 file from {providerName}. It may be offline or
 msgstr ""
 
 msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
+msgstr ""
+
+msgid "lameta does not recognize the Language name \"{trimmed}\""
 msgstr ""
 
 msgid "lameta expected to find a .link file at {e}"
@@ -1086,9 +1054,6 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "lameta将会打开您硬盘上的这个文件夹，然后退出。您应该用文本编辑器打开这些 {projectType} 文件，然后决定保留哪个文件，并删除其他文件。你决定保留的文件应该命名为 {name}。"
 
-msgid "local file"
-msgstr ""
-
 msgid "missing"
 msgstr ""
 
@@ -1106,9 +1071,6 @@ msgstr ""
 
 #. Follows a field's name, as in "Title needs a Spanish or Tok Pisin translation."
 msgid "needs a {languages} translation."
-msgstr ""
-
-msgid "none"
 msgstr ""
 
 msgid "or"

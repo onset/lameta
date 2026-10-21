@@ -26,23 +26,16 @@ describe("Continent migration for Americas-only configurations", () => {
     temp.cleanupSync();
   });
 
-  it.each(legacyContinents)(
-    "ELAR migrates project and session %s to Americas",
-    (legacyValue) => {
-      writeProjectFile("ELAR", legacyValue);
-      writeSession("Session1", legacyValue);
+  it.each(legacyContinents)("ELAR migrates project and session %s to Americas", (legacyValue) => {
+    writeProjectFile("ELAR", legacyValue);
+    writeSession("Session1", legacyValue);
 
-      const project = Project.fromDirectory(projectDirectory);
-      const session = project.sessions.items[0];
+    const project = Project.fromDirectory(projectDirectory);
+    const session = project.sessions.items[0];
 
-      expect(project.properties.getTextStringOrEmpty("continent")).toBe(
-        "Americas"
-      );
-      expect(session.properties.getTextStringOrEmpty("locationContinent")).toBe(
-        "Americas"
-      );
-    }
-  );
+    expect(project.properties.getTextStringOrEmpty("continent")).toBe("Americas");
+    expect(session.properties.getTextStringOrEmpty("locationContinent")).toBe("Americas");
+  });
 
   it.each(legacyContinents)(
     "non-ELAR keeps %s until configuration switches to ELAR",
@@ -53,25 +46,17 @@ describe("Continent migration for Americas-only configurations", () => {
       let project = Project.fromDirectory(projectDirectory);
       let session = project.sessions.items[0];
 
-      expect(project.properties.getTextStringOrEmpty("continent")).toBe(
-        legacyValue
-      );
-      expect(session.properties.getTextStringOrEmpty("locationContinent")).toBe(
-        legacyValue
-      );
+      expect(project.properties.getTextStringOrEmpty("continent")).toBe(legacyValue);
+      expect(session.properties.getTextStringOrEmpty("locationContinent")).toBe(legacyValue);
 
       writeProjectFile("ELAR", legacyValue);
 
       project = Project.fromDirectory(projectDirectory);
       session = project.sessions.items[0];
 
-      expect(project.properties.getTextStringOrEmpty("continent")).toBe(
-        "Americas"
-      );
-      expect(session.properties.getTextStringOrEmpty("locationContinent")).toBe(
-        "Americas"
-      );
-    }
+      expect(project.properties.getTextStringOrEmpty("continent")).toBe("Americas");
+      expect(session.properties.getTextStringOrEmpty("locationContinent")).toBe("Americas");
+    },
   );
 });
 
@@ -82,7 +67,7 @@ function writeProjectFile(archiveConfig: string, continent: string): void {
 <Project>
   <ArchiveConfigurationName>${archiveConfig}</ArchiveConfigurationName>
   <Continent>${continent}</Continent>
-</Project>`
+</Project>`,
   );
 }
 
@@ -96,6 +81,6 @@ function writeSession(sessionId: string, continent: string): void {
   <AdditionalFields>
     <Location_Continent type="string">${continent}</Location_Continent>
   </AdditionalFields>
-</Session>`
+</Session>`,
   );
 }

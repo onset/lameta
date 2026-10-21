@@ -12,10 +12,7 @@ let searchUtils: FolderSearchUtilities;
 test.describe("Folder Search UI", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    project = await launchWithProject(
-      lameta,
-      "FolderSearch[weird ✓ name]/测试"
-    );
+    project = await launchWithProject(lameta, "FolderSearch[weird ✓ name]/测试");
     page = lameta.page;
     searchUtils = new FolderSearchUtilities(page);
   });
@@ -45,7 +42,7 @@ test.describe("Folder Search UI", () => {
     // data attribute should reflect last search
     await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
       "data-last-search",
-      "alpha βeta / quirky ✨"
+      "alpha βeta / quirky ✨",
     );
     // click clear
     await page.getByTestId("folder-search-clear").click();
@@ -62,7 +59,7 @@ test.describe("Folder Search UI", () => {
     await input.fill("ZZZZ_NO_MATCH_§§");
     await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
       "data-last-search",
-      "ZZZZ_NO_MATCH_§§"
+      "ZZZZ_NO_MATCH_§§",
     );
     // clear again
     await page.getByTestId("folder-search-clear").click();
@@ -87,10 +84,7 @@ test.describe("Folder Search UI", () => {
     await input.fill(query);
     await page.waitForTimeout(200); // allow debounce
     // Verify filter recorded
-    await expect(page.getByTestId("folder-search-bar")).toHaveAttribute(
-      "data-last-search",
-      query
-    );
+    await expect(page.getByTestId("folder-search-bar")).toHaveAttribute("data-last-search", query);
     // Switch to Project tab
     await project.goToProjectConfiguration();
     // Switch back to Sessions
@@ -122,15 +116,10 @@ test.describe("Folder Search UI", () => {
     // wait briefly for debounce
     await page.waitForTimeout(250);
     // Expect at least one session row still visible
-    const filteredRows = await page
-      .locator(".folderList")
-      .getByRole("row")
-      .count();
+    const filteredRows = await page.locator(".folderList").getByRole("row").count();
     expect(filteredRows).toBeGreaterThan(1); // header + at least one data row
     // filename highlight span should exist containing mp3 (case-insensitive)
-    await expect(
-      page.getByTestId("inline-highlight").filter({ hasText: /mp3/i })
-    ).toBeVisible();
+    await expect(page.getByTestId("inline-highlight").filter({ hasText: /mp3/i })).toBeVisible();
   });
 
   test("search highlights a text field value", async () => {
@@ -162,9 +151,7 @@ test.describe("Folder Search UI", () => {
     const input = page.getByTestId("folder-search-input");
     await input.fill("Session");
     await page.waitForTimeout(250);
-    await expect(
-      page.locator('[data-has-highlight="true"]').first()
-    ).toBeVisible();
+    await expect(page.locator('[data-has-highlight="true"]').first()).toBeVisible();
     // clear search
     const clearButton = page.getByTestId("folder-search-clear");
     await clearButton.click();
@@ -181,15 +168,13 @@ test.describe("Folder Search UI", () => {
     await input.fill("ZZZNonMatch123");
     await page.waitForTimeout(250);
     // filtered list should now have zero data rows (only header) or selection cleared
-    const rowsBefore = await page.locator('.folderList [role="row"]').count();
+    await page.locator('.folderList [role="row"]').count();
     // add another session (should clear filter and show all again)
     await page.getByTestId("new-session-button").click();
     // search input should be cleared
     await expect(input).toHaveValue("");
     // selection should be on the newly added session (which contains 'New_Session')
-    await expect(
-      page.getByRole("gridcell", { name: /New_Session/i }).first()
-    ).toBeVisible();
+    await expect(page.getByRole("gridcell", { name: /New_Session/i }).first()).toBeVisible();
   });
 
   test("folder count and matches display", async () => {
@@ -273,9 +258,7 @@ test.describe("Folder Search UI", () => {
     await notesTab.click();
 
     // Wait for Notes tab content to load - wait for the notes editor to appear
-    const notesEditor = page.locator(
-      'div[role="textbox"][contenteditable="true"]'
-    );
+    const notesEditor = page.locator('div[role="textbox"][contenteditable="true"]');
     await notesEditor.waitFor({ state: "visible", timeout: 10000 });
 
     const token = "MetaMatchΩ123";
@@ -307,9 +290,7 @@ test.describe("Folder Search UI", () => {
     const input = page.getByTestId("folder-search-input");
     await input.fill(currentId);
     // Re-select the same session explicitly to ensure the details pane shows the Session tabs
-    const exactIdRegex = new RegExp(
-      `^${currentId.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`
-    );
+    const exactIdRegex = new RegExp(`^${currentId.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`);
     await page.getByRole("gridcell", { name: exactIdRegex }).first().click();
     await expect(page.getByTestId("session-tab-highlight")).toBeVisible();
   });
@@ -325,9 +306,7 @@ test.describe("Folder Search UI", () => {
     const token = "TabPropX456";
     await fileList.addFile(`media_${token}.mp3`);
     // file row may not be automatically selected; click by partial filename
-    const fileCell = page
-      .getByRole("gridcell", { name: new RegExp(token, "i") })
-      .first();
+    const fileCell = page.getByRole("gridcell", { name: new RegExp(token, "i") }).first();
     await fileCell.waitFor({ state: "visible" });
     await fileCell.click();
     const input = page.getByTestId("folder-search-input");

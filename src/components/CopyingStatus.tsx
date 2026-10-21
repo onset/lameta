@@ -1,23 +1,17 @@
 /* removed emotion jsx declaration */
 import { css } from "@emotion/react";
 import * as React from "react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { CopyManager } from "../other/CopyManager";
-import { ipcRenderer } from "electron";
 import { useInterval } from "./UseInterval";
 import { useState } from "react";
 import { lameta_orange } from "../containers/theme";
 
 // This is in the upper right corner of the screen.
-export const CopyingStatus: React.FunctionComponent<{}> = (props) => {
+export const CopyingStatus: React.FunctionComponent<{}> = () => {
   const [message, setMessage] = useState("");
   useInterval(() => {
     setMessage(CopyManager.filesAreStillCopying() ? t`Copying...` : "");
-    if (CopyManager.filesAreStillCopying()) {
-      ipcRenderer.send("copyInProgress");
-    } else {
-      ipcRenderer.send("copyStopped");
-    }
   }, 1000);
 
   return (

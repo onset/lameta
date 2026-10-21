@@ -29,7 +29,7 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
 
     // Wait for the session form to load
     await page.waitForSelector('[data-testid="field-id-edit"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Find an editable field
@@ -65,7 +65,7 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
     // We should already have a session from the previous test
     // Wait for the session form to load
     await page.waitForSelector('[data-testid="field-id-edit"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Find an editable field
@@ -100,7 +100,7 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
   test("editable field supports select all via keyboard (same underlying functionality as context menu)", async () => {
     // Wait for the session form to load
     await page.waitForSelector('[data-testid="field-id-edit"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Find an editable field
@@ -140,7 +140,7 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
 
     // Wait for the session form to load
     await page.waitForSelector('[data-testid="field-id-edit"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Find an editable field

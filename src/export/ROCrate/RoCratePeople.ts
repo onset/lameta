@@ -1,24 +1,20 @@
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
-import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
+import { Person } from "../../model/Project/Person/Person";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
 import {
   addChildFileEntries,
   getRoCrateTemplate,
   getElementUsingTemplate,
-  findFirstSessionWithDate
+  findFirstSessionWithDate,
 } from "./RoCrateExporter";
-import {
-  sanitizeForIri,
-  createPersonId,
-  createUnresolvedContributorId
-} from "./RoCrateUtils";
+import { createPersonId, createUnresolvedContributorId } from "./RoCrateUtils";
 
 // LDAC Profile compliant fields that should be preserved as-is
 const LDAC_COMPLIANT_FIELDS = new Set([
   "name",
-  "gender"
+  "gender",
   // Add other LDAC compliant fields as needed
 ]);
 
@@ -26,7 +22,7 @@ const LDAC_COMPLIANT_FIELDS = new Set([
 const NON_LDAC_FIELDS = new Set([
   "education",
   "primaryOccupation",
-  "birthYear" // Will be converted to ldac:age instead
+  "birthYear", // Will be converted to ldac:age instead
 ]);
 
 /**
@@ -38,12 +34,10 @@ const NON_LDAC_FIELDS = new Set([
 export function makeLdacCompliantPersonEntry(
   person: Person,
   sessionDate: Date | undefined,
-  personElement: any
+  personElement: any,
 ): void {
   const descriptionParts: string[] = [];
-  const existingDescription = person.metadataFile
-    ?.getTextProperty("description")
-    ?.trim();
+  const existingDescription = person.metadataFile?.getTextProperty("description")?.trim();
 
   if (existingDescription) {
     descriptionParts.push(existingDescription);
@@ -116,7 +110,7 @@ export function makeLdacCompliantPersonEntry(
 export async function makeEntriesFromParticipant(
   project: Project,
   session: Session,
-  rocrateLicense: RoCrateLicense
+  rocrateLicense: RoCrateLicense,
 ) {
   const uniqueContributors: { [key: string]: Set<string> } = {};
 
@@ -130,9 +124,7 @@ export async function makeEntriesFromParticipant(
     uniqueContributors[personName].add(role);
   });
 
-  const personField = fieldDefinitionsOfCurrentConfig.common.find(
-    (f) => f.key === "person"
-  );
+  const personField = fieldDefinitionsOfCurrentConfig.common.find((f) => f.key === "person");
   if (!personField) {
     // If person field definition is not available, skip generating person entries
     return [];
@@ -146,7 +138,7 @@ export async function makeEntriesFromParticipant(
   let sessionDate: Date | undefined;
   try {
     sessionDate = session.properties?.getDateField?.("date")?.asDate?.();
-  } catch (error) {
+  } catch {
     // If session doesn't have proper date field access, sessionDate remains undefined
     sessionDate = undefined;
   }
@@ -164,7 +156,7 @@ export async function makeEntriesFromParticipant(
     // add in the ro-crate stuff like @id and @type
     const personElement = getElementUsingTemplate(
       template,
-      person ? createPersonId(person) : createUnresolvedContributorId(name)
+      person ? createPersonId(person) : createUnresolvedContributorId(name),
     );
 
     if (person) {
@@ -173,12 +165,7 @@ export async function makeEntriesFromParticipant(
 
       // Person languages are not included in RO-Crate as they create unreferenced entities
       // Only session/project languages with proper ldac:subjectLanguage references are included
-      addChildFileEntries(
-        person,
-        personElement,
-        entriesForAllContributors,
-        rocrateLicense
-      );
+      addChildFileEntries(person, personElement, entriesForAllContributors, rocrateLicense);
     } else {
       // Create a stub entity for contributors without matching person records by omitting
       // description fields instead of inventing placeholder text

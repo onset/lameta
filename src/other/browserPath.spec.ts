@@ -8,9 +8,7 @@ describe("browserPath", () => {
   });
 
   it("joins relative paths using the runtime separator", () => {
-    expect(join("alpha", "beta", "gamma")).toBe(
-      normalize(["alpha", "beta", "gamma"].join(sep))
-    );
+    expect(join("alpha", "beta", "gamma")).toBe(normalize(["alpha", "beta", "gamma"].join(sep)));
   });
 
   it("preserves explicit POSIX paths", () => {

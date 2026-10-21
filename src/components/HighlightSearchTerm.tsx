@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { css } from "@emotion/react";
 import { SearchContext } from "./SearchContext";
 import { highlightMatches } from "./highlighting";
 import { searchHighlight } from "../containers/theme";
@@ -9,9 +8,7 @@ import { searchHighlight } from "../containers/theme";
 export const HighlightSearchTerm: React.FC<{ text: string }> = ({ text }) => {
   const { searchTerm } = useContext(SearchContext);
   if (!searchTerm) return <>{text}</>;
-  return (
-    <>{highlightMatches(text, searchTerm, { background: searchHighlight })}</>
-  );
+  return <>{highlightMatches(text, searchTerm, { background: searchHighlight })}</>;
 };
 
 export default HighlightSearchTerm;

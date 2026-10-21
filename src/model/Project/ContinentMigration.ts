@@ -1,10 +1,6 @@
 import { FieldDefinition } from "../field/FieldDefinition";
 
-const americasOnlyLegacyValues = new Set([
-  "north-america",
-  "middle-america",
-  "south-america"
-]);
+const americasOnlyLegacyValues = new Set(["north-america", "middle-america", "south-america"]);
 
 function isAmericasOnlyChoices(choices: string[] | undefined): boolean {
   if (!choices || choices.length === 0) {
@@ -12,7 +8,7 @@ function isAmericasOnlyChoices(choices: string[] | undefined): boolean {
   }
   const hasAmericas = choices.includes("Americas");
   const hasLegacyValues = choices.some((choice) =>
-    americasOnlyLegacyValues.has(choice.toLowerCase())
+    americasOnlyLegacyValues.has(choice.toLowerCase()),
   );
   return hasAmericas && !hasLegacyValues;
 }
@@ -20,7 +16,7 @@ function isAmericasOnlyChoices(choices: string[] | undefined): boolean {
 export function normalizeContinentValueForAmericasOnly(
   fieldDefinitions: FieldDefinition[],
   fieldKey: string,
-  value: string
+  value: string,
 ): string {
   const definition = fieldDefinitions.find((field) => field.key === fieldKey);
   if (!definition || !isAmericasOnlyChoices(definition.choices)) {

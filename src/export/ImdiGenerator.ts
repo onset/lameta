@@ -29,10 +29,7 @@ import { NavigationTarget } from "../navigation/NavigationTarget";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import { ImdiVocabularyTranslator } from "./ImdiVocabularyTranslator";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
-import {
-  parseLanguageCodeAndName,
-  splitLanguageFieldValue,
-} from "../languageFinder/languageTagFieldValue";
+import { parseLanguageCodeAndName } from "../languageFinder/languageTagFieldValue";
 import { getPrimarySubtag } from "../languageFinder/privateUseLanguages";
 
 // IMDI Date_Value_Type pattern from IMDI_3.0.xsd

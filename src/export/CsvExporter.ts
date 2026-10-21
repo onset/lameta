@@ -8,7 +8,6 @@ import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyException } from "../components/Notify";
-import { debug } from "winston";
 
 export const kEol: string = require("os").EOL;
 
@@ -77,7 +76,12 @@ export async function asyncMakeZipFile(
     } catch (e) {
       NotifyException(e, "There was an error making the zip file.");
     }
-    archive.finalize();
+    // archiver usually also reports a failure through the "error" event above, which notifies
+    // the user; rejecting here as well settles the promise when it does not.
+    archive.finalize().catch((err) => {
+      console.error("makeGenericCsvZipFile finalize:", err);
+      reject(err);
+    });
   });
 }
 

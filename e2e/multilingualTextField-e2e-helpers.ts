@@ -1,10 +1,6 @@
 import { Page, Locator, expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import {
-  createNewProject,
-  launchWithProject,
-  E2eProject
-} from "./various-e2e-helpers";
+import { createNewProject, launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 /**
  * Helpers for multilingual text field e2e tests.
@@ -28,9 +24,7 @@ export function getTitleField(page: Page): Locator {
 
 // Get all translation slots in Description field
 export function getDescriptionSlots(page: Page): Locator {
-  return getDescriptionField(page).locator(
-    '[data-testid^="translation-slot-"]'
-  );
+  return getDescriptionField(page).locator('[data-testid^="translation-slot-"]');
 }
 
 // Get a specific translation slot in Description field
@@ -61,20 +55,16 @@ export async function addLanguageViaMenu(
   page: Page,
   fromSlotCode: string,
   typeThis: string,
-  expectedBcp47: string
+  expectedBcp47: string,
 ) {
   const descriptionField = getDescriptionField(page);
 
   // Click color bar to open menu
-  const colorBar = descriptionField.getByTestId(
-    `slot-color-bar-${fromSlotCode}`
-  );
+  const colorBar = descriptionField.getByTestId(`slot-color-bar-${fromSlotCode}`);
   await colorBar.click();
 
   // Click "Add language slot" menu item
-  const addMenuItem = page.getByTestId(
-    `add-language-slot-menu-${fromSlotCode}`
-  );
+  const addMenuItem = page.getByTestId(`add-language-slot-menu-${fromSlotCode}`);
   await addMenuItem.click();
 
   // Wait for menu to close and the cancel button to appear (indicates language chooser is ready)
@@ -87,17 +77,13 @@ export async function addLanguageViaMenu(
   await cancelBtn.waitFor({ state: "visible", timeout: 3000 });
 
   // Find the language input that's in the description field
-  const languageInput = descriptionField
-    .locator('.select input[role="combobox"]')
-    .first();
+  const languageInput = descriptionField.locator('.select input[role="combobox"]').first();
 
   // Wait for input to be ready (it gets created when isAdding becomes true)
   await languageInput.waitFor({ state: "visible", timeout: 3000 });
 
   // Check if input has focus (autoFocus should focus it)
-  const focused = await languageInput.evaluate(
-    (el) => document.activeElement === el
-  );
+  const focused = await languageInput.evaluate((el) => document.activeElement === el);
 
   // Click to focus if not already
   if (!focused) {
@@ -123,10 +109,7 @@ export function getDescriptionEditor(page: Page, langCode: string): Locator {
  * Delete a language slot from Description via color bar menu.
  * Waits for the slot to disappear (DOM-based, no hardcoded timeout).
  */
-export async function deleteLanguageFromDescription(
-  page: Page,
-  langCode: string
-) {
+export async function deleteLanguageFromDescription(page: Page, langCode: string) {
   const descriptionField = getDescriptionField(page);
   const slot = descriptionField.getByTestId(`translation-slot-${langCode}`);
   const colorBar = descriptionField.getByTestId(`slot-color-bar-${langCode}`);
@@ -148,11 +131,7 @@ export function countSlotsInDescription(page: Page): Locator {
  * Type text in a language slot editor and blur to save.
  * Uses Tab key to blur and waits for the save to register.
  */
-export async function typeInSlotAndBlur(
-  page: Page,
-  langCode: string,
-  text: string
-) {
+export async function typeInSlotAndBlur(page: Page, langCode: string, text: string) {
   const editor = getDescriptionEditor(page, langCode);
   await editor.click();
   await editor.fill(text);
@@ -170,15 +149,13 @@ export async function typeInSlotAndBlur(
 export async function fillLanguageChooserAndSelect(
   page: Page,
   languageInput: Locator,
-  languageCodeOrName: string
+  languageCodeOrName: string,
 ) {
   await languageInput.fill(languageCodeOrName);
   // Wait for dropdown to appear (DOM-based wait instead of hardcoded 300ms timeout)
   // Use a try-catch with timeout since different contexts may show dropdown differently
   try {
-    await page
-      .locator(".select__menu")
-      .waitFor({ state: "visible", timeout: 2000 });
+    await page.locator(".select__menu").waitFor({ state: "visible", timeout: 2000 });
   } catch {
     // Dropdown may not appear if no matches or different component - continue anyway
   }
@@ -205,7 +182,7 @@ export interface MultilingualTestContext {
  */
 export async function setupMultilingualTestContext(
   testName: string,
-  metadataLanguages: string[]
+  metadataLanguages: string[],
 ): Promise<MultilingualTestContext> {
   const lameta = new LametaE2ERunner();
   const page = await lameta.launch();
@@ -220,7 +197,7 @@ export async function setupMultilingualTestContext(
 
   // Wait for the app to reload after configuration change
   await page.waitForSelector('[data-testid="project-tab"]', {
-    timeout: 10000
+    timeout: 10000,
   });
 
   // Set up Metadata Languages if any were specified
@@ -231,9 +208,7 @@ export async function setupMultilingualTestContext(
       .locator('.field:has(label:has-text("Metadata Languages"))')
       .first();
     await metadataContainer.waitFor({ state: "visible", timeout: 10000 });
-    const metadataInput = metadataContainer
-      .locator('.select input[role="combobox"]')
-      .first();
+    const metadataInput = metadataContainer.locator('.select input[role="combobox"]').first();
 
     for (const langCode of metadataLanguages) {
       await metadataInput.click();
@@ -244,9 +219,7 @@ export async function setupMultilingualTestContext(
   return { lameta, page, project };
 }
 
-export async function teardownMultilingualTestContext(
-  context: MultilingualTestContext
-) {
+export async function teardownMultilingualTestContext(context: MultilingualTestContext) {
   if (context?.lameta) {
     await context.lameta.quit();
   }
@@ -262,15 +235,11 @@ export async function teardownMultilingualTestContext(
  */
 export async function setupMultilingualTestContextFast(
   testName: string,
-  metadataLanguages: string[]
+  metadataLanguages: string[],
 ): Promise<MultilingualTestContext> {
   const lameta = new LametaE2ERunner();
   // Use fast launch with ELAR configuration
-  const project = await launchWithProject(
-    lameta,
-    `${testName}_${Date.now()}`,
-    "ELAR"
-  );
+  const project = await launchWithProject(lameta, `${testName}_${Date.now()}`, "ELAR");
   const page = lameta.page;
 
   // Set up Metadata Languages if any were specified
@@ -281,9 +250,7 @@ export async function setupMultilingualTestContextFast(
       .locator('.field:has(label:has-text("Metadata Languages"))')
       .first();
     await metadataContainer.waitFor({ state: "visible", timeout: 10000 });
-    const metadataInput = metadataContainer
-      .locator('.select input[role="combobox"]')
-      .first();
+    const metadataInput = metadataContainer.locator('.select input[role="combobox"]').first();
 
     for (const langCode of metadataLanguages) {
       await metadataInput.click();
@@ -298,6 +265,6 @@ export async function setupMultilingualTestContextFast(
 export async function waitForSessionForm(page: Page, timeout = 10000) {
   // Wait for the Description field label to be visible
   await page.waitForSelector('.field:has(label:text("Description"))', {
-    timeout
+    timeout,
   });
 }

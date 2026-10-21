@@ -6,16 +6,8 @@ import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import {
   setCurrentProjectId,
-  setMediaFolderOrEmptyForThisProjectAndMachine
+  setMediaFolderOrEmptyForThisProjectAndMachine,
 } from "../Project/MediaFolderAccess";
-import { i18nUnitTestPrep } from "../../other/localization";
-i18nUnitTestPrep();
-
-function getPretendAudioFile(): string {
-  const path = temp.path({ suffix: ".mp3" }) as string;
-  fs.writeFileSync(path, "pretend contents");
-  return path;
-}
 
 let externalMediaDirectory;
 let mp3PathInMediaDirectory;
@@ -32,7 +24,6 @@ beforeAll(() => {
 
   // during a test, this will create a fake store of settings
   setMediaFolderOrEmptyForThisProjectAndMachine(externalMediaDirectory);
-  externalMediaDirectory;
   mp3PathInMediaDirectory = Path.join(externalMediaDirectory, "test.mp3");
   fs.writeFileSync(mp3PathInMediaDirectory, "pretend contents");
 
@@ -44,10 +35,8 @@ beforeAll(() => {
 
 describe("Linked file", () => {
   it("getNameWithoutLinkExtension", () => {
-    const f = getOtherFileForMinorMp3();
-    expect(OtherFile.getNameWithoutLinkExtension("minor.mp3.link")).toBe(
-      "minor.mp3"
-    );
+    getOtherFileForMinorMp3();
+    expect(OtherFile.getNameWithoutLinkExtension("minor.mp3.link")).toBe("minor.mp3");
   });
 
   it("renames correctly", () => {
@@ -55,9 +44,7 @@ describe("Linked file", () => {
     f.tryToRenameBothFiles("blah");
     expect(f.isLinkFile()).toBe(true); // shouldn't change that
     expect(Path.basename(f.metadataFilePath)).toBe("blah.mp3.meta");
-    expect(Path.basename(f.pathInFolderToLinkFileOrLocalCopy)).toBe(
-      "blah.mp3.link"
-    );
+    expect(Path.basename(f.pathInFolderToLinkFileOrLocalCopy)).toBe("blah.mp3.link");
 
     expect(f.getFilenameToShowInList()).toBe("blah.mp3");
   });
@@ -72,14 +59,10 @@ describe("Linked file", () => {
     const f = OtherFile.CreateLinkFile(
       mp3PathInMediaDirectory,
       new EncounteredVocabularyRegistry(),
-      testSessionFolder
+      testSessionFolder,
     );
-    expect(Path.dirname(f.pathInFolderToLinkFileOrLocalCopy)).toBe(
-      testSessionFolder
-    );
-    expect(fs.readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf8")).toBe(
-      "test.mp3"
-    );
+    expect(Path.dirname(f.pathInFolderToLinkFileOrLocalCopy)).toBe(testSessionFolder);
+    expect(fs.readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf8")).toBe("test.mp3");
 
     commonTests(f, "test.mp3");
   });
@@ -91,7 +74,7 @@ describe("Linked file", () => {
       fs
         .readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf8")
         // on windows, this is "child\\minor.mp3". On mac, it is "child/minor.mp3"
-        .replace("\\", "/")
+        .replace("\\", "/"),
     )
       // so we normalized it
       .toBe("child/minor.mp3");
@@ -108,7 +91,7 @@ function getOtherFileForMinorMp3() {
   return OtherFile.CreateLinkFile(
     mp3InChildDirectory,
     new EncounteredVocabularyRegistry(),
-    testSessionFolder
+    testSessionFolder,
   );
 }
 
@@ -118,9 +101,7 @@ function commonTests(f: OtherFile, fileName: string) {
 
   expect(f.getFilenameToShowInList()).toBe(fileName);
 
-  expect(Path.dirname(f.pathInFolderToLinkFileOrLocalCopy)).toBe(
-    testSessionFolder
-  );
+  expect(Path.dirname(f.pathInFolderToLinkFileOrLocalCopy)).toBe(testSessionFolder);
   expect(f.isLinkFile()).toBe(true);
 
   expect(f.getActualFileExists()).toBe(true);
@@ -129,7 +110,5 @@ function commonTests(f: OtherFile, fileName: string) {
   expect(f.getNameToUseWhenExportingUsingTheActualFile()).toBe(fileName);
 
   //note, even if the source was in a minordirectory (e.g. "child/"), on export the file will be a the top level
-  expect(f.getRelativePathForExportingTheActualFile()).toBe(
-    "foobar/" + fileName
-  );
+  expect(f.getRelativePathForExportingTheActualFile()).toBe("foobar/" + fileName);
 }

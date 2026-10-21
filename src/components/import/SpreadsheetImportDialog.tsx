@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DialogBottomButtons,
   DialogCancelButton,
@@ -10,7 +10,8 @@ import {
   LametaDialog,
   useSetupLametaDialog,
 } from "../LametaDialog";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { MatrixGrid } from "./MatrixGrid";
 import { IImportMapping, makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
@@ -181,12 +182,15 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                   defaultPath: dir,
                 };
 
-                ipcRenderer.invoke("showOpenDialog", options).then((result) => {
-                  if (result && result.filePaths && result.filePaths.length > 0) {
-                    paths[folderType] = result.filePaths[0];
-                    setPaths(JSON.stringify(paths));
-                  }
-                });
+                ipcRenderer
+                  .invoke("showOpenDialog", options)
+                  .then((result) => {
+                    if (result && result.filePaths && result.filePaths.length > 0) {
+                      paths[folderType] = result.filePaths[0];
+                      setPaths(JSON.stringify(paths));
+                    }
+                  })
+                  .catch((err) => NotifyException(err as Error));
               }}
               css={css`
                 min-width: 50px;

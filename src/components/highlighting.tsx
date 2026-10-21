@@ -10,10 +10,7 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-export function buildHighlightedHTML(
-  value: string,
-  searchTerm: string
-): string {
+export function buildHighlightedHTML(value: string, searchTerm: string): string {
   if (!searchTerm) return escapeHtml(value);
   const lower = value.toLowerCase();
   let i = 0;
@@ -27,7 +24,7 @@ export function buildHighlightedHTML(
     if (found > i) html += escapeHtml(value.slice(i, found));
     const match = value.slice(found, found + searchTerm.length);
     html += `<mark data-testid="inline-highlight" style="background:${searchHighlight};padding:0 1px;">${escapeHtml(
-      match
+      match,
     )}</mark>`;
     i = found + searchTerm.length;
   }
@@ -37,7 +34,7 @@ export function buildHighlightedHTML(
 export function highlightMatches(
   text: string,
   searchTerm: string,
-  options?: { testId?: string; background?: string }
+  options?: { testId?: string; background?: string },
 ): React.ReactNode {
   if (!searchTerm) return text;
   const testId = options?.testId || "inline-highlight";
@@ -75,7 +72,7 @@ export function highlightMatches(
             </mark>
           ) : (
             p
-          )
+          ),
         )}
       </>
     );

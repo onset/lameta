@@ -2,7 +2,6 @@ import { test, expect, Page } from "@playwright/test";
 import {
   getDescriptionField,
   addLanguageViaMenu,
-  getDescriptionSlot,
   getDescriptionEditor,
   deleteLanguageFromDescription,
   countSlotsInDescription,
@@ -10,7 +9,7 @@ import {
   teardownMultilingualTestContext,
   waitForSessionForm,
   MultilingualTestContext,
-  hoverOverDescriptionField
+  hoverOverDescriptionField,
 } from "./multilingualTextField-e2e-helpers";
 
 // Working languages configured for this test file.
@@ -29,10 +28,7 @@ let page: Page;
 
 test.describe("Multilingual Text Fields - Persistence", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContextFast(
-      "MultilingualPersistence",
-      kWorkingLanguages
-    );
+    context = await setupMultilingualTestContextFast("MultilingualPersistence", kWorkingLanguages);
     page = context.page;
   });
 
@@ -73,9 +69,7 @@ test.describe("Multilingual Text Fields - Persistence", () => {
     const englishEditorAfter = getDescriptionEditor(page, "en");
     await expect(englishEditorAfter).toHaveText("Persistent English text");
 
-    const spanishSlotAfter = descriptionField.getByTestId(
-      "translation-slot-es"
-    );
+    const spanishSlotAfter = descriptionField.getByTestId("translation-slot-es");
     await expect(spanishSlotAfter).toBeVisible();
     const spanishEditorAfter = getDescriptionEditor(page, "es");
     await expect(spanishEditorAfter).toHaveText("Texto persistente en español");
@@ -103,15 +97,11 @@ test.describe("Multilingual Text Fields - Persistence", () => {
     await page.waitForTimeout(300);
 
     // French slot should be gone (empty translation not persisted)
-    await expect(
-      descriptionField.getByTestId("translation-slot-fr")
-    ).not.toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-fr")).not.toBeVisible();
 
     slots = countSlotsInDescription(page);
     await expect(slots).toHaveCount(kWorkingLanguages.length);
-    await expect(
-      descriptionField.getByTestId("translation-slot-en")
-    ).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-en")).toBeVisible();
   });
 
   test("whitespace-only text in translation is treated as empty", async () => {
@@ -156,18 +146,14 @@ test.describe("Multilingual Text Fields - Persistence", () => {
     await deleteLanguageFromDescription(page, "fr");
 
     // Verify French is gone
-    await expect(
-      descriptionField.getByTestId("translation-slot-fr")
-    ).not.toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-fr")).not.toBeVisible();
 
     // Re-add French via menu
     await addLanguageViaMenu(page, "en", "french", "fr");
 
     // French slot should be back but empty (previous text was cleared when removed)
     const frenchEditorAfter = getDescriptionEditor(page, "fr");
-    await expect(
-      descriptionField.getByTestId("translation-slot-fr")
-    ).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-fr")).toBeVisible();
     const frenchText = await frenchEditorAfter.textContent();
     expect(frenchText).toBe("");
 
@@ -197,9 +183,7 @@ test.describe("Multilingual Text Fields - Persistence", () => {
     await addLanguageMenuItem.click();
 
     // Type something but don't press Enter
-    const languageInput = descriptionField
-      .locator('.select input[role="combobox"]')
-      .first();
+    const languageInput = descriptionField.locator('.select input[role="combobox"]').first();
     await languageInput.fill("french");
     await page.waitForTimeout(300);
 
@@ -211,9 +195,7 @@ test.describe("Multilingual Text Fields - Persistence", () => {
     // Should still have the Working Languages
     const allSlots = countSlotsInDescription(page);
     await expect(allSlots).toHaveCount(kWorkingLanguages.length);
-    await expect(
-      descriptionField.getByTestId("translation-slot-en")
-    ).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-en")).toBeVisible();
   });
 
   test("typing in protected slot works and data persists", async () => {
@@ -242,13 +224,9 @@ test.describe("Multilingual Text Fields - Persistence", () => {
 
     // Verify data persisted
     const englishEditorAfter = getDescriptionEditor(page, "en");
-    await expect(englishEditorAfter).toHaveText(
-      "English text in protected slot"
-    );
+    await expect(englishEditorAfter).toHaveText("English text in protected slot");
 
     const spanishEditorAfter = getDescriptionEditor(page, "es");
-    await expect(spanishEditorAfter).toHaveText(
-      "Texto español en slot protegido"
-    );
+    await expect(spanishEditorAfter).toHaveText("Texto español en slot protegido");
   });
 });

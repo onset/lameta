@@ -35,10 +35,7 @@ describe("birthYear casing read test", () => {
 
     fs.writeFileSync(path.join(tempDir, `${personId}.person`), personXml);
 
-    const personFile = new PersonMetadataFile(
-      tempDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const personFile = new PersonMetadataFile(tempDir, new EncounteredVocabularyRegistry());
 
     const birthYear = personFile.getTextProperty("birthYear");
     console.log("Lowercase <birthYear> result:", birthYear);
@@ -57,10 +54,7 @@ describe("birthYear casing read test", () => {
 
     fs.writeFileSync(path.join(tempDir, `${personId}.person`), personXml);
 
-    const personFile = new PersonMetadataFile(
-      tempDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const personFile = new PersonMetadataFile(tempDir, new EncounteredVocabularyRegistry());
 
     const birthYear = personFile.getTextProperty("birthYear");
     console.log("PascalCase <BirthYear> result:", birthYear);
@@ -75,12 +69,9 @@ describe("birthYear casing read test", () => {
     fs.writeFileSync(
       path.join(tempDir1, `${personId1}.person`),
       `<?xml version="1.0" encoding="utf-8"?>
-<Person><birthYear type="string">1972</birthYear></Person>`
+<Person><birthYear type="string">1972</birthYear></Person>`,
     );
-    const file1 = new PersonMetadataFile(
-      tempDir1,
-      new EncounteredVocabularyRegistry()
-    );
+    const file1 = new PersonMetadataFile(tempDir1, new EncounteredVocabularyRegistry());
 
     // Test 2: PascalCase
     const tempDir2 = temp.mkdirSync("test-pascal");
@@ -88,12 +79,9 @@ describe("birthYear casing read test", () => {
     fs.writeFileSync(
       path.join(tempDir2, `${personId2}.person`),
       `<?xml version="1.0" encoding="utf-8"?>
-<Person><BirthYear type="string">1960</BirthYear></Person>`
+<Person><BirthYear type="string">1960</BirthYear></Person>`,
     );
-    const file2 = new PersonMetadataFile(
-      tempDir2,
-      new EncounteredVocabularyRegistry()
-    );
+    const file2 = new PersonMetadataFile(tempDir2, new EncounteredVocabularyRegistry());
 
     console.log("=== ALL Property keys in file1 (lowercase <birthYear>) ===");
     file1.properties.forEach((key, field) => {

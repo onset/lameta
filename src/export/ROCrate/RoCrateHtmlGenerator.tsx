@@ -19,9 +19,7 @@ type RoCrateData = {
 
 // Each item can be a string property name or an object { property, label, type }
 // Project: order to reflect prior preview expectations
-type OrderEntry =
-  | string
-  | { property: string; label?: string; type?: "date" | "size" };
+type OrderEntry = string | { property: string; label?: string; type?: "date" | "size" };
 
 // --- Entity Classification ---
 
@@ -38,7 +36,7 @@ const FILTERED_ENTITY_IDS = new Set([
   "ldac:AuthorizedAccess",
   "https://lexvo.org/id/iso639-3/und", // "undetermined" language
   "#descriptionDocuments",
-  "#otherDocuments"
+  "#otherDocuments",
 ]);
 
 /**
@@ -48,10 +46,7 @@ const FILTERED_ENTITY_IDS = new Set([
 const EntityClassifier = {
   /** Check if entity is a Language that should link to Glottolog */
   isLanguage(entity: RoCrateEntity): boolean {
-    return (
-      getEntityTypes(entity).includes("Language") &&
-      entity["@id"]?.startsWith("#language_")
-    );
+    return getEntityTypes(entity).includes("Language") && entity["@id"]?.startsWith("#language_");
   },
 
   /** Check if entity is a Place */
@@ -84,8 +79,7 @@ const EntityClassifier = {
     if (id === "People/") return true;
 
     // Filter person-files Datasets (e.g., People/Awi_Heole/)
-    if (id?.startsWith("People/") && id.endsWith("/") && id !== "People/")
-      return true;
+    if (id?.startsWith("People/") && id.endsWith("/") && id !== "People/") return true;
 
     // Filter Sessions/ top-level directory Dataset
     if (id === "Sessions/") return true;
@@ -99,9 +93,7 @@ const EntityClassifier = {
         entity.description ||
         entity["ldac:participant"] ||
         entity["ldac:subjectLanguage"] ||
-        (entity.name &&
-          entity.name !== id &&
-          !entity.name.startsWith("Session "));
+        (entity.name && entity.name !== id && !entity.name.startsWith("Session "));
       if (!hasSessionContent) return true;
     }
 
@@ -130,8 +122,7 @@ const EntityClassifier = {
     if (this.isOfficialLdacTerm(entity)) return true;
 
     // Filter official LDAC DefinedTermSets
-    if (types.includes("DefinedTermSet") && id?.startsWith("ldac:"))
-      return true;
+    if (types.includes("DefinedTermSet") && id?.startsWith("ldac:")) return true;
 
     // Filter structural wrapper Datasets
     if (this.isWrapperDataset(entity)) return true;
@@ -142,11 +133,7 @@ const EntityClassifier = {
   /** Check if entity is a lameta XML file */
   isLametaXml(entity: RoCrateEntity): boolean {
     const id = entity["@id"];
-    return (
-      id?.endsWith(".sprj") ||
-      id?.endsWith(".session") ||
-      id?.endsWith(".person")
-    );
+    return id?.endsWith(".sprj") || id?.endsWith(".session") || id?.endsWith(".person");
   },
 
   /** Check if entity represents a browser-handleable file */
@@ -191,7 +178,7 @@ const EntityClassifier = {
       "xml",
       "csv",
       // PDFs
-      "pdf"
+      "pdf",
     ]);
 
     const extension = id.toLowerCase().split(".").pop();
@@ -226,7 +213,7 @@ const EntityClassifier = {
       return "audio";
 
     return null;
-  }
+  },
 };
 
 // --- Field Configuration ---
@@ -238,10 +225,10 @@ const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
     { property: "ldac:subjectLanguage", label: "Subject Language" },
     {
       property: "WorkingLanguages",
-      label: "Working Languages"
+      label: "Working Languages",
     },
     "region",
-    { property: "contentLocation", label: "Country" }
+    { property: "contentLocation", label: "Country" },
   ],
   Session: [
     "description",
@@ -250,11 +237,11 @@ const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
     { property: "ldac:linguisticGenre", label: "Genre" },
     { property: "genre", label: "Genre" },
     "ldac:participant",
-    { property: "contentLocation", label: "Location" }
+    { property: "contentLocation", label: "Location" },
   ],
   Person: [
     "description",
-    { property: "ldac:age", label: "Age" }
+    { property: "ldac:age", label: "Age" },
     // Note: Person contributions are generated dynamically as prose below these fields
   ],
   Organization: ["description", "url"],
@@ -262,7 +249,7 @@ const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
   DefinedTerm: ["name", "description"],
   DigitalDocument: [
     { property: "encodingFormat", label: "Encoding Format" },
-    { property: "contentSize", label: "Content size", type: "size" }
+    { property: "contentSize", label: "Content size", type: "size" },
   ],
   Default: [
     "name",
@@ -272,8 +259,8 @@ const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
     { property: "dateCreated", label: "Date Created", type: "date" },
     { property: "dateModified", label: "Date Modified", type: "date" },
     "creator",
-    "license"
-  ]
+    "license",
+  ],
 };
 
 const hasSessionType = (types: string[]): boolean =>
@@ -294,8 +281,7 @@ const getFieldsForEntity = (entity: RoCrateEntity): OrderEntry[] => {
     types.includes("AudioObject")
   )
     return ENTITY_FIELDS.DigitalDocument;
-  if (entity["@id"] === "./" || types.includes("Dataset"))
-    return ENTITY_FIELDS.Project;
+  if (entity["@id"] === "./" || types.includes("Dataset")) return ENTITY_FIELDS.Project;
 
   return ENTITY_FIELDS.Default;
 };
@@ -351,7 +337,7 @@ const LinkResolver = {
     id: string,
     defaultName: string,
     graph: RoCrateEntity[],
-    propertyName?: string
+    propertyName?: string,
   ): LinkTarget {
     const entity = graph.find((e) => e["@id"] === id);
 
@@ -367,11 +353,7 @@ const LinkResolver = {
     }
 
     // Place entities in contentLocation - show plain text name
-    if (
-      propertyName === "contentLocation" &&
-      entity &&
-      EntityClassifier.isPlace(entity)
-    ) {
+    if (propertyName === "contentLocation" && entity && EntityClassifier.isPlace(entity)) {
       return { type: "plain", text: entity.name || defaultName };
     }
 
@@ -380,7 +362,7 @@ const LinkResolver = {
       return {
         type: "external",
         href: getLdacTermUrl(id),
-        text: entity.name || defaultName
+        text: entity.name || defaultName,
       };
     }
 
@@ -389,19 +371,16 @@ const LinkResolver = {
       return {
         type: "external",
         href: getLdacTermUrl(id),
-        text: entity.name || defaultName
+        text: entity.name || defaultName,
       };
     }
 
     // LDAC access types - external link
-    if (
-      entity &&
-      (id === "ldac:OpenAccess" || id === "ldac:AuthorizedAccess")
-    ) {
+    if (entity && (id === "ldac:OpenAccess" || id === "ldac:AuthorizedAccess")) {
       return {
         type: "external",
         href: getLdacTermUrl(id),
-        text: entity.name || defaultName
+        text: entity.name || defaultName,
       };
     }
 
@@ -410,7 +389,7 @@ const LinkResolver = {
       return {
         type: "external",
         href: getGlottologUrl(id),
-        text: entity.name || defaultName
+        text: entity.name || defaultName,
       };
     }
 
@@ -421,7 +400,7 @@ const LinkResolver = {
       return {
         type: "external",
         href: getLdacTermUrl(id),
-        text: displayName
+        text: displayName,
       };
     }
 
@@ -429,7 +408,7 @@ const LinkResolver = {
     return {
       type: "internal",
       href: `#${createAnchorId(id)}`,
-      text: entity?.name || defaultName
+      text: entity?.name || defaultName,
     };
   },
 
@@ -447,7 +426,7 @@ const LinkResolver = {
       case "internal":
         return <a href={target.href}>{target.text}</a>;
     }
-  }
+  },
 };
 
 // Helper function to convert RO-Crate @id values to display paths for HTML src/href attributes.
@@ -503,7 +482,7 @@ function getDisplayPath(id: string): string {
 
       // Fallback: return just the filename
       return pathSegments[pathSegments.length - 1] || path;
-    } catch (e) {
+    } catch {
       return id;
     }
   }
@@ -511,7 +490,7 @@ function getDisplayPath(id: string): string {
   // For relative paths, simply decode the percent-encoded characters
   try {
     return decodeURIComponent(id);
-  } catch (e) {
+  } catch {
     // If decoding fails, return the original id
     return id;
   }
@@ -582,11 +561,7 @@ const PropertyValue: React.FC<{
 }> = ({ value, graph, propertyName, fieldType }) => {
   // Handle missing/undefined/null values
   if (value === null || value === undefined) {
-    return (
-      <span style={{ fontStyle: "italic", color: "var(--color-text-muted)" }}>
-        Unknown
-      </span>
-    );
+    return <span style={{ fontStyle: "italic", color: "var(--color-text-muted)" }}>Unknown</span>;
   }
 
   // Handle date formatting for fields with type "date"
@@ -598,25 +573,21 @@ const PropertyValue: React.FC<{
         const formattedDate = date.toISOString().split("T")[0];
         return <>{formattedDate}</>;
       }
-    } catch (e) {
+    } catch {
       // If date parsing fails, fall through to normal rendering
     }
   }
 
   // Handle size formatting for fields with type "size"
-  if (
-    fieldType === "size" &&
-    (typeof value === "string" || typeof value === "number")
-  ) {
+  if (fieldType === "size" && (typeof value === "string" || typeof value === "number")) {
     try {
-      const sizeInBytes =
-        typeof value === "string" ? parseInt(value, 10) : value;
+      const sizeInBytes = typeof value === "string" ? parseInt(value, 10) : value;
       if (!isNaN(sizeInBytes) && sizeInBytes >= 0) {
         // Format as human readable size (e.g., "74 MB")
         const formattedSize = filesize(sizeInBytes, { round: 0 });
         return <>{formattedSize}</>;
       }
-    } catch (e) {
+    } catch {
       // If size parsing fails, fall through to normal rendering
     }
   }
@@ -657,10 +628,7 @@ const PropertyValue: React.FC<{
 
     let displayName = cleanReference.replace("#", "");
     if (cleanReference.startsWith("#language_")) {
-      displayName = cleanReference
-        .replace("#language_", "")
-        .replace(/__/g, " ")
-        .replace(/_/g, " ");
+      displayName = cleanReference.replace("#language_", "").replace(/__/g, " ").replace(/_/g, " ");
     }
     return <a href={`#${createAnchorId(cleanReference)}`}>{displayName}</a>;
   }
@@ -675,10 +643,7 @@ const PropertyValue: React.FC<{
   }
 
   // Special handling for WorkingLanguages - semicolon-separated language codes
-  if (
-    propertyName === "WorkingLanguages" &&
-    typeof value === "string"
-  ) {
+  if (propertyName === "WorkingLanguages" && typeof value === "string") {
     const languageCodes = value
       .split(";")
       .map((code) => code.trim())
@@ -689,9 +654,7 @@ const PropertyValue: React.FC<{
           {languageCodes.map((code, index) => {
             // Try to find a Language entity in the graph for this code
             const languageEntity = graph.find(
-              (entity) =>
-                entity["@type"] === "Language" &&
-                entity["@id"] === `#language_${code}`
+              (entity) => entity["@type"] === "Language" && entity["@id"] === `#language_${code}`,
             );
 
             if (languageEntity) {
@@ -699,11 +662,7 @@ const PropertyValue: React.FC<{
               const externalUrl = getGlottologUrl(`#language_${code}`);
               return (
                 <React.Fragment key={code}>
-                  <a
-                    href={externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={externalUrl} target="_blank" rel="noopener noreferrer">
                     {languageEntity.name || code}
                   </a>
                   {index < languageCodes.length - 1 && ", "}
@@ -744,9 +703,7 @@ const PropertyValue: React.FC<{
  * Renders a standard list of links to other entities.
  * For sessions, displays as "ID: Name" (e.g., "ETR008: Under the House").
  */
-const LinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
-  entities
-}) => {
+const LinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({ entities }) => {
   if (entities.length === 0) return null;
 
   const getDisplayText = (entity: RoCrateEntity): string => {
@@ -775,9 +732,7 @@ const LinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
     <ul className="sessions-list">
       {entities.map((entity) => (
         <li key={entity["@id"]}>
-          <a href={`#${createAnchorId(entity["@id"])}`}>
-            {getDisplayText(entity)}
-          </a>
+          <a href={`#${createAnchorId(entity["@id"])}`}>{getDisplayText(entity)}</a>
         </li>
       ))}
     </ul>
@@ -787,17 +742,13 @@ const LinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
 /**
  * Renders an inline comma-separated list of links to other entities.
  */
-const InlineLinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({
-  entities
-}) => {
+const InlineLinkedEntityList: React.FC<{ entities: RoCrateEntity[] }> = ({ entities }) => {
   if (entities.length === 0) return null;
   return (
     <span>
       {entities.map((entity, index) => (
         <span key={entity["@id"]}>
-          <a href={`#${createAnchorId(entity["@id"])}`}>
-            {entity.name || entity["@id"]}
-          </a>
+          <a href={`#${createAnchorId(entity["@id"])}`}>{entity.name || entity["@id"]}</a>
           {index < entities.length - 1 && ", "}
         </span>
       ))}
@@ -834,7 +785,7 @@ function isUnknownValue(value: any): boolean {
   }
   if (Array.isArray(value)) {
     // If all items in array are unknown, treat the whole value as unknown
-    return value.length === 0 || value.every((item) => isUnknownValue(item));
+    return value.every((item) => isUnknownValue(item));
   }
   return false;
 }
@@ -842,7 +793,7 @@ function isUnknownValue(value: any): boolean {
 function buildEntityProperties(
   entity: RoCrateEntity,
   fields: OrderEntry[],
-  skipUnknown: boolean = false
+  skipUnknown: boolean = false,
 ): BuildEntityPropertiesResult {
   const labelOverrideMap = new Map<string, string>();
   fields.forEach((entry) => {
@@ -860,7 +811,6 @@ function buildEntityProperties(
     const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
     const value = (entity as any)[key];
 
-    const hasValue = value !== null && value !== undefined;
     const isUnknown = isUnknownValue(value);
 
     // Skip properties with no value or unknown values entirely if skipUnknown is true
@@ -875,14 +825,10 @@ function buildEntityProperties(
 
     // If this property has a real value, remove any previous "Unknown" entry with the same label
     if (!isUnknown && usedLabels.has(label)) {
-      const existingIndex = propertiesToRender.findIndex(
-        ([existingKey, existingValue]) => {
-          const existingLabel =
-            labelOverrideMap.get(existingKey) ??
-            formatPropertyLabel(existingKey);
-          return existingLabel === label && isUnknownValue(existingValue);
-        }
-      );
+      const existingIndex = propertiesToRender.findIndex(([existingKey, existingValue]) => {
+        const existingLabel = labelOverrideMap.get(existingKey) ?? formatPropertyLabel(existingKey);
+        return existingLabel === label && isUnknownValue(existingValue);
+      });
       if (existingIndex !== -1) {
         propertiesToRender.splice(existingIndex, 1);
       }
@@ -918,12 +864,7 @@ const EntityProperties: React.FC<{
         <div key={key} className="property">
           <span className="property-name">{label}:</span>
           <span className="property-value">
-            <PropertyValue
-              value={value}
-              graph={graph}
-              propertyName={key}
-              fieldType={fieldType}
-            />
+            <PropertyValue value={value} graph={graph} propertyName={key} fieldType={fieldType} />
           </span>
         </div>
       );
@@ -947,7 +888,7 @@ const LDAC_ROLE_PROPERTIES = [
   "ldac:transcriber",
   "ldac:annotator",
   "ldac:participant",
-  "ldac:depositor"
+  "ldac:depositor",
 ];
 
 // Mapping from LDAC role property to human-readable role name
@@ -966,7 +907,7 @@ const ROLE_DISPLAY_NAMES: Record<string, string> = {
   "ldac:transcriber": "transcriber",
   "ldac:annotator": "annotator",
   "ldac:participant": "participant",
-  "ldac:depositor": "depositor"
+  "ldac:depositor": "depositor",
 };
 
 /**
@@ -992,10 +933,7 @@ function getShortSessionId(sessionId: string): string {
  * their original CollectionEvent IDs (#session-ETR009).
  * This function finds the corresponding session directory path for proper linking.
  */
-function findSessionAnchorId(
-  sessionId: string,
-  graph: RoCrateEntity[]
-): string {
+function findSessionAnchorId(sessionId: string, graph: RoCrateEntity[]): string {
   // For #session-XXX format, look for corresponding Sessions/XXX/ entity
   if (sessionId.startsWith("#session-")) {
     const shortId = sessionId.replace("#session-", "");
@@ -1008,8 +946,7 @@ function findSessionAnchorId(
         (e["@id"]?.startsWith("Sessions/") &&
           e["@id"]?.endsWith("/") &&
           (e.about?.["@id"] === sessionId ||
-            (Array.isArray(e.hasPart) &&
-              e.hasPart.some((p: any) => p["@id"] === sessionId))))
+            (Array.isArray(e.hasPart) && e.hasPart.some((p: any) => p["@id"] === sessionId)))),
     );
 
     if (directoryEntity) {
@@ -1062,8 +999,7 @@ const PersonContributions: React.FC<{
         }
         const roleName = ROLE_DISPLAY_NAMES[roleProp] || roleProp;
         // Capitalize first letter for display
-        const displayRole =
-          roleName.charAt(0).toUpperCase() + roleName.slice(1);
+        const displayRole = roleName.charAt(0).toUpperCase() + roleName.slice(1);
         if (!sessionToRoles.get(sessionId)!.includes(displayRole)) {
           sessionToRoles.get(sessionId)!.push(displayRole);
         }
@@ -1103,35 +1039,33 @@ const PersonContributions: React.FC<{
       const aFirst = getShortSessionId(aSessionIds[0]);
       const bFirst = getShortSessionId(bSessionIds[0]);
       return aFirst.localeCompare(bFirst);
-    }
+    },
   );
 
   // Build contribution items: "Session1, Session2: Role1, Role2"
-  const contributionItems = sortedRoleCombos.map(
-    ([roleComboKey, sessionIds], idx) => {
-      const roles = roleComboKey.split("|");
-      const rolesText = roles.join(", ");
+  const contributionItems = sortedRoleCombos.map(([roleComboKey, sessionIds], idx) => {
+    const roles = roleComboKey.split("|");
+    const rolesText = roles.join(", ");
 
-      // Build session links
-      const sessionLinks = sessionIds.map((sessionId, sessionIdx) => {
-        const shortId = getShortSessionId(sessionId);
-        const anchorId = findSessionAnchorId(sessionId, graph);
-        return (
-          <React.Fragment key={sessionId}>
-            <a href={`#${anchorId}`}>{shortId}</a>
-            {sessionIdx < sessionIds.length - 1 && ", "}
-          </React.Fragment>
-        );
-      });
-
+    // Build session links
+    const sessionLinks = sessionIds.map((sessionId, sessionIdx) => {
+      const shortId = getShortSessionId(sessionId);
+      const anchorId = findSessionAnchorId(sessionId, graph);
       return (
-        <React.Fragment key={roleComboKey}>
-          {sessionLinks}: {rolesText}
-          {idx < sortedRoleCombos.length - 1 && ". "}
+        <React.Fragment key={sessionId}>
+          <a href={`#${anchorId}`}>{shortId}</a>
+          {sessionIdx < sessionIds.length - 1 && ", "}
         </React.Fragment>
       );
-    }
-  );
+    });
+
+    return (
+      <React.Fragment key={roleComboKey}>
+        {sessionLinks}: {rolesText}
+        {idx < sortedRoleCombos.length - 1 && ". "}
+      </React.Fragment>
+    );
+  });
 
   return (
     <div className="property">
@@ -1152,7 +1086,7 @@ const Entity: React.FC<{
 }> = ({ entity, graph, isRootDataset = false, isChild = false }) => {
   if (!entity) return null;
 
-  const { "@id": id, "@type": type, name } = entity;
+  const { "@id": id, name } = entity;
   const types = getEntityTypes(entity);
   const anchorId = createAnchorId(id);
   // For merged session entities, also create anchor for original CollectionEvent ID
@@ -1182,7 +1116,7 @@ const Entity: React.FC<{
           position: "absolute",
           width: 0,
           height: 0,
-          overflow: "hidden"
+          overflow: "hidden",
         }}
       />
     ) : null;
@@ -1204,7 +1138,7 @@ const Entity: React.FC<{
     }
     // Convert "Sessions/ETR009" or "Sessions/ETR009/" to "Session: ETR009"
     if (id.startsWith("Sessions/")) {
-      const match = id.match(/^Sessions\/([^\/]+)\/?$/);
+      const match = id.match(/^Sessions\/([^/]+)\/?$/);
       if (match) {
         return `Session: ${decodeForDisplay(match[1])}`;
       }
@@ -1231,21 +1165,14 @@ const Entity: React.FC<{
   if (isImage) {
     const displayPath = getDisplayPath(id);
     const fields = getFieldsForEntity(entity);
-    const { labelOverrideMap, propertiesToRender } = buildEntityProperties(
-      entity,
-      fields
-    );
+    const { labelOverrideMap, propertiesToRender } = buildEntityProperties(entity, fields);
 
     return (
       <div className={entityClasses} id={anchorId}>
         <SecondaryAnchor />
         <EntityHeader />
         <EntityTypes />
-        {name && (
-          <h3 style={{ margin: "10px 0", color: "var(--color-text)" }}>
-            {name}
-          </h3>
-        )}
+        {name && <h3 style={{ margin: "10px 0", color: "var(--color-text)" }}>{name}</h3>}
         <a href={displayPath}>
           <img
             src={displayPath}
@@ -1255,8 +1182,7 @@ const Entity: React.FC<{
               const target = e.target as HTMLImageElement;
               target.style.display = "none";
               if (target.nextElementSibling)
-                (target.nextElementSibling as HTMLElement).style.display =
-                  "block";
+                (target.nextElementSibling as HTMLElement).style.display = "block";
             }}
           />
         </a>
@@ -1264,7 +1190,7 @@ const Entity: React.FC<{
           style={{
             display: "none",
             color: "var(--color-text-muted)",
-            fontStyle: "italic"
+            fontStyle: "italic",
           }}
         >
           Image could not be loaded: {displayPath}
@@ -1282,21 +1208,14 @@ const Entity: React.FC<{
     const MediaTag = isVideo ? "video" : "audio";
     const displayPath = getDisplayPath(id);
     const fields = getFieldsForEntity(entity);
-    const { labelOverrideMap, propertiesToRender } = buildEntityProperties(
-      entity,
-      fields
-    );
+    const { labelOverrideMap, propertiesToRender } = buildEntityProperties(entity, fields);
 
     return (
       <div className={entityClasses} id={anchorId}>
         <SecondaryAnchor />
         <EntityHeader />
         <EntityTypes />
-        {name && (
-          <h3 style={{ margin: "10px 0", color: "var(--color-text)" }}>
-            {name}
-          </h3>
-        )}
+        {name && <h3 style={{ margin: "10px 0", color: "var(--color-text)" }}>{name}</h3>}
         <MediaTag controls className="media-player">
           <source src={displayPath} type={entity.encodingFormat || ""} />
           Your browser does not support the {MediaTag} tag.
@@ -1317,7 +1236,7 @@ const Entity: React.FC<{
   const { labelOverrideMap, propertiesToRender } = buildEntityProperties(
     entity,
     fields,
-    isPerson || isSession // skipUnknown for Person and Session entities
+    isPerson || isSession, // skipUnknown for Person and Session entities
   );
 
   // Special lists for root dataset - using direct entity type checking instead of filtering
@@ -1343,7 +1262,7 @@ const Entity: React.FC<{
     // Using Intl.Collator with numeric: true for natural sorting of numbers in IDs
     const collator = new Intl.Collator([], {
       numeric: true,
-      sensitivity: "base"
+      sensitivity: "base",
     });
     const getSessionDisplayText = (entity: RoCrateEntity): string => {
       const shortId = getShortSessionId(entity["@id"]);
@@ -1381,7 +1300,7 @@ const Entity: React.FC<{
               style={{
                 color: "var(--color-primary-content)",
                 textDecoration: "underline",
-                fontWeight: "500"
+                fontWeight: "500",
               }}
             >
               {name}
@@ -1396,13 +1315,11 @@ const Entity: React.FC<{
           style={{
             margin: "10px 0",
             color: "var(--color-text-muted)",
-            fontStyle: "italic"
+            fontStyle: "italic",
           }}
         >
           This is an XML file that is used by{" "}
-          <a href="https://sites.google.com/site/metadatatooldiscussion/home">
-            lameta
-          </a>
+          <a href="https://sites.google.com/site/metadatatooldiscussion/home">lameta</a>
           {" software "}(<a href="https://github.com/onset/lameta">github</a>).
         </p>
       )}
@@ -1411,9 +1328,7 @@ const Entity: React.FC<{
         propertiesToRender={propertiesToRender}
         graph={graph}
       />
-      {types.includes("Person") && (
-        <PersonContributions personEntity={entity} graph={graph} />
-      )}
+      {types.includes("Person") && <PersonContributions personEntity={entity} graph={graph} />}
       {isRootDataset &&
         Object.entries(specialLists).map(
           ([title, entities]) =>
@@ -1430,7 +1345,7 @@ const Entity: React.FC<{
                   </div>
                 )}
               </div>
-            )
+            ),
         )}
     </div>
   );
@@ -1480,14 +1395,10 @@ function mergeSessionEntities(graph: RoCrateEntity[]): {
     ) {
       // Look for a CollectionEvent via "about" property (preferred/newer format)
       if (entity.about) {
-        const aboutId =
-          typeof entity.about === "object" ? entity.about["@id"] : entity.about;
+        const aboutId = typeof entity.about === "object" ? entity.about["@id"] : entity.about;
         if (aboutId?.startsWith("#session-")) {
           const collectionEvent = graph.find((e) => e["@id"] === aboutId);
-          if (
-            collectionEvent &&
-            hasSessionType(getEntityTypes(collectionEvent))
-          ) {
+          if (collectionEvent && hasSessionType(getEntityTypes(collectionEvent))) {
             sessionDirectoryToCollectionEvent.set(id, aboutId);
             collectionEventToSessionDirectory.set(aboutId, id);
             return; // Found via about, skip hasPart check
@@ -1501,10 +1412,7 @@ function mergeSessionEntities(graph: RoCrateEntity[]): {
           const partId = typeof part === "object" ? part["@id"] : part;
           if (partId?.startsWith("#session-")) {
             const collectionEvent = graph.find((e) => e["@id"] === partId);
-            if (
-              collectionEvent &&
-              hasSessionType(getEntityTypes(collectionEvent))
-            ) {
+            if (collectionEvent && hasSessionType(getEntityTypes(collectionEvent))) {
               sessionDirectoryToCollectionEvent.set(id, partId);
               collectionEventToSessionDirectory.set(partId, id);
             }
@@ -1520,7 +1428,6 @@ function mergeSessionEntities(graph: RoCrateEntity[]): {
 
   graph.forEach((entity) => {
     const id = entity["@id"];
-    const types = getEntityTypes(entity);
 
     // Skip session directory Datasets - they'll be merged with CollectionEvents
     if (sessionDirectoryToCollectionEvent.has(id)) {
@@ -1536,7 +1443,7 @@ function mergeSessionEntities(graph: RoCrateEntity[]): {
       const mergedEntity: RoCrateEntity = {
         ...entity,
         "@id": directoryId, // Use directory path for display
-        _originalCollectionEventId: id // Keep reference to original for internal links
+        _originalCollectionEventId: id, // Keep reference to original for internal links
       };
 
       // The directory Dataset contains the files via hasPart, so use its hasPart
@@ -1572,8 +1479,7 @@ function mergeSessionEntities(graph: RoCrateEntity[]): {
  */
 function computeHierarchy(graph: RoCrateEntity[]) {
   // First, merge session directory Datasets with their CollectionEvents
-  const { mergedGraph, sessionDirectoryToCollectionEvent } =
-    mergeSessionEntities(graph);
+  const { mergedGraph } = mergeSessionEntities(graph);
 
   const rootEntities: RoCrateEntity[] = [];
   const childrenMap = new Map<string, RoCrateEntity[]>();
@@ -1701,19 +1607,10 @@ function computeHierarchy(graph: RoCrateEntity[]) {
 
     // Root dataset first
     if (id === "./") return 0;
-    if (
-      id?.startsWith("Description/") ||
-      id?.startsWith("DescriptionDocuments/")
-    )
-      return 1;
-    if (id?.startsWith("OtherDocs/") || id?.startsWith("OtherDocuments/"))
-      return 2;
+    if (id?.startsWith("Description/") || id?.startsWith("DescriptionDocuments/")) return 1;
+    if (id?.startsWith("OtherDocs/") || id?.startsWith("OtherDocuments/")) return 2;
     // Sessions - either by type or by merged directory path
-    if (
-      hasSessionType(types) ||
-      (id?.startsWith("Sessions/") && id.endsWith("/"))
-    )
-      return 3;
+    if (hasSessionType(types) || (id?.startsWith("Sessions/") && id.endsWith("/"))) return 3;
     if (types.includes("Person")) return 4;
     return 5;
   };
@@ -1729,13 +1626,8 @@ function computeHierarchy(graph: RoCrateEntity[]) {
   // Sort children within each parent
   const getChildSortPriority = (entity: RoCrateEntity) => {
     const id = entity["@id"];
-    if (
-      id?.startsWith("Description/") ||
-      id?.startsWith("DescriptionDocuments/")
-    )
-      return 0;
-    if (id?.startsWith("OtherDocs/") || id?.startsWith("OtherDocuments/"))
-      return 1;
+    if (id?.startsWith("Description/") || id?.startsWith("DescriptionDocuments/")) return 0;
+    if (id?.startsWith("OtherDocs/") || id?.startsWith("OtherDocuments/")) return 1;
     return 2;
   };
 
@@ -1757,24 +1649,13 @@ const StaticHierarchicalEntityDisplay: React.FC<{
   childrenMap: Map<string, RoCrateEntity[]>;
   isRootDataset?: boolean;
   isChild?: boolean;
-}> = ({
-  entity,
-  graph,
-  childrenMap,
-  isRootDataset = false,
-  isChild = false
-}) => {
+}> = ({ entity, graph, childrenMap, isRootDataset = false, isChild = false }) => {
   const entityId = entity["@id"];
   const children = childrenMap.get(entityId) || [];
 
   return (
     <>
-      <Entity
-        entity={entity}
-        graph={graph}
-        isRootDataset={isRootDataset}
-        isChild={isChild}
-      />
+      <Entity entity={entity} graph={graph} isRootDataset={isRootDataset} isChild={isChild} />
       {children.length > 0 && (
         <div className="entity-children-container">
           {children.map((child) => (
@@ -1793,9 +1674,7 @@ const StaticHierarchicalEntityDisplay: React.FC<{
   );
 };
 
-const RoCratePreview: React.FC<{ roCrateData: RoCrateData }> = ({
-  roCrateData
-}) => {
+const RoCratePreview: React.FC<{ roCrateData: RoCrateData }> = ({ roCrateData }) => {
   const graph = roCrateData["@graph"] || [];
   const rootDataset = graph.find((item) => item["@id"] === "./");
 
@@ -1807,18 +1686,15 @@ const RoCratePreview: React.FC<{ roCrateData: RoCrateData }> = ({
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>
-          RO-Crate Preview - {rootDataset?.name || "Research Object"}
-        </title>
+        <title>RO-Crate Preview - {rootDataset?.name || "Research Object"}</title>
         <Style />
       </head>
       <body>
         <div className="header">
           <h1>{rootDataset?.name}</h1>
           <p>
-            This dataset was created by{" "}
-            <a href="https://github.com/onset/lameta">lameta</a>. This page is a
-            simplified, human-readable view of the{" "}
+            This dataset was created by <a href="https://github.com/onset/lameta">lameta</a>. This
+            page is a simplified, human-readable view of the{" "}
             <a
               href="https://www.researchobject.org/ro-crate/"
               target="_blank"
@@ -1827,17 +1703,11 @@ const RoCratePreview: React.FC<{ roCrateData: RoCrateData }> = ({
               RO-Crate
             </a>{" "}
             metadata found in the accompanying{" "}
-            <a href="ro-crate-metadata.json">ro-crate-metadata.json</a> file,
-            which conforms to the{" "}
-            <a
-              href="https://w3id.org/ldac/profile"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="ro-crate-metadata.json">ro-crate-metadata.json</a> file, which conforms to the{" "}
+            <a href="https://w3id.org/ldac/profile" target="_blank" rel="noopener noreferrer">
               LDAC Profile
             </a>
-            . The purpose of this page is to give you a general idea of what is
-            in the dataset.
+            . The purpose of this page is to give you a general idea of what is in the dataset.
           </p>
         </div>
         <div className="main-content">
@@ -1865,8 +1735,6 @@ const RoCratePreview: React.FC<{ roCrateData: RoCrateData }> = ({
  */
 export function generateRoCrateHtml(roCrateData: RoCrateData): string {
   const doctype = "<!DOCTYPE html>";
-  const markup = renderToStaticMarkup(
-    <RoCratePreview roCrateData={roCrateData} />
-  );
+  const markup = renderToStaticMarkup(<RoCratePreview roCrateData={roCrateData} />);
   return doctype + markup;
 }

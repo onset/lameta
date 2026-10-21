@@ -4,7 +4,7 @@ import {
   assignLanguagesToSegments,
   slashSyntaxToTaggedText,
   parseCommaSeparatedSlashSyntax,
-  commaSeparatedSlashSyntaxToTaggedText
+  commaSeparatedSlashSyntaxToTaggedText,
 } from "./TextHolderMigration";
 
 describe("parseSlashSyntax", () => {
@@ -82,7 +82,6 @@ describe("parseSlashSyntax", () => {
       expect(result.segments).toEqual(["", ""]);
       expect(result.hasSlashes).toBe(true);
     });
-
   });
 
   describe("whitespace handling", () => {
@@ -137,10 +136,7 @@ describe("assignLanguagesToSegments", () => {
     });
 
     it("should handle three languages", () => {
-      const result = assignLanguagesToSegments(
-        ["casa", "house", "maison"],
-        ["es", "en", "fr"]
-      );
+      const result = assignLanguagesToSegments(["casa", "house", "maison"], ["es", "en", "fr"]);
       expect(result.assignments.get("es")).toBe("casa");
       expect(result.assignments.get("en")).toBe("house");
       expect(result.assignments.get("fr")).toBe("maison");
@@ -191,10 +187,7 @@ describe("assignLanguagesToSegments", () => {
 
   describe("less slots than strings", () => {
     it("should assign extra segments to unknown tags", () => {
-      const result = assignLanguagesToSegments(
-        ["casa", "house", "maison", "hus"],
-        ["es", "en"]
-      );
+      const result = assignLanguagesToSegments(["casa", "house", "maison", "hus"], ["es", "en"]);
       expect(result.assignments.get("es")).toBe("casa");
       expect(result.assignments.get("en")).toBe("house");
       expect(result.assignments.get("unknown1")).toBe("maison");
@@ -214,10 +207,7 @@ describe("assignLanguagesToSegments", () => {
 
   describe("empty segment handling", () => {
     it("should preserve empty segments in assignments", () => {
-      const result = assignLanguagesToSegments(
-        ["casa", "", "maison"],
-        ["es", "en", "fr"]
-      );
+      const result = assignLanguagesToSegments(["casa", "", "maison"], ["es", "en", "fr"]);
       expect(result.assignments.get("es")).toBe("casa");
       expect(result.assignments.get("en")).toBe("");
       expect(result.assignments.get("fr")).toBe("maison");
@@ -234,10 +224,7 @@ describe("assignLanguagesToSegments", () => {
 
   describe("whitespace preservation", () => {
     it("should preserve whitespace in segments", () => {
-      const result = assignLanguagesToSegments(
-        [" casa ", " house "],
-        ["es", "en"]
-      );
+      const result = assignLanguagesToSegments([" casa ", " house "], ["es", "en"]);
       expect(result.assignments.get("es")).toBe(" casa ");
       expect(result.assignments.get("en")).toBe(" house ");
     });
@@ -252,11 +239,7 @@ describe("slashSyntaxToTaggedText", () => {
     });
 
     it("should convert three-language text", () => {
-      const result = slashSyntaxToTaggedText("casa / house / maison", [
-        "es",
-        "en",
-        "fr"
-      ]);
+      const result = slashSyntaxToTaggedText("casa / house / maison", ["es", "en", "fr"]);
       expect(result).toBe("[[es]]casa[[en]]house[[fr]]maison");
     });
 
@@ -298,11 +281,7 @@ describe("slashSyntaxToTaggedText", () => {
 
   describe("empty segment preservation", () => {
     it("should preserve empty segments in tagged output", () => {
-      const result = slashSyntaxToTaggedText("casa /  / maison", [
-        "es",
-        "en",
-        "fr"
-      ]);
+      const result = slashSyntaxToTaggedText("casa /  / maison", ["es", "en", "fr"]);
       expect(result).toBe("[[es]]casa[[en]][[fr]]maison");
     });
 
@@ -341,7 +320,7 @@ describe("parseSlashSyntax with comma-separated multilingual values", () => {
       "Mberyo",
       "Mberyo,Everyday Activities",
       "Actividades Cotidianas,Traditional Materials",
-      "Materiales"
+      "Materiales",
     ]);
   });
 });
@@ -367,12 +346,8 @@ describe("parseCommaSeparatedSlashSyntax", () => {
     const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es"]);
 
     expect(result.hasSlashes).toBe(true);
-    expect(result.assignments.get("en")).toBe(
-      "Mberyo, Everyday Activities, Traditional Materials"
-    );
-    expect(result.assignments.get("es")).toBe(
-      "Mberyo, Actividades Cotidianas, Materiales"
-    );
+    expect(result.assignments.get("en")).toBe("Mberyo, Everyday Activities, Traditional Materials");
+    expect(result.assignments.get("es")).toBe("Mberyo, Actividades Cotidianas, Materiales");
   });
 
   it("should handle items without slashes (monolingual items)", () => {
@@ -397,8 +372,7 @@ describe("parseCommaSeparatedSlashSyntax", () => {
   });
 
   it("should handle three languages", () => {
-    const userInput =
-      "History / Historia / Histoire, Culture / Cultura / Culture";
+    const userInput = "History / Historia / Histoire, Culture / Cultura / Culture";
 
     const result = parseCommaSeparatedSlashSyntax(userInput, ["en", "es", "fr"]);
 
@@ -444,10 +418,7 @@ describe("commaSeparatedSlashSyntaxToTaggedText", () => {
   it("should convert comma-separated slash syntax to tagged format", () => {
     const userInput = "History / Historia,Customs / Costumbres";
 
-    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, [
-      "en",
-      "es"
-    ]);
+    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, ["en", "es"]);
 
     expect(result).toBe("[[en]]History, Customs[[es]]Historia, Costumbres");
   });
@@ -455,10 +426,7 @@ describe("commaSeparatedSlashSyntaxToTaggedText", () => {
   it("should return original text when no slashes present", () => {
     const userInput = "History, Customs";
 
-    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, [
-      "en",
-      "es"
-    ]);
+    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, ["en", "es"]);
 
     expect(result).toBe("History, Customs");
   });
@@ -467,13 +435,10 @@ describe("commaSeparatedSlashSyntaxToTaggedText", () => {
     const userInput =
       "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales";
 
-    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, [
-      "en",
-      "es"
-    ]);
+    const result = commaSeparatedSlashSyntaxToTaggedText(userInput, ["en", "es"]);
 
     expect(result).toBe(
-      "[[en]]Mberyo, Everyday Activities, Traditional Materials[[es]]Mberyo, Actividades Cotidianas, Materiales"
+      "[[en]]Mberyo, Everyday Activities, Traditional Materials[[es]]Mberyo, Actividades Cotidianas, Materiales",
     );
   });
 });

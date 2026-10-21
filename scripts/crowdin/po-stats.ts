@@ -20,7 +20,7 @@ function compare(staleDir: string, newDir: string): number {
     const fresh = new Map(
       fs.existsSync(newPath)
         ? poEntries(loadPo(newPath)).map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr])
-        : []
+        : [],
     );
     let covered = 0;
     for (const e of stale) {

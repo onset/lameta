@@ -4,7 +4,6 @@ import { css } from "@emotion/react";
 import * as React from "react";
 import userSettings from "../other/UserSettings";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import NotificationBar from "./NotificationsBar/NotificationBar";
 import { observer } from "mobx-react";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
@@ -16,7 +15,8 @@ import { PeopleIcon } from "./people/PeopleIcon";
 import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import LametaMenu from "../other/menu";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { analyticsLocation } from "../other/analytics";
 import RegistrationReminder from "./RegistrationReminder";
 import { SaveNotifier } from "./SaveNotifier";
@@ -81,10 +81,10 @@ class Home extends React.Component<IProps> {
     // person or session, we need to update the corresponding menu
     // because this may be the first person/session, or there may
     // now be no persons/sessions.
-    mobx.observe(this.props.project.sessions, (change) => {
+    mobx.observe(this.props.project.sessions, () => {
       this.UpdateMenus(1); // assume we are in the session tab at the moment
     });
-    mobx.observe(this.props.project.persons, (change) => {
+    mobx.observe(this.props.project.persons, () => {
       this.UpdateMenus(2); // assume we are in the people tab at the moment
     });
 

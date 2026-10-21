@@ -33,19 +33,14 @@ export class CopyManager {
   public static abandonCopying(cancelJobsFirst: boolean) {
     if (cancelJobsFirst) {
       sentryBreadCrumb("abandonCopying(cancelJobsFirst)");
-      activeJobs.forEach((job, index) => {
+      activeJobs.forEach((job) => {
         try {
           job.process.kill("SIGINT");
           window.setTimeout(() => {
             try {
-              if (fs.existsSync(job.destination))
-                fs.removeSync(job.destination);
+              if (fs.existsSync(job.destination)) fs.removeSync(job.destination);
             } catch (err) {
-              console.error(
-                `trying to delete partially-copied file, got: ${JSON.stringify(
-                  err
-                )}`
-              );
+              console.error(`trying to delete partially-copied file, got: ${JSON.stringify(err)}`);
               sentryException(err);
             }
           }, 100);
@@ -62,10 +57,9 @@ export class CopyManager {
   public static safeAsyncCopyFileWithErrorNotification(
     sourcePath: string,
     destPath: string,
-    progress?: (msg: string) => void
+    progress?: (msg: string) => void,
   ): Promise<string> {
-    if (!fs.existsSync(Path.dirname(destPath)))
-      fs.mkdirSync(Path.dirname(destPath));
+    if (!fs.existsSync(Path.dirname(destPath))) fs.mkdirSync(Path.dirname(destPath));
     // it's too hard to write tests with the async copying happening (see the test "There should be 2 consent files in the ConsentDocuments folder")
     if (
       process.env.VITEST_WORKER_ID !== undefined &&
@@ -94,14 +88,10 @@ export class CopyManager {
     return new Promise<string>((resolve, reject) => {
       // By using spawn, we can get progress during the copy.
       // Note that the copy will continue even if we quit lameta.
-      const process: child_process.ChildProcess = child_process.spawn(
-        cmd,
-        args,
-        {
-          shell: true,
-          detached: true // without this, if we quit while the copy is going, it will be corrupt
-        }
-      );
+      const process: child_process.ChildProcess = child_process.spawn(cmd, args, {
+        shell: true,
+        detached: true, // without this, if we quit while the copy is going, it will be corrupt
+      });
       const job = { process, destination: destPath, progress: "0%" };
       activeJobs.push(job);
       //spawn.unref(); // allow lameta to quit even if this is still going

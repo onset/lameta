@@ -8,14 +8,14 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import * as mobx from "mobx";
 
 mobx.configure({
-  enforceActions: "never"
+  enforceActions: "never",
 });
 
 temp.track();
 
 const languageFinder = new LanguageFinder(() => ({
   iso639_3: "",
-  englishName: ""
+  englishName: "",
 }));
 
 /**
@@ -43,7 +43,7 @@ describe("LAM-112: Person ID changes when folder name does not", () => {
 
   function createPersonWithName(
     name: string,
-    idChangeHandler?: (oldId: string, newId: string) => void
+    idChangeHandler?: (oldId: string, newId: string) => void,
   ): Person {
     const personId = Path.basename(personDirectory);
     fs.writeFileSync(
@@ -51,13 +51,13 @@ describe("LAM-112: Person ID changes when folder name does not", () => {
       `<?xml version="1.0" encoding="utf-8"?>
 <Person>
   <name>${name}</name>
-</Person>`
+</Person>`,
     );
     return Person.fromDirectory(
       personDirectory,
       new EncounteredVocabularyRegistry(),
       idChangeHandler || (() => {}),
-      languageFinder
+      languageFinder,
     );
   }
 
@@ -115,7 +115,7 @@ describe("LAM-112: Person ID changes when folder name does not", () => {
       { from: "Alice", to: "Alice?", sanitizedFolder: "Alice" },
       { from: "Bob", to: "Bob*", sanitizedFolder: "Bob" },
       { from: "Mary", to: "Mary<>", sanitizedFolder: "Mary" },
-      { from: "Sam", to: "Sam:", sanitizedFolder: "Sam" }
+      { from: "Sam", to: "Sam:", sanitizedFolder: "Sam" },
     ];
 
     for (const testCase of testCases) {
@@ -127,14 +127,14 @@ describe("LAM-112: Person ID changes when folder name does not", () => {
         `<?xml version="1.0" encoding="utf-8"?>
 <Person>
   <name>${testCase.from}</name>
-</Person>`
+</Person>`,
       );
 
       const person = Person.fromDirectory(
         dir,
         new EncounteredVocabularyRegistry(),
         () => {},
-        languageFinder
+        languageFinder,
       );
 
       // Change the name
@@ -212,10 +212,7 @@ describe("referenceIdMatches should match by name even when person has a code", 
     temp.cleanupSync();
   });
 
-  function createPersonWithNameAndCode(
-    name: string,
-    code: string
-  ): Person {
+  function createPersonWithNameAndCode(name: string, code: string): Person {
     const personId = Path.basename(personDirectory);
     fs.writeFileSync(
       Path.join(personDirectory, personId + ".person"),
@@ -223,13 +220,13 @@ describe("referenceIdMatches should match by name even when person has a code", 
 <Person>
   <name>${name}</name>
   <code>${code}</code>
-</Person>`
+</Person>`,
     );
     return Person.fromDirectory(
       personDirectory,
       new EncounteredVocabularyRegistry(),
       () => {},
-      languageFinder
+      languageFinder,
     );
   }
 
@@ -255,13 +252,13 @@ describe("referenceIdMatches should match by name even when person has a code", 
       `<?xml version="1.0" encoding="utf-8"?>
 <Person>
   <name>John Smith</name>
-</Person>`
+</Person>`,
     );
     const person = Person.fromDirectory(
       dir,
       new EncounteredVocabularyRegistry(),
       () => {},
-      languageFinder
+      languageFinder,
     );
     expect(person.referenceIdMatches("John Smith")).toBe(true);
     expect(person.referenceIdMatches("john smith")).toBe(true);
