@@ -34,6 +34,9 @@ export const ImdiView: React.FunctionComponent<ImdiViewProps> = (props) => {
 
   // Validate the IMDI when it changes
   React.useEffect(() => {
+    // Drop the verdict on the previous XML so the preview never shows it against this XML.
+    setValidationResult(undefined);
+    let superseded = false;
     if (props.imdi) {
       const imdiSchema = GetOtherConfigurationSettings().imdiSchema || "IMDI_3.0.xsd";
       setSchemaName(imdiSchema);
@@ -45,12 +48,13 @@ export const ImdiView: React.FunctionComponent<ImdiViewProps> = (props) => {
       mainProcessApi
         .validateImdiAsync(xmlToValidate, imdiSchema)
         .then((r) => {
-          setValidationResult(r);
+          if (!superseded) setValidationResult(r);
         })
         .catch((err) => NotifyException(err as Error));
-    } else {
-      setValidationResult(undefined);
     }
+    return () => {
+      superseded = true;
+    };
   }, [props.imdi, props.wrapForValidation]);
 
   if (!props.imdi) {
