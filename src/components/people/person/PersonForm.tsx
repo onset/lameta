@@ -164,7 +164,7 @@ class PersonForm extends React.Component<IProps> {
         ) : null}
         {this.renderIfVisible(
           "languages",
-          <div className="languages">
+          <div className="languages" data-field-key="languages">
             <PersonLanguageList
               person={this.props.person}
               languageFinder={this.props.languageFinder}

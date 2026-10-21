@@ -258,6 +258,7 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
               key={group.folderKey ?? group.title}
               data-testid="problem-group"
               data-folder-key={group.folderKey}
+              data-current={isCurrent || undefined}
               css={css`
                 padding: 6px 0 4px;
                 ${dimmed ? "opacity: 0.45;" : ""}

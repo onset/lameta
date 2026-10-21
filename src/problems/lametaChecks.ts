@@ -44,28 +44,39 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
 
   for (const session of project.sessions.items as Session[]) {
     checkFileNames(session, "session", session.id);
-    const contributors = new Set(
-      session.getAllContributionsToAllFiles().map((c) => c.personReference),
-    );
-    for (const name of contributors) {
-      // a contribution may name a person by name or by code, as the export allows
-      if (project.findPerson(name)) continue;
-      problems.push({
-        checkId: "contributorWithoutPerson",
-        severity: "error",
-        ...wordProblem(
-          name,
-          t({
-            message: "has no matching Person.",
-            comment: 'Follows a contributor\'s name, as in "Awi Heole has no matching Person."',
-          }),
-        ),
-        target: {
-          folderType: "session",
-          folderId: session.id,
-          fieldKey: "contributions",
-        },
-      });
+    // reported once for each file that lists the contributor, so that the problem
+    // goes to the Contributors tab of that file
+    for (const file of session.files) {
+      // a person is matched without regard to case, so "Hatton" and "hatton" are one
+      const contributors = new Map<string, string>();
+      for (const c of file.contributions) {
+        const name = c.personReference?.trim();
+        if (name && !contributors.has(name.toLowerCase()))
+          contributors.set(name.toLowerCase(), name);
+      }
+      for (const name of contributors.values()) {
+        // a contribution may name a person by name or by code, as the export allows
+        if (project.findPerson(name)) continue;
+        problems.push({
+          checkId: "contributorWithoutPerson",
+          severity: "error",
+          ...wordProblem(
+            name,
+            t({
+              message: "has no matching Person.",
+              comment: 'Follows a contributor\'s name, as in "Awi Heole has no matching Person."',
+            }),
+          ),
+          target: {
+            folderType: "session",
+            folderId: session.id,
+            ...(file === session.metadataFile
+              ? {}
+              : { fileName: file.getTextProperty("filename", "") }),
+            fieldKey: "contributions",
+          },
+        });
+      }
     }
   }
   for (const person of project.persons.items as Person[]) {

@@ -53,6 +53,45 @@ function editorOf(page: Page, fieldKey: string): Locator {
     .first();
 }
 
+// the sidebar's section for one folder, such as "session:ETR009" or "person:Awi Heole"
+function groupOf(page: Page, folderKey: string): Locator {
+  return page.locator(`[data-testid='problem-group'][data-folder-key='${folderKey}']`);
+}
+
+// adds a session and gives it `id`, so that its section in the sidebar can be found
+async function newSession(project: E2eProject, page: Page, id: string) {
+  await project.goToSessions();
+  await project.addSession();
+  // a new session opens on the tab that the last one was on
+  await page.getByRole("tab", { name: /^Session$/ }).click();
+  await editorOf(page, "id").click();
+  await page.keyboard.press("Control+A");
+  await page.keyboard.type(id);
+  await page.keyboard.press("Tab");
+  await expect(page.locator(".fileList .rt-tr", { hasText: `${id}.session` })).toBeVisible();
+}
+
+// adds an MP3 named song.mp3 to the selected session, and selects it
+async function addSong(lameta: LametaE2ERunner, page: Page) {
+  const mediaPath = Path.join(fs.mkdtempSync(Path.join(os.tmpdir(), "problems-")), "song.mp3");
+  fs.copyFileSync(
+    Path.join(
+      process.cwd(),
+      "sample data",
+      "Edolo sample",
+      "Sessions",
+      "ETR009",
+      "ETR009_Careful.mp3",
+    ),
+    mediaPath,
+  );
+  await lameta.mockShowOpenDialog([mediaPath]);
+  await page.getByRole("button", { name: "Add Files" }).click();
+  const mediaRow = page.locator(".fileList .rt-tr", { hasText: "song.mp3" }).first();
+  await expect(mediaRow).toBeVisible({ timeout: 10000 });
+  await mediaRow.click();
+}
+
 async function openExportDialog(lameta: LametaE2ERunner, page: Page) {
   await lameta.clickMenu("File", "Export Project...");
   await expect(page.getByText("Export Project").first()).toBeVisible();
@@ -180,22 +219,152 @@ test.describe("Problems in a brand-new ELAR project", () => {
     await expect(highlighted).toHaveAttribute("data-field-key", "accessDescription");
   });
 
+  test("a click on a media file's contributor who has no person goes to that file's Contributors tab", async () => {
+    await newSession(project, page, "NAV-CONTRIBUTOR");
+    await addSong(lameta, page);
+    const contributorsTab = page.getByRole("tab", { name: /Contributors/i });
+    await contributorsTab.click();
+    await page.locator(".contributors .PersonChooser").last().click();
+    await page.keyboard.type("Nobody Known");
+    await page.keyboard.press("Enter");
+
+    await openSidebar(page);
+    const noPerson = entries(page, "contributorWithoutPerson").filter({ hasText: "Nobody Known" });
+    await expect(noPerson).toHaveCount(1, { timeout: 15000 });
+
+    // from the session's own file, whose contributors do not include Nobody Known,
+    // a click goes to the media file's Contributors tab
+    await page.locator(".fileList .rt-tr", { hasText: ".session" }).first().click();
+    await page.getByRole("tab", { name: /Notes/i }).click();
+    await noPerson.click();
+    await expect(contributorsTab).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".contributors")).toContainText("Nobody Known");
+    await expect(page.locator(".navigation-highlight")).toHaveAttribute(
+      "data-field-key",
+      "contributions",
+    );
+  });
+
+  test("from the People tab, a click on a session's problem goes to its field on the Session tab", async () => {
+    await newSession(project, page, "NAV-SESSION");
+    await openSidebar(page);
+    const descriptionRequired = groupOf(page, "session:NAV-SESSION").locator(
+      entries(page, "required", "description"),
+    );
+    await expect(descriptionRequired).toBeVisible({ timeout: 15000 });
+
+    await project.goToPeople();
+    await descriptionRequired.click();
+    await expect(page.getByTestId("sessions-tab")).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tab", { name: /^Session$/ })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    const highlighted = page.locator(".navigation-highlight");
+    await expect(highlighted).toHaveAttribute("data-field-key", "description");
+    await expect(editorOf(page, "id")).toHaveText("NAV-SESSION");
+  });
+
+  test("a media file with access S and no explanation is a problem that a click goes to, on the file's Properties tab", async () => {
+    await newSession(project, page, "NAV-MEDIA");
+    await addSong(lameta, page);
+    const propertiesTab = page.getByRole("tab", { name: /Properties/i });
+    await propertiesTab.click();
+    await page.click(
+      '.document-access-section [data-testid="access-chooser-field"] .field-value-border',
+    );
+    await page.keyboard.type("S:");
+    await page.keyboard.press("Enter");
+
+    await openSidebar(page);
+    const explanationRequired = groupOf(page, "session:NAV-MEDIA")
+      .locator(entries(page, "requiredWhen", "accessDescription"))
+      .filter({ hasText: "song.mp3" });
+    await expect(explanationRequired).toBeVisible({ timeout: 15000 });
+
+    // from the session's own file, a click comes back to the media file
+    await page.locator(".fileList .rt-tr", { hasText: ".session" }).first().click();
+    await explanationRequired.click();
+    await expect(propertiesTab).toHaveAttribute("aria-selected", "true");
+    const highlighted = page.locator(".navigation-highlight");
+    await expect(highlighted).toHaveAttribute("data-field-key", "accessDescription");
+    await expect(
+      highlighted.locator("xpath=ancestor::*[contains(@class,'document-access-section')]"),
+    ).toHaveCount(1);
+  });
+
+  test("from the Sessions tab, a click on a person's problems goes to the person's field and to their languages", async () => {
+    await project.goToPeople();
+    await project.addPerson("Nav Person");
+    await openSidebar(page);
+    const person = groupOf(page, "person:Nav Person");
+    const birthYearRequired = person.locator(entries(page, "required", "birthYear"));
+    const languagesRequired = person.locator(entries(page, "minItems", "languages"));
+    await expect(birthYearRequired).toBeVisible({ timeout: 15000 });
+    await expect(languagesRequired).toBeVisible();
+    const highlighted = page.locator(".navigation-highlight");
+
+    await project.goToSessions();
+    await birthYearRequired.click();
+    await expect(page.getByTestId("people-tab")).toHaveAttribute("aria-selected", "true");
+    await expect(highlighted).toHaveAttribute("data-field-key", "birthYear");
+
+    await project.goToProject();
+    await languagesRequired.click();
+    await expect(page.getByTestId("people-tab")).toHaveAttribute("aria-selected", "true");
+    await expect(highlighted).toHaveAttribute("data-field-key", "languages");
+  });
+
+  // revealField finds a field by data-field-key, or by the text box that TextFieldEdit
+  // marks; an editor with neither cannot be highlighted, and nothing else says so
+  test("every problem in the sidebar that names a field goes to that field when clicked", async () => {
+    // a session and a person, so that their fields have problems too
+    await newSession(project, page, "NAV-EVERY");
+    await project.goToPeople();
+    await project.addPerson("Every Person");
+    await openSidebar(page);
+    const withField = page.locator("button[data-testid='problem-entry'][data-field-key]");
+    await expect(withField.first()).toBeVisible({ timeout: 15000 });
+    const highlighted = page.locator(".navigation-highlight");
+    const count = await withField.count();
+    const notFound: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const entry = withField.nth(i);
+      const fieldKey = (await entry.getAttribute("data-field-key"))!;
+      const where = await entry.evaluate(
+        (e) => e.closest("[data-testid='problem-group']")?.getAttribute("data-folder-key") ?? "",
+      );
+      await entry.click();
+      try {
+        await expect(highlighted).toHaveAttribute("data-field-key", fieldKey, { timeout: 3000 });
+        // the field of this session or person, not of the one that was selected before
+        if (!where.startsWith("project:")) {
+          await expect(
+            page.locator("[data-testid='problem-group'][data-current='true']"),
+          ).toHaveAttribute("data-folder-key", where, { timeout: 3000 });
+        }
+      } catch {
+        notFound.push(`${where} ${fieldKey}`);
+      }
+    }
+    expect(notFound).toEqual([]);
+  });
+
   test("a new session's problems are listed, and the other folders are dimmed", async () => {
     await openSidebar(page);
-    await project.goToSessions();
-    await project.addSession();
-    const sessionGroup = page.locator("[data-testid='problem-group'][data-folder-key^='session:']");
-    await expect(sessionGroup.first()).toBeVisible({ timeout: 15000 });
-    await expect(sessionGroup.first().getByTestId("problem-entry").first()).toBeVisible();
+    await newSession(project, page, "NEW-SESSION");
+    const sessionGroup = groupOf(page, "session:NEW-SESSION");
+    await expect(sessionGroup).toBeVisible({ timeout: 15000 });
+    await expect(sessionGroup.getByTestId("problem-entry").first()).toBeVisible();
     // no "Looks good" for a session that has problems
-    await expect(sessionGroup.first().getByTestId("problems-looks-good")).toHaveCount(0);
+    await expect(sessionGroup.getByTestId("problems-looks-good")).toHaveCount(0);
 
     // with the mouse away from the sidebar, the project's section is dimmed
     await page.mouse.move(5, 300);
     const projectGroup = page.locator("[data-testid='problem-group'][data-folder-key='project:']");
     const opacity = (l: Locator) => l.evaluate((e) => Number(getComputedStyle(e).opacity));
     await expect.poll(() => opacity(projectGroup)).toBeLessThan(1);
-    await expect.poll(() => opacity(sessionGroup.first())).toBe(1);
+    await expect.poll(() => opacity(sessionGroup)).toBe(1);
     // with the mouse over the list, nothing is dimmed
     await projectGroup.hover();
     await expect.poll(() => opacity(projectGroup)).toBe(1);
@@ -203,6 +372,7 @@ test.describe("Problems in a brand-new ELAR project", () => {
 
   test("Tab goes down the left half of the session form, then the right", async () => {
     await project.goToSessions();
+    await page.getByRole("tab", { name: /^Session$/ }).click();
     const focusedField = () =>
       page.evaluate(() => {
         const keys = ["id", "date", "topic", "keyword", "title"];
