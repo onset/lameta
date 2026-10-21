@@ -40,6 +40,10 @@ describe("SpreadsheetToMatrix", () => {
     );
     personSmokeTest(matrix);
     const customColumn = matrix.columnInfos.find((info) => info.incomingLabel.startsWith("custom"));
+    // The label stays as the spreadsheet has it; makeCustomField() in MatrixImporter sanitizes it.
+    expect(customColumn?.incomingLabel).toBe("custom column with spaces");
+    expect(customColumn?.lametaProperty).toBe("custom");
+    expect(customColumn?.mappingStatus).toBe("Custom");
   });
 
   it("Can read in session xslx", () => {
