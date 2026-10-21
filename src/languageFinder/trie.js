@@ -33,13 +33,7 @@ Trie.prototype.insert = function (word) {
  * @param{object}   results - object to put the results into (key is word, value is {node, dist})
  * @param{number}   maxDist - will bail on tree paths whose Levenshtein distance is greater than maxDist
  */
-Trie.prototype._searchRecursive = function (
-  letter,
-  word,
-  previousRow,
-  results,
-  maxDist
-) {
+Trie.prototype._searchRecursive = function (letter, word, previousRow, results, maxDist) {
   var lastColumn = word.length;
   var currentRow = [previousRow[0] + 1];
 
@@ -47,9 +41,7 @@ Trie.prototype._searchRecursive = function (
     var insertDist = currentRow[column - 1] + 1;
     var deleteDist = previousRow[column] + 1;
     var replaceDist =
-      word.charAt(column - 1) === letter
-        ? previousRow[column - 1]
-        : previousRow[column - 1] + 1;
+      word.charAt(column - 1) === letter ? previousRow[column - 1] : previousRow[column - 1] + 1;
 
     currentRow[column] = Math.min(insertDist, deleteDist, replaceDist);
   }
@@ -61,13 +53,7 @@ Trie.prototype._searchRecursive = function (
   if (Math.min.apply(undefined, currentRow) <= maxDist) {
     for (var letter in this) {
       if (this.hasOwnProperty(letter) && letter.length === 1) {
-        this[letter]._searchRecursive(
-          letter,
-          word,
-          currentRow,
-          results,
-          maxDist
-        );
+        this[letter]._searchRecursive(letter, word, currentRow, results, maxDist);
       }
     }
   }

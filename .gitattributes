@@ -1,3 +1,9 @@
 
 # Use bd merge for beads JSONL files
 .beads/issues.jsonl merge=beads
+
+# oxfmt writes LF; keep git from converting it to CRLF in the working tree
+* text=auto eol=lf
+# sample files that are stored with CRLF line endings, as real projects have them
+*.eaf -text
+sample[[:space:]]data/*.csv -text
