@@ -785,7 +785,7 @@ function isUnknownValue(value: any): boolean {
   }
   if (Array.isArray(value)) {
     // If all items in array are unknown, treat the whole value as unknown
-    return value.length === 0 || value.every((item) => isUnknownValue(item));
+    return value.every((item) => isUnknownValue(item));
   }
   return false;
 }

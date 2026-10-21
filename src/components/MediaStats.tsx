@@ -170,7 +170,6 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
           resolve({ error: err.message });
         }
       });
-      break;
 
     case "Audio":
     case "Video":
@@ -196,7 +195,6 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
           reject(err);
         }
       });
-      break;
     default:
       return new Promise((resolve, reject) => {
         reject();

@@ -302,7 +302,7 @@ export const ExportDialog: React.FunctionComponent<{
               "ro-crate-metadata.json",
             );
             setOutputPath(outputPath);
-            saveFilesAsync("");
+            void saveFilesAsync(""); // it catches its own errors and shows them in the dialog
           } catch (err) {
             NotifyException(err, `${t`There was a problem exporting:`} ${err.message}`);
             closeDialog();
@@ -350,13 +350,17 @@ export const ExportDialog: React.FunctionComponent<{
               try {
                 setOutputPath(result.filePath);
                 // we'll return from this while the saving happens. When it is done, our mode will change from `exporting` to `finished`.
-                saveFilesAsync(result.filePath!);
+                void saveFilesAsync(result.filePath!); // it catches its own errors and shows them in the dialog
               } catch (err) {
                 NotifyException(err, `${t`There was a problem exporting:`} ${err.message}`);
                 closeDialog();
               }
             }, 100);
           }
+        })
+        .catch((err) => {
+          NotifyException(err as Error);
+          closeDialog();
         });
     } else {
       CopyManager.abandonCopying(true); // cancel can be clicked while doing imdi+files.
@@ -560,12 +564,14 @@ export const ExportDialog: React.FunctionComponent<{
                   .replace(/&amp;/g, "&");
 
               const copyEntriesToClipboard = () => {
-                navigator.clipboard.writeText(
-                  [
-                    ...exportedProblems.map(problemAsText),
-                    ...allEntries.map(decodeForClipboard),
-                  ].join("\n"),
-                );
+                navigator.clipboard
+                  .writeText(
+                    [
+                      ...exportedProblems.map(problemAsText),
+                      ...allEntries.map(decodeForClipboard),
+                    ].join("\n"),
+                  )
+                  .catch((err) => NotifyException(err as Error));
               };
 
               // Find index of first error for scrolling
@@ -776,12 +782,14 @@ export const ExportDialog: React.FunctionComponent<{
                   .replace(/&amp;/g, "&");
 
               const copyWarningsToClipboard = () => {
-                navigator.clipboard.writeText(
-                  [
-                    ...exportedProblems.map(problemAsText),
-                    ...allWarnings.map(decodeForClipboard),
-                  ].join("\n"),
-                );
+                navigator.clipboard
+                  .writeText(
+                    [
+                      ...exportedProblems.map(problemAsText),
+                      ...allWarnings.map(decodeForClipboard),
+                    ].join("\n"),
+                  )
+                  .catch((err) => NotifyException(err as Error));
               };
 
               return (
@@ -953,7 +961,9 @@ export const ExportDialog: React.FunctionComponent<{
             onClick={() => {
               cancelRequestedRef.current = true;
               // Also cancel any active file copy operations in the main process
-              mainProcessApi.cancelImdiExportCopyOperations();
+              mainProcessApi
+                .cancelImdiExportCopyOperations()
+                .catch((err) => NotifyException(err as Error));
               setExportProgress((prev) => ({
                 ...prev,
                 message: t`Cancelling...`,

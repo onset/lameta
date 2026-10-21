@@ -188,7 +188,7 @@ describe("prefetchCloudMetadata (end-to-end over a temp project)", () => {
     // 1 .sprj + 2 .session + 2 .person = 5
     expect(n).toBe(5);
     expect(materialize).toHaveBeenCalledTimes(5);
-    const requested = materialize.mock.calls.map((c) => c[0]).sort();
+    const requested = materialize.mock.calls.map((c) => c[0] as string).sort();
     expect(requested).toEqual(
       [
         Path.join(projectDir, "MyProject.sprj"),

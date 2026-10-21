@@ -208,7 +208,9 @@ export function addImportedFolderToProject(project: Project, folder: Folder, id:
 
   if (previousFolderWithThisId) {
     // enhance: let's keep the contents of the folder, and just replace or rewrite the metadata file
-    project.deleteFolder(previousFolderWithThisId, true /* immediately, no trash */);
+    // With immediateWithoutTrash, deleteFolder removes the folder before its first await, so the
+    // import below never sees it. deleteFolder reports its own failures and never rejects.
+    void project.deleteFolder(previousFolderWithThisId, true /* immediately, no trash */);
     //console.log(previousFolderWithThisId?.displayName);
   }
   // change the file name from "NewSession" or whatever to the actual id

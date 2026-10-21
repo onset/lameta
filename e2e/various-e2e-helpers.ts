@@ -34,7 +34,7 @@ export class E2eProject {
       await nameInput.fill(projectName);
       await this.page.waitForTimeout(50);
     }
-    expect(ok).toBeEnabled();
+    await expect(ok).toBeEnabled();
     this.projectDirectory = Path.join(process.env.E2ERoot!, "lameta", projectName);
     await ok.click();
     const w = await this.lameta.electronApp.firstWindow();

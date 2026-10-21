@@ -26,7 +26,6 @@ beforeAll(() => {
 
   // during a test, this will create a fake store of settings
   setMediaFolderOrEmptyForThisProjectAndMachine(externalMediaDirectory);
-  externalMediaDirectory;
   mp3PathInMediaDirectory = Path.join(externalMediaDirectory, "test.mp3");
   fs.writeFileSync(mp3PathInMediaDirectory, "pretend contents");
 

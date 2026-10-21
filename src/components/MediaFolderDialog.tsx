@@ -12,6 +12,7 @@ import {
   setMediaFolderOrEmptyForThisProjectAndMachine,
 } from "../model/Project/MediaFolderAccess";
 import { lameta_dark_green } from "../containers/theme";
+import { NotifyException } from "./Notify";
 import {
   DialogBottomButtons,
   DialogButton,
@@ -103,11 +104,14 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = () => {
                   defaultPath: require("os").homedir(),
                 };
 
-                ipcRenderer.invoke("showOpenDialog", options).then((result) => {
-                  if (result && result.filePaths && result.filePaths.length > 0) {
-                    setPath(result.filePaths[0]);
-                  }
-                });
+                ipcRenderer
+                  .invoke("showOpenDialog", options)
+                  .then((result) => {
+                    if (result && result.filePaths && result.filePaths.length > 0) {
+                      setPath(result.filePaths[0]);
+                    }
+                  })
+                  .catch((err) => NotifyException(err as Error));
               }}
             >
               <Trans>Change...</Trans>

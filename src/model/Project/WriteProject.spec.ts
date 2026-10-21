@@ -68,7 +68,7 @@ describe("Project Write", () => {
 function AttemptRoundTripOfOneField(key: string, xmlTag: string, content: string) {
   const f = GetProjectFileWithOneField(xmlTag, content);
   f.save(true);
-  let output = fs.readFileSync(f.metadataFilePath);
+  let output = fs.readFileSync(f.metadataFilePath, "utf8");
   let expected = `<${xmlTag}>${content}</${xmlTag}>`;
   if (output.indexOf(expected) < 0) {
     throw new Error(`Expected output to contain \r\n${expected}\r\n but got \r\n${output}`);
@@ -80,7 +80,7 @@ function AttemptRoundTripOfOneField(key: string, xmlTag: string, content: string
   f.setTextProperty(key, newValue);
 
   f.save(true);
-  output = fs.readFileSync(f.metadataFilePath);
+  output = fs.readFileSync(f.metadataFilePath, "utf8");
   expected = `<${xmlTag}>${newValue}</${xmlTag}>`;
   if (output.indexOf(expected) < 0) {
     throw new Error(`Expected output to contain \r\n${expected}\r\n but got \r\n${output}`);

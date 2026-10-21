@@ -367,10 +367,13 @@ export function computeMergedCatalog(catalogOfConfiguration: FieldDefinitionCust
             // this archive configuration has an entry for this definition
             // merge the properties of the choice into the field definition, overriding the defaults
 
-            const newDefinition = {
-              ...factoryDefinition,
-              ...configurationEntry,
-            };
+            // FieldDefinition holds only data (no methods or getters), so a plain-object
+            // copy is a complete FieldDefinition.
+            const newDefinition: FieldDefinition = Object.assign(
+              {},
+              factoryDefinition,
+              configurationEntry,
+            );
             customizations.push({
               area,
               factoryDefinition,

@@ -96,7 +96,7 @@ describe("fakeCloudProvider", () => {
     expect(getFakeCloudProviderIfActive()!.getStatus(cloudOnlyPath)).toBe("cloudOnly");
   });
 
-  it("setPinned(true) moves a cloud-only file to hydrating, then to local after hydrateDelayMs", () => {
+  it("setPinned(true) moves a cloud-only file to hydrating, then to local after hydrateDelayMs", async () => {
     vi.useFakeTimers();
     const cloudOnlyPath = "/fake/root/session/audio.mp3";
     process.env.E2E_FAKE_CLOUD_PROVIDER = writeManifest({
@@ -106,7 +106,7 @@ describe("fakeCloudProvider", () => {
     });
 
     const provider = getFakeCloudProviderIfActive()!;
-    provider.setPinned(cloudOnlyPath, true);
+    await provider.setPinned(cloudOnlyPath, true);
     expect(provider.getStatus(cloudOnlyPath)).toBe("hydrating");
 
     vi.advanceTimersByTime(499);
@@ -116,7 +116,7 @@ describe("fakeCloudProvider", () => {
     expect(provider.getStatus(cloudOnlyPath)).toBe("local");
   });
 
-  it("setPinned(false) while hydrating cancels back to cloudOnly", () => {
+  it("setPinned(false) while hydrating cancels back to cloudOnly", async () => {
     vi.useFakeTimers();
     const cloudOnlyPath = "/fake/root/session/audio.mp3";
     process.env.E2E_FAKE_CLOUD_PROVIDER = writeManifest({
@@ -126,10 +126,10 @@ describe("fakeCloudProvider", () => {
     });
 
     const provider = getFakeCloudProviderIfActive()!;
-    provider.setPinned(cloudOnlyPath, true);
+    await provider.setPinned(cloudOnlyPath, true);
     expect(provider.getStatus(cloudOnlyPath)).toBe("hydrating");
 
-    provider.setPinned(cloudOnlyPath, false);
+    await provider.setPinned(cloudOnlyPath, false);
     expect(provider.getStatus(cloudOnlyPath)).toBe("cloudOnly");
 
     // The cancelled timer must not still fire and flip it to local later.
@@ -147,7 +147,7 @@ describe("fakeCloudProvider", () => {
     });
 
     const provider = getFakeCloudProviderIfActive()!;
-    provider.setPinned(cloudOnlyPath, true);
+    await provider.setPinned(cloudOnlyPath, true);
     vi.advanceTimersByTime(500);
     expect(provider.getStatus(cloudOnlyPath)).toBe("local");
 

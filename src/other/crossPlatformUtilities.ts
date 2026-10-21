@@ -4,6 +4,7 @@ import * as fs from "fs-extra";
 import { PatientFS } from "./patientFile";
 import { t } from "@lingui/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
+import { NotifyException } from "../components/Notify";
 
 // The platform-appropriate label for the "reveal this file in the OS file
 // manager" action. Shared by the file-list context menu and the cloud status
@@ -20,7 +21,7 @@ export function revealInFolder(path: string) {
   }
 
   // Call main process to show item in folder (avoids macOS issues with renderer process)
-  mainProcessApi.revealInFolder(path);
+  mainProcessApi.revealInFolder(path).catch((err) => NotifyException(err as Error));
 }
 
 export async function asyncTrash(path: string) {

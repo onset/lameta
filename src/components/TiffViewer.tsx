@@ -94,7 +94,7 @@ export const TiffViewer: React.FC<ITiffViewerProps> = ({ path, className }) => {
       }
     };
 
-    loadTiff();
+    void loadTiff(); // it catches all of its own errors
 
     return () => {
       isMounted = false;

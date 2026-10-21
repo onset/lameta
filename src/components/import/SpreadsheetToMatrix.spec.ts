@@ -3,7 +3,6 @@ import * as temp from "temp";
 import { makeMappedMatrix, makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
 import { availableSpreadsheetMappings } from "./MatrixImporter";
 import { MappedMatrix, CellImportStatus, RowImportStatus } from "./MappedMatrix";
-import * as Path from "path";
 import { describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 
 let project: Project;
@@ -22,7 +21,6 @@ describe("SpreadsheetToMatrix", () => {
   beforeEach(() => {
     project.sessions.items.splice(0, 1000);
     project.persons.items.splice(0, 1000);
-    Path.resolve;
   });
   it("Can read in people xlsx with no people", () => {
     const matrix = makeMappedMatrixFromSpreadsheet(
@@ -91,7 +89,6 @@ describe("SpreadsheetToMatrix", () => {
     ];
     const m = makeMappedMatrix(inputRows, lingMetaX_ImportMap, project, "session");
     expect(m.rows.length).toBe(1);
-    m.rows[0].cells; // ?
 
     // Joe is a speaker in role 1
     expect(m.rows[0].cells[0].column.incomingLabel).toBe("participant_1_full_name");
@@ -172,7 +169,6 @@ it("Can map in filename and title from some data using LingMetaXMap column label
   ];
   const m = makeMappedMatrix(inputRows, lingMetaX_ImportMap, project, "session");
   expect(m.rows.length).toBe(1);
-  m.rows[0].cells; // ?
   expect(m.rows[0].cells[0].column.lametaProperty).toBe("id");
   expect(m.rows[0].cells[1].column.lametaProperty).toBe("title");
   expect(m.rows[0].cells[0].value).toBe("forest recording");

@@ -36,7 +36,7 @@ Yesterday,This one has a bad date,foobar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
     );
     await lameta.mockShowOpenDialog([csvPath]);
     await page.getByRole("button", { name: "Choose File" }).click();
-    const importButton = await page.getByTestId("import");
+    const importButton = page.getByTestId("import");
     await expect(importButton).toBeEnabled();
     await importButton.click();
 

@@ -9,19 +9,16 @@ import {
   updateTranslationsFromScan,
   getGenreEnglishLabel,
   getRoleEnglishLabel,
-  ScanResult
+  ScanResult,
 } from "../../model/Project/VocabularyScanner";
 import { getExportStringContext } from "../../export/ExportStringDefinitions";
 import { FieldVocabularyTranslations } from "../../model/Project/VocabularyTranslations";
-import {
-  translateGenreToLanguage,
-  translateRoleToLanguage
-} from "../../other/localization";
+import { translateGenreToLanguage, translateRoleToLanguage } from "../../other/localization";
 import {
   lameta_orange,
   lameta_dark_blue,
   textPrimary,
-  lameta_light_orange_background
+  lameta_light_orange_background,
 } from "../../containers/theme";
 import LinearProgress from "@mui/material/LinearProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -31,7 +28,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
 import {
   getFieldDefinition,
-  getCommonFieldDefinition
+  getCommonFieldDefinition,
 } from "../../model/field/ConfiguredFieldDefinitions";
 import { NotifyError } from "../Notify";
 
@@ -53,10 +50,7 @@ interface VocabularyTranslationsTabProps {
 
 interface TranslationRowProps {
   value: string;
-  source:
-    | "custom"
-    | "factory-value-used-in-sessions"
-    | "factory-value-used-by-export";
+  source: "custom" | "factory-value-used-in-sessions" | "factory-value-used-by-export";
   translations: Record<string, string>;
   languageCodes: string[];
   englishLabel: string;
@@ -80,7 +74,7 @@ const TranslationInput: React.FC<TranslationInputProps> = ({
   initialValue,
   placeholder,
   disabled,
-  onChange
+  onChange,
 }) => {
   const [value, setValue] = useState(initialValue);
 
@@ -109,9 +103,11 @@ const TranslationInput: React.FC<TranslationInputProps> = ({
       css={css`
         width: 100%;
         padding: 6px;
-        border: ${needsTranslation
-          ? `2px solid ${lameta_orange}`
-          : `1px solid ${disabled ? "transparent" : "#ccc"}`};
+        border: ${
+          needsTranslation
+            ? `2px solid ${lameta_orange}`
+            : `1px solid ${disabled ? "transparent" : "#ccc"}`
+        };
         border-radius: 4px;
         background: transparent;
         color: inherit;
@@ -133,7 +129,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
   onTranslationChange,
   getBuiltInTranslation,
   context,
-  hideExportIcon
+  hideExportIcon,
 }) => {
   // Custom values (source === "custom") get an ice cream icon
   const isCustomValue = source === "custom";
@@ -142,9 +138,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
 
   // Filter out English from the language codes for the translation columns
   // since English is already shown in the first column
-  const nonEnglishCodes = languageCodes.filter(
-    (code) => code !== "en" && code !== "eng"
-  );
+  const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
 
   return (
     <tr
@@ -243,11 +237,7 @@ interface FieldSectionProps {
   fieldData: FieldVocabularyTranslations | undefined;
   languageCodes: string[];
   languageNames: Record<string, string>;
-  onTranslationChange: (
-    value: string,
-    languageCode: string,
-    translation: string
-  ) => void;
+  onTranslationChange: (value: string, languageCode: string, translation: string) => void;
   getBuiltInTranslation: (value: string, lang: string) => string | undefined;
   getEnglishLabel: (value: string) => string;
   /** Optional function to get context/help text for a value */
@@ -265,16 +255,14 @@ const FieldSection: React.FC<FieldSectionProps> = ({
   getBuiltInTranslation,
   getEnglishLabel,
   getContext,
-  hideExportIcon
+  hideExportIcon,
 }) => {
-  const nonEnglishCodes = languageCodes.filter(
-    (code) => code !== "en" && code !== "eng"
-  );
+  const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
 
   // Helper to check if an entry has missing translations
   const hasMissingTranslations = (
     value: string,
-    entry: { translations: Record<string, string> }
+    entry: { translations: Record<string, string> },
   ) => {
     return nonEnglishCodes.some((code) => {
       const projectTranslation = entry.translations[code];
@@ -413,15 +401,14 @@ const FieldSection: React.FC<FieldSectionProps> = ({
   );
 };
 
-export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps> =
-  observer(({ project }) => {
+export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps> = observer(
+  ({ project }) => {
     const [isScanning, setIsScanning] = useState(false);
     const [scanProgress, setScanProgress] = useState(0);
     const [scanMessage, setScanMessage] = useState("");
     const [scanError, setScanError] = useState<string | null>(null);
     const [hasScanned, setHasScanned] = useState(false);
-    const [lastScanResult, setLastScanResult] =
-      useState<ScanResult | null>(null);
+    const [lastScanResult, setLastScanResult] = useState<ScanResult | null>(null);
 
     // Check if genre and role fields are multilingual in the current archive config.
     // Note: We explicitly check genre and role because they are the only vocabulary fields
@@ -444,7 +431,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
     // Auto-scan on first visit
     useEffect(() => {
       if (!hasScanned && languageCodes.length > 0) {
-        performScan();
+        void performScan(); // it reports its own failures
       }
     }, [hasScanned, languageCodes.length]);
 
@@ -464,7 +451,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
           (progress, message) => {
             setScanProgress(progress);
             setScanMessage(message);
-          }
+          },
         );
 
         updateTranslationsFromScan(translations, result, languageCodes);
@@ -476,9 +463,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         hadError = true;
         console.error("Error scanning project:", error);
         const errorMessage =
-          error instanceof Error
-            ? error.message
-            : t`Unknown error while scanning vocabulary`;
+          error instanceof Error ? error.message : t`Unknown error while scanning vocabulary`;
         setScanError(errorMessage);
         setScanProgress(0);
         setScanMessage(t`Scan failed`);
@@ -497,7 +482,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         translations.updateGenreTranslation(value, languageCode, translation);
         translations.save();
       },
-      [translations]
+      [translations],
     );
 
     const handleRoleTranslationChange = useCallback(
@@ -505,35 +490,29 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         translations.updateRoleTranslation(value, languageCode, translation);
         translations.save();
       },
-      [translations]
+      [translations],
     );
 
     const handleExportStringTranslationChange = useCallback(
       (value: string, languageCode: string, translation: string) => {
-        translations.updateExportStringTranslation(
-          value,
-          languageCode,
-          translation
-        );
+        translations.updateExportStringTranslation(value, languageCode, translation);
         translations.save();
       },
-      [translations]
+      [translations],
     );
 
     const genreMissingCount = isGenreMultilingual
       ? translations.getGenreMissingCount(languageCodes, (value, lang) =>
-          translateGenreToLanguage(value, lang)
+          translateGenreToLanguage(value, lang),
         )
       : 0;
     const roleMissingCount = isRoleMultilingual
       ? translations.getRoleMissingCount(languageCodes, (value, lang) =>
-          translateRoleToLanguage(value, lang)
+          translateRoleToLanguage(value, lang),
         )
       : 0;
-    const exportStringMissingCount =
-      translations.getExportStringMissingCount(languageCodes);
-    const totalMissing =
-      genreMissingCount + roleMissingCount + exportStringMissingCount;
+    const exportStringMissingCount = translations.getExportStringMissingCount(languageCodes);
+    const totalMissing = genreMissingCount + roleMissingCount + exportStringMissingCount;
 
     if (languageCodes.length < 2) {
       return (
@@ -553,8 +532,8 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             `}
           >
             <Trans>
-              You need at least two metadata languages defined to use vocabulary
-              translations. Please add metadata languages in the Languages tab.
+              You need at least two metadata languages defined to use vocabulary translations.
+              Please add metadata languages in the Languages tab.
             </Trans>
           </p>
         </div>
@@ -641,9 +620,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             margin: 0 0 16px 0;
           `}
         >
-          <Trans>
-            The columns here are based on your project's metadata languages.
-          </Trans>
+          <Trans>The columns here are based on your project's metadata languages.</Trans>
         </p>
 
         {isGenreMultilingual && (
@@ -652,15 +629,10 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             fieldData={translations.genres}
             languageCodes={languageCodes}
             languageNames={Object.fromEntries(
-              metadataLanguages.map((slot) => [
-                slot.tag,
-                slot.name || slot.tag.toUpperCase()
-              ])
+              metadataLanguages.map((slot) => [slot.tag, slot.name || slot.tag.toUpperCase()]),
             )}
             onTranslationChange={handleGenreTranslationChange}
-            getBuiltInTranslation={(value, lang) =>
-              translateGenreToLanguage(value, lang)
-            }
+            getBuiltInTranslation={(value, lang) => translateGenreToLanguage(value, lang)}
             getEnglishLabel={getGenreEnglishLabel}
           />
         )}
@@ -671,15 +643,10 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             fieldData={translations.roles}
             languageCodes={languageCodes}
             languageNames={Object.fromEntries(
-              metadataLanguages.map((slot) => [
-                slot.tag,
-                slot.name || slot.tag.toUpperCase()
-              ])
+              metadataLanguages.map((slot) => [slot.tag, slot.name || slot.tag.toUpperCase()]),
             )}
             onTranslationChange={handleRoleTranslationChange}
-            getBuiltInTranslation={(value, lang) =>
-              translateRoleToLanguage(value, lang)
-            }
+            getBuiltInTranslation={(value, lang) => translateRoleToLanguage(value, lang)}
             getEnglishLabel={getRoleEnglishLabel}
           />
         )}
@@ -691,10 +658,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             fieldData={translations.exportStrings}
             languageCodes={languageCodes}
             languageNames={Object.fromEntries(
-              metadataLanguages.map((slot) => [
-                slot.tag,
-                slot.name || slot.tag.toUpperCase()
-              ])
+              metadataLanguages.map((slot) => [slot.tag, slot.name || slot.tag.toUpperCase()]),
             )}
             onTranslationChange={handleExportStringTranslationChange}
             getBuiltInTranslation={() => undefined}
@@ -705,4 +669,5 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         )}
       </div>
     );
-  });
+  },
+);

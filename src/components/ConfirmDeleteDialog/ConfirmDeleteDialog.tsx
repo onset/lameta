@@ -14,10 +14,11 @@ import {
   LametaDialog,
 } from "../LametaDialog";
 import { Button } from "@mui/material";
+import { NotifyException } from "../Notify";
 
 let staticShowDeleteDialog: (
   descriptionOfWhatWillBeDeleted: string,
-  asyncDeletionFunction: () => void,
+  asyncDeletionFunction: () => void | Promise<void>,
 ) => void = () => {};
 export { staticShowDeleteDialog as ShowDeleteDialog };
 
@@ -28,9 +29,11 @@ enum Mode {
 }
 export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
   const [mode, setMode] = React.useState<Mode>(Mode.closed);
-  const [deletionAction, setDeletionAction] = React.useState<() => void>(() => () => {});
+  const [deletionAction, setDeletionAction] = React.useState<() => void | Promise<void>>(
+    () => () => {},
+  );
   const [descriptionOfWhatWillBeDeleted, setDescriptionOfWhatWillBeDeleted] = React.useState("__");
-  staticShowDeleteDialog = (description: string, deleteAction: () => void) => {
+  staticShowDeleteDialog = (description: string, deleteAction: () => void | Promise<void>) => {
     setDescriptionOfWhatWillBeDeleted(description);
     setMode(Mode.confirming);
     setDeletionAction(() => deleteAction);
@@ -106,13 +109,14 @@ export const ConfirmDeleteDialog: React.FunctionComponent<{}> = () => {
                 //const action = deletionAction; //review
                 setMode(Mode.deleting);
                 window.setTimeout(() => {
-                  try {
-                    runInAction(async () => {
-                      await deletionAction();
+                  runInAction(async () => {
+                    await deletionAction();
+                  })
+                    .catch((err) => NotifyException(err as Error))
+                    .finally(() => {
                       setDeletionAction(() => {});
                       setMode(Mode.closed);
                     });
-                  } catch {}
                 }, 100);
               }}
             >

@@ -48,7 +48,8 @@ describe.skipIf(!practiceDirectory)("ELAR rules.js on ELAR's practice IMDI", () 
           output.problems.length
         } problems in ${Date.now() - start} ms`,
       );
-      for (const [id, n] of [...counts].sort()) lines.push(`  ${id.padEnd(40)} ${n}`);
+      for (const [id, n] of [...counts].sort(([a], [b]) => a.localeCompare(b)))
+        lines.push(`  ${id.padEnd(40)} ${n}`);
     }
     await browser.close();
     console.log(lines.join("\n"));

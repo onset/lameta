@@ -858,7 +858,6 @@ export class Project extends Folder {
         // no, not yet this.sessions.selected.index = this.sessions.items.length - 1;
         analyticsEvent("Create", "Create Session From Import");
         return session;
-        break;
       }
       case "person": {
         const dir = this.getUniqueFolder(
@@ -1112,9 +1111,7 @@ export class Project extends Folder {
 
   public deleteCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex] as Session;
-    ShowDeleteDialog(`"${session.id}"`, () => {
-      this.deleteFolder(session);
-    });
+    ShowDeleteDialog(`"${session.id}"`, () => this.deleteFolder(session));
   }
   public deleteMarkedFolders(folderType: IFolderType) {
     const folders = this.getFolderArrayFromType(folderType);
@@ -1195,8 +1192,6 @@ export class Project extends Folder {
   }
 
   public async deleteFolder(folder: Folder, immediateWithoutTrash = false) {
-    const folderType = folder.folderType;
-    folderType;
     try {
       let didDelete = false;
       if (immediateWithoutTrash) {
@@ -1205,7 +1200,7 @@ export class Project extends Folder {
       }
 
       //console.log("deleting " + folder.displayName);
-      else didDelete = await (await asyncTrash(folder.directory)).succeeded;
+      else didDelete = (await asyncTrash(folder.directory)).succeeded;
       if (didDelete) {
         //console.log("Project did delete " + folder.directory);
         const folders = this.getFolderArrayFromType(folder.folderType);
@@ -1282,7 +1277,7 @@ export class Project extends Folder {
       //   this.persons.selected.index = countAfterWeRemoveThisOne > 0 ? 0 : -1;
       //   this.persons.items.splice(indexToDelete, 1);
       // }
-      this.deleteFolder(person);
+      return this.deleteFolder(person);
     });
   }
 

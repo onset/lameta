@@ -1,4 +1,5 @@
 import { shell } from "electron";
+import { NotifyException } from "../components/Notify";
 import {
   addWordToSpellCheckerDictionary,
   onContextMenu,
@@ -273,7 +274,9 @@ export default class LametaMenu {
             {
               label: t`Help translate`,
               click: () => {
-                shell.openPath("https://crowdin.com/project/saymorex"); // haven't been able to correct this URL yet
+                shell
+                  .openExternal("https://crowdin.com/project/saymorex") // haven't been able to correct this URL yet
+                  .catch((err) => NotifyException(err as Error));
               },
             },
           ],
@@ -423,7 +426,9 @@ export default class LametaMenu {
         {
           label: t`Report a problem`,
           click: () => {
-            shell.openExternal("https://github.com/onset/lameta/issues");
+            shell
+              .openExternal("https://github.com/onset/lameta/issues")
+              .catch((err) => NotifyException(err as Error));
           },
         },
         {

@@ -219,10 +219,12 @@ export abstract class Folder {
     assert.ok(paths.length > 0, "addFiles given an empty array of files");
     sentryBreadCrumb(`addFiles ${paths.length} files.`);
 
-    await runInAction(async () => {
-      await paths.forEach(async (p: string) => {
-        await this.copyInOneFileAsync(p);
-      });
+    runInAction(() => {
+      for (const p of paths) {
+        // Callers expect the new files to be listed (still copying) when this returns, not
+        // copied. copyInOneFileAsync notifies the user of each failure itself.
+        this.copyInOneFileAsync(p).catch((err) => console.error(`copyInFiles: ${String(err)}`));
+      }
     });
   }
   get type(): string {
@@ -321,7 +323,7 @@ export abstract class Folder {
         file.metadataFilePath !== file.pathInFolderToLinkFileOrLocalCopy
       ) {
         if (fs.existsSync(file.metadataFilePath)) {
-          if (!(await asyncTrash(file.metadataFilePath))) {
+          if (!(await asyncTrash(file.metadataFilePath)).succeeded) {
             NotifyError(
               t`lameta was not able to put this file in the trash` + ` (${file.metadataFilePath})`,
             );

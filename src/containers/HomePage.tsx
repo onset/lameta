@@ -25,7 +25,7 @@ import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import { MessageDialog, ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../other/errorHandling";
-import { NotifyError } from "../components/Notify";
+import { NotifyError, NotifyException } from "../components/Notify";
 import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
@@ -167,11 +167,12 @@ class HomePage extends React.Component<IProps, IState> {
         });
       },
       plan,
-    );
-
-    if (plan.useAsync) {
-      this.setState({ showLoadingDialog: false });
-    }
+    ).finally(() => {
+      // close the dialog even if the load failed, or it would block the app forever
+      if (plan.useAsync) {
+        this.setState({ showLoadingDialog: false });
+      }
+    });
     this.projectHolder.setProject(project);
   }
 
@@ -212,7 +213,9 @@ class HomePage extends React.Component<IProps, IState> {
 
     // Handle async loading of large projects with progress dialog
     if (this.pendingProjectDirectory) {
-      this.loadProjectWithProgress(this.pendingProjectDirectory);
+      this.loadProjectWithProgress(this.pendingProjectDirectory).catch((err) =>
+        NotifyException(err as Error),
+      );
       this.pendingProjectDirectory = null;
     }
 
@@ -379,7 +382,7 @@ class HomePage extends React.Component<IProps, IState> {
                   // friendly and having the same behavior in e2e and non-e2e is good.
 
                   //remote.getCurrentWindow().reload();
-                  this.softReload();
+                  this.softReload().catch((err) => NotifyException(err as Error));
                   //if (getTestEnvironment().E2E) this.softReload();
                   //else remote.getCurrentWindow().reload();
                 }}
@@ -474,22 +477,25 @@ class HomePage extends React.Component<IProps, IState> {
         },
       ],
     };
-    ipcRenderer.invoke("showOpenDialog", options).then((results) => {
-      sentryBreadCrumb("processing callback of open project dialog");
-      if (
-        results &&
-        results!.filePaths &&
-        results.filePaths!.length > 0 &&
-        results.filePaths![0].length > 0
-      ) {
-        const directory = fs.realpathSync(Path.dirname(results.filePaths[0]));
-        userSettings.PreviousProjectDirectory = directory;
+    ipcRenderer
+      .invoke("showOpenDialog", options)
+      .then(async (results) => {
+        sentryBreadCrumb("processing callback of open project dialog");
+        if (
+          results &&
+          results!.filePaths &&
+          results.filePaths!.length > 0 &&
+          results.filePaths![0].length > 0
+        ) {
+          const directory = fs.realpathSync(Path.dirname(results.filePaths[0]));
+          userSettings.PreviousProjectDirectory = directory;
 
-        // Always route through the async loader; it internally decides sync vs
-        // async and shows the progress dialog for large/cloud-evicted projects.
-        this.loadProjectWithProgress(directory);
-      }
-    });
+          // Always route through the async loader; it internally decides sync vs
+          // async and shows the progress dialog for large/cloud-evicted projects.
+          await this.loadProjectWithProgress(directory);
+        }
+      })
+      .catch((err) => NotifyException(err as Error));
   }
 }
 

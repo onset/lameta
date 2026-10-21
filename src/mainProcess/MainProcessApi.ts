@@ -40,7 +40,7 @@ export class MainProcessApi {
   // On macOS, calling shell.showItemInFolder from a renderer can delay Finder until app quits.
   // So we need to do it in the Main Process
   public async revealInFolder(path: string) {
-    await shell.showItemInFolder(path);
+    shell.showItemInFolder(path);
   }
 
   // ============================================================================

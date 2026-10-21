@@ -35,12 +35,9 @@ test.describe.skip("Localization", () => {
     await lameta.quit();
   });
 
-  test("labels are in Indonesian", async () => {
-    // At the moment the Indonesian translations are changing, as well as the UI,
-    // so I've decided to put this test on ice.
-
-    return;
-
+  // At the moment the Indonesian translations are changing, as well as the UI,
+  // so I've decided to put this test on ice.
+  test.skip("labels are in Indonesian", async () => {
     // menu
     await expectMenuWithLabel(lameta.electronApp, "Lihat");
 

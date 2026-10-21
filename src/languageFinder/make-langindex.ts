@@ -23,12 +23,16 @@ interface ILangTag {
 // delete the old langindex.json
 fs.removeSync("./src/languageFinder/langindex.json");
 const url = "https://github.com/silnrsi/langtags/raw/master/pub/langtags.json";
-fetch(url).then((response) => {
-  response.text().then((json) => {
+fetch(url)
+  .then((response) => response.text())
+  .then((json) => {
     const allEntries = JSON.parse(json);
     process(allEntries);
+  })
+  .catch((err) => {
+    console.error(err);
+    globalThis.process.exitCode = 1;
   });
-});
 
 function process(allEntries) {
   console.log(`Starting with ${allEntries.length} elements from langtags.json`);

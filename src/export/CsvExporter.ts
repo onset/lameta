@@ -76,7 +76,8 @@ export async function asyncMakeZipFile(
     } catch (e) {
       NotifyException(e, "There was an error making the zip file.");
     }
-    archive.finalize();
+    // archiver also reports a failure through the "error" event above, which notifies the user.
+    archive.finalize().catch((err) => console.error("makeGenericCsvZipFile finalize:", err));
   });
 }
 

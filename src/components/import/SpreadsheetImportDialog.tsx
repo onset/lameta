@@ -181,12 +181,15 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                   defaultPath: dir,
                 };
 
-                ipcRenderer.invoke("showOpenDialog", options).then((result) => {
-                  if (result && result.filePaths && result.filePaths.length > 0) {
-                    paths[folderType] = result.filePaths[0];
-                    setPaths(JSON.stringify(paths));
-                  }
-                });
+                ipcRenderer
+                  .invoke("showOpenDialog", options)
+                  .then((result) => {
+                    if (result && result.filePaths && result.filePaths.length > 0) {
+                      paths[folderType] = result.filePaths[0];
+                      setPaths(JSON.stringify(paths));
+                    }
+                  })
+                  .catch((err) => NotifyException(err as Error));
               }}
               css={css`
                 min-width: 50px;

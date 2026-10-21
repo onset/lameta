@@ -10,38 +10,33 @@ describe("RoCrateExporter Project Geographic Coverage", () => {
       filePrefix: "test-project",
       knownFields: [],
       metadataFile: {
-        getTextProperty: vi
-          .fn()
-          .mockImplementation((key: string, defaultValue?: string) => {
-            if (key === "title") return "Test Project";
-            if (key === "country") return "Vanuatu";
-            if (key === "continent") return "Oceania";
-            return defaultValue || "";
-          }),
+        getTextProperty: vi.fn().mockImplementation((key: string, defaultValue?: string) => {
+          if (key === "title") return "Test Project";
+          if (key === "country") return "Vanuatu";
+          if (key === "continent") return "Oceania";
+          return defaultValue || "";
+        }),
         properties: {
           forEach: vi.fn(),
-          getHasValue: vi.fn().mockReturnValue(false)
-        }
+          getHasValue: vi.fn().mockReturnValue(false),
+        },
       },
       sessions: {
-        items: []
+        items: [],
       },
       files: [],
       descriptionFolder: null,
-      otherDocsFolder: null
+      otherDocsFolder: null,
     } as any;
   });
 
   it("should use contentLocation with Place entities instead of raw country/continent properties", async () => {
     // Generate RO-Crate metadata
     const roCrateData = await getRoCrate(mockProject, mockProject);
-    const roCrateJson =
-      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+    const roCrateJson = typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
     // Find the root dataset entry
-    const rootDataset = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === "./"
-    );
+    const rootDataset = roCrateJson["@graph"].find((entity: any) => entity["@id"] === "./");
 
     expect(rootDataset).toBeDefined();
 
@@ -61,9 +56,7 @@ describe("RoCrateExporter Project Geographic Coverage", () => {
       expect(Object.keys(locationRef)).toHaveLength(1); // Should only have @id
 
       // Find and validate the referenced Place entity
-      const entity = roCrateJson["@graph"].find(
-        (e: any) => e["@id"] === locationRef["@id"]
-      );
+      const entity = roCrateJson["@graph"].find((e: any) => e["@id"] === locationRef["@id"]);
       expect(entity).toBeDefined();
       expect(entity["@type"]).toBe("Place");
       expect(entity.name).toBeDefined();
@@ -73,9 +66,7 @@ describe("RoCrateExporter Project Geographic Coverage", () => {
     const placeId = rootDataset.contentLocation[0]["@id"];
     expect(placeId).toBeDefined();
 
-    const placeEntity = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === placeId
-    );
+    const placeEntity = roCrateJson["@graph"].find((entity: any) => entity["@id"] === placeId);
 
     expect(placeEntity).toBeDefined();
     expect(placeEntity["@type"]).toBe("Place");
@@ -85,45 +76,34 @@ describe("RoCrateExporter Project Geographic Coverage", () => {
 
   it("should create Place entity for country only when continent is not provided", async () => {
     // Create a mock project with only country field
-    const projectWithCountry = {
-      ...mockProject,
+    const projectWithCountry = Object.assign({}, mockProject, {
       metadataFile: {
-        getTextProperty: vi
-          .fn()
-          .mockImplementation((key: string, defaultValue?: string) => {
-            if (key === "title") return "Test Project";
-            if (key === "country") return "France";
-            if (key === "continent") return "";
-            return defaultValue || "";
-          }),
+        getTextProperty: vi.fn().mockImplementation((key: string, defaultValue?: string) => {
+          if (key === "title") return "Test Project";
+          if (key === "country") return "France";
+          if (key === "continent") return "";
+          return defaultValue || "";
+        }),
         properties: {
           forEach: vi.fn(),
-          getHasValue: vi.fn().mockReturnValue(false)
-        }
-      }
-    } as any;
+          getHasValue: vi.fn().mockReturnValue(false),
+        },
+      },
+    }) as any;
 
     // Generate RO-Crate metadata
-    const roCrateData = await getRoCrate(
-      projectWithCountry,
-      projectWithCountry
-    );
-    const roCrateJson =
-      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+    const roCrateData = await getRoCrate(projectWithCountry, projectWithCountry);
+    const roCrateJson = typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
     // Find the root dataset entry
-    const rootDataset = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === "./"
-    );
+    const rootDataset = roCrateJson["@graph"].find((entity: any) => entity["@id"] === "./");
 
     expect(rootDataset).toBeDefined();
     expect(rootDataset.country).toBeUndefined();
     expect(rootDataset.contentLocation).toBeDefined();
 
     const placeId = rootDataset.contentLocation[0]["@id"];
-    const placeEntity = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === placeId
-    );
+    const placeEntity = roCrateJson["@graph"].find((entity: any) => entity["@id"] === placeId);
 
     expect(placeEntity).toBeDefined();
     expect(placeEntity["@type"]).toBe("Place");
@@ -133,45 +113,34 @@ describe("RoCrateExporter Project Geographic Coverage", () => {
 
   it("should create Place entity for continent only when country is not provided", async () => {
     // Create a mock project with only continent field
-    const projectWithContinent = {
-      ...mockProject,
+    const projectWithContinent = Object.assign({}, mockProject, {
       metadataFile: {
-        getTextProperty: vi
-          .fn()
-          .mockImplementation((key: string, defaultValue?: string) => {
-            if (key === "title") return "Test Project";
-            if (key === "country") return "";
-            if (key === "continent") return "Asia";
-            return defaultValue || "";
-          }),
+        getTextProperty: vi.fn().mockImplementation((key: string, defaultValue?: string) => {
+          if (key === "title") return "Test Project";
+          if (key === "country") return "";
+          if (key === "continent") return "Asia";
+          return defaultValue || "";
+        }),
         properties: {
           forEach: vi.fn(),
-          getHasValue: vi.fn().mockReturnValue(false)
-        }
-      }
-    } as any;
+          getHasValue: vi.fn().mockReturnValue(false),
+        },
+      },
+    }) as any;
 
     // Generate RO-Crate metadata
-    const roCrateData = await getRoCrate(
-      projectWithContinent,
-      projectWithContinent
-    );
-    const roCrateJson =
-      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+    const roCrateData = await getRoCrate(projectWithContinent, projectWithContinent);
+    const roCrateJson = typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
     // Find the root dataset entry
-    const rootDataset = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === "./"
-    );
+    const rootDataset = roCrateJson["@graph"].find((entity: any) => entity["@id"] === "./");
 
     expect(rootDataset).toBeDefined();
     expect(rootDataset.continent).toBeUndefined();
     expect(rootDataset.contentLocation).toBeDefined();
 
     const placeId = rootDataset.contentLocation[0]["@id"];
-    const placeEntity = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === placeId
-    );
+    const placeEntity = roCrateJson["@graph"].find((entity: any) => entity["@id"] === placeId);
 
     expect(placeEntity).toBeDefined();
     expect(placeEntity["@type"]).toBe("Place");
@@ -180,36 +149,27 @@ describe("RoCrateExporter Project Geographic Coverage", () => {
 
   it("should not create contentLocation when neither country nor continent is provided", async () => {
     // Create a mock project with neither field
-    const projectWithoutLocation = {
-      ...mockProject,
+    const projectWithoutLocation = Object.assign({}, mockProject, {
       metadataFile: {
-        getTextProperty: vi
-          .fn()
-          .mockImplementation((key: string, defaultValue?: string) => {
-            if (key === "title") return "Test Project";
-            if (key === "country") return "";
-            if (key === "continent") return "";
-            return defaultValue || "";
-          }),
+        getTextProperty: vi.fn().mockImplementation((key: string, defaultValue?: string) => {
+          if (key === "title") return "Test Project";
+          if (key === "country") return "";
+          if (key === "continent") return "";
+          return defaultValue || "";
+        }),
         properties: {
           forEach: vi.fn(),
-          getHasValue: vi.fn().mockReturnValue(false)
-        }
-      }
-    } as any;
+          getHasValue: vi.fn().mockReturnValue(false),
+        },
+      },
+    }) as any;
 
     // Generate RO-Crate metadata
-    const roCrateData = await getRoCrate(
-      projectWithoutLocation,
-      projectWithoutLocation
-    );
-    const roCrateJson =
-      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+    const roCrateData = await getRoCrate(projectWithoutLocation, projectWithoutLocation);
+    const roCrateJson = typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
     // Find the root dataset entry
-    const rootDataset = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === "./"
-    );
+    const rootDataset = roCrateJson["@graph"].find((entity: any) => entity["@id"] === "./");
 
     expect(rootDataset).toBeDefined();
     expect(rootDataset.country).toBeUndefined();

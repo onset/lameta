@@ -22,15 +22,12 @@ import { locateDependencyForFilesystemCall } from "./locateDependency";
 
 let analytics: Analytics | undefined;
 
-export async function initializeAnalytics() {
+export function initializeAnalytics() {
   try {
     let key: string | undefined = undefined;
     if (process.env.NODE_ENV === "test" || getTestEnvironment().E2E) {
       analytics = undefined; // don't spend segment.com quota on tests
-    } else if (
-      userSettingsSingleton.DeveloperMode ||
-      process.env.NODE_ENV === "development"
-    )
+    } else if (userSettingsSingleton.DeveloperMode || process.env.NODE_ENV === "development")
       key = getKey(0);
     // Will show up here: https://app.segment.com/lameta/sources/lameta-test/debugger
     else key = getKey(1);
@@ -46,8 +43,8 @@ export async function initializeAnalytics() {
         appVersion: version,
         language: currentUILanguage || "",
         howUsing: userSettingsSingleton.HowUsing,
-        email: userSettingsSingleton.Email
-      }
+        email: userSettingsSingleton.Email,
+      },
     });
   } catch (e) {
     console.error(e);
@@ -59,7 +56,7 @@ export function analyticsLocation(screenName: string) {
     try {
       analytics.page({
         userId: userSettingsSingleton.ClientId,
-        name: screenName
+        name: screenName,
       });
     } catch (e) {
       console.error(e);
@@ -67,17 +64,13 @@ export function analyticsLocation(screenName: string) {
     sentryBreadCrumb(screenName);
   }
 }
-export function analyticsEvent(
-  category: string,
-  event: string,
-  details?: object
-) {
+export function analyticsEvent(category: string, event: string, details?: object) {
   if (analytics) {
     try {
       analytics.track({
         userId: userSettingsSingleton.ClientId,
         event,
-        properties: details
+        properties: details,
       });
     } catch (e) {
       console.error(e);
@@ -90,7 +83,7 @@ function getKey(index: number): string | undefined {
   // this .gitignore'd file, if it exists, should contain a comma-separated list of keys: "testKey, productionKey"
   if (!fs.existsSync(path)) {
     console.log(
-      `No "assets/.segment" file found at ${path}. Will not send analytics. This is expected in development mode.`
+      `No "assets/.segment" file found at ${path}. Will not send analytics. This is expected in development mode.`,
     );
     return undefined;
   }

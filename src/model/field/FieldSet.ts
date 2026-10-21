@@ -22,7 +22,9 @@ export class FieldSet extends Dictionary<string, Field> {
       // Reduce noise in tests: 'type' is optional and frequently missing on synthetic files.
       // Log other missing keys as warnings instead of errors.
       if (key !== "type")
-        console.warn(`This FieldSet has no value with key: ${key}. It has [${this.keys()}]`);
+        console.warn(
+          `This FieldSet has no value with key: ${key}. It has [${this.keys().join(", ")}]`,
+        );
       throw Error("This FieldSet has no value with key: " + key);
     } else {
       return f;

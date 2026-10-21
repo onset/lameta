@@ -33,7 +33,7 @@ function notify(message: string, details?: string | React.ReactNode, options?: T
   }
   // the delay helps with messages that we wouldn't see on startup becuase the react window isn't ready for it
   window.setTimeout(() => {
-    const key = message + details;
+    const key = typeof details === "string" ? message + details : message;
     // don't show a message again if it's still showing
     if (activeToasts.indexOf(key) < 0) {
       activeToasts.push(key);
@@ -229,7 +229,8 @@ export function NotifyMultipleProjectFiles(
               window.setTimeout(() => quitApp(), 1000);
             }
           }
-        });
+        })
+        .catch((err) => NotifyException(err as Error));
     },
   );
 }
