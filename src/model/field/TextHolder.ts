@@ -2,7 +2,7 @@ import { makeObservable, observable, runInAction } from "mobx";
 import {
   parseSlashSyntax,
   assignLanguagesToSegments,
-  parseCommaSeparatedSlashSyntax
+  parseCommaSeparatedSlashSyntax,
 } from "./TextHolderMigration";
 
 /**
@@ -28,7 +28,7 @@ export class TextHolder {
   public _text: string = "";
   constructor() {
     makeObservable(this, {
-      _text: observable
+      _text: observable,
     });
   }
 
@@ -106,7 +106,7 @@ export class TextHolder {
   public getTextAxisVirtual(
     tag: string,
     languageTags: string[],
-    isCommaSeparated: boolean = false
+    isCommaSeparated: boolean = false,
   ): string {
     if (!this.looksLikeSlashSyntax()) {
       // Not slash syntax - use normal behavior
@@ -115,10 +115,7 @@ export class TextHolder {
 
     if (isCommaSeparated) {
       // Comma-separated items with per-item slash syntax
-      const { assignments } = parseCommaSeparatedSlashSyntax(
-        this._text,
-        languageTags
-      );
+      const { assignments } = parseCommaSeparatedSlashSyntax(this._text, languageTags);
       return assignments.get(tag) ?? "";
     }
 
@@ -138,17 +135,14 @@ export class TextHolder {
    */
   public getVirtualMultiAxisView(
     languageTags: string[],
-    isCommaSeparated: boolean = false
+    isCommaSeparated: boolean = false,
   ): Map<string, string> | null {
     if (!this.looksLikeSlashSyntax()) {
       return null; // Not slash syntax
     }
 
     if (isCommaSeparated) {
-      const { assignments } = parseCommaSeparatedSlashSyntax(
-        this._text,
-        languageTags
-      );
+      const { assignments } = parseCommaSeparatedSlashSyntax(this._text, languageTags);
       return assignments;
     }
 
@@ -170,21 +164,15 @@ export class TextHolder {
    */
   public getEffectiveSlotTags(
     metadataSlotTags: string[],
-    isCommaSeparated: boolean = false
+    isCommaSeparated: boolean = false,
   ): string[] {
     if (this.looksLikeSlashSyntax()) {
       if (isCommaSeparated) {
-        const { orderedTags } = parseCommaSeparatedSlashSyntax(
-          this._text,
-          metadataSlotTags
-        );
+        const { orderedTags } = parseCommaSeparatedSlashSyntax(this._text, metadataSlotTags);
         return orderedTags;
       }
       const { segments } = parseSlashSyntax(this._text);
-      const { orderedTags } = assignLanguagesToSegments(
-        segments,
-        metadataSlotTags
-      );
+      const { orderedTags } = assignLanguagesToSegments(segments, metadataSlotTags);
       return orderedTags;
     }
     // For tagged text, return the actual axes
@@ -198,7 +186,7 @@ export class TextHolder {
     constructor(
       public readonly wouldConvert: boolean,
       public readonly unknownCount: number,
-      public readonly unknownTags: string[]
+      public readonly unknownTags: string[],
     ) {}
   };
 
@@ -212,7 +200,7 @@ export class TextHolder {
    */
   public previewSlashSyntaxConversion(
     languageTags: string[],
-    isCommaSeparated: boolean = false
+    isCommaSeparated: boolean = false,
   ): {
     wouldConvert: boolean;
     unknownCount: number;
@@ -238,7 +226,7 @@ export class TextHolder {
     return {
       wouldConvert: true,
       unknownCount: unknownTags.length,
-      unknownTags
+      unknownTags,
     };
   }
 
@@ -252,7 +240,7 @@ export class TextHolder {
    */
   public commitSlashSyntaxConversion(
     languageTags: string[],
-    isCommaSeparated: boolean = false
+    isCommaSeparated: boolean = false,
   ): boolean {
     if (!this.looksLikeSlashSyntax()) {
       return false;
@@ -308,36 +296,30 @@ export class TextHolder {
 
     if (axisTextPairsWithExtra[0] !== "")
       throw new Error(
-        `Cannot have text before the first langauge tag. Found when deserializing: ${this._text}`
+        `Cannot have text before the first langauge tag. Found when deserializing: ${this._text}`,
       );
     // remove the first element, which is the text before the first tag, which is not valid
     axisTextPairsWithExtra.shift();
     // now split each pair into tag and text
-    const axisTextPairsArrayOfArrays = axisTextPairsWithExtra.map((s) =>
-      s.split("]]")
-    );
+    const axisTextPairsArrayOfArrays = axisTextPairsWithExtra.map((s) => s.split("]]"));
 
     const result: MultiAxisText = {};
     // add each pair to result
     axisTextPairsArrayOfArrays.forEach((pair) => {
       if (pair.length != 2) {
-        throw new Error(
-          `Invalid axis/text pair when deserializing: ${this._text}`
-        );
+        throw new Error(`Invalid axis/text pair when deserializing: ${this._text}`);
       }
       result[pair[0]] = pair[1];
     });
     return result;
   }
   public getAllNonEmptyTextAxes(): string[] {
-    return TextHolder.getNonEmptyLanguageAxesStatic(
-      this.deserializeMultiAxisText()
-    );
+    return TextHolder.getNonEmptyLanguageAxesStatic(this.deserializeMultiAxisText());
   }
 
   private static getNonEmptyLanguageAxesStatic(axes: MultiAxisText): string[] {
     return Object.keys(axes).filter(
-      (language) => axes[language] !== undefined && axes[language].trim() !== ""
+      (language) => axes[language] !== undefined && axes[language].trim() !== "",
     );
   }
 

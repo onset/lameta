@@ -1,11 +1,7 @@
 import { describe, it, beforeAll, afterAll } from "vite-plus/test";
 
 import { Project } from "../model/Project/Project";
-import {
-  setResultXml,
-  xexpect as expect,
-  count
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect, count } from "../other/xmlUnitTestUtils";
 import ImdiBundler from "./ImdiBundler";
 import temp from "temp";
 import * as fs from "fs-extra";
@@ -51,12 +47,9 @@ describe("Consent Form Inclusion", () => {
         true, //<-- copy in files
         // oxlint-disable-next-line @typescript-eslint/no-unused-vars
         (f) => true,
-        true
+        true,
       );
-      const xml = fs.readFileSync(
-        Path.join(rootDirectory, "ConsentDocuments.imdi"),
-        "utf8"
-      );
+      const xml = fs.readFileSync(Path.join(rootDirectory, "ConsentDocuments.imdi"), "utf8");
       expect(xml).toBeTruthy();
       setResultXml(xml);
     } finally {
@@ -78,19 +71,13 @@ describe("Consent Form Inclusion", () => {
 
   it("There should be 2 consent files in the ConsentDocuments folder", async () => {
     await waitForCondition(() => {
-      return fs.existsSync(
-        Path.join(rootDirectory, "ConsentDocuments", "Awi_Heole_Consent.JPG")
-      );
+      return fs.existsSync(Path.join(rootDirectory, "ConsentDocuments", "Awi_Heole_Consent.JPG"));
     });
     await waitForCondition(() => {
-      return fs.existsSync(
-        Path.join(rootDirectory, "ConsentDocuments", "Ilawi_Amosa_Consent.JPG")
-      );
+      return fs.existsSync(Path.join(rootDirectory, "ConsentDocuments", "Ilawi_Amosa_Consent.JPG"));
     });
     expect(
-      fs.existsSync(
-        Path.join(rootDirectory, "ConsentDocuments", "Ilawi_Amosa_Consent.JPG")
-      )
+      fs.existsSync(Path.join(rootDirectory, "ConsentDocuments", "Ilawi_Amosa_Consent.JPG")),
     ).toBeTruthy();
   });
 

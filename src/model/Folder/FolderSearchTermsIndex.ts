@@ -29,9 +29,7 @@ export class FolderSearchTermsIndex {
           // Folder-level properties signature (e.g., Session/Person fields)
           const folderPropsSig = f.properties
             .values()
-            .map((fld: any) =>
-              fld && typeof fld.text === "string" ? fld.text : ""
-            )
+            .map((fld: any) => (fld && typeof fld.text === "string" ? fld.text : ""))
             .join("|");
 
           // Files signature: include file names, file metadata field texts, and contributions
@@ -46,9 +44,7 @@ export class FolderSearchTermsIndex {
                 if (file && file.properties && file.properties.values) {
                   propsText = file.properties
                     .values()
-                    .map((p: any) =>
-                      p && typeof p.text === "string" ? p.text : ""
-                    )
+                    .map((p: any) => (p && typeof p.text === "string" ? p.text : ""))
                     .join("|");
                 }
               } catch {}
@@ -57,9 +53,7 @@ export class FolderSearchTermsIndex {
                 if (file && Array.isArray(file.contributions)) {
                   contribText = file.contributions
                     .map((c: any) =>
-                      [c?.personReference, c?.role, c?.comments]
-                        .filter(Boolean)
-                        .join("|")
+                      [c?.personReference, c?.role, c?.comments].filter(Boolean).join("|"),
                     )
                     .join(";");
                 }
@@ -77,8 +71,7 @@ export class FolderSearchTermsIndex {
                 .join("|");
             } else if (f.metadataFile instanceof SessionMetadataFile) {
               const subject = f.properties.getTextStringOrEmpty("languages");
-              const working =
-                f.properties.getTextStringOrEmpty("workingLanguages");
+              const working = f.properties.getTextStringOrEmpty("workingLanguages");
               languageSig = [subject, working].join("|");
             }
           } catch {}
@@ -89,7 +82,7 @@ export class FolderSearchTermsIndex {
         if (sig !== prev) {
           this.build();
         }
-      }
+      },
     );
   }
 
@@ -97,7 +90,7 @@ export class FolderSearchTermsIndex {
     if (!this.group) return;
     const items: IndexedFolder[] = this.group.items.map((f) => ({
       folder: f,
-      blob: this.makeBlob(f)
+      blob: this.makeBlob(f),
     }));
     // This gives us exact matches only. "Fuzzy", while conceivably helpful,
     // is too confusing for a user that is trying to filter down to a set
@@ -107,7 +100,7 @@ export class FolderSearchTermsIndex {
       includeScore: false,
       threshold: 0.0,
       ignoreLocation: true,
-      minMatchCharLength: kMinimumSearchTermLength
+      minMatchCharLength: kMinimumSearchTermLength,
     });
   }
 
@@ -122,9 +115,7 @@ export class FolderSearchTermsIndex {
   private makeBlob(f: Folder): string {
     const fieldBits = f.properties
       .values()
-      .map((field: any) =>
-        field && typeof field.text === "string" ? field.text : ""
-      );
+      .map((field: any) => (field && typeof field.text === "string" ? field.text : ""));
     const fileBits: string[] = [];
     (f.files || []).forEach((file: any) => {
       try {
@@ -160,10 +151,9 @@ export class FolderSearchTermsIndex {
           languageBits.push(language.code);
           let languageName = "";
           try {
-            languageName =
-              staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                language.code
-              );
+            languageName = staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
+              language.code,
+            );
           } catch (e: any) {
             NotifyException(e, "Language name lookup failed");
           }
@@ -185,10 +175,7 @@ export class FolderSearchTermsIndex {
             languageBits.push(code);
             let name = "";
             try {
-              name =
-                staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(
-                  code
-                );
+              name = staticLanguageFinder.findOneLanguageNameFromCode_Or_ReturnCode(code);
             } catch (e: any) {
               NotifyException(e, "Language name lookup failed");
             }
@@ -223,20 +210,14 @@ export class FolderSearchTermsIndex {
         contribs.forEach((c) => {
           if (c.role) personContributionBits.push(c.role);
           if (c.comments) personContributionBits.push(c.comments);
-          if ((c as any).sessionName)
-            personContributionBits.push((c as any).sessionName);
+          if ((c as any).sessionName) personContributionBits.push((c as any).sessionName);
         });
       } catch (e: any) {
         NotifyException(e, "Indexing person contributions failed");
       }
     }
 
-    return [
-      ...fieldBits,
-      ...fileBits,
-      ...languageBits,
-      ...personContributionBits
-    ].join(" | ");
+    return [...fieldBits, ...fileBits, ...languageBits, ...personContributionBits].join(" | ");
   }
 }
 

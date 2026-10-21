@@ -119,12 +119,12 @@ ctx7 docs /prisma/prisma "How to define one-to-many relations with cascade delet
 
 The query directly affects the quality of results. Be specific and include relevant details. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query.
 
-| Quality | Example |
-|---------|---------|
-| Good | `"How to set up authentication with JWT in Express.js"` |
-| Good | `"React useEffect cleanup function with async operations"` |
-| Bad | `"auth"` |
-| Bad | `"hooks"` |
+| Quality | Example                                                    |
+| ------- | ---------------------------------------------------------- |
+| Good    | `"How to set up authentication with JWT in Express.js"`    |
+| Good    | `"React useEffect cleanup function with async operations"` |
+| Bad     | `"auth"`                                                   |
+| Bad     | `"hooks"`                                                  |
 
 Use the user's full question as the query when possible, vague one-word queries return generic results.
 
@@ -145,6 +145,7 @@ ctx7 login
 ## Error Handling
 
 If a command fails with a quota error ("Monthly quota reached" or "quota exceeded"):
+
 1. Inform the user their Context7 quota is exhausted
 2. Suggest they authenticate for higher limits: `ctx7 login`
 3. If they cannot or choose not to authenticate, answer from training knowledge and clearly note it may be outdated

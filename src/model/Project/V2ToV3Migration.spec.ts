@@ -33,21 +33,13 @@ describe("V2 to V3 migration on project open", () => {
 
     const project = Project.fromDirectory(projectDirectory);
 
-    expect(project.properties.getTextStringOrEmpty("title")).toBe(
-      "V2 Project Title"
-    );
+    expect(project.properties.getTextStringOrEmpty("title")).toBe("V2 Project Title");
     // name was missing, so we should get it from title
-    expect(project.properties.getTextStringOrEmpty("name")).toBe(
-      "V2 Project Title"
-    );
+    expect(project.properties.getTextStringOrEmpty("name")).toBe("V2 Project Title");
     // VernacularISO3CodeAndName --> SubjectLanguages
-    expect(project.properties.getTextStringOrEmpty("SubjectLanguages")).toBe(
-      "abc:Abracadabra"
-    );
+    expect(project.properties.getTextStringOrEmpty("SubjectLanguages")).toBe("abc:Abracadabra");
     // AnalysisISO3CodeAndName --> WorkingLanguages
-    expect(project.properties.getTextStringOrEmpty("WorkingLanguages")).toBe(
-      "xyz:Xabradabra"
-    );
+    expect(project.properties.getTextStringOrEmpty("WorkingLanguages")).toBe("xyz:Xabradabra");
   });
 
   it("migrates V2 session situation and setting into description", () => {
@@ -57,7 +49,7 @@ describe("V2 to V3 migration on project open", () => {
       `
   <description type="string">Existing description.</description>
   <situation type="string">Riverbank recording</situation>
-  <setting type="string">Morning interview</setting>`
+  <setting type="string">Morning interview</setting>`,
     );
 
     const project = Project.fromDirectory(projectDirectory);
@@ -82,27 +74,18 @@ describe("V2 to V3 migration on project open", () => {
   <mothersLanguage>en</mothersLanguage>
   <fathersLanguage>fr</fathersLanguage>
   <otherLanguage0>de</otherLanguage0>
-  <Description>Lorem Ipsum.</Description>`
+  <Description>Lorem Ipsum.</Description>`,
     );
 
     const project = Project.fromDirectory(projectDirectory);
     const person = project.persons.items[0] as Person;
 
-    expect(person.languages.map((language) => language.code)).toEqual([
-      "etr",
-      "eng",
-      "fra",
-      "deu"
-    ]);
+    expect(person.languages.map((language) => language.code)).toEqual(["etr", "eng", "fra", "deu"]);
     expect(person.languages[0].primary).toBe(true);
     expect(person.languages[1].mother).toBe(true);
     expect(person.languages[2].father).toBe(true);
-    expect(person.properties.getTextStringOrEmpty("description")).toContain(
-      "Lorem Ipsum."
-    );
-    expect(person.properties.getTextStringOrEmpty("description")).toContain(
-      "Huya"
-    );
+    expect(person.properties.getTextStringOrEmpty("description")).toContain("Lorem Ipsum.");
+    expect(person.properties.getTextStringOrEmpty("description")).toContain("Huya");
   });
 });
 
@@ -112,7 +95,7 @@ function writeProjectFile(projectFields: string): void {
     `<?xml version="1.0" encoding="utf-8"?>
 <Project>
   ${projectFields}
-</Project>`
+</Project>`,
   );
 }
 
@@ -124,7 +107,7 @@ function writeSession(sessionId: string, sessionFields: string): void {
     `<?xml version="1.0" encoding="utf-8"?>
 <Session>
   ${sessionFields}
-</Session>`
+</Session>`,
   );
 }
 
@@ -136,6 +119,6 @@ function writePerson(personFolderName: string, personFields: string): void {
     `<?xml version="1.0" encoding="utf-8"?>
 <Person>
   ${personFields}
-</Person>`
+</Person>`,
   );
 }

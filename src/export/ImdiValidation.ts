@@ -6,10 +6,7 @@ import * as fs from "fs";
 // Auto-cleanup temp files on app exit (including failed IMDI files)
 temp.track(true);
 
-export async function validateImdiOrThrow(
-  imdiXml: string,
-  displayNameForThisFile?: string
-) {
+export async function validateImdiOrThrow(imdiXml: string, displayNameForThisFile?: string) {
   // console.log(
   //   "[ImdiValidation] validateImdiOrThrow called for:",
   //   displayNameForThisFile
@@ -55,9 +52,7 @@ export async function validateImdiOrThrow(
           const isErrorLine = lineNum === actualErrorLine;
           return isErrorLine ? `<b style="color:red">${escaped}</b>` : escaped;
         });
-        context = `\n\nError at line ${actualErrorLine}:\n${formattedLines.join(
-          "\n"
-        )}`;
+        context = `\n\nError at line ${actualErrorLine}:\n${formattedLines.join("\n")}`;
       }
       // Also escape the error message itself in case it contains XML snippets
       return `<b style="color:red">${escapeHtml(e.message)}</b>${context}`;
@@ -71,7 +66,7 @@ export async function validateImdiOrThrow(
         .substring(0, 50);
       const tempPath = temp.path({
         prefix: `failed-imdi-${safeName}-`,
-        suffix: ".imdi"
+        suffix: ".imdi",
       });
       fs.writeFileSync(tempPath, imdiXml, "utf8");
       savedPath = tempPath;
@@ -80,15 +75,13 @@ export async function validateImdiOrThrow(
       console.error("[ImdiValidation] Could not save failed IMDI:", saveError);
     }
 
-    const debugInfo = savedPath
-      ? `\n\nThe failed IMDI has been saved to:\n${savedPath}`
-      : "";
+    const debugInfo = savedPath ? `\n\nThe failed IMDI has been saved to:\n${savedPath}` : "";
 
     const schemaInfo = imdiSchema || "IMDI_3.0.xsd";
     throw new Error(
       `The IMDI for ${displayNameForThisFile} did not pass validation using schema: ${schemaInfo}.${debugInfo}\n${errorDetails.join(
-        "\n\n"
-      )}`
+        "\n\n",
+      )}`,
     );
   }
 }

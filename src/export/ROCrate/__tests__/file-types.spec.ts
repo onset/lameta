@@ -5,8 +5,8 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
@@ -20,8 +20,8 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01")
-  })
+    birthtime: new Date("2023-01-01"),
+  }),
 }));
 
 /**
@@ -44,56 +44,54 @@ describe("File type assignments", () => {
 
   beforeEach(() => {
     // Mock field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
         key: "person",
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Person",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Create mock files with various extensions
     const mockAudioFile = {
       getActualFilePath: () => "/sessions/test/audio.mp3",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "audio.mp3"
+      pathInFolderToLinkFileOrLocalCopy: "audio.mp3",
     } as any;
 
     const mockVideoFile = {
       getActualFilePath: () => "/sessions/test/video.mp4",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "video.mp4"
+      pathInFolderToLinkFileOrLocalCopy: "video.mp4",
     } as any;
 
     const mockImageFile = {
       getActualFilePath: () => "/sessions/test/image.jpg",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "image.jpg"
+      pathInFolderToLinkFileOrLocalCopy: "image.jpg",
     } as any;
 
     const mockSessionMetaFile = {
       getActualFilePath: () => "/sessions/test/test.session",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "test.session"
+      pathInFolderToLinkFileOrLocalCopy: "test.session",
     } as any;
 
     const mockXmlFile = {
       getActualFilePath: () => "/sessions/test/data.xml",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "data.xml"
+      pathInFolderToLinkFileOrLocalCopy: "data.xml",
     } as any;
 
     const mockEafFile = {
       getActualFilePath: () => "/sessions/test/transcription.eaf",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "transcription.eaf"
+      pathInFolderToLinkFileOrLocalCopy: "transcription.eaf",
     } as any;
 
     // Mock session
@@ -105,8 +103,8 @@ describe("File type assignments", () => {
         getTextProperty: vi.fn().mockReturnValue(""),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [
         mockAudioFile,
@@ -114,9 +112,9 @@ describe("File type assignments", () => {
         mockImageFile,
         mockSessionMetaFile,
         mockXmlFile,
-        mockEafFile
+        mockEafFile,
       ],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as any;
 
     mockProject = {
@@ -127,12 +125,12 @@ describe("File type assignments", () => {
         getTextProperty: vi.fn().mockReturnValue(""),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       knownFields: [],
-      authorityLists: { accessChoicesOfCurrentProtocol: [] }
+      authorityLists: { accessChoicesOfCurrentProtocol: [] },
     } as any;
 
     // Set up prototypes
@@ -144,7 +142,7 @@ describe("File type assignments", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const audioFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/test/audio.mp3"
+      (item: any) => item["@id"] === "Sessions/test/audio.mp3",
     );
     expect(audioFile).toBeDefined();
     expect(audioFile["@type"]).toEqual(["File", "AudioObject"]);
@@ -157,7 +155,7 @@ describe("File type assignments", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const videoFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/test/video.mp4"
+      (item: any) => item["@id"] === "Sessions/test/video.mp4",
     );
     expect(videoFile).toBeDefined();
     expect(videoFile["@type"]).toEqual(["File", "VideoObject"]);
@@ -170,7 +168,7 @@ describe("File type assignments", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const imageFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/test/image.jpg"
+      (item: any) => item["@id"] === "Sessions/test/image.jpg",
     );
     expect(imageFile).toBeDefined();
     expect(imageFile["@type"]).toEqual(["File", "ImageObject"]);
@@ -183,7 +181,7 @@ describe("File type assignments", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const sessionFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/test/test.session"
+      (item: any) => item["@id"] === "Sessions/test/test.session",
     );
     expect(sessionFile).toBeDefined();
     // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
@@ -194,9 +192,7 @@ describe("File type assignments", () => {
   it("should type .xml files as File only", async () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
-    const xmlFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/test/data.xml"
-    );
+    const xmlFile = result["@graph"].find((item: any) => item["@id"] === "Sessions/test/data.xml");
     expect(xmlFile).toBeDefined();
     // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
     // Per RO-Crate spec, non-media files only need @type of "File"
@@ -207,7 +203,7 @@ describe("File type assignments", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const eafFile = result["@graph"].find(
-      (item: any) => item["@id"] === "Sessions/test/transcription.eaf"
+      (item: any) => item["@id"] === "Sessions/test/transcription.eaf",
     );
     expect(eafFile).toBeDefined();
     // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
@@ -222,40 +218,36 @@ describe("Person file type assignments", () => {
 
   beforeEach(() => {
     // Mock field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
         key: "person",
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Person",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     const mockPersonFile = {
       getActualFilePath: () => "/people/John_Doe/John_Doe.person",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "John_Doe.person"
+      pathInFolderToLinkFileOrLocalCopy: "John_Doe.person",
     } as any;
 
     const mockPhotoFile = {
       getActualFilePath: () => "/people/John_Doe/John_Doe_Photo.jpg",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "John_Doe_Photo.jpg"
+      pathInFolderToLinkFileOrLocalCopy: "John_Doe_Photo.jpg",
     } as any;
 
     const mockConsentFile = {
       getActualFilePath: () => "/people/John_Doe/John_Doe_Consent.pdf",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "John_Doe_Consent.pdf"
+      pathInFolderToLinkFileOrLocalCopy: "John_Doe_Consent.pdf",
     } as any;
 
     mockPerson = {
@@ -271,10 +263,10 @@ describe("Person file type assignments", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
-      files: [mockPersonFile, mockPhotoFile, mockConsentFile]
+      files: [mockPersonFile, mockPhotoFile, mockConsentFile],
     } as any;
 
     mockProject = {
@@ -289,12 +281,12 @@ describe("Person file type assignments", () => {
         getTextProperty: vi.fn().mockReturnValue(""),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       knownFields: [],
-      authorityLists: { accessChoicesOfCurrentProtocol: [] }
+      authorityLists: { accessChoicesOfCurrentProtocol: [] },
     } as any;
 
     Object.setPrototypeOf(mockProject, Project.prototype);
@@ -308,7 +300,7 @@ describe("Person file type assignments", () => {
     const personFile = result.find(
       (item: any) =>
         item["@id"] === "People/John_Doe/John_Doe.person" ||
-        (item.name && item.name === "John_Doe.person")
+        (item.name && item.name === "John_Doe.person"),
     );
     expect(personFile).toBeDefined();
     // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
@@ -322,7 +314,7 @@ describe("Person file type assignments", () => {
     const photoFile = result.find(
       (item: any) =>
         item["@id"] === "People/John_Doe/John_Doe_Photo.jpg" ||
-        (item.name && item.name === "John_Doe_Photo.jpg")
+        (item.name && item.name === "John_Doe_Photo.jpg"),
     );
     expect(photoFile).toBeDefined();
     expect(photoFile["@type"]).toEqual(["File", "ImageObject"]);
@@ -335,7 +327,7 @@ describe("Person file type assignments", () => {
     const consentFile = result.find(
       (item: any) =>
         item["@id"] === "People/John_Doe/John_Doe_Consent.pdf" ||
-        (item.name && item.name === "John_Doe_Consent.pdf")
+        (item.name && item.name === "John_Doe_Consent.pdf"),
     );
     expect(consentFile).toBeDefined();
     // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
@@ -348,42 +340,36 @@ describe("Project-level file type assignments", () => {
   let mockProject: Project;
 
   beforeEach(() => {
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([]);
 
     const mockSprjFile = {
       getActualFilePath: () => "/project/TestProject.sprj",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "TestProject.sprj"
+      pathInFolderToLinkFileOrLocalCopy: "TestProject.sprj",
     } as any;
 
     const mockDescriptionDoc = {
       getActualFilePath: () => "/project/DescriptionDocuments/README.txt",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "README.txt"
+      pathInFolderToLinkFileOrLocalCopy: "README.txt",
     } as any;
 
     const mockOtherImage = {
       getActualFilePath: () => "/project/OtherDocuments/map.png",
       getModifiedDate: () => new Date("2023-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "map.png"
+      pathInFolderToLinkFileOrLocalCopy: "map.png",
     } as any;
 
     // Create mock description folder
     const mockDescriptionFolder = {
-      files: [mockDescriptionDoc]
+      files: [mockDescriptionDoc],
     } as any;
 
     // Create mock other docs folder
     const mockOtherDocsFolder = {
-      files: [mockOtherImage]
+      files: [mockOtherImage],
     } as any;
 
     mockProject = {
@@ -394,14 +380,14 @@ describe("Project-level file type assignments", () => {
         getTextProperty: vi.fn().mockReturnValue(""),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [mockSprjFile],
       knownFields: [],
       authorityLists: { accessChoicesOfCurrentProtocol: [] },
       descriptionFolder: mockDescriptionFolder,
-      otherDocsFolder: mockOtherDocsFolder
+      otherDocsFolder: mockOtherDocsFolder,
     } as any;
 
     Object.setPrototypeOf(mockProject, Project.prototype);
@@ -411,8 +397,7 @@ describe("Project-level file type assignments", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const sprjFile = result["@graph"].find(
-      (item: any) =>
-        item.name === "TestProject.sprj" || item["@id"]?.includes(".sprj")
+      (item: any) => item.name === "TestProject.sprj" || item["@id"]?.includes(".sprj"),
     );
     expect(sprjFile).toBeDefined();
     // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
@@ -425,8 +410,7 @@ describe("Project-level file type assignments", () => {
 
     const descFile = result["@graph"].find(
       (item: any) =>
-        item["@id"] === "DescriptionDocuments/README.txt" ||
-        item.name === "README.txt"
+        item["@id"] === "DescriptionDocuments/README.txt" || item.name === "README.txt",
     );
     expect(descFile).toBeDefined();
     // LAM-69: https://linear.app/lameta/issue/LAM-69/correct-types
@@ -438,8 +422,7 @@ describe("Project-level file type assignments", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     const imageFile = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === "OtherDocuments/map.png" || item.name === "map.png"
+      (item: any) => item["@id"] === "OtherDocuments/map.png" || item.name === "map.png",
     );
     expect(imageFile).toBeDefined();
     // Images still get ImageObject, not CreativeWork

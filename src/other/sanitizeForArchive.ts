@@ -15,8 +15,7 @@ export function sanitizeForArchive(name: string, forceRules?: "ASCII"): string {
       n = ASCIIFolder.foldReplacing(n, "X"); // does things like "Afi Ƒe Nɔƒe" -> "Afi Fe Nofe"
       n = n.trim().replace(/\s/g, "_");
       // If the ASCII conversion has left us with an invalid character, replace them with an underscore
-      const validChars =
-        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.-";
+      const validChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.-";
       const regex = new RegExp("[^" + validChars + "]", "g");
       n = n.replace(regex, "_");
       break;
@@ -25,10 +24,7 @@ export function sanitizeForArchive(name: string, forceRules?: "ASCII"): string {
       // nothing more to do?
       break;
     default:
-      throw new Error(
-        "Unknown fileNameRules: " +
-          GetOtherConfigurationSettings().fileNameRules
-      );
+      throw new Error("Unknown fileNameRules: " + GetOtherConfigurationSettings().fileNameRules);
   }
 
   // regardless of limitations by the archive, make sure it is safe for filesystems

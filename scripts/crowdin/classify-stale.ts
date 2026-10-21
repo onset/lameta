@@ -6,12 +6,12 @@ import { loadPo, poEntries, entryKey } from "./lib";
 const R = path.join(__dirname, "..", "..");
 for (const [stale, fresh] of [
   ["pt", "pt-BR"],
-  ["zh", "zh-CN"]
+  ["zh", "zh-CN"],
 ]) {
   console.log(`==== ${stale} -> ${fresh} ====`);
   for (const set of ["messages", "fields"]) {
     const staleE = poEntries(loadPo(path.join(R, "locale", stale, `${set}.po`))).filter((e) =>
-      e.msgstr.trim()
+      e.msgstr.trim(),
     );
     const en = poEntries(loadPo(path.join(R, "locale", "en", `${set}.po`)));
     const enKeys = new Set(en.map((e) => entryKey(e.msgctxt, e.msgid)));
@@ -23,8 +23,8 @@ for (const [stale, fresh] of [
     const freshMap = new Map(
       poEntries(loadPo(path.join(R, "locale", fresh, `${set}.po`))).map((e) => [
         entryKey(e.msgctxt, e.msgid),
-        e.msgstr
-      ])
+        e.msgstr,
+      ]),
     );
     for (const e of staleE) {
       const k = entryKey(e.msgctxt, e.msgid);
@@ -35,14 +35,16 @@ for (const [stale, fresh] of [
           console.log(`RETIRED [${set}]: ${JSON.stringify(e.msgid).slice(0, 70)}`);
         else {
           const untranslated = otherCtxs.filter(
-            (c) => !(freshMap.get(entryKey(c, e.msgid)) ?? "").trim()
+            (c) => !(freshMap.get(entryKey(c, e.msgid)) ?? "").trim(),
           );
           console.log(
-            `CTX-MOVED [${set}]: ${JSON.stringify(e.msgid).slice(0, 60)} old-ctx=${e.msgctxt || "-"} new-ctx=[${otherCtxs.join(", ")}] untranslated-at=[${untranslated.join(", ")}]`
+            `CTX-MOVED [${set}]: ${JSON.stringify(e.msgid).slice(0, 60)} old-ctx=${e.msgctxt || "-"} new-ctx=[${otherCtxs.join(", ")}] untranslated-at=[${untranslated.join(", ")}]`,
           );
         }
       } else {
-        console.log(`STILL-EMPTY [${set}]: ${JSON.stringify(e.msgid).slice(0, 70)} ctx=${e.msgctxt || "-"}`);
+        console.log(
+          `STILL-EMPTY [${set}]: ${JSON.stringify(e.msgid).slice(0, 70)} ctx=${e.msgctxt || "-"}`,
+        );
       }
     }
   }

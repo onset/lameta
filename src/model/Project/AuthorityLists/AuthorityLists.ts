@@ -41,10 +41,7 @@ export class AuthorityLists {
       let description = "";
       let settings: any = {};
       if (fs.existsSync(`${path}/${directoryName}/settings.json5`)) {
-        const settingsText = fs.readFileSync(
-          `${path}/${directoryName}/settings.json5`,
-          "utf8"
-        );
+        const settingsText = fs.readFileSync(`${path}/${directoryName}/settings.json5`, "utf8");
         settings = JSON5.parse(settingsText);
         description = settings.configurationFullName || "??";
         delete settings.configurationFullName;
@@ -54,42 +51,35 @@ export class AuthorityLists {
         id: directoryName,
         label: directoryName,
         description: description,
-        extra: settings
+        extra: settings,
       });
       // read in vocabularies.json5 from the directory, parse it, and add the accessProtocol member to the accessProtocolChoices array
-      const vocabulariesText = fs.readFileSync(
-        `${path}/${directoryName}/vocabularies.json5`
-      );
+      const vocabulariesText = fs.readFileSync(`${path}/${directoryName}/vocabularies.json5`);
       const vocabularies = JSON5.parse(vocabulariesText.toString());
       if (vocabularies.accessProtocol) {
         this.accessProtocolLists.push({
           archiveConfigurationName: directoryName,
 
-          choices: vocabularies.accessProtocol
+          choices: vocabularies.accessProtocol,
         });
       }
     });
     this.archiveConfigurationChoices.push({
       id: "default",
       label: "Other",
-      description: ""
+      description: "",
     });
   }
 
   public setAccessProtocol(protocolName: string, customChoices: string) {
-    if (
-      protocolName === "custom" /* lameta <3.0 */ ||
-      protocolName === "default"
-    ) {
+    if (protocolName === "custom" /* lameta <3.0 */ || protocolName === "default") {
       // tslint:disable-next-line:arrow-return-shorthand
-      this.accessChoicesOfCurrentProtocol = customChoices
-        .split(",")
-        .map((c) => {
-          return { id: c.trim(), label: c.trim(), description: "" };
-        });
+      this.accessChoicesOfCurrentProtocol = customChoices.split(",").map((c) => {
+        return { id: c.trim(), label: c.trim(), description: "" };
+      });
     } else {
       const protocol = this.accessProtocolLists.find(
-        (o: any) => o.archiveConfigurationName === protocolName
+        (o: any) => o.archiveConfigurationName === protocolName,
       );
       this.accessChoicesOfCurrentProtocol = protocol
         ? (protocol.choices as unknown as IChoice[])
@@ -102,7 +92,7 @@ export class AuthorityLists {
     this.roleChoices.forEach((p) => {
       console.log(`"role.label.${p.id}", "Contributor Role", "${p.label}"`);
       console.log(
-        `"role.description.${p.id}", "Description of contributor role '${p.label}'", "${p.description}"`
+        `"role.description.${p.id}", "Description of contributor role '${p.label}'", "${p.description}"`,
       );
     });
   }
@@ -111,9 +101,7 @@ export class AuthorityLists {
     genres.forEach((g) => {
       console.log(`"Genre which is: ${g.definition}", "${g.label}"`);
       console.log(`"Definition of genre '${g.label}'", "${g.definition}"`);
-      g.examples.forEach((e) =>
-        console.log(`"Example of genre '${g.label}'", "${e}"`)
-      );
+      g.examples.forEach((e) => console.log(`"Example of genre '${g.label}'", "${e}"`));
     });
   }
 
@@ -140,22 +128,18 @@ export function loadOLACRoles(): IChoice[] {
   const xml: string = olacRolesRawq;
 
   let xmlAsObject: any = {};
-  xml2js.parseString(
-    xml,
-    { async: false, explicitArray: false },
-    (err, result) => {
-      if (err) {
-        throw err;
-      }
-      xmlAsObject = result;
+  xml2js.parseString(xml, { async: false, explicitArray: false }, (err, result) => {
+    if (err) {
+      throw err;
     }
-  );
+    xmlAsObject = result;
+  });
   // that will have a root with one child, like "Session" or "Meta". Zoom in on that
   // so that we just have the object with its properties.
   return xmlAsObject.OLAC_doc.body.section[1].term.map((t: any) => ({
     id: t.code,
     label: t.name,
-    description: t.definition
+    description: t.definition,
   }));
 
   //xmlAsObject[Object.keys(xmlAsObject)[0]];

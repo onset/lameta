@@ -13,10 +13,7 @@ export interface VocabularyValueTranslation {
    * "factory-value-used-in-sessions" = from built-in vocab with missing translations,
    * "factory-value-used-by-export" = built-in value used during IMDI export (e.g., Consent, Researcher)
    */
-  source:
-    | "custom"
-    | "factory-value-used-in-sessions"
-    | "factory-value-used-by-export";
+  source: "custom" | "factory-value-used-in-sessions" | "factory-value-used-by-export";
   /** Map of language code to translation string. Empty string means no translation yet. */
   translations: Record<string, string>;
 }
@@ -25,10 +22,7 @@ export interface VocabularyValueTranslation {
  * Represents all vocabulary values for a single field (e.g., "genre" or "role").
  * The key is the vocabulary value as stored in session/person files.
  */
-export type FieldVocabularyTranslations = Record<
-  string,
-  VocabularyValueTranslation
->;
+export type FieldVocabularyTranslations = Record<string, VocabularyValueTranslation>;
 
 /**
  * The complete vocabulary translations file structure.
@@ -68,7 +62,7 @@ export class VocabularyTranslations {
   private createEmptyData(): VocabularyTranslationsFile {
     return {
       version: CURRENT_VERSION,
-      fields: {}
+      fields: {},
     };
   }
 
@@ -172,11 +166,8 @@ export class VocabularyTranslations {
    */
   public setGenre(
     value: string,
-    source:
-      | "custom"
-      | "factory-value-used-in-sessions"
-      | "factory-value-used-by-export",
-    translations: Record<string, string>
+    source: "custom" | "factory-value-used-in-sessions" | "factory-value-used-by-export",
+    translations: Record<string, string>,
   ): void {
     runInAction(() => {
       if (!this.data.fields.genre) {
@@ -192,11 +183,8 @@ export class VocabularyTranslations {
    */
   public setRole(
     value: string,
-    source:
-      | "custom"
-      | "factory-value-used-in-sessions"
-      | "factory-value-used-by-export",
-    translations: Record<string, string>
+    source: "custom" | "factory-value-used-in-sessions" | "factory-value-used-by-export",
+    translations: Record<string, string>,
   ): void {
     runInAction(() => {
       if (!this.data.fields.role) {
@@ -212,11 +200,8 @@ export class VocabularyTranslations {
    */
   public setExportString(
     value: string,
-    source:
-      | "custom"
-      | "factory-value-used-in-sessions"
-      | "factory-value-used-by-export",
-    translations: Record<string, string>
+    source: "custom" | "factory-value-used-in-sessions" | "factory-value-used-by-export",
+    translations: Record<string, string>,
   ): void {
     runInAction(() => {
       if (!this.data.fields.exportStrings) {
@@ -231,20 +216,14 @@ export class VocabularyTranslations {
    * Update a single translation for a genre.
    * Lookup is case-insensitive to handle variations in how values are stored.
    */
-  public updateGenreTranslation(
-    value: string,
-    languageCode: string,
-    translation: string
-  ): void {
+  public updateGenreTranslation(value: string, languageCode: string, translation: string): void {
     runInAction(() => {
       const genres = this.data.fields.genre;
       if (!genres) return;
 
       // Case-insensitive lookup
       const valueLower = value.toLowerCase();
-      const key = Object.keys(genres).find(
-        (k) => k.toLowerCase() === valueLower
-      );
+      const key = Object.keys(genres).find((k) => k.toLowerCase() === valueLower);
       if (!key) return;
 
       genres[key].translations[languageCode] = translation;
@@ -257,20 +236,14 @@ export class VocabularyTranslations {
    * Update a single translation for a role.
    * Lookup is case-insensitive to handle variations in how values are stored.
    */
-  public updateRoleTranslation(
-    value: string,
-    languageCode: string,
-    translation: string
-  ): void {
+  public updateRoleTranslation(value: string, languageCode: string, translation: string): void {
     runInAction(() => {
       const roles = this.data.fields.role;
       if (!roles) return;
 
       // Case-insensitive lookup
       const valueLower = value.toLowerCase();
-      const key = Object.keys(roles).find(
-        (k) => k.toLowerCase() === valueLower
-      );
+      const key = Object.keys(roles).find((k) => k.toLowerCase() === valueLower);
       if (!key) return;
 
       roles[key].translations[languageCode] = translation;
@@ -286,7 +259,7 @@ export class VocabularyTranslations {
   public updateExportStringTranslation(
     value: string,
     languageCode: string,
-    translation: string
+    translation: string,
   ): void {
     runInAction(() => {
       const exportStrings = this.data.fields.exportStrings;
@@ -294,9 +267,7 @@ export class VocabularyTranslations {
 
       // Case-insensitive lookup
       const valueLower = value.toLowerCase();
-      const key = Object.keys(exportStrings).find(
-        (k) => k.toLowerCase() === valueLower
-      );
+      const key = Object.keys(exportStrings).find((k) => k.toLowerCase() === valueLower);
       if (!key) return;
 
       exportStrings[key].translations[languageCode] = translation;
@@ -310,10 +281,7 @@ export class VocabularyTranslations {
    * Returns undefined if not found.
    * Lookup is case-insensitive to handle variations in how values are stored.
    */
-  public getGenreTranslation(
-    value: string,
-    languageCode: string
-  ): string | undefined {
+  public getGenreTranslation(value: string, languageCode: string): string | undefined {
     const genres = this.data.fields.genre;
     if (!genres) return undefined;
 
@@ -324,9 +292,7 @@ export class VocabularyTranslations {
 
     const entry = genres[key];
     const translation = entry.translations[languageCode];
-    return translation && translation.trim().length > 0
-      ? translation
-      : undefined;
+    return translation && translation.trim().length > 0 ? translation : undefined;
   }
 
   /**
@@ -334,10 +300,7 @@ export class VocabularyTranslations {
    * Returns undefined if not found.
    * Lookup is case-insensitive to handle variations in how values are stored.
    */
-  public getRoleTranslation(
-    value: string,
-    languageCode: string
-  ): string | undefined {
+  public getRoleTranslation(value: string, languageCode: string): string | undefined {
     const roles = this.data.fields.role;
     if (!roles) return undefined;
 
@@ -348,9 +311,7 @@ export class VocabularyTranslations {
 
     const entry = roles[key];
     const translation = entry.translations[languageCode];
-    return translation && translation.trim().length > 0
-      ? translation
-      : undefined;
+    return translation && translation.trim().length > 0 ? translation : undefined;
   }
 
   /**
@@ -358,10 +319,7 @@ export class VocabularyTranslations {
    * Returns undefined if not found.
    * Lookup is case-insensitive to handle variations in how values are stored.
    */
-  public getExportStringTranslation(
-    value: string,
-    languageCode: string
-  ): string | undefined {
+  public getExportStringTranslation(value: string, languageCode: string): string | undefined {
     const exportStrings = this.data.fields.exportStrings;
     if (!exportStrings) return undefined;
 
@@ -372,9 +330,7 @@ export class VocabularyTranslations {
 
     const entry = exportStrings[key];
     const translation = entry.translations[languageCode];
-    return translation && translation.trim().length > 0
-      ? translation
-      : undefined;
+    return translation && translation.trim().length > 0 ? translation : undefined;
   }
 
   /**
@@ -387,23 +343,19 @@ export class VocabularyTranslations {
   public isGenreMissingTranslations(
     value: string,
     languageCodes: string[],
-    getBuiltInTranslation?: (value: string, lang: string) => string | undefined
+    getBuiltInTranslation?: (value: string, lang: string) => string | undefined,
   ): boolean {
     const entry = this.data.fields.genre?.[value];
     if (!entry) return true;
     // Filter out English since the key itself is the English value
-    const nonEnglishCodes = languageCodes.filter(
-      (code) => code !== "en" && code !== "eng"
-    );
+    const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
     return nonEnglishCodes.some((code) => {
       const projectTranslation = entry.translations[code];
-      if (projectTranslation && projectTranslation.trim().length > 0)
-        return false;
+      if (projectTranslation && projectTranslation.trim().length > 0) return false;
       // Check built-in translation if provided
       if (getBuiltInTranslation) {
         const builtInTranslation = getBuiltInTranslation(value, code);
-        if (builtInTranslation && builtInTranslation.trim().length > 0)
-          return false;
+        if (builtInTranslation && builtInTranslation.trim().length > 0) return false;
       }
       return true;
     });
@@ -419,23 +371,19 @@ export class VocabularyTranslations {
   public isRoleMissingTranslations(
     value: string,
     languageCodes: string[],
-    getBuiltInTranslation?: (value: string, lang: string) => string | undefined
+    getBuiltInTranslation?: (value: string, lang: string) => string | undefined,
   ): boolean {
     const entry = this.data.fields.role?.[value];
     if (!entry) return true;
     // Filter out English since the key itself is the English value
-    const nonEnglishCodes = languageCodes.filter(
-      (code) => code !== "en" && code !== "eng"
-    );
+    const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
     return nonEnglishCodes.some((code) => {
       const projectTranslation = entry.translations[code];
-      if (projectTranslation && projectTranslation.trim().length > 0)
-        return false;
+      if (projectTranslation && projectTranslation.trim().length > 0) return false;
       // Check built-in translation if provided
       if (getBuiltInTranslation) {
         const builtInTranslation = getBuiltInTranslation(value, code);
-        if (builtInTranslation && builtInTranslation.trim().length > 0)
-          return false;
+        if (builtInTranslation && builtInTranslation.trim().length > 0) return false;
       }
       return true;
     });
@@ -448,16 +396,11 @@ export class VocabularyTranslations {
    * @param value The export string value to check
    * @param languageCodes The language codes to check
    */
-  public isExportStringMissingTranslations(
-    value: string,
-    languageCodes: string[]
-  ): boolean {
+  public isExportStringMissingTranslations(value: string, languageCodes: string[]): boolean {
     const entry = this.data.fields.exportStrings?.[value];
     if (!entry) return true;
     // Filter out English since the key itself is the English value
-    const nonEnglishCodes = languageCodes.filter(
-      (code) => code !== "en" && code !== "eng"
-    );
+    const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
     return nonEnglishCodes.some((code) => {
       const projectTranslation = entry.translations[code];
       return !projectTranslation || projectTranslation.trim().length === 0;
@@ -471,15 +414,11 @@ export class VocabularyTranslations {
    */
   public getGenreMissingCount(
     languageCodes: string[],
-    getBuiltInTranslation?: (value: string, lang: string) => string | undefined
+    getBuiltInTranslation?: (value: string, lang: string) => string | undefined,
   ): number {
     const genres = this.data.fields.genre || {};
     return Object.keys(genres).filter((value) =>
-      this.isGenreMissingTranslations(
-        value,
-        languageCodes,
-        getBuiltInTranslation
-      )
+      this.isGenreMissingTranslations(value, languageCodes, getBuiltInTranslation),
     ).length;
   }
 
@@ -490,15 +429,11 @@ export class VocabularyTranslations {
    */
   public getRoleMissingCount(
     languageCodes: string[],
-    getBuiltInTranslation?: (value: string, lang: string) => string | undefined
+    getBuiltInTranslation?: (value: string, lang: string) => string | undefined,
   ): number {
     const roles = this.data.fields.role || {};
     return Object.keys(roles).filter((value) =>
-      this.isRoleMissingTranslations(
-        value,
-        languageCodes,
-        getBuiltInTranslation
-      )
+      this.isRoleMissingTranslations(value, languageCodes, getBuiltInTranslation),
     ).length;
   }
 
@@ -509,7 +444,7 @@ export class VocabularyTranslations {
   public getExportStringMissingCount(languageCodes: string[]): number {
     const exportStrings = this.data.fields.exportStrings || {};
     return Object.keys(exportStrings).filter((value) =>
-      this.isExportStringMissingTranslations(value, languageCodes)
+      this.isExportStringMissingTranslations(value, languageCodes),
     ).length;
   }
 
@@ -520,16 +455,11 @@ export class VocabularyTranslations {
    */
   public ensureGenreEntry(
     value: string,
-    source:
-      | "custom"
-      | "factory-value-used-in-sessions"
-      | "factory-value-used-by-export",
-    languageCodes: string[]
+    source: "custom" | "factory-value-used-in-sessions" | "factory-value-used-by-export",
+    languageCodes: string[],
   ): void {
     // Filter out English since the key itself is the English value
-    const nonEnglishCodes = languageCodes.filter(
-      (code) => code !== "en" && code !== "eng"
-    );
+    const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
 
     runInAction(() => {
       if (!this.data.fields.genre) {
@@ -539,7 +469,7 @@ export class VocabularyTranslations {
       // Case-insensitive lookup to avoid duplicates (e.g., "consent" vs "Consent")
       const valueLower = value.toLowerCase();
       const existingKey = Object.keys(this.data.fields.genre).find(
-        (key) => key.toLowerCase() === valueLower
+        (key) => key.toLowerCase() === valueLower,
       );
 
       if (existingKey) {
@@ -558,11 +488,9 @@ export class VocabularyTranslations {
           // Also migrate old source values ("builtin", "project", "hardcoded-export")
           if (
             source === "factory-value-used-by-export" ||
-            ![
-              "custom",
-              "factory-value-used-in-sessions",
-              "factory-value-used-by-export"
-            ].includes(existing.source)
+            !["custom", "factory-value-used-in-sessions", "factory-value-used-by-export"].includes(
+              existing.source,
+            )
           ) {
             existing.source = source;
             this.dirty = true;
@@ -587,16 +515,11 @@ export class VocabularyTranslations {
    */
   public ensureRoleEntry(
     value: string,
-    source:
-      | "custom"
-      | "factory-value-used-in-sessions"
-      | "factory-value-used-by-export",
-    languageCodes: string[]
+    source: "custom" | "factory-value-used-in-sessions" | "factory-value-used-by-export",
+    languageCodes: string[],
   ): void {
     // Filter out English since the key itself is the English value
-    const nonEnglishCodes = languageCodes.filter(
-      (code) => code !== "en" && code !== "eng"
-    );
+    const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
 
     runInAction(() => {
       if (!this.data.fields.role) {
@@ -606,7 +529,7 @@ export class VocabularyTranslations {
       // Case-insensitive lookup to avoid duplicates (e.g., "researcher" vs "Researcher")
       const valueLower = value.toLowerCase();
       const existingKey = Object.keys(this.data.fields.role).find(
-        (key) => key.toLowerCase() === valueLower
+        (key) => key.toLowerCase() === valueLower,
       );
 
       if (existingKey) {
@@ -625,11 +548,9 @@ export class VocabularyTranslations {
           // Also migrate old source values ("builtin", "project", "hardcoded-export")
           if (
             source === "factory-value-used-by-export" ||
-            ![
-              "custom",
-              "factory-value-used-in-sessions",
-              "factory-value-used-by-export"
-            ].includes(existing.source)
+            !["custom", "factory-value-used-in-sessions", "factory-value-used-by-export"].includes(
+              existing.source,
+            )
           ) {
             existing.source = source;
             this.dirty = true;
@@ -652,14 +573,9 @@ export class VocabularyTranslations {
    * If the entry already exists, adds any missing language placeholders.
    * English is excluded since the key itself is the English value.
    */
-  public ensureExportStringEntry(
-    value: string,
-    languageCodes: string[]
-  ): void {
+  public ensureExportStringEntry(value: string, languageCodes: string[]): void {
     // Filter out English since the key itself is the English value
-    const nonEnglishCodes = languageCodes.filter(
-      (code) => code !== "en" && code !== "eng"
-    );
+    const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
 
     runInAction(() => {
       if (!this.data.fields.exportStrings) {
@@ -669,7 +585,7 @@ export class VocabularyTranslations {
       // Case-insensitive lookup to avoid duplicates
       const valueLower = value.toLowerCase();
       const existingKey = Object.keys(this.data.fields.exportStrings).find(
-        (key) => key.toLowerCase() === valueLower
+        (key) => key.toLowerCase() === valueLower,
       );
 
       if (existingKey) {
@@ -691,7 +607,7 @@ export class VocabularyTranslations {
         }
         this.data.fields.exportStrings[value] = {
           source: "factory-value-used-by-export",
-          translations
+          translations,
         };
         this.dirty = true;
       }

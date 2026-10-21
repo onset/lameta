@@ -4,14 +4,14 @@ import {
   createSessionLicense,
   getSessionLicenseId,
   createLdacAccessTypeDefinitions,
-  RoCrateLicense
+  RoCrateLicense,
 } from "./RoCrateLicenseManager";
 
 import { addFieldEntries, addChildFileEntries } from "./RoCrateExporter";
 import {
   getContactPersonReference,
   setContactPersonProperties,
-  createUnknownContributorEntity
+  createUnknownContributorEntity,
 } from "./RoCrateEntityResolver";
 import { makeEntriesFromParticipant } from "./RoCratePeople";
 import { RoCrateLanguages } from "./RoCrateLanguages";
@@ -20,7 +20,7 @@ import {
   createSessionId,
   createSessionDirectoryId,
   createPersonId,
-  createUnresolvedContributorId
+  createUnresolvedContributorId,
 } from "./RoCrateUtils";
 
 type PublisherDetails = {
@@ -34,7 +34,7 @@ export async function createSessionEntry(
   isStandaloneSession: boolean = false,
   rocrateLanguages: RoCrateLanguages,
   rocrateLicense: RoCrateLicense,
-  publisher?: PublisherDetails
+  publisher?: PublisherDetails,
 ): Promise<object[]> {
   const sessionTypes = isStandaloneSession
     ? ["Dataset", "RepositoryObject", "CollectionEvent"]
@@ -49,18 +49,16 @@ export async function createSessionEntry(
     "@id": isStandaloneSession ? "./" : createSessionId(session),
     "@type": sessionTypes,
     conformsTo: {
-      "@id": "https://w3id.org/ldac/profile#Object"
+      "@id": "https://w3id.org/ldac/profile#Object",
     },
-    name:
-      session.metadataFile?.getTextProperty("title") ||
-      "No title provided for this session.",
+    name: session.metadataFile?.getTextProperty("title") || "No title provided for this session.",
     description:
       session.metadataFile?.getTextProperty("description") ||
       "No description provided for this session.",
     datePublished: new Date().toISOString(),
     // Sessions need the CollectionEvent type plus the LDAC Session classification so
     // downstream tools recognise them as event objects rather than generic datasets.
-    collectionEventType: "https://w3id.org/ldac/terms#Session"
+    collectionEventType: "https://w3id.org/ldac/terms#Session",
   };
 
   // Only add hasPart for standalone sessions (when session IS the root Dataset)
@@ -112,8 +110,8 @@ export async function createSessionEntry(
       "@id": "ro-crate-metadata.json",
       "@type": "CreativeWork",
       conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
-      about: { "@id": "./" }
-    }
+      about: { "@id": "./" },
+    },
   ];
 
   const otherEntries: any[] = [];
@@ -123,13 +121,7 @@ export async function createSessionEntry(
     otherEntries.push(createUnknownContributorEntity());
   }
 
-  await addFieldEntries(
-    project,
-    session,
-    mainSessionEntry,
-    otherEntries,
-    rocrateLanguages
-  );
+  await addFieldEntries(project, session, mainSessionEntry, otherEntries, rocrateLanguages);
 
   // Ensure session has ldac:subjectLanguage (fallback if no languages field processed)
   if (!mainSessionEntry["ldac:subjectLanguage"]) {
@@ -140,18 +132,10 @@ export async function createSessionEntry(
 
   // Add participant properties and person entries
   addParticipantProperties(mainSessionEntry, session, project);
-  allEntries.push(
-    ...(await makeEntriesFromParticipant(project, session, rocrateLicense))
-  );
+  allEntries.push(...(await makeEntriesFromParticipant(project, session, rocrateLicense)));
 
   // Add files to session hasPart
-  addChildFileEntries(
-    session,
-    mainSessionEntry,
-    otherEntries,
-    rocrateLicense,
-    project
-  );
+  addChildFileEntries(session, mainSessionEntry, otherEntries, rocrateLicense, project);
 
   // Create Place entity if location is specified
   const location = session.metadataFile?.getTextProperty("location");
@@ -159,7 +143,7 @@ export async function createSessionEntry(
     otherEntries.push({
       "@id": `#${location}`,
       "@type": "Place",
-      name: location
+      name: location,
     });
   }
 
@@ -196,7 +180,7 @@ export async function createSessionEntry(
 export function addParticipantProperties(
   sessionEntry: any,
   session: Session,
-  project: Project
+  project: Project,
 ): void {
   const roleGroups: { [key: string]: string[] } = {};
 
@@ -210,9 +194,7 @@ export function addParticipantProperties(
     }
 
     const person = project.findPerson(personName);
-    const personId = person
-      ? createPersonId(person)
-      : createUnresolvedContributorId(personName);
+    const personId = person ? createPersonId(person) : createUnresolvedContributorId(personName);
 
     // Avoid duplicates
     if (!roleGroups[role].includes(personId)) {

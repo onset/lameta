@@ -14,7 +14,7 @@ describe("RO-Crate IRI Validation", () => {
 
   it("should create proper Person @id fragments for names with spaces", () => {
     const mockPerson = {
-      filePrefix: "BAHOUNGOU Hilaire"
+      filePrefix: "BAHOUNGOU Hilaire",
     };
 
     const personId = createPersonId(mockPerson);
@@ -28,7 +28,7 @@ describe("RO-Crate IRI Validation", () => {
 
   it("should encode parentheses but preserve @ in Person IDs", () => {
     const mockPerson = {
-      filePrefix: "BAKALA Michel (@Mfouati)"
+      filePrefix: "BAKALA Michel (@Mfouati)",
     };
 
     const personId = createPersonId(mockPerson);

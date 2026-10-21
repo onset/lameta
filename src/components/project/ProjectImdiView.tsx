@@ -2,11 +2,7 @@ import * as React from "react";
 import { css } from "@emotion/react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { Project } from "../../model/Project/Project";
-import {
-  TargetImdiView,
-  DocumentFolderImdiView,
-  ConsentImdiView
-} from "../ImdiView";
+import { TargetImdiView, DocumentFolderImdiView, ConsentImdiView } from "../ImdiView";
 
 interface IProps {
   project: Project;
@@ -85,11 +81,7 @@ export const ProjectImdiView: React.FunctionComponent<IProps> = (props) => {
         </TabList>
 
         <TabPanel>
-          <TargetImdiView
-            target={props.project}
-            project={props.project}
-            folder={props.project}
-          />
+          <TargetImdiView target={props.project} project={props.project} folder={props.project} />
         </TabPanel>
 
         <TabPanel>

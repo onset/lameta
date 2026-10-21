@@ -24,7 +24,7 @@ import {
   loadPo,
   poEntries,
   entryKey,
-  sleep
+  sleep,
 } from "./lib";
 
 const REPO = path.join(__dirname, "..", "..");
@@ -32,12 +32,23 @@ const BACKUP = path.join(REPO, "crowdin-backup", "2026-07-09");
 const STAGING = path.join(__dirname, "staging");
 // crowdinId -> folder name used inside the v2 root build zip
 const ROOT_BUILD_FOLDER: Record<string, string> = {
-  "es-ES": "es", fr: "fr", ru: "ru", "zh-CN": "zh", "pt-BR": "pt", id: "id", fa: "fa"
+  "es-ES": "es",
+  fr: "fr",
+  ru: "ru",
+  "zh-CN": "zh",
+  "pt-BR": "pt",
+  id: "id",
+  fa: "fa",
 };
 // stale local dirs that hold fields translations not elsewhere on disk
 const STALE_DIR: Record<string, string> = { "pt-BR": "pt", "zh-CN": "zh" };
 
-interface Fill { msgctxt: string; msgid: string; msgstr: string; source: string }
+interface Fill {
+  msgctxt: string;
+  msgid: string;
+  msgstr: string;
+  source: string;
+}
 
 function loadCsvTextMap(): Map<string, Record<string, string>> {
   // English text -> { csvColumn: translation } from the v2 CSVs
@@ -64,13 +75,19 @@ function loadCsvTextMap(): Map<string, Record<string, string>> {
   return map;
 }
 
-async function exportBranchFile(branchId: number, files: any[], name: string, langId: string, dest: string) {
+async function exportBranchFile(
+  branchId: number,
+  files: any[],
+  name: string,
+  langId: string,
+  dest: string,
+) {
   const file = files.find((f) => f.branchId === branchId && path.basename(f.path) === name);
   if (!file) throw new Error(`${name} not found on branch ${branchId}`);
   const res = (
     await api(`/projects/${PROJECT_ID}/translations/exports`, {
       method: "POST",
-      body: { targetLanguageId: langId, fileIds: [file.id] }
+      body: { targetLanguageId: langId, fileIds: [file.id] },
     })
   ).data;
   await downloadToFile(res.url, dest);
@@ -83,7 +100,7 @@ function writeStagingPo(langFolder: string, set: string, fills: Fill[]) {
     translations[f.msgctxt][f.msgid] = {
       msgctxt: f.msgctxt || undefined,
       msgid: f.msgid,
-      msgstr: [f.msgstr]
+      msgstr: [f.msgstr],
     };
   }
   const po = gettextParser.po.compile({
@@ -92,9 +109,9 @@ function writeStagingPo(langFolder: string, set: string, fills: Fill[]) {
       "content-type": "text/plain; charset=utf-8",
       language: langFolder,
       "mime-version": "1.0",
-      "content-transfer-encoding": "8bit"
+      "content-transfer-encoding": "8bit",
     },
-    translations
+    translations,
   });
   const dest = path.join(STAGING, langFolder, `${set}.po`);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
@@ -103,11 +120,14 @@ function writeStagingPo(langFolder: string, set: string, fills: Fill[]) {
 
 async function main() {
   const branchName = process.argv[2];
-  if (!branchName) throw new Error("usage: build-recovered-translations.ts <branchName> [langId,...]");
+  if (!branchName)
+    throw new Error("usage: build-recovered-translations.ts <branchName> [langId,...]");
   const langFilter = process.argv[3]?.split(",");
   const langs = LANGS.filter((l) => !langFilter || langFilter.includes(l.crowdinId));
 
-  const branches = await apiAll(`/projects/${PROJECT_ID}/branches?name=${encodeURIComponent(branchName)}`);
+  const branches = await apiAll(
+    `/projects/${PROJECT_ID}/branches?name=${encodeURIComponent(branchName)}`,
+  );
   if (!branches.length) throw new Error(`no branch named ${branchName}`);
   const branchId = branches[0].id;
   const files = await apiAll(`/projects/${PROJECT_ID}/files?recursion=1`);
@@ -122,27 +142,48 @@ async function main() {
     // what is currently untranslated on the target branch?
     const exportDir = path.join(STAGING, "_branch-exports", branchName, lang.crowdinId);
     for (const set of ["messages", "fields"]) {
-      await exportBranchFile(branchId, files, `${set}.po`, lang.crowdinId, path.join(exportDir, `${set}.po`));
+      await exportBranchFile(
+        branchId,
+        files,
+        `${set}.po`,
+        lang.crowdinId,
+        path.join(exportDir, `${set}.po`),
+      );
       await sleep(150);
     }
     const branchMessages = new Map(
-      poEntries(loadPo(path.join(exportDir, "messages.po"))).map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr])
+      poEntries(loadPo(path.join(exportDir, "messages.po"))).map((e) => [
+        entryKey(e.msgctxt, e.msgid),
+        e.msgstr,
+      ]),
     );
     const branchFields = new Map(
-      poEntries(loadPo(path.join(exportDir, "fields.po"))).map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr])
+      poEntries(loadPo(path.join(exportDir, "fields.po"))).map((e) => [
+        entryKey(e.msgctxt, e.msgid),
+        e.msgstr,
+      ]),
     );
 
     // ---- messages.po ----
-    const rootBuildPo = path.join(BACKUP, "root-build", ROOT_BUILD_FOLDER[lang.crowdinId], "messages.po");
+    const rootBuildPo = path.join(
+      BACKUP,
+      "root-build",
+      ROOT_BUILD_FOLDER[lang.crowdinId],
+      "messages.po",
+    );
     const rootMap = new Map(
-      poEntries(loadPo(rootBuildPo)).filter((e) => e.msgstr.trim()).map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr])
+      poEntries(loadPo(rootBuildPo))
+        .filter((e) => e.msgstr.trim())
+        .map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr]),
     );
     const localFolder = STALE_DIR[lang.crowdinId] ?? lang.folder;
     const localPoPath = path.join(REPO, "locale", localFolder, "messages.po");
     const localMap = new Map(
       fs.existsSync(localPoPath)
-        ? poEntries(loadPo(localPoPath)).filter((e) => e.msgstr.trim()).map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr])
-        : []
+        ? poEntries(loadPo(localPoPath))
+            .filter((e) => e.msgstr.trim())
+            .map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr])
+        : [],
     );
     const msgFills: Fill[] = [];
     for (const e of enMessages) {
@@ -157,7 +198,10 @@ async function main() {
       branchAlreadyTranslated: [...branchMessages.values()].filter((v) => v.trim()).length,
       filled: msgFills.length,
       bySource: msgFills.reduce((a: any, f) => ((a[f.source] = (a[f.source] ?? 0) + 1), a), {}),
-      stillEmpty: enMessages.length - [...branchMessages.values()].filter((v) => v.trim()).length - msgFills.length
+      stillEmpty:
+        enMessages.length -
+        [...branchMessages.values()].filter((v) => v.trim()).length -
+        msgFills.length,
     };
     if (msgFills.length) writeStagingPo(lang.folder, "messages", msgFills);
 
@@ -167,8 +211,10 @@ async function main() {
       : undefined;
     const staleMap = new Map(
       staleFieldsPath && fs.existsSync(staleFieldsPath)
-        ? poEntries(loadPo(staleFieldsPath)).filter((e) => e.msgstr.trim()).map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr])
-        : []
+        ? poEntries(loadPo(staleFieldsPath))
+            .filter((e) => e.msgstr.trim())
+            .map((e) => [entryKey(e.msgctxt, e.msgid), e.msgstr])
+        : [],
     );
     const fieldFills: Fill[] = [];
     for (const e of enFields) {
@@ -183,13 +229,16 @@ async function main() {
       branchAlreadyTranslated: [...branchFields.values()].filter((v) => v.trim()).length,
       filled: fieldFills.length,
       bySource: fieldFills.reduce((a: any, f) => ((a[f.source] = (a[f.source] ?? 0) + 1), a), {}),
-      stillEmpty: enFields.length - [...branchFields.values()].filter((v) => v.trim()).length - fieldFills.length
+      stillEmpty:
+        enFields.length -
+        [...branchFields.values()].filter((v) => v.trim()).length -
+        fieldFills.length,
     };
     if (fieldFills.length) writeStagingPo(lang.folder, "fields", fieldFills);
 
     report.langs[lang.crowdinId] = rep;
     console.log(
-      `${lang.crowdinId.padEnd(6)} messages: +${rep.messages.filled} (had ${rep.messages.branchAlreadyTranslated}, ${rep.messages.stillEmpty} still empty)   fields: +${rep.fields.filled} (had ${rep.fields.branchAlreadyTranslated}, ${rep.fields.stillEmpty} still empty)`
+      `${lang.crowdinId.padEnd(6)} messages: +${rep.messages.filled} (had ${rep.messages.branchAlreadyTranslated}, ${rep.messages.stillEmpty} still empty)   fields: +${rep.fields.filled} (had ${rep.fields.branchAlreadyTranslated}, ${rep.fields.stillEmpty} still empty)`,
     );
   }
 
@@ -198,7 +247,7 @@ async function main() {
   for (const set of ["messages", "fields"]) {
     fs.copyFileSync(
       path.join(REPO, "locale", "en", `${set}.po`),
-      path.join(STAGING, "en", `${set}.po`)
+      path.join(STAGING, "en", `${set}.po`),
     );
   }
 

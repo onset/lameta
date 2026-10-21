@@ -28,9 +28,7 @@ test.describe("ID Validation Tests", () => {
     await page.keyboard.press("Tab");
 
     // verify no validation message appears (if component exposes one)
-    const validationMessage = page.locator(
-      '[data-testid="validation-message"]'
-    );
+    const validationMessage = page.locator('[data-testid="validation-message"]');
     if (await validationMessage.count()) {
       await expect(validationMessage).not.toBeVisible();
     }
@@ -49,9 +47,7 @@ test.describe("ID Validation Tests", () => {
     await page.keyboard.press("Tab");
 
     // verify validation message appears
-    const validationMessage = page.locator(
-      '[data-testid="validation-message"]'
-    );
+    const validationMessage = page.locator('[data-testid="validation-message"]');
     if (await validationMessage.count()) {
       await expect(validationMessage).toBeVisible();
       await expect(validationMessage).toContainText("ID cannot be empty");
@@ -71,9 +67,7 @@ test.describe("ID Validation Tests", () => {
     await page.keyboard.press("Tab");
 
     // verify validation message appears
-    const validationMessage = page.locator(
-      '[data-testid="validation-message"]'
-    );
+    const validationMessage = page.locator('[data-testid="validation-message"]');
     if (await validationMessage.count()) {
       await expect(validationMessage).toBeVisible();
       await expect(validationMessage).toContainText("ID cannot contain spaces");

@@ -32,11 +32,7 @@ export const LametaXmlView: React.FunctionComponent<{
         overflow: hidden;
       `}
     >
-      <SearchableCodeViewer
-        content={xml}
-        language="xml"
-        autoFocusSearch={true}
-      />
+      <SearchableCodeViewer content={xml} language="xml" autoFocusSearch={true} />
     </div>
   );
 };

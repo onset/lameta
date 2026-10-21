@@ -6,6 +6,6 @@ export default defineConfig({
   build: {
     ...baseConfig.build,
     minify: false,
-    cssMinify: false
-  }
+    cssMinify: false,
+  },
 });

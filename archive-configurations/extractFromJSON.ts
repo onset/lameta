@@ -89,9 +89,7 @@ function createPoFilesFromOneSetOfJsons(set: string) {
     return aKey.localeCompare(bKey);
   });
 
-  console.log(
-    `extractFromJSON: Gathered ${messages.length} strings from ${set}.`
-  );
+  console.log(`extractFromJSON: Gathered ${messages.length} strings from ${set}.`);
   // PO string literals need backslashes, quotes and newlines escaped, or the
   // file stops parsing (e.g. a description that quotes an example title)
   const poString = (s: string) =>

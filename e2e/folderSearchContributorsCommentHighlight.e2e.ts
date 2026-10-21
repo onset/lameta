@@ -33,9 +33,7 @@ test.describe("Folder Search Contributors Comment Highlight", () => {
     // Focus first row comment textarea and type distinctive text
     const unique = "ContribCömment Üñîq-123_测试/テスト";
     // Find the first comments cell's textarea
-    const firstTextarea = page
-      .getByTestId("contributor-comment-textarea")
-      .first();
+    const firstTextarea = page.getByTestId("contributor-comment-textarea").first();
     await firstTextarea.waitFor({ state: "visible" });
     await firstTextarea.click();
     await firstTextarea.fill(unique);
@@ -47,12 +45,8 @@ test.describe("Folder Search Contributors Comment Highlight", () => {
     await searchInput.press("Enter");
     // Let search propagate and MobX reactions update the table highlight
     await page.waitForFunction(() => {
-      const el = document.querySelector(
-        '[data-testid="contributor-comment-cell"]'
-      );
-      return (
-        el && (el as HTMLElement).getAttribute("data-has-highlight") === "true"
-      );
+      const el = document.querySelector('[data-testid="contributor-comment-cell"]');
+      return el && (el as HTMLElement).getAttribute("data-has-highlight") === "true";
     });
 
     // Ensure we are still on Contributors

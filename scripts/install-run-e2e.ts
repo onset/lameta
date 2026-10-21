@@ -34,22 +34,13 @@ const findInstalledPath = async (): Promise<string> => {
   const platform = os.platform();
   if (platform === "win32") {
     const candidates = [
-      path.join(
-        process.env.LOCALAPPDATA || "",
-        "Programs",
-        "lameta",
-        "lameta.exe"
-      ),
-      path.join(
-        process.env["ProgramFiles"] || "C:/Program Files",
-        "lameta",
-        "lameta.exe"
-      ),
+      path.join(process.env.LOCALAPPDATA || "", "Programs", "lameta", "lameta.exe"),
+      path.join(process.env["ProgramFiles"] || "C:/Program Files", "lameta", "lameta.exe"),
       path.join(
         process.env["ProgramFiles(x86)"] || "C:/Program Files (x86)",
         "lameta",
-        "lameta.exe"
-      )
+        "lameta.exe",
+      ),
     ];
     for (const p of candidates) {
       if (p && fs.existsSync(p)) return p;
@@ -72,7 +63,7 @@ const killExistingLameta = async (): Promise<void> => {
     // Kill any auto-launched instance from the installer so Playwright can start a fresh one
     await new Promise<void>((resolve) => {
       const p = spawn("taskkill", ["/IM", "lameta.exe", "/F"], {
-        stdio: "ignore"
+        stdio: "ignore",
       });
       p.on("exit", () => resolve());
       p.on("error", () => resolve());
@@ -82,7 +73,7 @@ const killExistingLameta = async (): Promise<void> => {
   } else if (platform === "darwin") {
     await new Promise<void>((resolve) => {
       const p = spawn("bash", ["-lc", "pkill -f 'lameta.app' || true"], {
-        stdio: "ignore"
+        stdio: "ignore",
       });
       p.on("exit", () => resolve());
       p.on("error", () => resolve());
@@ -98,7 +89,7 @@ const runPnpmE2E = async (
     debug?: boolean;
     slowmo?: string | number;
     extraArgs?: string[];
-  }
+  },
 ): Promise<number> => {
   return new Promise<number>((resolve) => {
     // Use 1 worker to avoid single-instance conflicts with packaged app.
@@ -123,8 +114,8 @@ const runPnpmE2E = async (
       stdio: "inherit",
       env: {
         ...process.env,
-        E2E_LAMETA_EXECUTABLE: exePath
-      }
+        E2E_LAMETA_EXECUTABLE: exePath,
+      },
     });
     child.on("exit", (code) => resolve(code ?? 1));
   });
@@ -133,8 +124,7 @@ const runPnpmE2E = async (
 const main = async () => {
   const platform = os.platform();
   const argv = process.argv.slice(2);
-  const stopOnFailure =
-    argv.includes("--stop-on-failure") || argv.includes("-x");
+  const stopOnFailure = argv.includes("--stop-on-failure") || argv.includes("-x");
 
   // Parse and strip script-level flags we handle explicitly
   let debug = false;
@@ -178,13 +168,13 @@ const main = async () => {
   log(
     `Running e2e${stopOnFailure ? " (stop on first failure)" : ""}${
       extraArgs.length ? ` with args: ${extraArgs.join(" ")}` : ""
-    }...`
+    }...`,
   );
   const exitCode = await runPnpmE2E(exePath, {
     stopOnFailure,
     debug,
     slowmo,
-    extraArgs
+    extraArgs,
   });
   if (exitCode === 0) {
     log("E2E SUCCESS");

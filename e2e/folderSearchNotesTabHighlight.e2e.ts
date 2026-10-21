@@ -11,10 +11,7 @@ let project: E2eProject;
 test.describe("Folder Search Notes Tab Highlight", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    project = await launchWithProject(
-      lameta,
-      "FolderSearchNotesTabHighlight/ΔNotes"
-    );
+    project = await launchWithProject(lameta, "FolderSearchNotesTabHighlight/ΔNotes");
     page = lameta.page;
   });
   test.afterAll(async () => {
@@ -33,9 +30,7 @@ test.describe("Folder Search Notes Tab Highlight", () => {
     // Open Notes tab and enter distinctive notes text
     await page.getByRole("tab", { name: /Notes/i }).click();
     const unique = "UnIqNoTeStrïng ✨ ZZZ";
-    const notesEditor = page.locator(
-      'div[role="textbox"][contenteditable="true"]'
-    );
+    const notesEditor = page.locator('div[role="textbox"][contenteditable="true"]');
     await notesEditor.click();
     await notesEditor.type(unique);
     // blur by focusing search input (also ensures editing ends so highlight can apply later)
@@ -54,9 +49,7 @@ test.describe("Folder Search Notes Tab Highlight", () => {
     // Navigate back to Notes tab to see inline highlight inside content
     await page.getByRole("tab", { name: /Notes/i }).click();
     await expect(
-      page
-        .getByTestId("inline-highlight")
-        .filter({ hasText: /UnIqNoTeStrïng/i })
+      page.getByTestId("inline-highlight").filter({ hasText: /UnIqNoTeStrïng/i }),
     ).toBeVisible();
   });
 });

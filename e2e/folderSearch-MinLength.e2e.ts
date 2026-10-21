@@ -32,9 +32,9 @@ test.describe("Folder Search minimum length", () => {
     await page.waitForTimeout(250);
 
     // Expect no highlights in the folder list area and no filtered count indicator
-    await expect(
-      page.locator(".folderList [data-testid='inline-highlight']").first()
-    ).toHaveCount(0);
+    await expect(page.locator(".folderList [data-testid='inline-highlight']").first()).toHaveCount(
+      0,
+    );
     const countNow = await page.locator(allRowsSelector).count();
     expect(countNow).toBe(initialCount);
 

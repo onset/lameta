@@ -6,12 +6,12 @@ export async function asyncTrash(path: string) {
 }
 export async function asyncTrashWithContext<T>(
   path: string,
-  callerContext: T
+  callerContext: T,
 ): Promise<{ succeeded: boolean; path: string; context: T }> {
   return Promise.resolve({
     succeeded: false,
     path: path,
-    context: callerContext
+    context: callerContext,
   }); // we don't get a result from removeSync
 }
 

@@ -46,12 +46,8 @@ test.describe("Notes Tab - Click Area", () => {
     // Verify focus was set to the editor
     const isFocused = await page.evaluate(() => {
       const activeElement = document.activeElement;
-      const notesEditor = document.querySelector(
-        '[data-testid="field-notes-edit"]'
-      );
-      return (
-        notesEditor?.contains(activeElement) || activeElement === notesEditor
-      );
+      const notesEditor = document.querySelector('[data-testid="field-notes-edit"]');
+      return notesEditor?.contains(activeElement) || activeElement === notesEditor;
     });
     expect(isFocused).toBe(true);
 

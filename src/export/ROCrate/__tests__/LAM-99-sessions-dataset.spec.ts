@@ -27,16 +27,16 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01T00:00:00Z")
-  })
+    birthtime: new Date("2023-01-01T00:00:00Z"),
+  }),
 }));
 
 vi.mock("../../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 describe("LAM-99: Sessions Dataset", () => {
@@ -45,21 +45,15 @@ describe("LAM-99: Sessions Dataset", () => {
   let mockSession2: Session;
 
   beforeEach(() => {
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([]);
 
     // Create mock file with all needed methods
     const createMockFile = (name: string) => ({
       getActualFilePath: () => `/project/Sessions/${name}`,
       getModifiedDate: () => new Date("2023-06-01T00:00:00Z"),
-      getTextProperty: vi.fn().mockReturnValue("")
+      getTextProperty: vi.fn().mockReturnValue(""),
     });
 
     // Mock sessions
@@ -76,12 +70,12 @@ describe("LAM-99: Sessions Dataset", () => {
         properties: {
           forEach: vi.fn(),
           getHasValue: vi.fn().mockReturnValue(false),
-          getTextStringOrEmpty: vi.fn().mockReturnValue("")
-        }
+          getTextStringOrEmpty: vi.fn().mockReturnValue(""),
+        },
       },
       knownFields: [],
       files: [createMockFile("ETR008/ETR008.session")],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as unknown as Session;
 
     mockSession2 = {
@@ -97,35 +91,31 @@ describe("LAM-99: Sessions Dataset", () => {
         properties: {
           forEach: vi.fn(),
           getHasValue: vi.fn().mockReturnValue(false),
-          getTextStringOrEmpty: vi.fn().mockReturnValue("")
-        }
+          getTextStringOrEmpty: vi.fn().mockReturnValue(""),
+        },
       },
       knownFields: [],
-      files: [
-        createMockFile("ETR009/ETR009.session"),
-        createMockFile("ETR009/ETR009_Audio.mp3")
-      ],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      files: [createMockFile("ETR009/ETR009.session"), createMockFile("ETR009/ETR009_Audio.mp3")],
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as unknown as Session;
 
     mockProject = {
       filePrefix: "TestProject",
       directory: "/project",
       sessions: {
-        items: [mockSession1, mockSession2]
+        items: [mockSession1, mockSession2],
       },
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "projectDescription")
-            return "Test project description";
+          if (key === "projectDescription") return "Test project description";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";
         }),
         properties: {
           forEach: vi.fn(),
-          getHasValue: vi.fn().mockReturnValue(false)
-        }
+          getHasValue: vi.fn().mockReturnValue(false),
+        },
       },
       knownFields: [],
       files: [],
@@ -136,12 +126,12 @@ describe("LAM-99: Sessions Dataset", () => {
             id: "public",
             label: "public",
             description: "Public access",
-            ldacAccessCategory: "ldac:OpenAccess"
-          }
-        ]
+            ldacAccessCategory: "ldac:OpenAccess",
+          },
+        ],
       },
       descriptionFolder: { files: [] },
-      otherDocsFolder: { files: [] }
+      otherDocsFolder: { files: [] },
     } as unknown as Project;
 
     // Set up correct prototypes for instanceof checks
@@ -158,9 +148,7 @@ describe("LAM-99: Sessions Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const sessionsDataset = graph.find(
-      (item: any) => item["@id"] === "Sessions/"
-    );
+    const sessionsDataset = graph.find((item: any) => item["@id"] === "Sessions/");
 
     expect(sessionsDataset).toBeDefined();
     expect(sessionsDataset["@type"]).toContain("Dataset");
@@ -181,17 +169,15 @@ describe("LAM-99: Sessions Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const sessionsDataset = graph.find(
-      (item: any) => item["@id"] === "Sessions/"
-    );
+    const sessionsDataset = graph.find((item: any) => item["@id"] === "Sessions/");
 
     expect(sessionsDataset).toBeDefined();
     expect(sessionsDataset["pcdm:hasMember"]).toBeDefined();
     expect(sessionsDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "Sessions/ETR008/"
+      "@id": "Sessions/ETR008/",
     });
     expect(sessionsDataset["pcdm:hasMember"]).toContainEqual({
-      "@id": "Sessions/ETR009/"
+      "@id": "Sessions/ETR009/",
     });
   });
 
@@ -199,12 +185,8 @@ describe("LAM-99: Sessions Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const session1Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR008/"
-    );
-    const session2Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR009/"
-    );
+    const session1Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR008/");
+    const session2Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR009/");
 
     expect(session1Dir).toBeDefined();
     expect(session1Dir["@type"]).toContain("Dataset");
@@ -217,9 +199,7 @@ describe("LAM-99: Sessions Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const session2Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR009/"
-    );
+    const session2Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR009/");
 
     expect(session2Dir).toBeDefined();
     expect(session2Dir.hasPart).toBeDefined();
@@ -233,12 +213,8 @@ describe("LAM-99: Sessions Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const session1Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR008/"
-    );
-    const session2Dir = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR009/"
-    );
+    const session1Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR008/");
+    const session2Dir = graph.find((item: any) => item["@id"] === "Sessions/ETR009/");
 
     expect(session1Dir["pcdm:memberOf"]).toEqual({ "@id": "Sessions/" });
     expect(session2Dir["pcdm:memberOf"]).toEqual({ "@id": "Sessions/" });
@@ -248,9 +224,7 @@ describe("LAM-99: Sessions Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const sessionsDataset = graph.find(
-      (item: any) => item["@id"] === "Sessions/"
-    );
+    const sessionsDataset = graph.find((item: any) => item["@id"] === "Sessions/");
 
     expect(sessionsDataset["pcdm:memberOf"]).toEqual({ "@id": "./" });
   });
@@ -259,9 +233,7 @@ describe("LAM-99: Sessions Dataset", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
     const graph = result["@graph"];
 
-    const sessionFile = graph.find(
-      (item: any) => item["@id"] === "Sessions/ETR009/ETR009.session"
-    );
+    const sessionFile = graph.find((item: any) => item["@id"] === "Sessions/ETR009/ETR009.session");
 
     expect(sessionFile).toBeDefined();
     expect(sessionFile.isPartOf).toEqual({ "@id": "Sessions/ETR009/" });
@@ -276,10 +248,10 @@ describe("LAM-99: Sessions Dataset", () => {
 
     expect(rootEntity["pcdm:hasMember"]).toBeDefined();
     expect(rootEntity["pcdm:hasMember"]).toContainEqual({
-      "@id": "#session-ETR008"
+      "@id": "#session-ETR008",
     });
     expect(rootEntity["pcdm:hasMember"]).toContainEqual({
-      "@id": "#session-ETR009"
+      "@id": "#session-ETR009",
     });
   });
 
@@ -346,8 +318,6 @@ describe("LAM-99: Sessions Dataset", () => {
     expect(reachableFromRoot.has("Sessions/ETR009/")).toBe(true);
     expect(reachableFromRoot.has("Sessions/ETR008/ETR008.session")).toBe(true);
     expect(reachableFromRoot.has("Sessions/ETR009/ETR009.session")).toBe(true);
-    expect(reachableFromRoot.has("Sessions/ETR009/ETR009_Audio.mp3")).toBe(
-      true
-    );
+    expect(reachableFromRoot.has("Sessions/ETR009/ETR009_Audio.mp3")).toBe(true);
   });
 });

@@ -21,7 +21,7 @@ export const Markdown: React.FunctionComponent<{
           >
             {children}
           </a>
-        )
+        ),
       }}
     >
       {children}

@@ -15,8 +15,8 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
@@ -30,8 +30,8 @@ import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/Configured
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 2048,
-    birthtime: new Date("2010-06-06")
-  })
+    birthtime: new Date("2010-06-06"),
+  }),
 }));
 
 // Mock the RoCrateLicenseManager module
@@ -46,17 +46,14 @@ vi.mock("../RoCrateLicenseManager", () => ({
     getFileLicense = vi.fn();
     clear = vi.fn();
     getAllFileLicenses = vi.fn().mockReturnValue(new Map());
-    static getRepositoryCollectionTypes = () => [
-      "Dataset",
-      "RepositoryCollection"
-    ];
-  }
+    static getRepositoryCollectionTypes = () => ["Dataset", "RepositoryCollection"];
+  },
 }));
 
 // Mock the RoCrateMaterialTypes module
 vi.mock("./RoCrateMaterialTypes", () => ({
   getLdacMaterialTypeForPath: vi.fn().mockReturnValue("Text"),
-  createLdacMaterialTypeDefinitions: vi.fn().mockReturnValue([])
+  createLdacMaterialTypeDefinitions: vi.fn().mockReturnValue([]),
 }));
 
 // Mock the RoCrateUtils module
@@ -67,10 +64,8 @@ vi.mock("./RoCrateUtils", () => ({
   getCustomUri: vi.fn(),
   sanitizeForIri: vi.fn((input) => input || ""),
   createFileId: vi.fn((folder, fileName) => fileName || ""),
-  createSessionId: vi.fn(
-    (session) => `Sessions/${session.filePrefix || "test"}/`
-  ),
-  createPersonId: vi.fn(stubCreatePersonId)
+  createSessionId: vi.fn((session) => `Sessions/${session.filePrefix || "test"}/`),
+  createPersonId: vi.fn(stubCreatePersonId),
 }));
 
 describe("RoCrateExporter PII and Custom Fields Filtering", () => {
@@ -80,19 +75,17 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
 
   beforeEach(() => {
     // Mock the field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
         key: "person",
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Person",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Mock person with PII and custom fields
@@ -105,27 +98,27 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
           key: "name",
           englishLabel: "Full Name",
           personallyIdentifiableInformation: false,
-          isCustom: false
+          isCustom: false,
         } as FieldDefinition,
         {
           key: "howToContact",
           englishLabel: "How to Contact",
           personallyIdentifiableInformation: true, // This is PII
-          isCustom: false
+          isCustom: false,
         } as FieldDefinition,
         {
           key: "education",
           englishLabel: "Education",
           personallyIdentifiableInformation: false,
-          isCustom: false
-        } as FieldDefinition
+          isCustom: false,
+        } as FieldDefinition,
       ],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           const properties = {
             name: "John Doe",
             howToContact: "john.doe@example.com", // PII field
-            education: "University Graduate"
+            education: "University Graduate",
           };
           return properties[key] || "";
         }),
@@ -135,19 +128,19 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
             // because we don't know if they contain PII
             callback("customAddress", {
               text: "123 Main St, City, State", // Custom field that could contain PII
-              definition: { isCustom: true }
+              definition: { isCustom: true },
             });
             callback("customPhoneNumber", {
               text: "+1-555-123-4567", // Custom field that is definitely PII
-              definition: { isCustom: true }
+              definition: { isCustom: true },
             });
           }),
-          getHasValue: vi.fn().mockReturnValue(true)
+          getHasValue: vi.fn().mockReturnValue(true),
         },
-        languages: []
+        languages: [],
       },
       files: [],
-      ageOn: vi.fn().mockReturnValue("30")
+      ageOn: vi.fn().mockReturnValue("30"),
     } as any;
 
     // Mock session
@@ -159,16 +152,16 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
         getTextProperty: vi.fn().mockReturnValue(""),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       getAllContributionsToAllFiles: vi.fn().mockReturnValue([
         {
           personReference: "john-doe",
-          role: "speaker"
-        }
-      ])
+          role: "speaker",
+        },
+      ]),
     } as any;
 
     // Mock project
@@ -187,12 +180,12 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       knownFields: [],
-      authorityLists: { accessChoicesOfCurrentProtocol: [] }
+      authorityLists: { accessChoicesOfCurrentProtocol: [] },
     } as any;
 
     // Set up prototypes for instanceof checks
@@ -207,8 +200,7 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
     const expectedPersonId = stubCreatePersonId(mockPerson);
     // Find the person entry
     const personEntry = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === expectedPersonId && item["@type"] === "Person"
+      (item: any) => item["@id"] === expectedPersonId && item["@type"] === "Person",
     );
 
     expect(personEntry).toBeDefined();
@@ -233,8 +225,7 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
     const expectedPersonId = stubCreatePersonId(mockPerson);
     // Find the person entry
     const personEntry = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === expectedPersonId && item["@type"] === "Person"
+      (item: any) => item["@id"] === expectedPersonId && item["@type"] === "Person",
     );
 
     expect(personEntry).toBeDefined();
@@ -259,25 +250,23 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
         key: "name",
         englishLabel: "Full Name",
         personallyIdentifiableInformation: false,
-        isCustom: false
+        isCustom: false,
       } as FieldDefinition,
       {
         key: "gender",
         englishLabel: "Gender",
         personallyIdentifiableInformation: false,
-        isCustom: false
-      } as FieldDefinition
+        isCustom: false,
+      } as FieldDefinition,
     ];
 
-    (mockPerson.metadataFile as any).getTextProperty = vi
-      .fn()
-      .mockImplementation((key: string) => {
-        const properties = {
-          name: "John Doe",
-          gender: "Male"
-        };
-        return properties[key] || "";
-      });
+    (mockPerson.metadataFile as any).getTextProperty = vi.fn().mockImplementation((key: string) => {
+      const properties = {
+        name: "John Doe",
+        gender: "Male",
+      };
+      return properties[key] || "";
+    });
 
     // Remove custom fields
     (mockPerson.metadataFile as any).properties.forEach = vi.fn();
@@ -286,8 +275,7 @@ describe("RoCrateExporter PII and Custom Fields Filtering", () => {
 
     const expectedPersonId = stubCreatePersonId(mockPerson);
     const personEntry = result["@graph"].find(
-      (item: any) =>
-        item["@id"] === expectedPersonId && item["@type"] === "Person"
+      (item: any) => item["@id"] === expectedPersonId && item["@type"] === "Person",
     );
 
     expect(personEntry).toBeDefined();

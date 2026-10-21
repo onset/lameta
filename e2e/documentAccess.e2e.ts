@@ -12,11 +12,7 @@ test.describe("Document Access", () => {
   test.beforeAll(async () => {
     lametaE2E = new LametaE2ERunner();
     // Launch with ELAR configuration since documentAccess tests require ELAR
-    project = await launchWithProject(
-      lametaE2E,
-      "DocumentAccessProject",
-      "ELAR"
-    );
+    project = await launchWithProject(lametaE2E, "DocumentAccessProject", "ELAR");
   });
 
   test.afterAll(async () => {
@@ -88,9 +84,7 @@ test.describe("Document Access", () => {
     await page.waitForSelector('text="test_access_update.txt"');
 
     // Select the file via its row
-    const fileRow = page
-      .locator(".fileList .rt-tr", { hasText: "test_access_update.txt" })
-      .first();
+    const fileRow = page.locator(".fileList .rt-tr", { hasText: "test_access_update.txt" }).first();
     await fileRow.dblclick();
 
     // access tab should be visible and interactive
@@ -106,9 +100,7 @@ test.describe("Document Access", () => {
     // We can interact with it via keyboard or clicks.
 
     // Click directly on the chooser input and pick the "U" option
-    await page.click(
-      '[data-testid="access-chooser-field"] .field-value-border'
-    );
+    await page.click('[data-testid="access-chooser-field"] .field-value-border');
     await page.getByRole("option").first().click();
 
     // Check that tab label updated to reflect the new code
@@ -156,22 +148,18 @@ test.describe("Document Access", () => {
 
     const originalFileCell = page.getByRole("gridcell", {
       name: docName,
-      exact: true
+      exact: true,
     });
     await originalFileCell.waitFor({ state: "visible", timeout: 10000 });
 
-    const fileRow = page
-      .locator(".fileList .rt-tr", { hasText: docName })
-      .first();
+    const fileRow = page.locator(".fileList .rt-tr", { hasText: docName }).first();
     await fileRow.dblclick();
 
     const accessTab = page.locator('[data-testid="access-tab"]');
     await expect(accessTab).toBeVisible({ timeout: 10000 });
     await accessTab.click();
 
-    const chooser = page.locator(
-      '[data-testid="access-chooser-field"] .field-value-border'
-    );
+    const chooser = page.locator('[data-testid="access-chooser-field"] .field-value-border');
     await chooser.waitFor({ state: "visible", timeout: 10000 });
     await chooser.click();
     await page.getByRole("option").first().click();
@@ -186,7 +174,7 @@ test.describe("Document Access", () => {
     await originalFileCell.waitFor({ state: "visible", timeout: 10000 });
 
     const metaFileCell = page.getByRole("gridcell", {
-      name: `${docName}.meta`
+      name: `${docName}.meta`,
     });
     await expect(metaFileCell).toHaveCount(0);
     await expect(originalFileCell).toBeVisible();
@@ -212,9 +200,7 @@ test.describe("Document Access", () => {
     const fileCell = page.getByRole("gridcell", { name: docName, exact: true });
     await fileCell.waitFor({ state: "visible", timeout: 10000 });
 
-    const fileRow = page
-      .locator(".fileList .rt-tr", { hasText: docName })
-      .first();
+    const fileRow = page.locator(".fileList .rt-tr", { hasText: docName }).first();
     await fileRow.dblclick();
 
     // Navigate to the Access tab
@@ -223,9 +209,7 @@ test.describe("Document Access", () => {
     await accessTab.click();
 
     // Set the access value using the chooser
-    const accessChooser = page.locator(
-      '[data-testid="access-chooser-field"] .field-value-border'
-    );
+    const accessChooser = page.locator('[data-testid="access-chooser-field"] .field-value-border');
     await accessChooser.waitFor({ state: "visible", timeout: 10000 });
     await accessChooser.click();
 
@@ -244,9 +228,7 @@ test.describe("Document Access", () => {
     // Now set the access explanation (accessDescription field)
     // The accessDescription field is a TextFieldEdit component
     const accessExplanationText = "Restricted due to cultural sensitivity";
-    const explanationField = page.locator(
-      '[data-testid="field-accessDescription-edit"]'
-    );
+    const explanationField = page.locator('[data-testid="field-accessDescription-edit"]');
     await explanationField.waitFor({ state: "visible", timeout: 10000 });
     await explanationField.click();
     await explanationField.fill(accessExplanationText);
@@ -273,12 +255,10 @@ test.describe("Document Access", () => {
     // Find and select the same file using a fresh locator
     const reloadedFileCell = page.getByRole("gridcell", {
       name: docName,
-      exact: true
+      exact: true,
     });
     await reloadedFileCell.waitFor({ state: "visible", timeout: 10000 });
-    const reloadedFileRow = page
-      .locator(".fileList .rt-tr", { hasText: docName })
-      .first();
+    const reloadedFileRow = page.locator(".fileList .rt-tr", { hasText: docName }).first();
     await reloadedFileRow.dblclick();
 
     // Navigate to the Access tab again
@@ -287,14 +267,12 @@ test.describe("Document Access", () => {
 
     // Verify the access code is still displayed in the tab
     await expect(reloadedAccessTab).toContainText(selectedAccessCode, {
-      timeout: 5000
+      timeout: 5000,
     });
     await reloadedAccessTab.click();
 
     // Verify the access explanation field still has the value we set
-    const reloadedExplanationField = page.locator(
-      '[data-testid="field-accessDescription-edit"]'
-    );
+    const reloadedExplanationField = page.locator('[data-testid="field-accessDescription-edit"]');
     await reloadedExplanationField.waitFor({ state: "visible", timeout: 10000 });
     await expect(reloadedExplanationField).toHaveText(accessExplanationText);
   });

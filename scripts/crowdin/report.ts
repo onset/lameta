@@ -12,7 +12,9 @@ async function main() {
 
   let branchId: number | undefined;
   if (arg !== "--root") {
-    const branches = await apiAll(`/projects/${PROJECT_ID}/branches?name=${encodeURIComponent(arg)}`);
+    const branches = await apiAll(
+      `/projects/${PROJECT_ID}/branches?name=${encodeURIComponent(arg)}`,
+    );
     if (!branches.length) throw new Error(`no branch named ${arg}`);
     branchId = branches[0].id;
     console.log(`Branch "${arg}" (id ${branchId})`);
@@ -21,9 +23,7 @@ async function main() {
   }
 
   const allFiles = await apiAll(`/projects/${PROJECT_ID}/files?recursion=1`);
-  const files = allFiles.filter((f) =>
-    branchId ? f.branchId === branchId : !f.branchId
-  );
+  const files = allFiles.filter((f) => (branchId ? f.branchId === branchId : !f.branchId));
 
   for (const f of files.sort((a, b) => a.path.localeCompare(b.path))) {
     const strings = await apiAll(`/projects/${PROJECT_ID}/strings?fileId=${f.id}`);
@@ -31,13 +31,11 @@ async function main() {
     const progress = (
       await api(`/projects/${PROJECT_ID}/files/${f.id}/languages/progress?limit=50`)
     ).data.map((d: any) => d.data);
-    const perLang = progress
-      .map((p: any) => `${p.languageId}:${p.phrases.translated}`)
-      .join(" ");
+    const perLang = progress.map((p: any) => `${p.languageId}:${p.phrases.translated}`).join(" ");
     console.log(
       `${f.path.padEnd(28)} strings: ${String(strings.length).padStart(4)} (${hidden} hidden, ${
         strings.length - hidden
-      } visible)  translated: ${perLang}`
+      } visible)  translated: ${perLang}`,
     );
   }
 }

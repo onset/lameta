@@ -37,17 +37,14 @@ function stripTrailingSeparators(path: string, separator: string) {
     return path;
   }
 
-  return path.replace(
-    new RegExp(`[${separator === WINDOWS_SEPARATOR ? "\\\\" : "/"}]+$`),
-    ""
-  );
+  return path.replace(new RegExp(`[${separator === WINDOWS_SEPARATOR ? "\\\\" : "/"}]+$`), "");
 }
 
 function splitRoot(path: string) {
   if (/^[A-Za-z]:[\\/]/.test(path)) {
     return {
       root: path.slice(0, 3).replace(POSIX_SEPARATOR, WINDOWS_SEPARATOR),
-      rest: path.slice(3)
+      rest: path.slice(3),
     };
   }
 
@@ -58,7 +55,7 @@ function splitRoot(path: string) {
       const root = `\\\\${parts[0]}\\${parts[1]}\\`;
       return {
         root,
-        rest: parts.slice(2).join(WINDOWS_SEPARATOR)
+        rest: parts.slice(2).join(WINDOWS_SEPARATOR),
       };
     }
   }
@@ -66,7 +63,7 @@ function splitRoot(path: string) {
   if (path.startsWith(POSIX_SEPARATOR) || path.startsWith(WINDOWS_SEPARATOR)) {
     return {
       root: detectSeparator(path),
-      rest: path.slice(1)
+      rest: path.slice(1),
     };
   }
 
@@ -189,7 +186,7 @@ export function parse(path: string) {
     dir,
     base,
     ext,
-    name: ext ? base.slice(0, -ext.length) : base
+    name: ext ? base.slice(0, -ext.length) : base,
   };
 }
 
@@ -221,7 +218,7 @@ const browserPath = {
   basename,
   extname,
   parse,
-  resolve
+  resolve,
 };
 
 export default browserPath;

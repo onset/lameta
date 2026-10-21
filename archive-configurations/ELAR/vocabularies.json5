@@ -3,19 +3,19 @@
     {
       id: "O",
       label: "O: fully open",
-      ldacAccessCategory: "ldac:OpenAccess"
+      ldacAccessCategory: "ldac:OpenAccess",
     },
     {
       id: "U",
       label: "U: available to registered users",
       description: "Registered users can access (after registration)",
-      ldacAccessCategory: "ldac:AuthorizedAccess"
+      ldacAccessCategory: "ldac:AuthorizedAccess",
     },
     {
       id: "S",
       label: "S: available upon request only",
       description: "Access must be obtained from Depositor via ELAR",
-      ldacAccessCategory: "ldac:AuthorizedAccess"
-    }
-  ]
+      ldacAccessCategory: "ldac:AuthorizedAccess",
+    },
+  ],
 }

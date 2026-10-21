@@ -12,13 +12,13 @@ import { getRoCrate } from "../RoCrateExporter";
 import {
   createPersonId,
   createPersonFilesDatasetId,
-  createUnresolvedContributorId
+  createUnresolvedContributorId,
 } from "../RoCrateUtils";
 import {
   setupCommonMocks,
   createMockProject,
   createMockSession,
-  createMockPerson
+  createMockPerson,
 } from "./test-utils/rocrate-test-setup";
 import { Contribution } from "../../../model/file/File";
 
@@ -26,8 +26,8 @@ import { Contribution } from "../../../model/file/File";
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2024-01-01")
-  })
+    birthtime: new Date("2024-01-01"),
+  }),
 }));
 
 describe("RO-Crate People/ dataset includes all contributors", () => {
@@ -38,26 +38,22 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
       // These names have special characters that will be percent-encoded differently
       const contributors = [
         "José García", // Accented characters will be percent-encoded
-        "Jose Garcia" // Plain ASCII version
+        "Jose Garcia", // Plain ASCII version
       ];
 
-      const contributions = contributors.map(
-        (name) => new Contribution(name, "speaker", "")
-      );
+      const contributions = contributors.map((name) => new Contribution(name, "speaker", ""));
 
       const mockSession = createMockSession({
         filePrefix: "test-session",
-        metadata: { title: "Unicode Test Session" }
+        metadata: { title: "Unicode Test Session" },
       });
 
-      mockSession.getAllContributionsToAllFiles = vi
-        .fn()
-        .mockReturnValue(contributions);
+      mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue(contributions);
 
       const mockProject = createMockProject({
         metadata: { title: "Test Project" },
         persons: { items: [] },
-        sessions: { items: [mockSession] }
+        sessions: { items: [mockSession] },
       });
 
       mockProject.findPerson = vi.fn().mockReturnValue(null);
@@ -102,7 +98,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
 
       const mockSession = createMockSession({
         filePrefix: "test-session",
-        metadata: { title: "Test Session" }
+        metadata: { title: "Test Session" },
       });
 
       mockSession.getAllContributionsToAllFiles = vi
@@ -112,7 +108,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
       const mockProject = createMockProject({
         metadata: { title: "Test Project" },
         persons: { items: [] }, // No person folders
-        sessions: { items: [mockSession] }
+        sessions: { items: [mockSession] },
       });
 
       // The contributor does NOT exist as a Person in the project
@@ -123,9 +119,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
 
       // The contributor should exist as a Person entity
       const contributorId = createUnresolvedContributorId(contributorName);
-      const contributorEntity = graph.find(
-        (e: any) => e["@id"] === contributorId
-      );
+      const contributorEntity = graph.find((e: any) => e["@id"] === contributorId);
       expect(contributorEntity).toBeDefined();
       expect(contributorEntity["@type"]).toBe("Person");
       expect(contributorEntity.name).toBe(contributorName);
@@ -137,36 +131,26 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
 
       // The contributor should NOT be in People/.hasPart (hasPart is only for Files/Datasets)
       // Person entities without files exist in the graph but don't participate in hasPart hierarchy
-      const peopleHasPartIds = (peopleDataset.hasPart || []).map(
-        (ref: any) => ref["@id"]
-      );
+      const peopleHasPartIds = (peopleDataset.hasPart || []).map((ref: any) => ref["@id"]);
       expect(peopleHasPartIds).not.toContain(contributorId);
     });
 
     it("should include multiple unresolved contributors as Person entities but NOT in People/ hasPart", async () => {
-      const contributors = [
-        "Mary Smith",
-        "Dr. John Wilson (Linguist)",
-        "Sarah O'Connor"
-      ];
+      const contributors = ["Mary Smith", "Dr. John Wilson (Linguist)", "Sarah O'Connor"];
 
-      const contributions = contributors.map(
-        (name) => new Contribution(name, "speaker", "")
-      );
+      const contributions = contributors.map((name) => new Contribution(name, "speaker", ""));
 
       const mockSession = createMockSession({
         filePrefix: "test-session",
-        metadata: { title: "Multi Contributor Session" }
+        metadata: { title: "Multi Contributor Session" },
       });
 
-      mockSession.getAllContributionsToAllFiles = vi
-        .fn()
-        .mockReturnValue(contributions);
+      mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue(contributions);
 
       const mockProject = createMockProject({
         metadata: { title: "Test Project" },
         persons: { items: [] }, // No person folders
-        sessions: { items: [mockSession] }
+        sessions: { items: [mockSession] },
       });
 
       // None of these exist as Person records
@@ -178,9 +162,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
       // All contributors should exist as Person entities
       for (const name of contributors) {
         const contributorId = createUnresolvedContributorId(name);
-        const contributorEntity = graph.find(
-          (e: any) => e["@id"] === contributorId
-        );
+        const contributorEntity = graph.find((e: any) => e["@id"] === contributorId);
         expect(contributorEntity).toBeDefined();
         expect(contributorEntity["@type"]).toBe("Person");
       }
@@ -190,9 +172,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
       expect(peopleDataset).toBeDefined();
 
       // Contributors should NOT be in People/.hasPart (hasPart is only for Files/Datasets)
-      const peopleHasPartIds = (peopleDataset.hasPart || []).map(
-        (ref: any) => ref["@id"]
-      );
+      const peopleHasPartIds = (peopleDataset.hasPart || []).map((ref: any) => ref["@id"]);
 
       for (const name of contributors) {
         const contributorId = createUnresolvedContributorId(name);
@@ -205,7 +185,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
     it("should include #unknown-contributor as Person entity but NOT in People/ hasPart", async () => {
       const mockSession = createMockSession({
         filePrefix: "test-session",
-        metadata: { title: "Test Session" }
+        metadata: { title: "Test Session" },
       });
 
       mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([]);
@@ -213,10 +193,10 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
       const mockProject = createMockProject({
         metadata: {
           title: "Test Project",
-          contactPerson: "" // Empty contact person triggers #unknown-contributor
+          contactPerson: "", // Empty contact person triggers #unknown-contributor
         },
         persons: { items: [] },
-        sessions: { items: [mockSession] }
+        sessions: { items: [mockSession] },
       });
 
       mockProject.findPerson = vi.fn().mockReturnValue(null);
@@ -225,9 +205,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
       const graph = (roCrate as any)["@graph"];
 
       // The #unknown-contributor entity should exist
-      const unknownContributor = graph.find(
-        (e: any) => e["@id"] === "#unknown-contributor"
-      );
+      const unknownContributor = graph.find((e: any) => e["@id"] === "#unknown-contributor");
       expect(unknownContributor).toBeDefined();
       expect(unknownContributor["@type"]).toBe("Person");
       expect(unknownContributor.name).toBe("Unknown");
@@ -238,9 +216,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
 
       // #unknown-contributor should NOT be in People/.hasPart (hasPart is only for Files/Datasets)
       // Person entities exist in the graph but don't participate in hasPart hierarchy
-      const peopleHasPartIds = (peopleDataset.hasPart || []).map(
-        (ref: any) => ref["@id"]
-      );
+      const peopleHasPartIds = (peopleDataset.hasPart || []).map((ref: any) => ref["@id"]);
       expect(peopleHasPartIds).not.toContain("#unknown-contributor");
     });
   });
@@ -251,13 +227,13 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
       const mockPhotoFile = {
         getActualFilePath: () => "/people/Alice_Smith/Alice_Smith_Photo.jpg",
         getModifiedDate: () => new Date("2024-01-15"),
-        pathInFolderToLinkFileOrLocalCopy: "Alice_Smith_Photo.jpg"
+        pathInFolderToLinkFileOrLocalCopy: "Alice_Smith_Photo.jpg",
       } as any;
 
       const personAlice = createMockPerson({
         filePrefix: "Alice_Smith",
         metadata: { fullName: "Alice Smith" },
-        files: [mockPhotoFile]
+        files: [mockPhotoFile],
       });
 
       // Unresolved contributor (no folder, no files - should NOT be in hasPart)
@@ -265,20 +241,20 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
 
       const mockSession = createMockSession({
         filePrefix: "test-session",
-        metadata: { title: "Test Session" }
+        metadata: { title: "Test Session" },
       });
 
       mockSession.getAllContributionsToAllFiles = vi
         .fn()
         .mockReturnValue([
           new Contribution("Alice_Smith", "speaker", ""),
-          new Contribution(unresolvedContributorName, "consultant", "")
+          new Contribution(unresolvedContributorName, "consultant", ""),
         ]);
 
       const mockProject = createMockProject({
         metadata: { title: "Test Project" },
         persons: { items: [personAlice] },
-        sessions: { items: [mockSession] }
+        sessions: { items: [mockSession] },
       });
 
       mockProject.findPerson = vi.fn().mockImplementation((ref: string) => {
@@ -290,9 +266,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
 
       // Both contributors should exist as Person entities
       const alicePersonId = createPersonId(personAlice);
-      const bobContributorId = createUnresolvedContributorId(
-        unresolvedContributorName
-      );
+      const bobContributorId = createUnresolvedContributorId(unresolvedContributorName);
 
       const aliceEntity = graph.find((e: any) => e["@id"] === alicePersonId);
       const bobEntity = graph.find((e: any) => e["@id"] === bobContributorId);
@@ -304,9 +278,7 @@ describe("RO-Crate People/ dataset includes all contributors", () => {
       const peopleDataset = graph.find((e: any) => e["@id"] === "People/");
       expect(peopleDataset).toBeDefined();
 
-      const peopleHasPartIds = (peopleDataset.hasPart || []).map(
-        (ref: any) => ref["@id"]
-      );
+      const peopleHasPartIds = (peopleDataset.hasPart || []).map((ref: any) => ref["@id"]);
 
       // Alice (with folder and files) should be connected via her person-files dataset
       const aliceFilesDatasetId = createPersonFilesDatasetId(personAlice);

@@ -24,50 +24,47 @@ export const EXPORT_STRING_DEFINITIONS: ExportStringDefinition[] = [
   {
     english: "Description Documents",
     context: "Title for Description Documents bundle",
-    category: "bundle-title"
+    category: "bundle-title",
   },
   {
-    english:
-      "This bundle contains descriptive documents about the documentation project.",
+    english: "This bundle contains descriptive documents about the documentation project.",
     context: "Description for the Description Documents bundle.",
-    category: "bundle-description"
+    category: "bundle-description",
   },
   // OtherDocuments bundle
   {
     english: "Other Documents",
     context: "Title for the Other Documents bundle.",
-    category: "bundle-title"
+    category: "bundle-title",
   },
   {
     english: "This bundle contains other project documents.",
     context: "Description of the Other Documents bundle.",
-    category: "bundle-description"
+    category: "bundle-description",
   },
   // ConsentDocuments bundle
   {
     english: "Documentation of consent for the contributors to this collection",
     context: "Title for the Consent Documents bundle.",
-    category: "bundle-title"
+    category: "bundle-title",
   },
   {
     english:
       "This bundle contains media demonstrating informed consent for sessions in this collection.",
     context: "Description for the Consent Documents bundle.",
-    category: "bundle-description"
+    category: "bundle-description",
   },
   {
     english: "Consent documents",
     context: "Access description used on each consent file in the Consent Documents bundle.",
-    category: "bundle-access-description"
-  }
+    category: "bundle-access-description",
+  },
 ];
 
 /**
  * Convenience array of just the English strings (for use in VocabularyScanner).
  */
-export const HARDCODED_EXPORT_STRINGS: string[] = EXPORT_STRING_DEFINITIONS.map(
-  (d) => d.english
-);
+export const HARDCODED_EXPORT_STRINGS: string[] = EXPORT_STRING_DEFINITIONS.map((d) => d.english);
 
 /**
  * Get the context/help text for a given export string.
@@ -83,17 +80,16 @@ export function getExportStringContext(english: string): string | undefined {
 export const ExportStrings = {
   DescriptionDocuments: {
     title: "Description Documents",
-    description:
-      "This bundle contains descriptive documents about the documentation project."
+    description: "This bundle contains descriptive documents about the documentation project.",
   },
   OtherDocuments: {
     title: "Other Documents",
-    description: "This bundle contains other project documents."
+    description: "This bundle contains other project documents.",
   },
   ConsentDocuments: {
     title: "Documentation of consent for the contributors to this collection",
     description:
       "This bundle contains media demonstrating informed consent for sessions in this collection.",
-    accessDescription: "Consent documents"
-  }
+    accessDescription: "Consent documents",
+  },
 } as const;

@@ -30,18 +30,14 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
    * Helper to get the Subject Languages container
    */
   function getSubjectLanguagesContainer() {
-    return page
-      .locator('div.field:has(label:has-text("Subject Languages"))')
-      .first();
+    return page.locator('div.field:has(label:has-text("Subject Languages"))').first();
   }
 
   /**
    * Helper to get the Working Languages container
    */
   function getWorkingLanguagesContainer() {
-    return page
-      .locator('div.field:has(label:has-text("Working Languages"))')
-      .first();
+    return page.locator('div.field:has(label:has-text("Working Languages"))').first();
   }
 
   /**
@@ -82,12 +78,9 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
   /**
    * Helper to delete a language from the container
    */
-  async function deleteLanguage(
-    container,
-    languageNamePattern: string | RegExp
-  ) {
+  async function deleteLanguage(container, languageNamePattern: string | RegExp) {
     const removeButton = container.getByRole("button", {
-      name: new RegExp(`Remove.*${languageNamePattern}`, "i")
+      name: new RegExp(`Remove.*${languageNamePattern}`, "i"),
     });
     await removeButton.click();
     await page.waitForTimeout(200);
@@ -106,15 +99,12 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
     // The pill should show "Portuguese" (the full name), not just "por"
     // Look for the remove button which shows the language name
     const removeButton = container.getByRole("button", {
-      name: /Remove.*Portuguese/i
+      name: /Remove.*Portuguese/i,
     });
     await expect(removeButton).toBeVisible({ timeout: 5000 });
 
     // Also verify the pill text includes "Portuguese"
-    const pillText = await container
-      .locator('[class*="multiValue"]')
-      .first()
-      .textContent();
+    const pillText = await container.locator('[class*="multiValue"]').first().textContent();
     expect(pillText).toContain("Portuguese");
     // Should NOT be just "porpor" (which would indicate the bug)
     expect(pillText).not.toBe("porpor");
@@ -132,7 +122,7 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
 
     // Verify it was added
     const frenchRemoveButton = container.getByRole("button", {
-      name: /Remove.*French/i
+      name: /Remove.*French/i,
     });
     await expect(frenchRemoveButton).toBeVisible({ timeout: 5000 });
 
@@ -147,7 +137,7 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
 
     // Verify it was added again
     const frenchRemoveButton2 = container.getByRole("button", {
-      name: /Remove.*French/i
+      name: /Remove.*French/i,
     });
     await expect(frenchRemoveButton2).toBeVisible({ timeout: 5000 });
   });
@@ -183,10 +173,7 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
     await addLanguageByTyping(container, "deu");
 
     // The pill should show "German" (or "Standard German"), not just "deu"
-    const pillText = await container
-      .locator('[class*="multiValue"]')
-      .first()
-      .textContent();
+    const pillText = await container.locator('[class*="multiValue"]').first().textContent();
     expect(pillText).toContain("German");
     expect(pillText).not.toBe("deudeu"); // Should not be just the code repeated
   });
@@ -202,12 +189,8 @@ test.describe("LanguageChoicesEditor (Subject/Working Languages)", () => {
     await addLanguageByTyping(container, "Dutch");
 
     // Verify both are present
-    await expect(
-      container.getByRole("button", { name: /Remove.*Italian/i })
-    ).toBeVisible();
-    await expect(
-      container.getByRole("button", { name: /Remove.*Dutch/i })
-    ).toBeVisible();
+    await expect(container.getByRole("button", { name: /Remove.*Italian/i })).toBeVisible();
+    await expect(container.getByRole("button", { name: /Remove.*Dutch/i })).toBeVisible();
   });
 
   test("languages with commas should display correctly", async () => {

@@ -5,7 +5,7 @@ import {
   setupCommonMocks,
   createMockProject,
   createMockSession,
-  createMockPerson
+  createMockPerson,
 } from "./test-utils/rocrate-test-setup";
 import { Contribution } from "../../../model/file/File";
 
@@ -13,8 +13,8 @@ import { Contribution } from "../../../model/file/File";
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2024-01-01")
-  })
+    birthtime: new Date("2024-01-01"),
+  }),
 }));
 
 describe("RoCrateExporter - Person Reference Consistency", () => {
@@ -23,27 +23,26 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
   it("keeps Person entities contextual and excludes them from root hasPart", async () => {
     // Mock files for the person - needed for intermediate dataset creation
     const mockPersonFile = {
-      getActualFilePath: () =>
-        "/people/BAHOUNGOU Hilaire/BAHOUNGOU Hilaire.person",
+      getActualFilePath: () => "/people/BAHOUNGOU Hilaire/BAHOUNGOU Hilaire.person",
       getModifiedDate: () => new Date("2024-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "BAHOUNGOU Hilaire.person"
+      pathInFolderToLinkFileOrLocalCopy: "BAHOUNGOU Hilaire.person",
     } as any;
 
     // Create person with spaces using test utilities (must have files to get intermediate dataset)
     const personWithSpaces = createMockPerson({
       filePrefix: "BAHOUNGOU Hilaire",
       metadata: {
-        fullName: "BAHOUNGOU Hilaire"
+        fullName: "BAHOUNGOU Hilaire",
       },
-      files: [mockPersonFile]
+      files: [mockPersonFile],
     });
 
     // Create session with contribution using test utilities
     const mockSession = createMockSession({
       filePrefix: "test-session",
       metadata: {
-        title: "Test Session"
-      }
+        title: "Test Session",
+      },
     });
 
     // Override to return specific contribution
@@ -54,17 +53,15 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     // Create project using test utilities
     const mockProject = createMockProject({
       metadata: {
-        title: "Test Project"
+        title: "Test Project",
       },
       persons: { items: [personWithSpaces] },
-      sessions: { items: [mockSession] }
+      sessions: { items: [mockSession] },
     });
 
     // Override findPerson to return our specific person
     mockProject.findPerson = vi.fn().mockImplementation((reference: string) => {
-      return reference.trim() === "BAHOUNGOU Hilaire"
-        ? personWithSpaces
-        : undefined;
+      return reference.trim() === "BAHOUNGOU Hilaire" ? personWithSpaces : undefined;
     });
 
     const roCrate = await getRoCrate(mockProject, mockProject);
@@ -74,17 +71,14 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     const rootDataset = graph.find((item: any) => item["@id"] === "./");
     expect(rootDataset).toBeDefined();
     const expectedPersonId = createPersonId(personWithSpaces);
-    const expectedPersonFilesDatasetId =
-      createPersonFilesDatasetId(personWithSpaces);
+    const expectedPersonFilesDatasetId = createPersonFilesDatasetId(personWithSpaces);
 
     // Root hasPart should reference the People dataset wrapper but never direct Person IDs
-    const rootHasPartIds =
-      rootDataset.hasPart?.map((ref: any) => ref["@id"]) ?? [];
+    const rootHasPartIds = rootDataset.hasPart?.map((ref: any) => ref["@id"]) ?? [];
     expect(rootHasPartIds).not.toContain("People/");
     expect(rootHasPartIds).not.toContain(expectedPersonId);
     // People/ is now linked via pcdm:hasMember, not hasPart
-    const rootHasMemberIds =
-      rootDataset["pcdm:hasMember"]?.map((ref: any) => ref["@id"]) ?? [];
+    const rootHasMemberIds = rootDataset["pcdm:hasMember"]?.map((ref: any) => ref["@id"]) ?? [];
     expect(rootHasMemberIds).toContain("People/");
 
     // LAM-68 https://linear.app/lameta/issue/LAM-68/people-dataset
@@ -95,42 +89,38 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     expect(peopleDataset?.["@type"]).toBe("Dataset");
     // People/.hasPart now references person-files Datasets
     expect(peopleDataset?.hasPart).toContainEqual({
-      "@id": expectedPersonFilesDatasetId
+      "@id": expectedPersonFilesDatasetId,
     });
     expect(peopleDataset?.["pcdm:memberOf"]).toEqual({ "@id": "./" });
 
     // LAM-98: The person-files Dataset should reference the Person via about, not hasPart
     const personFilesDataset = graph.find(
-      (item: any) => item["@id"] === expectedPersonFilesDatasetId
+      (item: any) => item["@id"] === expectedPersonFilesDatasetId,
     );
     expect(personFilesDataset).toBeDefined();
     expect(personFilesDataset?.["@type"]).toBe("Dataset");
     // Person is referenced via 'about' (not hasPart - a person is not "part of" a dataset)
     expect(personFilesDataset?.about).toEqual({
-      "@id": expectedPersonId
+      "@id": expectedPersonId,
     });
     // hasPart should contain files, not the Person entity
     expect(personFilesDataset?.hasPart).not.toContainEqual({
-      "@id": expectedPersonId
+      "@id": expectedPersonId,
     });
     expect(personFilesDataset?.isPartOf).toEqual({ "@id": "People/" });
 
     // The Person entity should exist with the sanitized @id
     const personEntity = graph.find(
-      (item: any) =>
-        item["@type"] === "Person" && item["@id"] === expectedPersonId
+      (item: any) => item["@type"] === "Person" && item["@id"] === expectedPersonId,
     );
     expect(personEntity).toBeDefined();
 
     // The session should reference the Person via ldac role properties instead of root hasPart
     const sessionEntity = graph.find(
-      (item: any) =>
-        typeof item["@id"] === "string" && item["@id"].startsWith("#session-")
+      (item: any) => typeof item["@id"] === "string" && item["@id"].startsWith("#session-"),
     );
     expect(sessionEntity).toBeDefined();
-    expect(sessionEntity?.["ldac:speaker"]).toEqual([
-      { "@id": expectedPersonId }
-    ]);
+    expect(sessionEntity?.["ldac:speaker"]).toEqual([{ "@id": expectedPersonId }]);
   });
 
   // LAM-97: Test that person files (photos, consent forms, .person files) are included
@@ -144,36 +134,36 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     const mockPhotoFile = {
       getActualFilePath: () => "/people/Test_Person/Test_Person_Photo.JPG",
       getModifiedDate: () => new Date("2024-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "Test_Person_Photo.JPG"
+      pathInFolderToLinkFileOrLocalCopy: "Test_Person_Photo.JPG",
     } as any;
 
     const mockConsentFile = {
       getActualFilePath: () => "/people/Test_Person/Test_Person_Consent.JPG",
       getModifiedDate: () => new Date("2024-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "Test_Person_Consent.JPG"
+      pathInFolderToLinkFileOrLocalCopy: "Test_Person_Consent.JPG",
     } as any;
 
     const mockPersonFile = {
       getActualFilePath: () => "/people/Test_Person/Test_Person.person",
       getModifiedDate: () => new Date("2024-01-01"),
-      pathInFolderToLinkFileOrLocalCopy: "Test_Person.person"
+      pathInFolderToLinkFileOrLocalCopy: "Test_Person.person",
     } as any;
 
     // Create person with files
     const personWithFiles = createMockPerson({
       filePrefix: "Test_Person",
       metadata: {
-        fullName: "Test Person"
+        fullName: "Test Person",
       },
-      files: [mockPhotoFile, mockConsentFile, mockPersonFile]
+      files: [mockPhotoFile, mockConsentFile, mockPersonFile],
     });
 
     // Create session with contribution
     const mockSession = createMockSession({
       filePrefix: "test-session",
       metadata: {
-        title: "Test Session"
-      }
+        title: "Test Session",
+      },
     });
 
     mockSession.getAllContributionsToAllFiles = vi
@@ -183,10 +173,10 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     // Create project
     const mockProject = createMockProject({
       metadata: {
-        title: "Test Project"
+        title: "Test Project",
       },
       persons: { items: [personWithFiles] },
-      sessions: { items: [mockSession] }
+      sessions: { items: [mockSession] },
     });
 
     mockProject.findPerson = vi.fn().mockImplementation((reference: string) => {
@@ -197,26 +187,21 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     const graph = (roCrate as any)["@graph"];
 
     const expectedPersonId = createPersonId(personWithFiles);
-    const expectedPersonFilesDatasetId =
-      createPersonFilesDatasetId(personWithFiles);
+    const expectedPersonFilesDatasetId = createPersonFilesDatasetId(personWithFiles);
 
     // LAM-98: People/ now references person-files Datasets, not entities directly
     const peopleDataset = graph.find((item: any) => item["@id"] === "People/");
     expect(peopleDataset).toBeDefined();
-    const peopleHasPartIds = peopleDataset.hasPart.map(
-      (ref: any) => ref["@id"]
-    );
+    const peopleHasPartIds = peopleDataset.hasPart.map((ref: any) => ref["@id"]);
     // People/ should reference the person-files Dataset
     expect(peopleHasPartIds).toContain(expectedPersonFilesDatasetId);
     // People/ should NOT directly contain the person entity or files
     expect(peopleHasPartIds).not.toContain(expectedPersonId);
-    expect(peopleHasPartIds).not.toContain(
-      "People/Test_Person/Test_Person_Photo.JPG"
-    );
+    expect(peopleHasPartIds).not.toContain("People/Test_Person/Test_Person_Photo.JPG");
 
     // LAM-98: The person-files Dataset should reference the Person via about, and contain files
     const personFilesDataset = graph.find(
-      (item: any) => item["@id"] === expectedPersonFilesDatasetId
+      (item: any) => item["@id"] === expectedPersonFilesDatasetId,
     );
     expect(personFilesDataset).toBeDefined();
     expect(personFilesDataset?.["@type"]).toBe("Dataset");
@@ -226,27 +211,19 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     // Person is referenced via 'about' (not hasPart - a person is not "part of" a dataset)
     expect(personFilesDataset?.about).toEqual({ "@id": expectedPersonId });
 
-    const personFilesHasPartIds = personFilesDataset.hasPart.map(
-      (ref: any) => ref["@id"]
-    );
+    const personFilesHasPartIds = personFilesDataset.hasPart.map((ref: any) => ref["@id"]);
 
     // Should NOT include the Person entity in hasPart - Person is referenced via about
     expect(personFilesHasPartIds).not.toContain(expectedPersonId);
 
     // Should include all person files
-    expect(personFilesHasPartIds).toContain(
-      "People/Test_Person/Test_Person_Photo.JPG"
-    );
-    expect(personFilesHasPartIds).toContain(
-      "People/Test_Person/Test_Person_Consent.JPG"
-    );
-    expect(personFilesHasPartIds).toContain(
-      "People/Test_Person/Test_Person.person"
-    );
+    expect(personFilesHasPartIds).toContain("People/Test_Person/Test_Person_Photo.JPG");
+    expect(personFilesHasPartIds).toContain("People/Test_Person/Test_Person_Consent.JPG");
+    expect(personFilesHasPartIds).toContain("People/Test_Person/Test_Person.person");
 
     // Verify the files have the `about` property pointing to the person
     const photoFile = graph.find(
-      (item: any) => item["@id"] === "People/Test_Person/Test_Person_Photo.JPG"
+      (item: any) => item["@id"] === "People/Test_Person/Test_Person_Photo.JPG",
     );
     expect(photoFile).toBeDefined();
     expect(photoFile.about).toEqual({ "@id": expectedPersonId });
@@ -255,15 +232,13 @@ describe("RoCrateExporter - Person Reference Consistency", () => {
     expect(photoFile.isPartOf).toEqual({ "@id": expectedPersonFilesDatasetId });
 
     // Verify person entity has image property pointing to photo
-    const personEntity = graph.find(
-      (item: any) => item["@id"] === expectedPersonId
-    );
+    const personEntity = graph.find((item: any) => item["@id"] === expectedPersonId);
     expect(personEntity).toBeDefined();
     const images = Array.isArray(personEntity.image)
       ? personEntity.image
       : [personEntity.image].filter(Boolean);
     expect(images).toContainEqual({
-      "@id": "People/Test_Person/Test_Person_Photo.JPG"
+      "@id": "People/Test_Person/Test_Person_Photo.JPG",
     });
   });
 });

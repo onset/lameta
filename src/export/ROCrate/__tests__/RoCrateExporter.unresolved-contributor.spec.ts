@@ -3,7 +3,7 @@ import { getRoCrate } from "../RoCrateExporter";
 import {
   setupCommonMocks,
   createMockProject,
-  createMockSession
+  createMockSession,
 } from "./test-utils/rocrate-test-setup";
 import { Contribution } from "../../../model/file/File";
 
@@ -19,8 +19,8 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
           if (key === "title") return "Test Session";
           if (key === "description") return "A test session";
           return "";
-        })
-      }
+        }),
+      },
     });
 
     // Create a contributor with a name that contains spaces and special characters
@@ -28,9 +28,7 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
     const contribution = new Contribution(contributorName, "speaker", "");
 
     // Mock the session to return this contribution
-    session.getAllContributionsToAllFiles = vi
-      .fn()
-      .mockReturnValue([contribution]);
+    session.getAllContributionsToAllFiles = vi.fn().mockReturnValue([contribution]);
 
     // Make sure this contributor does NOT exist as a Person in the project
     project.findPerson = vi.fn().mockReturnValue(null);
@@ -44,7 +42,7 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
 
     // Find the contributor entity in the graph
     const contributorEntities = graph.filter(
-      (item: any) => item["@type"] === "Person" && item.name === contributorName
+      (item: any) => item["@type"] === "Person" && item.name === contributorName,
     );
 
     expect(contributorEntities).toHaveLength(1);
@@ -64,16 +62,12 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
     expect(contributorEntity.description).toBeUndefined();
 
     // Find the session that references this contributor
-    const sessionEntity = graph.find((item: any) =>
-      item["@type"]?.includes("CollectionEvent")
-    );
+    const sessionEntity = graph.find((item: any) => item["@type"]?.includes("CollectionEvent"));
     expect(sessionEntity).toBeDefined();
 
     // The session should reference the contributor by the same @id in LDAC role properties
     expect(sessionEntity["ldac:speaker"]).toBeDefined();
-    expect(sessionEntity["ldac:speaker"]).toEqual([
-      { "@id": contributorEntity["@id"] }
-    ]);
+    expect(sessionEntity["ldac:speaker"]).toEqual([{ "@id": contributorEntity["@id"] }]);
   });
 
   test("should handle multiple unresolved contributors with different names", async () => {
@@ -83,25 +77,16 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
       metadata: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Multi Contributor Session";
-          if (key === "description")
-            return "A session with multiple contributors";
+          if (key === "description") return "A session with multiple contributors";
           return "";
-        })
-      }
+        }),
+      },
     });
 
-    const contributors = [
-      "Mary Smith",
-      "Dr. John Wilson (Linguist)",
-      "Sarah O'Connor"
-    ];
+    const contributors = ["Mary Smith", "Dr. John Wilson (Linguist)", "Sarah O'Connor"];
 
-    const contributions = contributors.map(
-      (name) => new Contribution(name, "speaker", "")
-    );
-    session.getAllContributionsToAllFiles = vi
-      .fn()
-      .mockReturnValue(contributions);
+    const contributions = contributors.map((name) => new Contribution(name, "speaker", ""));
+    session.getAllContributionsToAllFiles = vi.fn().mockReturnValue(contributions);
 
     // Ensure none of these exist as Person records
     project.findPerson = vi.fn().mockReturnValue(null);
@@ -114,8 +99,7 @@ describe("RO-Crate Unresolved Contributor Handling", () => {
 
     // Find all contributor entities
     const contributorEntities = graph.filter(
-      (item: any) =>
-        item["@type"] === "Person" && contributors.includes(item.name)
+      (item: any) => item["@type"] === "Person" && contributors.includes(item.name),
     );
 
     expect(contributorEntities).toHaveLength(3);

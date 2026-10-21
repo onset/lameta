@@ -32,9 +32,7 @@ describe("parseWorkingLanguagesToSlots", () => {
   });
 
   it("should parse multiple languages and normalize to BCP47 format", () => {
-    const slots = Project.parseWorkingLanguagesToSlots(
-      "eng:English;spa:Spanish;fra:French"
-    );
+    const slots = Project.parseWorkingLanguagesToSlots("eng:English;spa:Spanish;fra:French");
     expect(slots).toHaveLength(3);
     expect(slots[0].tag).toBe("en"); // eng -> en
     expect(slots[0].name).toBe("English");
@@ -57,7 +55,7 @@ describe("parseWorkingLanguagesToSlots", () => {
       "deu:German", // 4th - color[3]
       "ita:Italian", // 5th - color[0] (cycling back)
       "por:Portuguese", // 6th - color[1]
-      "rus:Russian" // 7th - color[2]
+      "rus:Russian", // 7th - color[2]
     ].join(";");
 
     const slots = Project.parseWorkingLanguagesToSlots(languages);
@@ -89,17 +87,13 @@ describe("parseWorkingLanguagesToSlots", () => {
   });
 
   it("should normalize language codes to lowercase", () => {
-    const slots = Project.parseWorkingLanguagesToSlots(
-      "ENG:English;SPA:Spanish"
-    );
+    const slots = Project.parseWorkingLanguagesToSlots("ENG:English;SPA:Spanish");
     expect(slots[0].tag).toBe("en"); // normalized to BCP47
     expect(slots[1].tag).toBe("es"); // normalized to BCP47
   });
 
   it("should trim whitespace from codes and names", () => {
-    const slots = Project.parseWorkingLanguagesToSlots(
-      "  eng : English  ;  spa : Spanish  "
-    );
+    const slots = Project.parseWorkingLanguagesToSlots("  eng : English  ;  spa : Spanish  ");
     expect(slots[0].tag).toBe("en"); // normalized to BCP47
     expect(slots[0].name).toBe("English");
     expect(slots[1].tag).toBe("es"); // normalized to BCP47
@@ -107,9 +101,7 @@ describe("parseWorkingLanguagesToSlots", () => {
   });
 
   it("should skip empty entries", () => {
-    const slots = Project.parseWorkingLanguagesToSlots(
-      "eng:English;;spa:Spanish;"
-    );
+    const slots = Project.parseWorkingLanguagesToSlots("eng:English;;spa:Spanish;");
     expect(slots).toHaveLength(2);
     expect(slots[0].tag).toBe("en");
     expect(slots[1].tag).toBe("es");
@@ -124,18 +116,14 @@ describe("parseWorkingLanguagesToSlots", () => {
 
   it("should deduplicate when both 2-letter and 3-letter codes are provided", () => {
     // If someone provides both en and eng, should only get one slot
-    const slots = Project.parseWorkingLanguagesToSlots(
-      "en:English;eng:English Again"
-    );
+    const slots = Project.parseWorkingLanguagesToSlots("en:English;eng:English Again");
     expect(slots).toHaveLength(1);
     expect(slots[0].tag).toBe("en");
     expect(slots[0].name).toBe("English"); // first one wins
   });
 
   it("should handle special characters in language names", () => {
-    const slots = Project.parseWorkingLanguagesToSlots(
-      "deu:Deutsch (German);zho:中文"
-    );
+    const slots = Project.parseWorkingLanguagesToSlots("deu:Deutsch (German);zho:中文");
     expect(slots[0].name).toBe("Deutsch (German)");
     expect(slots[1].name).toBe("中文");
   });

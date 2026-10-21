@@ -5,14 +5,11 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
-import {
-  createSessionEntry,
-  addParticipantProperties
-} from "../RoCrateSessions";
+import { createSessionEntry, addParticipantProperties } from "../RoCrateSessions";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
@@ -32,9 +29,7 @@ describe("RoCrateSessions", () => {
     mockRoCrateLicense = new RoCrateLicense();
 
     // Mock the field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
 
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
@@ -42,21 +37,21 @@ describe("RoCrateSessions", () => {
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Person",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Mock project
     mockProject = {
       metadataFile: {
-        getTextProperty: vi.fn().mockReturnValue("Test Project")
+        getTextProperty: vi.fn().mockReturnValue("Test Project"),
       },
       authorityLists: {
-        accessChoicesOfCurrentProtocol: []
+        accessChoicesOfCurrentProtocol: [],
       },
-      findPerson: vi.fn()
+      findPerson: vi.fn(),
     } as unknown as Project;
 
     // Mock session
@@ -66,7 +61,7 @@ describe("RoCrateSessions", () => {
       date: "2023-01-01",
       location: "Test Location",
       access: "public",
-      languages: ""
+      languages: "",
     };
     mockSession = {
       filePrefix: "test-session",
@@ -75,25 +70,24 @@ describe("RoCrateSessions", () => {
           .fn()
           .mockImplementation(
             (key: string, defaultValue: string = "") =>
-              sessionProperties[key as keyof typeof sessionProperties] ??
-              defaultValue
+              sessionProperties[key as keyof typeof sessionProperties] ?? defaultValue,
           ),
         properties: {
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       knownFields: [],
       getAllContributionsToAllFiles: vi.fn().mockReturnValue([
         {
           personReference: "John Doe",
-          role: "speaker"
+          role: "speaker",
         },
         {
           personReference: "Jane Smith",
-          role: "interviewer"
-        }
+          role: "interviewer",
+        },
       ]),
-      files: []
+      files: [],
     } as unknown as Session;
   });
 
@@ -104,7 +98,7 @@ describe("RoCrateSessions", () => {
         mockSession,
         true,
         mockRoCrateLanguages,
-        mockRoCrateLicense
+        mockRoCrateLicense,
       );
 
       expect(result).toBeInstanceOf(Array);
@@ -114,14 +108,8 @@ describe("RoCrateSessions", () => {
       expect(sessionEntry["@id"]).toBe("./");
       // LAM-61 https://linear.app/lameta/issue/LAM-61/sessions-should-be-collectionevent
       // Sessions must now be typed as CollectionEvent with an explicit Session classification.
-      expect(sessionEntry["@type"]).toEqual([
-        "Dataset",
-        "RepositoryObject",
-        "CollectionEvent"
-      ]);
-      expect(sessionEntry.collectionEventType).toBe(
-        "https://w3id.org/ldac/terms#Session"
-      );
+      expect(sessionEntry["@type"]).toEqual(["Dataset", "RepositoryObject", "CollectionEvent"]);
+      expect(sessionEntry.collectionEventType).toBe("https://w3id.org/ldac/terms#Session");
       expect(sessionEntry.name).toBe("Test Session");
       expect(sessionEntry["pcdm:memberOf"]).toBeUndefined();
     });
@@ -132,7 +120,7 @@ describe("RoCrateSessions", () => {
         mockSession,
         false,
         mockRoCrateLanguages,
-        mockRoCrateLicense
+        mockRoCrateLicense,
       );
 
       expect(result).toBeInstanceOf(Array);
@@ -140,13 +128,8 @@ describe("RoCrateSessions", () => {
       // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1
       // Session entities now expose #session-* fragments instead of pseudo-paths.
       expect(sessionEntry["@id"]).toBe("#session-test-session");
-      expect(sessionEntry["@type"]).toEqual([
-        "RepositoryObject",
-        "CollectionEvent"
-      ]);
-      expect(sessionEntry.collectionEventType).toBe(
-        "https://w3id.org/ldac/terms#Session"
-      );
+      expect(sessionEntry["@type"]).toEqual(["RepositoryObject", "CollectionEvent"]);
+      expect(sessionEntry.collectionEventType).toBe("https://w3id.org/ldac/terms#Session");
       expect(sessionEntry.startDate).toBe("2023-01-01");
       expect(sessionEntry.location).toEqual({ "@id": "#Test Location" });
     });
@@ -157,7 +140,7 @@ describe("RoCrateSessions", () => {
         mockSession,
         false,
         mockRoCrateLanguages,
-        mockRoCrateLicense
+        mockRoCrateLicense,
       );
 
       const sessionEntry = result[0] as any;
@@ -170,7 +153,7 @@ describe("RoCrateSessions", () => {
         mockSession,
         true,
         mockRoCrateLanguages,
-        mockRoCrateLicense
+        mockRoCrateLicense,
       );
 
       const sessionEntry = result[0] as any;
@@ -185,15 +168,13 @@ describe("RoCrateSessions", () => {
 
       // Person IDs use percent-encoding for spaces per sanitizeForIri
       expect(sessionEntry["ldac:speaker"]).toEqual([{ "@id": "#John%20Doe" }]);
-      expect(sessionEntry["ldac:interviewer"]).toEqual([
-        { "@id": "#Jane%20Smith" }
-      ]);
+      expect(sessionEntry["ldac:interviewer"]).toEqual([{ "@id": "#Jane%20Smith" }]);
     });
 
     it("should handle multiple people with same role", () => {
       mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([
         { personReference: "John Doe", role: "speaker" },
-        { personReference: "Jane Smith", role: "speaker" }
+        { personReference: "Jane Smith", role: "speaker" },
       ]);
 
       const sessionEntry = {};
@@ -202,7 +183,7 @@ describe("RoCrateSessions", () => {
       // Person IDs use percent-encoding for spaces per sanitizeForIri
       expect(sessionEntry["ldac:speaker"]).toEqual([
         { "@id": "#John%20Doe" },
-        { "@id": "#Jane%20Smith" }
+        { "@id": "#Jane%20Smith" },
       ]);
     });
 
@@ -210,7 +191,7 @@ describe("RoCrateSessions", () => {
       mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([
         { personReference: "John Doe", role: "speaker" },
         { personReference: "Jane Smith", role: "speaker" },
-        { personReference: "Bob Wilson", role: "recorder" }
+        { personReference: "Bob Wilson", role: "recorder" },
       ]);
 
       const sessionEntry = {};
@@ -220,18 +201,16 @@ describe("RoCrateSessions", () => {
       // Person IDs use percent-encoding for spaces per sanitizeForIri
       expect(sessionEntry["ldac:speaker"]).toEqual([
         { "@id": "#John%20Doe" },
-        { "@id": "#Jane%20Smith" }
+        { "@id": "#Jane%20Smith" },
       ]);
-      expect(sessionEntry["ldac:recorder"]).toEqual([
-        { "@id": "#Bob%20Wilson" }
-      ]);
+      expect(sessionEntry["ldac:recorder"]).toEqual([{ "@id": "#Bob%20Wilson" }]);
     });
 
     it("should avoid duplicate person IDs in the same role", () => {
       mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([
         { personReference: "John Doe", role: "speaker" },
         { personReference: "John Doe", role: "speaker" }, // duplicate
-        { personReference: "Jane Smith", role: "speaker" }
+        { personReference: "Jane Smith", role: "speaker" },
       ]);
 
       const sessionEntry = {};
@@ -240,7 +219,7 @@ describe("RoCrateSessions", () => {
       // Person IDs use percent-encoding for spaces per sanitizeForIri
       expect(sessionEntry["ldac:speaker"]).toEqual([
         { "@id": "#John%20Doe" },
-        { "@id": "#Jane%20Smith" }
+        { "@id": "#Jane%20Smith" },
       ]);
       expect(sessionEntry["ldac:speaker"]).toHaveLength(2); // Only unique entries
     });

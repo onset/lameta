@@ -30,12 +30,9 @@ describe("Project Async Loading", () => {
         overallTotal: number;
       }> = [];
 
-      const project = await Project.fromDirectoryAsync(
-        "sample data/Edolo sample",
-        (progress) => {
-          progressCalls.push({ ...progress });
-        }
-      );
+      const project = await Project.fromDirectoryAsync("sample data/Edolo sample", (progress) => {
+        progressCalls.push({ ...progress });
+      });
 
       // Verify project loaded correctly
       expect(project).toBeDefined();
@@ -68,48 +65,42 @@ describe("Project Async Loading", () => {
   });
 
   // Additional tests for Large Sample if available
-  (hasLargeSample ? describe : describe.skip)(
-    "fromDirectoryAsync with Large Sample",
-    () => {
-      it("should load Large Sample project asynchronously with progress", async () => {
-        const progressCalls: Array<{
-          phase: "sessions" | "people";
-          overallCurrent: number;
-          overallTotal: number;
-        }> = [];
+  (hasLargeSample ? describe : describe.skip)("fromDirectoryAsync with Large Sample", () => {
+    it("should load Large Sample project asynchronously with progress", async () => {
+      const progressCalls: Array<{
+        phase: "sessions" | "people";
+        overallCurrent: number;
+        overallTotal: number;
+      }> = [];
 
-        const project = await Project.fromDirectoryAsync(
-          "sample data/Large Sample",
-          (progress) => {
-            progressCalls.push({ ...progress });
-          }
-        );
-
-        // Verify project loaded correctly
-        expect(project).toBeDefined();
-        expect(project.loadingError).toBeUndefined();
-
-        // Large Sample has 19 people and many sessions
-        expect(project.persons.items.length).toBe(19);
-        expect(project.sessions.items.length).toBeGreaterThan(10);
-
-        // With batched yields, we should have fewer progress calls than total items
-        // but still enough to show meaningful progress
-        expect(progressCalls.length).toBeGreaterThan(0);
-
-        // Verify progress never goes backwards
-        let previousOverallCurrent = 0;
-        for (const call of progressCalls) {
-          expect(call.overallCurrent).toBeGreaterThanOrEqual(previousOverallCurrent);
-          previousOverallCurrent = call.overallCurrent;
-        }
+      const project = await Project.fromDirectoryAsync("sample data/Large Sample", (progress) => {
+        progressCalls.push({ ...progress });
       });
 
-      it("should count folders correctly in Large Sample", () => {
-        const counts = Project.countFoldersInDirectory("sample data/Large Sample");
-        expect(counts.sessionCount).toBeGreaterThan(10);
-        expect(counts.personCount).toBe(19);
-      });
-    }
-  );
+      // Verify project loaded correctly
+      expect(project).toBeDefined();
+      expect(project.loadingError).toBeUndefined();
+
+      // Large Sample has 19 people and many sessions
+      expect(project.persons.items.length).toBe(19);
+      expect(project.sessions.items.length).toBeGreaterThan(10);
+
+      // With batched yields, we should have fewer progress calls than total items
+      // but still enough to show meaningful progress
+      expect(progressCalls.length).toBeGreaterThan(0);
+
+      // Verify progress never goes backwards
+      let previousOverallCurrent = 0;
+      for (const call of progressCalls) {
+        expect(call.overallCurrent).toBeGreaterThanOrEqual(previousOverallCurrent);
+        previousOverallCurrent = call.overallCurrent;
+      }
+    });
+
+    it("should count folders correctly in Large Sample", () => {
+      const counts = Project.countFoldersInDirectory("sample data/Large Sample");
+      expect(counts.sessionCount).toBeGreaterThan(10);
+      expect(counts.personCount).toBe(19);
+    });
+  });
 });
