@@ -172,9 +172,13 @@ test.describe("Popup menus", () => {
     await titleField().press("Control+a");
     const menu = await rightClickTitle();
     expect(labels(menu)).toEqual(["Cut", "Copy", "Paste", "Select All"]);
-    // one right-click shows one menu, even after the page has updated many times
-    await page.waitForTimeout(500);
-    expect(await lameta.getPopupMenuCount()).toBe(1);
+    // The page has updated many times by now, and each update sets up the context menu
+    // again. There must still be only one listener, or one right-click shows several menus.
+    expect(
+      await page.evaluate(() =>
+        require("electron").ipcRenderer.listenerCount("windowIpc.contextMenu"),
+      ),
+    ).toBe(1);
 
     await lameta.electronApp.evaluate(({ clipboard }) => clipboard.writeText(""));
     await lameta.clickPopupMenuItem("Copy");
@@ -597,8 +601,11 @@ test.describe("Quitting", () => {
 
       // Playwright accepts beforeunload dialogs, which would let the window close.
       // Electron itself shows none: it keeps the window open when onbeforeunload returns a value.
-      page.on("dialog", (d) => {
-        if (d.type() === "beforeunload") d.dismiss().catch(() => {});
+      let beforeUnloadDismissals = 0;
+      page.on("dialog", async (d) => {
+        if (d.type() !== "beforeunload") return;
+        await d.dismiss().catch(() => {});
+        beforeUnloadDismissals++;
       });
 
       await lameta.mockShowOpenDialog([source]);
@@ -610,7 +617,8 @@ test.describe("Quitting", () => {
       await expect
         .poll(questions)
         .toEqual([["Do not quit", "Abandon files that are still copying"]]);
-      await page.waitForTimeout(1000);
+      // once the close has been refused, the window stays
+      await expect.poll(() => beforeUnloadDismissals).toBe(1);
       expect(
         await lameta.electronApp.evaluate(
           ({ BrowserWindow }) => BrowserWindow.getAllWindows().length,
