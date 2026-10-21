@@ -58,8 +58,8 @@ export function setUILanguage(code: string, reload: boolean = true) {
   currentUILanguage = code;
   moment.locale(currentUILanguage); // this is a global change
 
-  // Crowdin and older compiled assets have used folder names like "zh-cn",
-  // "zh", and "pt" even when the UI locale code is "zh-CN" or "pt-BR".
+  // Catalog folders are named by UI locale code (crowdin.yml maps pt-BR and
+  // zh-CN downloads there); older checkouts may still have "zh-cn", "zh" or "pt".
   const folder = resolveCatalogFolder(code);
   loadOneCatalog(folder, code, "messages"); // these come from code
   loadOneCatalog(folder, code, "fields"); // these come from the fields.json5 files

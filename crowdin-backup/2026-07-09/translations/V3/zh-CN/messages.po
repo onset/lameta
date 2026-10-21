@@ -1,0 +1,695 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2018-12-15 15:06-0700\n"
+"Mime-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: zh\n"
+"Project-Id-Version: saymorex\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-07-09 18:24\n"
+"Last-Translator: \n"
+"Language-Team: Chinese Simplified\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /V3/messages.po\n"
+"X-Crowdin-File-ID: 68\n"
+
+msgid "A file with the same name already exists at that location."
+msgstr "当前位置中已存在同名文件。"
+
+msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
+msgstr "包含所有项目可归档文件的文件夹，并为OPEX打包了IMDI。"
+
+msgid "A folder with an IMDI file for the project and each session."
+msgstr "包含项目和每个场次IMDI文件的文件夹。"
+
+msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
+msgstr "一个包含项目信息且用逗号分隔的文件，后续每行对应一场次。许多lameta字段被省略。"
+
+msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
+msgstr "每个项目、场次和人员信息均用逗号分隔的单个压缩包。"
+
+msgid "Abandon files that are still copying"
+msgstr "放弃仍在复制的文件"
+
+msgid "About This Project"
+msgstr "关于本项目"
+
+msgid "About lameta"
+msgstr "关于lameta"
+
+msgid "Access"
+msgstr "访问权限"
+
+msgid "Add Files"
+msgstr "添加文件"
+
+msgid "Add Language"
+msgstr "添加语言"
+
+msgid "Add documents here that describe the projects and corpus."
+msgstr "在此添加描述项目和库的文件。"
+
+msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
+msgstr "将那些似乎无法归入其他类别的文件添加到这里。例如，说明项目资金来源的文件。"
+
+msgid "All Sessions"
+msgstr "所有场次"
+
+msgid "Archive Configuration"
+msgstr "存档配置"
+
+msgid "As a curator"
+msgstr "作为管理人员"
+
+msgid "As a developer"
+msgstr "作为开发人员"
+
+msgid "As a trainer"
+msgstr "作为培训人员"
+
+msgid "Audio"
+msgstr "音频"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Cannot add files of that type"
+msgstr "无法添加该类型的文件"
+
+msgid "Change Name To:"
+msgstr "重命名为："
+
+msgid "Change..."
+msgstr "更改..."
+
+msgid "Choose File"
+msgstr "选择文件"
+
+msgid "Choose Language"
+msgstr "选择语言"
+
+msgid "Choose Spreadsheet Mapping:"
+msgstr "选择用于映射的电子表格："
+
+msgid "Choose an export format:"
+msgstr "选择导出格式："
+
+msgid "Choose which Sessions to export:"
+msgstr "选择要导出的场次："
+
+msgid "Clear"
+msgstr "清除"
+
+msgid "Close"
+msgstr "关闭"
+
+msgid "Collection"
+msgstr "典藏"
+
+msgid "Comments"
+msgstr "备注"
+
+msgid "Confirm Delete"
+msgstr "确认删除"
+
+msgid "Contributions"
+msgstr "贡献"
+
+msgid "Contributors"
+msgstr "贡献人"
+
+msgid "Copy"
+msgstr "复制"
+
+msgid "Copy Requested..."
+msgstr "已请求复制..."
+
+msgid "Copying in Files..."
+msgstr "正在复制文件..."
+
+msgid "Copying..."
+msgstr "正在复制..."
+
+msgid "Create"
+msgstr "创建"
+
+msgid "Create New Project"
+msgstr "创建新项目"
+
+msgid "Create New Project with Sample Data"
+msgstr "使用样本数据创建新项目"
+
+msgid "Create New lameta Project"
+msgstr "创建新lameta项目"
+
+msgid "Create Project Using Sample Data"
+msgstr "使用样本数据创建新项目"
+
+msgid "Create Project..."
+msgstr "创建项目..."
+
+msgid "Credits"
+msgstr "鸣谢"
+
+msgid "Custom Access Choices"
+msgstr "自定义访问选项"
+
+msgid "Custom Field"
+msgstr "自定义字段"
+
+msgid "Cut"
+msgstr "剪切"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Delete All Marked People..."
+msgstr "删除标记的所有人..."
+
+msgid "Delete All Marked Sessions..."
+msgstr "删除标记的所有场次"
+
+msgid "Delete File..."
+msgstr "删除文件..."
+
+msgid "Delete Person..."
+msgstr "删除人员..."
+
+msgid "Delete Session"
+msgstr "删除场次"
+
+msgid "Delete Session..."
+msgstr "删除场次..."
+
+msgid "Delete link to file..."
+msgstr "删除文件链接..."
+
+msgid "Deleting..."
+msgstr "正在删除…"
+
+msgid "Description Documents"
+msgstr "说明文档"
+
+msgid "Do not quit"
+msgstr "不退出"
+
+msgid "Done"
+msgstr "已完成"
+
+msgid "Download"
+msgstr "下载"
+
+msgid "Duplicate Person"
+msgstr "复制人员"
+
+msgid "Duplicate Session"
+msgstr "复制场次"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "Email Address"
+msgstr "电子邮件地址"
+
+msgid "Enter each choice, separated by commas"
+msgstr "输入每个选项，用逗号分隔"
+
+msgid "Error"
+msgstr "错误"
+
+msgid "Export"
+msgstr "导出"
+
+msgid "Export Project"
+msgstr "导出项目"
+
+msgid "Export Project..."
+msgstr "导出项目..."
+
+msgid "Exporting..."
+msgstr "正在导出..."
+
+msgid "Field"
+msgstr "字段"
+
+msgid "File"
+msgstr "文件"
+
+msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
+msgstr "在媒体播放器占用视频文件时，可能会发生文件锁定。同时也可能是由杀毒软件或文件同步引起的。如果问题持续，请重启 lameta 并重试。"
+
+msgid "File to Import:"
+msgstr "要导入的文件："
+
+msgid "Font Size"
+msgstr "字体大小"
+
+msgid "For a course or workshop"
+msgstr "用于课程或工作坊"
+
+msgid "For documenting another language"
+msgstr "用于记录另一种语言"
+
+msgid "For documenting my own language"
+msgstr "用于记录自己的语言"
+
+msgid "Found file with a name containing 'Consent'"
+msgstr "找到名称包含“知情同意”的文件"
+
+msgid "Found no file with a name containing 'Consent'"
+msgstr "未找到名称包含“知情同意”的文件"
+
+msgid "Full Name"
+msgstr "全名"
+
+msgid "Help"
+msgstr "帮助"
+
+msgid "Help translate"
+msgstr "协助翻译"
+
+msgid "Hide Others"
+msgstr "隐藏其他"
+
+msgid "Hide lameta"
+msgstr "隐藏lameta"
+
+msgid "How are you using lameta?"
+msgstr "您要如何使用lameta？"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "IMDI Mode"
+msgstr "IMDI模式"
+
+msgid "IMDI Only"
+msgstr "仅用 IMDI"
+
+msgid "Image"
+msgstr "图像"
+
+msgid "Import Spreadsheet of People"
+msgstr "导入人员表格"
+
+msgid "Import Spreadsheet of Sessions"
+msgstr "导入场次表格"
+
+msgid "Import {chosenCount} People"
+msgstr "导入{chosenCount}个人员"
+
+msgid "Import {chosenCount} Sessions"
+msgstr "导入{chosenCount}个场次"
+
+msgid "Importing..."
+msgstr "正在导入..."
+
+msgid "Indicates that this is the father or mother's primary language."
+msgstr "表明这是父亲或母亲的主要语言。"
+
+msgid "Interface Language"
+msgstr "界面语言"
+
+msgid "Language Code"
+msgstr "语言代码"
+
+msgid "Larger"
+msgstr "更大"
+
+msgid "Learner"
+msgstr "学习者"
+
+msgid "Linked to {p}"
+msgstr "链接到 {p}"
+
+msgid "Mark as a primary language of the mother."
+msgstr "标记为母亲的主要语言。"
+
+msgid "Mark as a primary language."
+msgstr "标记为主要语言。"
+
+msgid "Mark as primary language of the father."
+msgstr "标记为父亲的主要语言。"
+
+msgid "Mark for Deletion or Export"
+msgstr "标记以便删除或导出"
+
+msgid "Mark for Export or Deletion"
+msgstr "标记以便导出或删除"
+
+msgid "Media Folder"
+msgstr "媒体文件夹"
+
+msgid "Media Folder Settings..."
+msgstr "媒体文件夹设置..."
+
+msgid "Modified"
+msgstr "修改时间"
+
+msgid "More Fields"
+msgstr "更多字段"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "New Person"
+msgstr "添加人员"
+
+msgid "New Session"
+msgstr "新场次"
+
+msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
+msgstr "通常，当您向项目、场次或人员添加文件时，该文件会被复制到与您的lameta项目相同的文件夹中。而对某些文件来说，您可能更希望让它们保存在原位置，并仅通过\"链接\"指向到它们。"
+
+msgid "Not important to the archive, but will be included"
+msgstr "对存档不重要，但仍将被包含"
+
+msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
+msgstr "请注意，这是您媒体文件目录中一个文件的链接。 在这里，您重命名的是此链接，而不是它指向的原始文件。 如果您稍后导出时包含此文件，将使用此名称导出。"
+
+msgid "Notes"
+msgstr "注释"
+
+msgid "OK"
+msgstr "好"
+
+msgid "OPEX + Files"
+msgstr "OPEX + 文件"
+
+msgid "One or more files are still being copied into your project."
+msgstr "一个或多个文件仍在复制到您的项目中。"
+
+msgid "Open"
+msgstr "打开"
+
+msgid "Open Project"
+msgstr "打开项目"
+
+msgid "Open Project..."
+msgstr "打开项目..."
+
+msgid "Open in ELAN"
+msgstr "在ELAN中打开"
+
+msgid "Open in program associated with this file type"
+msgstr "在与此文件类型关联的程序中打开"
+
+msgid "Other Documents"
+msgstr "其他文件"
+
+msgid "PARADISEC Mode"
+msgstr "PARADISEC模式"
+
+msgid "Paradisec CSV"
+msgstr "Paradisec CSV"
+
+msgid "Paste"
+msgstr "粘贴"
+
+msgid "People"
+msgstr "人员"
+
+msgid "Person"
+msgstr "人员"
+
+msgid "Please Register"
+msgstr "请注册"
+
+msgid "Please remove characters that not allowed by the Archive Settings."
+msgstr "请删除存档设置中不允许的字符。"
+
+msgid "Please wait until all files are finished copying into this folder"
+msgstr "请等待所有文件都复制到此文件夹中"
+
+msgid "Project"
+msgstr "项目"
+
+msgid "Project will be created in: {path}."
+msgstr "项目将被创建在： {path}."
+
+msgid "Properties"
+msgstr "参数"
+
+msgid "Quit"
+msgstr "退出"
+
+msgid "Redo"
+msgstr "恢复"
+
+msgid "Registration"
+msgstr "注册"
+
+msgid "Registration..."
+msgstr "注册..."
+
+msgid "Release Notes"
+msgstr "更新日志"
+
+msgid "Rename"
+msgstr "重命名"
+
+msgid "Rename File"
+msgstr "重命名文件"
+
+msgid "Rename for Consent"
+msgstr "重命名为知情同意"
+
+msgid "Rename..."
+msgstr "重命名..."
+
+msgid "Renaming failed because there is already a file with that name."
+msgstr "重命名失败，因为已经有一个文件使用该名称。"
+
+msgid "Report a problem"
+msgstr "报告问题"
+
+msgid "Restart lameta and do the rename before playing the video again."
+msgstr "重启lameta，并在重命名后再次播放视频。"
+
+msgid "Role"
+msgstr "角色"
+
+msgid "Save As"
+msgstr "另存为"
+
+msgid "Saving"
+msgstr "保存中"
+
+msgid "Saving before rename..."
+msgstr "重命名前保存中..."
+
+msgid "Select All"
+msgstr "全选"
+
+msgid "Services"
+msgstr "服务"
+
+msgid "Session"
+msgstr "场次"
+
+msgid "Sessions"
+msgstr "场次"
+
+msgid "Show All"
+msgstr "显示全部"
+
+msgid "Show Release Notes"
+msgstr "显示更新日志"
+
+msgid "Show export"
+msgstr "显示导出"
+
+msgid "Show in File Explorer"
+msgstr "在文件资源管理器中显示"
+
+msgid "Show in Finder"
+msgstr "在访达中显示"
+
+msgid "Show me the folder with the problem"
+msgstr "显示有问题的文件夹"
+
+msgid "Show more releases"
+msgstr "显示更多发布"
+
+msgid "Size"
+msgstr "大小"
+
+msgid "Smaller"
+msgstr "更小"
+
+msgid "Some operating systems would not allow that name."
+msgstr "有些操作系统不允许使用该名称。"
+
+msgid "Something is wrong here..."
+msgstr "这里出现了一些错误..."
+
+msgid "Sorry, no slashes are allowed"
+msgstr "抱歉，不允许使用斜线"
+
+msgid "Start Screen"
+msgstr "开始界面"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Text"
+msgstr "文本"
+
+msgid "That name would lead to an empty filename."
+msgstr "该名称将导致文件名为空。"
+
+msgid "The IMDI files were validated."
+msgstr "IMDI文件已验证。"
+
+msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
+msgstr "媒体文件夹中的预期位置没有该文件。媒体文件夹设置为 {m} ，而该文件应位于 {e}"
+
+msgid "The {fieldNameInUiLanguage} cannot be empty"
+msgstr "{fieldNameInUiLanguage}不能为空"
+
+msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
+msgstr "该文件夹中有多个 \"{projectType}\"类型的文件，应只有一个。"
+
+msgid "There is a problem with {displayName}. Click for more information."
+msgstr "{displayName}存在问题。点击获取更多信息。"
+
+msgid "There is already a Person with that name or code."
+msgstr "已经有一个具有该名称或代码的人。"
+
+msgid "There is already a file here with the name"
+msgstr "已有同名文件"
+
+msgid "There is already a project at: {path}."
+msgstr "在 {path}已有一个项目。"
+
+msgid "There is already a {folderKind} \"{value}\"."
+msgstr "已有 {folderKind} \"{value}\"。"
+
+msgid "There was a problem exporting:"
+msgstr "导出时出现问题："
+
+msgid "This Personally Identifiable Information may not be exported by some formats."
+msgstr "因为可用于识别个人身份，这些信息将无法导出为某些格式。"
+
+msgid "This XML conforms to the IMDI schema."
+msgstr "该XML符合IMDI模式。"
+
+msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
+msgstr "这是一个链接，但lameta找不到此项目的媒体文件夹。请参阅文件：媒体文件夹设置。"
+
+msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
+msgstr "此设置对您在此计算机上使用的账户是唯一的。 另一台计算机上的同事需要将此值设定为他们计算机上正确的位置。"
+
+msgid "This will not be consumed by the archive. It is only for the use of the researcher."
+msgstr "这些信息仅供研究人员使用，存档不会涉及。"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Undo"
+msgstr "撤销"
+
+msgid "Update available"
+msgstr "有可用更新"
+
+msgid "Value"
+msgstr "值"
+
+msgid "Video"
+msgstr "视频"
+
+msgid "View"
+msgstr "查看"
+
+msgid "View Release Notes"
+msgstr "查看更新日志"
+
+msgid "Warning"
+msgstr "警告"
+
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+"restarting your computer, please report the problem to\n"
+"https://github.com/onset/lameta/issues."
+msgstr "我们没有针对此错误的具体提示。如果您无法通过重启计算机来解决该问题，请将问题报告至https://github.com/onset/lameta/issues。"
+
+msgid "What would you like to call this project?"
+msgstr "您想给这个项目起什么名字？"
+
+msgid "You are running lameta version:"
+msgstr "您正在运行lameta的版本是："
+
+msgid "You cannot add files of that type"
+msgstr "无法添加该类型的文件"
+
+msgid "You cannot add folders."
+msgstr "无法添加文件夹。"
+
+msgid "ZIP Archive"
+msgstr "ZIP压缩文件"
+
+msgid "Zip of CSVs"
+msgstr "CSV压缩文件"
+
+msgid "choose..."
+msgstr "选择..."
+
+msgid "lameta"
+msgstr "lameta"
+
+msgid "lameta  was not able to rename that file."
+msgstr "lameta无法重命名该文件。"
+
+msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
+msgstr "lameta允许您指定一个\"媒体文件夹\"。当您添加的文件位于该文件夹中的某处时，lameta会创建一个链接，而不是复制一个副本。这个文件夹可以放在任何地方，包括您保存大型视频录像的外置硬盘根目录。"
+
+msgid "lameta and SayMore Project Files"
+msgstr "lameta和SayMore项目文件"
+
+msgid "lameta cannot export files while files are still being copied in."
+msgstr "当文件仍在复制时，lameta无法导出文件。"
+
+msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
+msgstr "lameta无法找到媒体文件夹{m}。请参阅文件：媒体文件夹设置。"
+
+msgid "lameta could not find a matching Person for the following contributors:"
+msgstr "lameta无法在人员中匹配以下贡献者："
+
+msgid "lameta could not rename the directory."
+msgstr "lameta无法重命名目录。"
+
+msgid "lameta expected to find a .link file at {e}"
+msgstr "在{e}应有一个.link文件"
+
+msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."
+msgstr "lameta试图将文件夹\"{oldFolderName}\"重命名为\"{newFolderName}\"，但已有一个同名文件夹。"
+
+msgid "lameta was not able to delete the file."
+msgstr "lameta无法删除该文件。"
+
+msgid "lameta was not able to put this file in the trash"
+msgstr "lameta无法将此文件扔进垃圾桶"
+
+msgid "lameta was not able to rename one of the files in the folder."
+msgstr "lameta无法重命名文件夹中的一个文件。"
+
+msgid "lameta was not able to rename the folder."
+msgstr "lameta无法重命名文件夹。"
+
+#. Shows in a tooltip on an info icon in the Notes tab
+msgid "lameta will not export Notes to MIDI"
+msgstr "lameta将不会导出备注到MIDI"
+
+msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
+msgstr "lameta将会打开您硬盘上的这个文件夹，然后退出。您应该用文本编辑器打开这些 {projectType} 文件，然后决定保留哪个文件，并删除其他文件。你决定保留的文件应该命名为 {name}。"
+
+msgid "{0} Marked Sessions"
+msgstr "{0}个标记的场次"
+
+msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
+msgstr "{descriptionOfWhatWillBeDeleted}将被移至垃圾桶"
+

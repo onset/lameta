@@ -1,0 +1,345 @@
+[
+ {
+  "id": 9069,
+  "identifier": "access is Free to all",
+  "text": "access is Free to all",
+  "context": "AILCA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9071,
+  "identifier": "all Users can access (requires registration)",
+  "text": "all Users can access (requires registration)",
+  "context": "AILCA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9073,
+  "identifier": "Researchers and Community members are allowed access",
+  "text": "Researchers and Community members are allowed access",
+  "context": "AILCA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9075,
+  "identifier": "only Community members are allowed access (normally requires application to Depositor)",
+  "text": "only Community members are allowed access (normally requires application to Depositor)",
+  "context": "AILCA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9077,
+  "identifier": "only Subscribers are allowed access (requires application to Depositor)",
+  "text": "only Subscribers are allowed access (requires application to Depositor)",
+  "context": "AILCA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9079,
+  "identifier": "only the Depositor and delegate can access",
+  "text": "only the Depositor and delegate can access",
+  "context": "AILCA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9081,
+  "identifier": "F: Free to All",
+  "text": "F: Free to All",
+  "context": "AILCA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9083,
+  "identifier": "U: All Registered Users",
+  "text": "U: All Registered Users",
+  "context": "AILCA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9085,
+  "identifier": "RC: Registered Users and Community members",
+  "text": "RC: Registered Users and Community members",
+  "context": "AILCA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9087,
+  "identifier": "C: Community members only",
+  "text": "C: Community members only",
+  "context": "AILCA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9089,
+  "identifier": "S: Subscribers only",
+  "text": "S: Subscribers only",
+  "context": "AILCA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9091,
+  "identifier": "private",
+  "text": "private",
+  "context": "AILCA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9093,
+  "identifier": "Archive users will have full access to these materials after agreeing to AILLA's Terms and Conditions and logging in. Choose this level for all non-sensitive materials. This is the default level.",
+  "text": "Archive users will have full access to these materials after agreeing to AILLA's Terms and Conditions and logging in. Choose this level for all non-sensitive materials. This is the default level.",
+  "context": "AILLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9095,
+  "identifier": "When you deposit with the archive, you will define a password with an optional hint. You will be able to provide access to others by sharing the password with them. This is the most flexible option.",
+  "text": "When you deposit with the archive, you will define a password with an optional hint. You will be able to provide access to others by sharing the password with them. This is the most flexible option.",
+  "context": "AILLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9097,
+  "identifier": "When you deposit with the archive, you will specify a date. After that date, access will change to Level 1. This option is good for resources that are only sensitive for a period of time; for example, the lifetime of the narrator or the five years until you finish your thesis. You will still be able to access these materials yourself with the password.",
+  "text": "When you deposit with the archive, you will specify a date. After that date, access will change to Level 1. This option is good for resources that are only sensitive for a period of time; for example, the lifetime of the narrator or the five years until you finish your thesis. You will still be able to access these materials yourself with the password.",
+  "context": "AILLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9099,
+  "identifier": "Archive users must contact you directly to ask for the password. AILLA will provide contact information. Note that you must maintain your contact information and be prepared to respond to requests from people you do not know.",
+  "text": "Archive users must contact you directly to ask for the password. AILLA will provide contact information. Note that you must maintain your contact information and be prepared to respond to requests from people you do not know.",
+  "context": "AILLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9101,
+  "identifier": "1: Public Access",
+  "text": "1: Public Access",
+  "context": "AILLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9103,
+  "identifier": "2: Password",
+  "text": "2: Password",
+  "context": "AILLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9105,
+  "identifier": "3: Time Limit",
+  "text": "3: Time Limit",
+  "context": "AILLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9107,
+  "identifier": "4: Depositor control",
+  "text": "4: Depositor control",
+  "context": "AILLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9109,
+  "identifier": "Any member of the public may access the material for non-profit use.",
+  "text": "Any member of the public may access the material for non-profit use.",
+  "context": "ANLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9111,
+  "identifier": "When you deposit with the archive, you will specify a date. After that data, access will change to Unrestricted access.",
+  "text": "When you deposit with the archive, you will specify a date. After that data, access will change to Unrestricted access.",
+  "context": "ANLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9113,
+  "identifier": "When you deposit with the archive, you will specify restrictions on access. For example, 'access only with permission of village council', 'access only with permission of descendants', etc.",
+  "text": "When you deposit with the archive, you will specify restrictions on access. For example, 'access only with permission of village council', 'access only with permission of descendants', etc.",
+  "context": "ANLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9115,
+  "identifier": "Unrestricted access",
+  "text": "Unrestricted access",
+  "context": "ANLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9117,
+  "identifier": "Time limit",
+  "text": "Time limit",
+  "context": "ANLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9119,
+  "identifier": "Restricted access",
+  "text": "Restricted access",
+  "context": "ANLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9121,
+  "identifier": "All users can access (requires registration)",
+  "text": "All users can access (requires registration)",
+  "context": "ELAR/accessProtocol/undefined/description",
+  "isHidden": false
+ },
+ {
+  "id": 9123,
+  "identifier": "Only Subscribers are allowed access (must apply to Depositor for access)",
+  "text": "Only Subscribers are allowed access (must apply to Depositor for access)",
+  "context": "ELAR/accessProtocol/undefined/description",
+  "isHidden": false
+ },
+ {
+  "id": 9125,
+  "identifier": "O: fully open",
+  "text": "O: fully open",
+  "context": "ELAR/accessProtocol/undefined/label",
+  "isHidden": false
+ },
+ {
+  "id": 9127,
+  "identifier": "U: open to users",
+  "text": "U: open to users",
+  "context": "ELAR/accessProtocol/undefined/label",
+  "isHidden": false
+ },
+ {
+  "id": 9129,
+  "identifier": "S: open to subscribers",
+  "text": "S: open to subscribers",
+  "context": "ELAR/accessProtocol/undefined/label",
+  "isHidden": false
+ },
+ {
+  "id": 9131,
+  "identifier": "Open (subject to PARADISEC access conditions)",
+  "text": "Open (subject to PARADISEC access conditions)",
+  "context": "PARADISEC/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9133,
+  "identifier": "Closed (subject to certain specified conditions)",
+  "text": "Closed (subject to certain specified conditions)",
+  "context": "PARADISEC/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9135,
+  "identifier": "Open",
+  "text": "Open",
+  "context": "PARADISEC/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9137,
+  "identifier": "Closed",
+  "text": "Closed",
+  "context": "PARADISEC/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9139,
+  "identifier": "Open to all users",
+  "text": "Open to all users",
+  "context": "REAP/accessProtocol/undefined/description",
+  "isHidden": false
+ },
+ {
+  "id": 9141,
+  "identifier": "Restricted to REAP users",
+  "text": "Restricted to REAP users",
+  "context": "REAP/accessProtocol/undefined/description",
+  "isHidden": false
+ },
+ {
+  "id": 9143,
+  "identifier": "Restricted to Organizational Unit",
+  "text": "Restricted to Organizational Unit",
+  "context": "REAP/accessProtocol/undefined/description",
+  "isHidden": false
+ },
+ {
+  "id": 9145,
+  "identifier": "Public",
+  "text": "Public",
+  "context": "REAP/accessProtocol/undefined/label",
+  "isHidden": false
+ },
+ {
+  "id": 9147,
+  "identifier": "REAP Users",
+  "text": "REAP Users",
+  "context": "REAP/accessProtocol/undefined/label",
+  "isHidden": false
+ },
+ {
+  "id": 9149,
+  "identifier": "Entity",
+  "text": "Entity",
+  "context": "REAP/accessProtocol/undefined/label",
+  "isHidden": false
+ },
+ {
+  "id": 9151,
+  "identifier": "Resources can be accessed immediately.",
+  "text": "Resources can be accessed immediately.",
+  "context": "TLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9153,
+  "identifier": "Resources can be accessed by registered users which possibly (as in the case of DOBES) have to agree with a Code of Conduct.",
+  "text": "Resources can be accessed by registered users which possibly (as in the case of DOBES) have to agree with a Code of Conduct.",
+  "context": "TLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9155,
+  "identifier": "In addition to the conditions that hold for restricted resources, protected resources can be accessed on request only. The responsibles (usually the depositors) will examine the request and, if they grant access, they may do so for a specific use or limited amount of time, which may have to be agreed upon in a usage declaration.",
+  "text": "In addition to the conditions that hold for restricted resources, protected resources can be accessed on request only. The responsibles (usually the depositors) will examine the request and, if they grant access, they may do so for a specific use or limited amount of time, which may have to be agreed upon in a usage declaration.",
+  "context": "TLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9157,
+  "identifier": "Can be accessed only by the depositors (and, e.g., members of the respective speech community).",
+  "text": "Can be accessed only by the depositors (and, e.g., members of the respective speech community).",
+  "context": "TLA/accessProtocol/undefined/description",
+  "isHidden": true
+ },
+ {
+  "id": 9159,
+  "identifier": "Open",
+  "text": "Open",
+  "context": "TLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9161,
+  "identifier": "Restricted",
+  "text": "Restricted",
+  "context": "TLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9163,
+  "identifier": "Protected",
+  "text": "Protected",
+  "context": "TLA/accessProtocol/undefined/label",
+  "isHidden": true
+ },
+ {
+  "id": 9165,
+  "identifier": "Closed",
+  "text": "Closed",
+  "context": "TLA/accessProtocol/undefined/label",
+  "isHidden": true
+ }
+]

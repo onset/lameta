@@ -1,0 +1,79 @@
+[
+ {
+  "id": 7398,
+  "identifier": "O: fully open",
+  "text": "O: fully open",
+  "context": "ELAR/accessProtocol/O/label",
+  "isHidden": false
+ },
+ {
+  "id": 7400,
+  "identifier": "Only Subscribers are allowed access (must apply to Depositor for access)",
+  "text": "Only Subscribers are allowed access (must apply to Depositor for access)",
+  "context": "ELAR/accessProtocol/S/description",
+  "isHidden": false
+ },
+ {
+  "id": 7402,
+  "identifier": "S: open to subscribers",
+  "text": "S: open to subscribers",
+  "context": "ELAR/accessProtocol/S/label",
+  "isHidden": false
+ },
+ {
+  "id": 7404,
+  "identifier": "All users can access (requires registration)",
+  "text": "All users can access (requires registration)",
+  "context": "ELAR/accessProtocol/U/description",
+  "isHidden": false
+ },
+ {
+  "id": 7406,
+  "identifier": "U: open to users",
+  "text": "U: open to users",
+  "context": "ELAR/accessProtocol/U/label",
+  "isHidden": false
+ },
+ {
+  "id": 7408,
+  "identifier": "Restricted to Organizational Unit",
+  "text": "Restricted to Organizational Unit",
+  "context": "REAP/accessProtocol/Entity/description",
+  "isHidden": false
+ },
+ {
+  "id": 7410,
+  "identifier": "Entity",
+  "text": "Entity",
+  "context": "REAP/accessProtocol/Entity/label",
+  "isHidden": false
+ },
+ {
+  "id": 7412,
+  "identifier": "Open to all users",
+  "text": "Open to all users",
+  "context": "REAP/accessProtocol/Public/description",
+  "isHidden": false
+ },
+ {
+  "id": 7414,
+  "identifier": "Public",
+  "text": "Public",
+  "context": "REAP/accessProtocol/Public/label",
+  "isHidden": false
+ },
+ {
+  "id": 7416,
+  "identifier": "Restricted to REAP users",
+  "text": "Restricted to REAP users",
+  "context": "REAP/accessProtocol/REAP/description",
+  "isHidden": false
+ },
+ {
+  "id": 7418,
+  "identifier": "REAP Users",
+  "text": "REAP Users",
+  "context": "REAP/accessProtocol/REAP/label",
+  "isHidden": false
+ }
+]
