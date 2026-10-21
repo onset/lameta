@@ -44,8 +44,8 @@ describe("computeMergedCatalog", () => {
       ],
     };
 
-    // todo I don't know why this fails even though the exception is being thrown
-    // expect(computeMergedCatalog(ourCatalog)).toThrow();
+    expect(() => computeMergedCatalog(ourCatalog)).toThrow();
+    expect(() => computeMergedCatalog({ project: [ourCatalog.project[0]] })).not.toThrow();
   });
 });
 
