@@ -538,6 +538,7 @@ msgstr ""
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
 msgstr "Tenga en cuenta que este es un enlace a un archivo en su carpeta de medios. Aquí, usted está renombrando el enlace, no el archivo original que se indica. Si más adelante crea una exportación que incluya este archivo, la exportación usará este nombre.\n"
+""
 
 msgid "Notes"
 msgstr "Notas"
@@ -1112,4 +1113,3 @@ msgstr ""
 
 msgid "{warnings} warnings"
 msgstr ""
-
