@@ -4,6 +4,7 @@ import { ConfirmDeleteDialog } from "../components/ConfirmDeleteDialog/ConfirmDe
 import LanguagePickerDialog from "../components/LanguagePickerDialog/LanguagePickerDialog";
 import * as ReactModal from "react-modal";
 import { RenameFileDialog } from "../components/RenameFileDialog/RenameFileDialog";
+import { UnlistedLanguageDialog } from "../components/UnlistedLanguageDialog/UnlistedLanguageDialog";
 import { I18nProvider } from "@lingui/react";
 import { i18n } from "../other/localization";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
@@ -68,6 +69,7 @@ export const App: React.FunctionComponent = observer(() => {
           <ConfirmDeleteDialog />
           <LanguagePickerDialog />
           <RenameFileDialog />
+          <UnlistedLanguageDialog />
           <RegistrationDialog />
           <ReleasesDialog />
         </ThemeProvider>

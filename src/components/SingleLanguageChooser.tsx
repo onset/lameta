@@ -2,11 +2,7 @@ import AsyncSelect from "react-select/async";
 import { default as React, useState, useEffect } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 import _ from "lodash";
-import {
-  LanguageOption,
-  languagePillHoverStyle,
-  LanguagePillForSingle
-} from "./LanguagePill";
+import { LanguageOption, languagePillHoverStyle, LanguagePillForSingle } from "./LanguagePill";
 import { observer } from "mobx-react";
 
 const saymore_orange = "#e69664";
@@ -26,7 +22,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
   const customStyles = {
     input: (provided, state) => ({
       ...provided,
-      height: "1.3em"
+      height: "1.3em",
     }),
     control: (styles, state) => ({
       ...styles,
@@ -37,42 +33,45 @@ export const SingleLanguageChooser: React.FunctionComponent<
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
-      "&:hover": { borderColor: saymore_orange }
+      "&:hover": { borderColor: saymore_orange },
     }),
 
     clearIndicator: (styles) => ({
       ...styles,
-      color: "#e4e4e4" // I would rather show only when cursor is in the frame of the control, but I haven't figured it out
+      color: "#e4e4e4", // I would rather show only when cursor is in the frame of the control, but I haven't figured it out
     }),
     menuPortal: (base) => ({
       ...base,
-      zIndex: 9999
-    })
+      zIndex: 9999,
+    }),
   };
 
   const code = props.languageTag ? props.languageTag.trim() : undefined;
   const currentValue = code
     ? {
         value: code,
-        label: getName(props.languageFinder, code)
+        label: getName(props.languageFinder, code),
       }
     : undefined;
 
   const loadMatchingOptions = (inputValue, callback) => {
     const matches =
-      inputValue.length > 1
-        ? props.languageFinder!.makeMatchesAndLabelsForSelect(inputValue)
-        : [];
+      inputValue.length > 1 ? props.languageFinder!.makeMatchesAndLabelsForSelect(inputValue) : [];
     callback(
-      matches.map(
-        (m: { languageInfo: Language; nameMatchingWhatTheyTyped: string }) => ({
-          value: m.languageInfo.iso639_3,
-          label: m.nameMatchingWhatTheyTyped,
-          language: m.languageInfo
-        })
-      )
+      matches.map((m: { languageInfo: Language; nameMatchingWhatTheyTyped: string }) => ({
+        value: m.languageInfo.iso639_3,
+        label: m.nameMatchingWhatTheyTyped,
+        language: m.languageInfo,
+      })),
     );
   };
+  // One debounced loader for the life of the control. A new one on each render defeats the
+  // debounce, because each has its own timer.
+  const debouncedLoadMatchingOptions = React.useMemo(
+    () => _.debounce(loadMatchingOptions, 100),
+    [],
+  );
+
   return (
     <div className={"field " + (props.className ? props.className : "")}>
       <AsyncSelect
@@ -84,12 +83,12 @@ export const SingleLanguageChooser: React.FunctionComponent<
         components={{
           SingleValue: (p: any) => <LanguagePillForSingle {...p} />,
           Option: (p: any) => <LanguageOption {...p} />,
-          DropdownIndicator: null
+          DropdownIndicator: null,
         }}
         className="select"
         placeholder="Type a language name or code..."
         isClearable={true}
-        loadOptions={_.debounce(loadMatchingOptions, 100)}
+        loadOptions={debouncedLoadMatchingOptions}
         value={currentValue}
         styles={customStyles}
         menuPortalTarget={document.body}

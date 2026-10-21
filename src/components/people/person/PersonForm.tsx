@@ -1,4 +1,5 @@
 import * as React from "react";
+import { FieldProblemLine } from "../../problems/FieldProblemLine";
 
 import { Person } from "../../../model/Project/Person/Person";
 import { observer } from "mobx-react";
@@ -27,22 +28,15 @@ class PersonForm extends React.Component<IProps> {
   }
 
   private renderIfVisible(key: string, element: React.ReactNode) {
-    return this.props.fields.getFieldDefinition(key).visibility !== "never"
-      ? element
-      : null;
+    return this.props.fields.getFieldDefinition(key).visibility !== "never" ? element : null;
   }
 
   public render() {
     // this is a bit of a hack to move these fields up if the large "how to contact" field isn't being shown. Possibly with more grid-foo this could be done with pure CSS?
     const howToContactVisible =
-      this.props.fields.getFieldDefinition("howToContact").visibility !==
-      "never";
-    const rightColumnFieldsVisible = [
-      "education",
-      "ethnicGroup",
-      "primaryOccupation"
-    ].some(
-      (key) => this.props.fields.getFieldDefinition(key).visibility !== "never"
+      this.props.fields.getFieldDefinition("howToContact").visibility !== "never";
+    const rightColumnFieldsVisible = ["education", "ethnicGroup", "primaryOccupation"].some(
+      (key) => this.props.fields.getFieldDefinition(key).visibility !== "never",
     );
 
     return (
@@ -70,14 +64,11 @@ class PersonForm extends React.Component<IProps> {
               this.props.person.IdMightHaveChanged();
             }}
             className="full-name left-side"
-          />
+          />,
         )}
         {this.renderIfVisible(
           "nickname",
-          <TextFieldEdit
-            className="nickname"
-            field={this.props.fields.getTextField("nickname")}
-          />
+          <TextFieldEdit className="nickname" field={this.props.fields.getTextField("nickname")} />,
         )}
         {this.renderIfVisible(
           "code",
@@ -89,14 +80,11 @@ class PersonForm extends React.Component<IProps> {
               // ID is s function of the name and the code
               this.props.person.IdMightHaveChanged();
             }}
-          />
+          />,
         )}
         {this.renderIfVisible(
           "birthYear",
-          <TextFieldEdit
-            className={"birth"}
-            field={this.props.fields.getTextField("birthYear")}
-          />
+          <TextFieldEdit className={"birth"} field={this.props.fields.getTextField("birthYear")} />,
         )}
         {this.renderIfVisible(
           "gender",
@@ -104,7 +92,7 @@ class PersonForm extends React.Component<IProps> {
             includeLabel={true}
             className={"gender"}
             field={this.props.fields.getTextField("gender")}
-          />
+          />,
         )}
         <MugShot person={this.props.person} />
 
@@ -113,7 +101,7 @@ class PersonForm extends React.Component<IProps> {
           <TextFieldEdit
             field={this.props.fields.getTextField("description")}
             className="description multiline full-right-side"
-          />
+          />,
         )}
         {howToContactVisible ? (
           <>
@@ -122,28 +110,28 @@ class PersonForm extends React.Component<IProps> {
               <TextFieldEdit
                 className="howToContact multiline full-right-side"
                 field={this.props.fields.getTextField("howToContact")}
-              />
+              />,
             )}
             {this.renderIfVisible(
               "education",
               <TextFieldEdit
                 className="education"
                 field={this.props.fields.getTextField("education")}
-              />
+              />,
             )}
             {this.renderIfVisible(
               "ethnicGroup",
               <TextFieldEdit
                 field={this.props.fields.getTextField("ethnicGroup")}
                 className="ethnicGroup"
-              />
+              />,
             )}
             {this.renderIfVisible(
               "primaryOccupation",
               <TextFieldEdit
                 field={this.props.fields.getTextField("primaryOccupation")}
                 className="primaryOccupation"
-              />
+              />,
             )}
           </>
         ) : rightColumnFieldsVisible ? (
@@ -153,35 +141,36 @@ class PersonForm extends React.Component<IProps> {
               <TextFieldEdit
                 className="education"
                 field={this.props.fields.getTextField("education")}
-              />
+              />,
             )}
             {this.renderIfVisible(
               "ethnicGroup",
               <TextFieldEdit
                 field={this.props.fields.getTextField("ethnicGroup")}
                 className="ethnicGroup"
-              />
+              />,
             )}
             {this.renderIfVisible(
               "primaryOccupation",
               <TextFieldEdit
                 field={this.props.fields.getTextField("primaryOccupation")}
                 className="primaryOccupation"
-              />
+              />,
             )}
           </div>
         ) : null}
-        {this.props.person.metadataFile?.properties.shouldShow(
-          "customFields"
-        ) ? (
+        {this.props.person.metadataFile?.properties.shouldShow("customFields") ? (
           <CustomFieldsTable file={this.props.person.metadataFile!} />
         ) : null}
         {this.renderIfVisible(
           "languages",
-          <PersonLanguageList
-            person={this.props.person}
-            languageFinder={this.props.languageFinder}
-          />
+          <div className="languages">
+            <PersonLanguageList
+              person={this.props.person}
+              languageFinder={this.props.languageFinder}
+            />
+            <FieldProblemLine field={this.props.fields.getValue("languages")} />
+          </div>,
         )}
         {/* 
         <div className="primary-language">

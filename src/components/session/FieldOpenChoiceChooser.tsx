@@ -1,4 +1,5 @@
 import * as React from "react";
+import { FieldProblemLine } from "../problems/FieldProblemLine";
 import { Field } from "../../model/field/Field";
 import { observer } from "mobx-react";
 import CreatableSelect from "react-select/creatable";
@@ -24,21 +25,24 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
 }> = observer((props) => {
   // Access vocabulary translations here in the observer so MobX tracks changes
   const vocabularyTranslations = Project.getVocabularyTranslations();
-  
+
   // Read revision to subscribe to changes - when translations are updated,
   // revision changes and MobX will re-render this component
   // oxlint-disable-next-line @typescript-eslint/no-unused-vars
   const _revision = vocabularyTranslations?.revision ?? 0;
-  
+
   // Helper function to translate genres including project-level translations
   // Defined inside the observer so it captures the current translations
   // Note: Not using useCallback because we want this to always use fresh data from vocabularyTranslations
-  const translateGenreWithProjectTranslations = (genre: string, lang: string): string | undefined => {
+  const translateGenreWithProjectTranslations = (
+    genre: string,
+    lang: string,
+  ): string | undefined => {
     return translateGenreToLanguage(genre, lang, (value, langCode) =>
-      vocabularyTranslations?.getGenreTranslation(value, langCode)
+      vocabularyTranslations?.getGenreTranslation(value, langCode),
     );
   };
-  
+
   // enhance: "complex" here means there is more than just a phrase associated with
   // this. Genres have definitions and examples too. It seems that this code is
   // conflating "open" with "complex"; we could certainly have a field where you
@@ -61,7 +65,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
         value: c.id,
         label: props.translateChoice(c.label),
         title: tip,
-        source: c.source
+        source: c.source,
       });
     })
     .sort((a: any, b: any) => (a.label as string).localeCompare(b.label));
@@ -69,18 +73,22 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
   let currentOption: object | null = null;
   if (props.field.text.trim().length > 0) {
     const matchingOption = options.find(
-      (o: any) => o.value.toLowerCase() === props.field.text.toLowerCase()
+      (o: any) => o.value.toLowerCase() === props.field.text.toLowerCase(),
     );
     currentOption = matchingOption
       ? matchingOption
       : {
           value: props.field.text,
-          label: props.field.text
+          label: props.field.text,
         };
   }
   const { searchTerm } = React.useContext(SearchContext);
   return (
-    <div className={"field " + props.className} data-testid="genre-chooser">
+    <div
+      className={"field " + props.className}
+      data-testid="genre-chooser"
+      data-field-key={props.field.key}
+    >
       <FieldLabel fieldDef={props.field.definition} />
       <CreatableSelect
         className="field-value-border"
@@ -97,37 +105,37 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
             border: "none",
             boxShadow: "none",
             "&:hover": {
-              border: "none"
+              border: "none",
             },
-            borderRadius: 0
+            borderRadius: 0,
           }),
           menu: (provided) => ({
             ...provided,
             marginTop: "0",
-            marginBottom: "0"
+            marginBottom: "0",
           }),
           container: (provided) => ({
             ...provided,
-            marginTop: "2px"
+            marginTop: "2px",
           }),
           valueContainer: (provided) => ({
             ...provided,
             paddingLeft: "2px",
-            paddingTop: "0"
+            paddingTop: "0",
           }),
           input: (provided) => ({
             ...provided,
-            height: "20px"
+            height: "20px",
           }),
           indicatorsContainer: (provided) => ({
             ...provided,
-            height: "26px"
+            height: "26px",
           }),
           dropdownIndicator: (provided) => ({
             ...provided,
             height: "26px",
-            padding: "1px"
-          })
+            padding: "1px",
+          }),
         }}
         onChange={(s: any) => {
           props.field.setValueFromString(s && s.value ? s.value : "");
@@ -137,15 +145,10 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
           SingleValue: (p: any) => {
             const isMultilingual = props.field.definition.multilingual;
             const slots = Project.getMetadataLanguageSlots();
-            const showTranslationTooltip =
-              isMultilingual && slots.length > 1 && p.data.value;
-            const { content: tooltipContent, hasMissing } =
-              showTranslationTooltip
-                ? buildTranslationTooltip(
-                    p.data.value,
-                    translateGenreWithProjectTranslations
-                  )
-                : { content: null, hasMissing: false };
+            const showTranslationTooltip = isMultilingual && slots.length > 1 && p.data.value;
+            const { content: tooltipContent, hasMissing } = showTranslationTooltip
+              ? buildTranslationTooltip(p.data.value, translateGenreWithProjectTranslations)
+              : { content: null, hasMissing: false };
 
             const innerContent = <HighlightSearchTerm text={p.data.label} />;
 
@@ -191,10 +194,11 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
                 </span>
               </components.SingleValue>
             );
-          }
+          },
         }}
         options={options}
       />
+      <FieldProblemLine field={props.field} />
     </div>
   );
 });

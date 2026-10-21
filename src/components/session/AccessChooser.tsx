@@ -1,4 +1,5 @@
 import * as React from "react";
+import { FieldProblemLine } from "../problems/FieldProblemLine";
 import { observer } from "mobx-react";
 import { Field, IChoice } from "../../model/field/Field";
 // tslint:disable-next-line:no-duplicate-imports
@@ -15,22 +16,18 @@ export interface IProps {
   authorityLists: AuthorityLists;
 }
 
-const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
-  props
-) => {
+const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (props) => {
   const { searchTerm } = React.useContext(SearchContext);
 
-  const options = props.authorityLists.accessChoicesOfCurrentProtocol.map(
-    (c: IChoice) => {
-      // The choice already has a human-readable label (e.g., "U: open to users")
-      // which may include localized text. We use the id as the stored value
-      // but display the label to the user.
-      return new Object({
-        value: c.id, // we store the code (e.g. "U") on disk, not the label
-        label: c.label // display the full label from the vocabulary
-      });
-    }
-  );
+  const options = props.authorityLists.accessChoicesOfCurrentProtocol.map((c: IChoice) => {
+    // The choice already has a human-readable label (e.g., "U: open to users")
+    // which may include localized text. We use the id as the stored value
+    // but display the label to the user.
+    return new Object({
+      value: c.id, // we store the code (e.g. "U") on disk, not the label
+      label: c.label, // display the full label from the vocabulary
+    });
+  });
 
   let currentOption: object | null = null;
   if (props.field.text.trim().length > 0) {
@@ -41,12 +38,16 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
       : {
           value: storedValue,
           label: storedValue + " <-- Invalid Access",
-          title: "This value is not in the current access protocol."
+          title: "This value is not in the current access protocol.",
         };
   }
 
   return (
-    <div className={"field access-chooser"} data-testid="access-chooser-field">
+    <div
+      className={"field access-chooser"}
+      data-testid="access-chooser-field"
+      data-field-key={props.field.key}
+    >
       <FieldLabel fieldDef={props.field.definition} />
       <ReactSelectClass
         id="access-chooser" // for playwright
@@ -68,7 +69,7 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
             <components.SingleValue {...selectProps}>
               <HighlightSearchTerm text={selectProps.data.label} />
             </components.SingleValue>
-          )
+          ),
         }}
         styles={{
           control: (styles, state) => ({
@@ -78,45 +79,46 @@ const AccessChooser: React.FC<IProps & React.HTMLAttributes<HTMLDivElement>> = (
             border: "none",
             boxShadow: "none",
             "&:hover": {
-              border: "none"
+              border: "none",
             },
-            borderRadius: 0
+            borderRadius: 0,
           }),
           menu: (provided) => ({
             ...provided,
             marginTop: "0",
-            marginBottom: "0"
+            marginBottom: "0",
           }),
           container: (provided) => ({
-            ...provided
+            ...provided,
             //marginTop: "2px"
           }),
           valueContainer: (provided) => ({
             ...provided,
             paddingLeft: "2px",
-            paddingTop: "0"
+            paddingTop: "0",
           }),
           input: (provided) => ({
             ...provided,
-            height: "20px"
+            height: "20px",
           }),
           indicatorsContainer: (provided) => ({
             ...provided,
-            height: "26px"
+            height: "26px",
           }),
           dropdownIndicator: (provided) => ({
             ...provided,
             height: "26px",
-            padding: "1px"
+            padding: "1px",
           }),
           option: (provided, state) => ({
             ...provided,
             color: "black",
             backgroundColor: state.isFocused ? lameta_orange : "white",
-            fontWeight: state.isSelected ? "bold" : "normal"
-          })
+            fontWeight: state.isSelected ? "bold" : "normal",
+          }),
         }}
       />
+      <FieldProblemLine field={props.field} />
     </div>
   );
 };

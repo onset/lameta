@@ -57,6 +57,8 @@ if (process.env.E2E) {
 Store.initRenderer();
 
 let win: BrowserWindow | null = null;
+// whether the developer tools were open, in development
+const devToolsStore = new Store<{ open: boolean }>({ name: "devTools" });
 
 export { win as mainWindow };
 
@@ -150,8 +152,6 @@ async function createWindow() {
     console.log("VITE_DEV_SERVER_URL", process.env.VITE_DEV_SERVER_URL);
     // electron-vite-vue#298
     win.loadURL(url!);
-    // Open devTool if the app is not packaged
-    win.webContents.openDevTools();
   } else {
     win.loadFile(indexHtml);
   }
@@ -169,10 +169,14 @@ async function createWindow() {
       console.log(
         "!!!!!If you hang when doing a 'yarn dev', it's possible that Chrome is trying to pause on a breakpoint. Disable the mainWindow.openDevTools(), run 'dev' again, open devtools (ctrl+alt+i), turn off the breakpoint settings, then renable.",
       );
-
-      win!.webContents.openDevTools();
+    }
+    if (process.env.VITE_DEV_SERVER_URL || process.env.NODE_ENV === "development") {
+      // as the developer last left them, so that a refresh does not reopen them
+      if (devToolsStore.get("open", true)) win!.webContents.openDevTools();
     }
   });
+  win.webContents.on("devtools-opened", () => devToolsStore.set("open", true));
+  win.webContents.on("devtools-closed", () => devToolsStore.set("open", false));
 
   // Initialize launch-test handling (no-op if not requested)
   initLaunchTest(win);
@@ -305,3 +309,5 @@ ipcMain.handle("showMessageBox", (event, options) => {
 
 // this instaniates the MainProcessApi class and makes it available to the render process
 import "./MainProcessApi";
+import { registerRulesSandbox } from "./rulesSandbox";
+registerRulesSandbox();

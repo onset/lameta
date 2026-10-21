@@ -9,6 +9,7 @@ import { sentryException } from "../other/errorHandling";
 import { t } from "@lingui/macro";
 import { quitApp } from "../other/windowIpc";
 import { ipcRenderer } from "electron";
+import log from "../other/log";
 
 import { Theme, ToastOptions, toast } from "react-toastify";
 const activeToasts: string[] = [];
@@ -20,6 +21,16 @@ const errorToastProps: ToastOptions = {
 };
 
 function notify(message: string, details?: string | React.ReactNode, options?: ToastOptions) {
+  // what the user saw, in lameta.log, with where it came from
+  if (options?.type === "error" || options?.type === "warning") {
+    try {
+      const text = [message, typeof details === "string" ? details : ""]
+        .filter((x) => x)
+        .join(" | ");
+      const stack = (new Error().stack ?? "").split("\n").slice(2).join("\n");
+      log.log(options.type === "error" ? "error" : "warn", `${text}\n${stack}`);
+    } catch {}
+  }
   // the delay helps with messages that we wouldn't see on startup becuase the react window isn't ready for it
   window.setTimeout(() => {
     const key = message + details;

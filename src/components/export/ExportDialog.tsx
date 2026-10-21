@@ -31,6 +31,7 @@ import {
   DialogTitle,
   DialogMiddle,
   DialogBottomButtons,
+  DialogBottomLeftButtons,
   DialogCancelButton,
   useSetupLametaDialog,
 } from "../LametaDialog";
@@ -42,6 +43,8 @@ import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
 import { Session } from "../../model/Project/Session/Session";
 import { lameta_green, lameta_dark_green } from "../../containers/theme";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
+import { checkProject, IProjectCheck } from "../../problems/checkProject";
+import { ExportProblemsList, ExportProblemsSummary, problemAsText } from "./ExportProblems";
 
 // Export-specific modules
 import { runRoCrateValidation } from "./roCrateExport";
@@ -71,10 +74,6 @@ const warningCategoryColors = [
 
 // Patterns to identify warning categories
 const warningCategoryPatterns: Array<{ pattern: RegExp; label: string }> = [
-  {
-    pattern: /does not comply with the file naming rules/i,
-    label: "file-naming",
-  },
   { pattern: /BirthYear .* is not valid for IMDI/i, label: "birthyear" },
   { pattern: /missing/i, label: "missing" },
   { pattern: /could not/i, label: "could-not" },
@@ -127,6 +126,22 @@ export const ExportDialog: React.FunctionComponent<{
 
   staticShowExportDialog = () => {
     setMode(Mode.choosing);
+    // all of lameta's checks, on the project as it is now
+    setProjectCheck(undefined);
+    const project = props.projectHolder.project;
+    if (project)
+      checkProject(project).then(
+        (check) => {
+          setProjectCheck(check);
+          // so that the problems are there to work through after the dialog closes
+          if (check.problems.length > 0) userSettingsSingleton.ShowProblems = true;
+        },
+        (e) =>
+          setProjectCheck({
+            problems: [],
+            rulesFileErrors: [{ kind: "check", message: String(e?.message ?? e) }],
+          }),
+      );
     resetCategoryColors(); // Reset warning color assignments for fresh dialog
     // Reset all export-related state for a fresh dialog
     setExportLog([]);
@@ -139,7 +154,6 @@ export const ExportDialog: React.FunctionComponent<{
       message: "",
     });
     setImdiValidated(false);
-    SetRulesBasedValidationResult(undefined);
     setOutputPath(undefined);
     cancelRequestedRef.current = false;
     showDialog();
@@ -164,9 +178,8 @@ export const ExportDialog: React.FunctionComponent<{
 
   const [imdiValidated, setImdiValidated] = useState<boolean>(false);
 
-  const [rulesBasedValidationResult, SetRulesBasedValidationResult] = React.useState<
-    string | undefined
-  >();
+  // what lameta's checks found when the dialog opened; undefined while they run
+  const [projectCheck, setProjectCheck] = useState<IProjectCheck | undefined>();
 
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
   const [exportFormat, setExportFormat] = useState(userSettingsSingleton.ExportFormat);
@@ -176,6 +189,24 @@ export const ExportDialog: React.FunctionComponent<{
   const countOfMarkedSessions = props.projectHolder?.project?.sessions
     ? props.projectHolder.project.sessions.countOfMarkedFolders()
     : 0;
+
+  // The problems in what would be exported: the project, the people, and all the
+  // sessions or only the marked ones
+  const exportedSessionIds = new Set(
+    (props.projectHolder?.project?.sessions.items ?? [])
+      .filter((f) => whichSessionsOption === "all" || f.marked)
+      .map((f) => (f as unknown as Session).id),
+  );
+  const exportedProblems = (projectCheck?.problems ?? []).filter(
+    (p) => !p.sessionId || exportedSessionIds.has(p.sessionId),
+  );
+  const archiveName =
+    props.projectHolder?.project?.properties.getTextStringOrEmpty("archiveConfigurationName") ?? "";
+  // An archive can refuse some kinds of export while there are problems; warnings
+  // are allowed.
+  const exportBlocked =
+    (GetOtherConfigurationSettings().exportFormatsBlockedByProblems ?? []).includes(exportFormat) &&
+    exportedProblems.some((p) => p.severity === "error");
 
   React.useEffect(() => {
     // guess what they will want based on if they have checked anything
@@ -266,26 +297,6 @@ export const ExportDialog: React.FunctionComponent<{
         setMode(Mode.exporting);
         setTimeout(() => {
           try {
-            // For RO-Crate, we still need to check for rules violations
-            const folderFilter =
-              whichSessionsOption === "all" ? () => true : (f: Folder) => f.marked;
-            const sessions: Session[] = props.projectHolder.project!.sessions.items.filter(
-              folderFilter,
-            ) as unknown as Session[];
-            // for each session, call getRulesViolationsString() and if it is not empty, add to RulesBasedValidationResult
-            let rulesBasedValidationResult = "";
-            for (const session of sessions) {
-              const result = session.getRulesViolationsString(
-                props.projectHolder.project!.persons.items.map((p) =>
-                  p.properties.getTextStringOrEmpty(p.propertyForCheckingId),
-                ),
-              );
-              if (result) {
-                rulesBasedValidationResult += `**${session.id}**\n\n${result}\n\n`;
-              }
-            }
-            SetRulesBasedValidationResult(rulesBasedValidationResult);
-
             // RO-Crate export writes to a fixed location in the project directory
             const outputPath = Path.join(
               props.projectHolder.project!.directory,
@@ -338,25 +349,6 @@ export const ExportDialog: React.FunctionComponent<{
             // setTimeout lets us update the ui before diving in
             setTimeout(() => {
               try {
-                const folderFilter =
-                  whichSessionsOption === "all" ? () => true : (f: Folder) => f.marked;
-                const sessions: Session[] = props.projectHolder.project!.sessions.items.filter(
-                  folderFilter,
-                ) as unknown as Session[];
-                // for each session, call getRulesViolationsString() and if it is not empty, add to RulesBasedValidationResult
-                let rulesBasedValidationResult = "";
-                for (const session of sessions) {
-                  const result = session.getRulesViolationsString(
-                    props.projectHolder.project!.persons.items.map((p) =>
-                      p.properties.getTextStringOrEmpty(p.propertyForCheckingId),
-                    ),
-                  );
-                  if (result) {
-                    rulesBasedValidationResult += `**${session.id}**\n\n${result}\n\n`;
-                  }
-                }
-                SetRulesBasedValidationResult(rulesBasedValidationResult);
-
                 setOutputPath(result.filePath);
                 // we'll return from this while the saving happens. When it is done, our mode will change from `exporting` to `finished`.
                 saveFilesAsync(result.filePath!);
@@ -537,6 +529,10 @@ export const ExportDialog: React.FunctionComponent<{
             setCountOfMarkedSessions={() => {}} // No-op since we're using useMemo now
           />
         )}
+        {/* at the right, above the export's progress and log once it starts */}
+        {mode !== Mode.cancelled && mode !== Mode.choosing && (
+          <ExportProblemsSummary check={projectCheck} problems={exportedProblems} align="right" />
+        )}
         <div
           css={css`
             /* margin-left: 20px; */
@@ -544,24 +540,7 @@ export const ExportDialog: React.FunctionComponent<{
         >
           {mode === Mode.error &&
             (() => {
-              // Format rules-based validation warnings to match export log style
               const projectDir = props.projectHolder.project?.directory || "";
-
-              // Convert rulesBasedValidationResult to plain warning lines
-              const rulesWarnings: string[] = [];
-              if (rulesBasedValidationResult) {
-                // Parse markdown: **Session Name**\n\nviolation text
-                const sections = rulesBasedValidationResult
-                  .split(/\*\*([^*]+)\*\*/)
-                  .filter((s) => s.trim());
-                for (let i = 0; i < sections.length; i += 2) {
-                  const sessionName = sections[i]?.trim();
-                  const violation = sections[i + 1]?.trim();
-                  if (sessionName && violation) {
-                    rulesWarnings.push(`⚠️ ${sessionName}: ${violation}`);
-                  }
-                }
-              }
 
               // Strip project path from export log entries
               const cleanedExportLog = exportLog.map((entry) => {
@@ -571,7 +550,7 @@ export const ExportDialog: React.FunctionComponent<{
                 return entry;
               });
 
-              const allEntries = [...rulesWarnings, ...cleanedExportLog];
+              const allEntries = cleanedExportLog;
 
               // Helper to decode HTML entities and strip formatting tags for clipboard
               const decodeForClipboard = (html: string) =>
@@ -583,7 +562,12 @@ export const ExportDialog: React.FunctionComponent<{
                   .replace(/&amp;/g, "&");
 
               const copyEntriesToClipboard = () => {
-                navigator.clipboard.writeText(allEntries.map(decodeForClipboard).join("\n"));
+                navigator.clipboard.writeText(
+                  [
+                    ...exportedProblems.map(problemAsText),
+                    ...allEntries.map(decodeForClipboard),
+                  ].join("\n"),
+                );
               };
 
               // Find index of first error for scrolling
@@ -610,6 +594,9 @@ export const ExportDialog: React.FunctionComponent<{
                     <ErrorIcon color="error" />
                     <Trans>Export failed</Trans>
                   </h3>
+                  {exportedProblems.length > 0 && (
+                    <ExportProblemsList problems={exportedProblems} />
+                  )}
 
                   {/* Show log with errors and warnings */}
                   {allEntries.length > 0 && (
@@ -768,24 +755,7 @@ export const ExportDialog: React.FunctionComponent<{
           )}
           {mode === Mode.finished &&
             (() => {
-              // Format rules-based validation warnings to match export log style
               const projectDir = props.projectHolder.project?.directory || "";
-
-              // Convert rulesBasedValidationResult to plain warning lines
-              const rulesWarnings: string[] = [];
-              if (rulesBasedValidationResult) {
-                // Parse markdown: **Session Name**\n\nviolation text
-                const sections = rulesBasedValidationResult
-                  .split(/\*\*([^*]+)\*\*/)
-                  .filter((s) => s.trim());
-                for (let i = 0; i < sections.length; i += 2) {
-                  const sessionName = sections[i]?.trim();
-                  const violation = sections[i + 1]?.trim();
-                  if (sessionName && violation) {
-                    rulesWarnings.push(`⚠️ ${sessionName}: ${violation}`);
-                  }
-                }
-              }
 
               // Strip project path from export log warnings
               const cleanedExportLog = exportLog.map((entry) => {
@@ -795,8 +765,8 @@ export const ExportDialog: React.FunctionComponent<{
                 return entry;
               });
 
-              const allWarnings = [...rulesWarnings, ...cleanedExportLog];
-              const hasWarnings = allWarnings.length > 0;
+              const allWarnings = cleanedExportLog;
+              const hasWarnings = allWarnings.length > 0 || exportedProblems.length > 0;
 
               // Helper to decode HTML entities and strip formatting tags for clipboard
               const decodeForClipboard = (html: string) =>
@@ -808,7 +778,12 @@ export const ExportDialog: React.FunctionComponent<{
                   .replace(/&amp;/g, "&");
 
               const copyWarningsToClipboard = () => {
-                navigator.clipboard.writeText(allWarnings.map(decodeForClipboard).join("\n"));
+                navigator.clipboard.writeText(
+                  [
+                    ...exportedProblems.map(problemAsText),
+                    ...allWarnings.map(decodeForClipboard),
+                  ].join("\n"),
+                );
               };
 
               return (
@@ -838,14 +813,19 @@ export const ExportDialog: React.FunctionComponent<{
                       />
                     )}
                     {hasWarnings ? (
-                      <Trans>Done, with {allWarnings.length} warnings</Trans>
+                      <Trans>
+                        Done, with {exportedProblems.length + allWarnings.length} warnings
+                      </Trans>
                     ) : (
                       <Trans>Done</Trans>
                     )}
                   </h3>
 
+                  {exportedProblems.length > 0 && (
+                    <ExportProblemsList problems={exportedProblems} />
+                  )}
                   {/* Show warnings log if any */}
-                  {hasWarnings && (
+                  {allWarnings.length > 0 && (
                     <div
                       css={css`
                         position: relative;
@@ -987,10 +967,43 @@ export const ExportDialog: React.FunctionComponent<{
         )}
         {mode === Mode.choosing && (
           <>
+            {/* the counts, and under them the reason Export is disabled */}
+            <DialogBottomLeftButtons>
+              <div
+                css={css`
+                  align-self: center;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 4px;
+                  border: solid 1px #9b1c1c;
+                  border-radius: 6px;
+                  padding: 6px 10px;
+                `}
+              >
+                <ExportProblemsSummary
+                  check={projectCheck}
+                  problems={exportedProblems}
+                  align="left"
+                />
+                {exportBlocked && (
+                  <div
+                    data-testid="export-blocked"
+                    css={css`
+                      color: #9b1c1c;
+                    `}
+                  >
+                    <Trans>
+                      Problems must be fixed before {archiveName} will accept this export.
+                    </Trans>
+                  </div>
+                )}
+              </div>
+            </DialogBottomLeftButtons>
             <Button
               variant="contained"
               color="secondary"
               onClick={() => handleContinue(true)}
+              disabled={!projectCheck || exportBlocked}
               css={css`
                 min-width: 80px;
               `}

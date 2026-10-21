@@ -1,6 +1,7 @@
 import JSON5 from "json5";
 import * as fs from "fs-extra";
-import { makeObservable, observable, runInAction } from "mobx";
+import { computed, makeObservable, observable, runInAction } from "mobx";
+import { resolvePrivateUseCodes } from "../../languageFinder/privateUseLanguages";
 import * as mobx from "mobx";
 import * as Path from "path";
 import { getIdValidationMessageOrUndefined, Session } from "./Session/Session";
@@ -18,7 +19,12 @@ import { FieldDefinition } from "../field/FieldDefinition";
 import { t } from "@lingui/macro";
 import { analyticsEvent } from "../../other/analytics";
 import userSettings from "../../other/UserSettings";
-import { LanguageFinder, staticLanguageFinder } from "../../languageFinder/LanguageFinder";
+import {
+  ILangIndexEntry,
+  LanguageFinder,
+  staticLanguageFinder,
+} from "../../languageFinder/LanguageFinder";
+import { splitLanguageFieldValue } from "../../languageFinder/languageTagFieldValue";
 import { LanguageSlot } from "../field/TextHolder";
 // FIXED: Import safeCaptureException instead of using Sentry directly
 // CONTEXT: This prevents E2E test failures from Sentry RendererTransport errors
@@ -240,6 +246,34 @@ export class Project extends Folder {
     folders.items.forEach((f: Folder) => console.log(f.displayName));
   }
 
+  // The tag of every language that the project, its sessions and its people name, e.g.
+  // "etr" or "qab-x-tolo". Two languages that ISO 639-3 does not list must have
+  // different codes from qaa..qtz across all of these (see privateUseLanguages.ts).
+  public getAllLanguageTags(): string[] {
+    const fromLanguageFields = (folder: Folder) =>
+      [...folder.properties.values()]
+        .filter((field) => field.definition?.type === "languageChoices")
+        .flatMap((field) => splitLanguageFieldValue(field.text).map((entry) => entry.code));
+    return [
+      ...fromLanguageFields(this),
+      ...this.sessions.items.flatMap(fromLanguageFields),
+      ...(this.persons.items as Person[]).flatMap((person) =>
+        person.languages.map((language) => language.code),
+      ),
+    ].filter((tag) => tag.trim().length > 0);
+  }
+
+  // Which 3-letter code each unlisted language exports as (see resolvePrivateUseCodes).
+  // A MobX computed value: the IMDI of a session reads this rather than every session's
+  // languages, so it is generated again only when these codes change.
+  public get privateUseCodes(): Map<string, string> {
+    return resolvePrivateUseCodes(this.getAllLanguageTags());
+  }
+
+  public static getAllLanguageTagsOfCurrentProject(): string[] {
+    return sCurrentProject === null ? [] : sCurrentProject.getAllLanguageTags();
+  }
+
   public static getDefaultWorkingLanguages(): string {
     return sCurrentProject === null
       ? ""
@@ -376,6 +410,13 @@ export class Project extends Folder {
     makeObservable(this, {
       sessions: observable,
       persons: observable,
+      privateUseCodes: computed({
+        // kept while nothing observes it, so that an export does not work it out
+        // again for each session
+        keepAlive: true,
+        equals: (a: Map<string, string>, b: Map<string, string>) =>
+          a.size === b.size && [...a].every(([tag, code]) => b.get(tag) === code),
+      }),
     });
 
     if (this.properties.getTextStringOrEmpty("guid").length === 0) {
@@ -434,7 +475,8 @@ export class Project extends Folder {
     this.knownFields = fieldDefinitionsOfCurrentConfig.project; // for csv export
 
     this.languageFinder = new LanguageFinder(
-      () => this.getFirstSubjectLanguageCodeAndName(), // REVIEW now that we have multiple languages
+      () => this.getFirstSubjectLanguageCodeAndName(), // used for sort priority
+      () => this.getAllProjectLanguages(),
     );
     this.loadSettingsFromConfiguration();
 
@@ -1303,29 +1345,40 @@ export class Project extends Folder {
     this.properties.setText("SubjectLanguages", content);
   }
 
+  private getLanguagesOfField(fieldName: string): ILangIndexEntry[] {
+    return splitLanguageFieldValue(this.properties.getTextStringOrEmpty(fieldName)).map(
+      (entry) => ({
+        iso639_3: entry.code.toLowerCase(),
+        // In the degenerate case in which there was no ":" in the incoming xml element,
+        // use the code as the name.
+        englishName: entry.name ?? entry.code,
+      }),
+    );
+  }
+
+  /**
+   * Every language named anywhere in the project's own language fields. The language finder
+   * needs all of them, not just the first subject language, or a language the user invented
+   * cannot be found by name outside the field that created it.
+   */
+  public getAllProjectLanguages(): ILangIndexEntry[] {
+    const seen = new Set<string>();
+    return ["SubjectLanguages", "WorkingLanguages", "metadataLanguages"].flatMap((key) =>
+      this.getLanguagesOfField(key).filter((l) => {
+        if (l.iso639_3.length === 0 || seen.has(l.iso639_3)) return false;
+        seen.add(l.iso639_3);
+        return true;
+      }),
+    );
+  }
+
   private getFirstLanguageCodeAndName(fieldName: string):
     | {
         iso639_3: string;
         englishName: string;
       }
     | undefined {
-    const languages: string = this.properties.getTextStringOrEmpty(fieldName);
-
-    if (languages.trim().length === 0) {
-      return undefined; // hasn't been defined yet, e.g. a new project
-    }
-    const firstCodeLangPair = languages.split(";")[0].trim();
-    if (!firstCodeLangPair) {
-      return undefined;
-    }
-    const parts = firstCodeLangPair.split(":");
-    // In the degenerate case in which there was no ":" in the incoming xml element,
-    // use the code as the name.
-    const langName = parts.length > 1 ? parts[1] : parts[0];
-    return {
-      iso639_3: parts[0].trim().toLowerCase(),
-      englishName: langName.trim(),
-    };
+    return this.getLanguagesOfField(fieldName)[0]; // undefined for a new project
   }
   public getFirstSubjectLanguageCodeAndName():
     | {

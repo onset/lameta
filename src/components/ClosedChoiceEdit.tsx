@@ -1,4 +1,5 @@
 import * as React from "react";
+import { FieldProblemLine } from "./problems/FieldProblemLine";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import { translateChoice } from "../other/localization";
@@ -11,18 +12,13 @@ export interface IProps {
   field: Field;
 }
 
-class ClosedChoiceEdit extends React.Component<
-  IProps & React.HTMLAttributes<HTMLDivElement>
-> {
+class ClosedChoiceEdit extends React.Component<IProps & React.HTMLAttributes<HTMLDivElement>> {
   static contextType = SearchContext;
   constructor(props: IProps) {
     super(props);
   }
 
-  private static onChange(
-    event: React.FormEvent<HTMLSelectElement>,
-    text: Field
-  ) {
+  private static onChange(event: React.FormEvent<HTMLSelectElement>, text: Field) {
     text.text = event.currentTarget.value;
   }
 
@@ -38,11 +34,11 @@ class ClosedChoiceEdit extends React.Component<
     const v = ClosedChoiceEdit.getValue(this.props.field);
     const { searchTerm } = (this.context || { searchTerm: "" }) as any;
     const display = translateChoice(v);
-    const hasHighlight =
-      !!searchTerm && display.toLowerCase().includes(searchTerm);
+    const hasHighlight = !!searchTerm && display.toLowerCase().includes(searchTerm);
     return (
       <div
         className={"field " + this.props.className}
+        data-field-key={this.props.field.key}
         data-has-highlight={hasHighlight ? "true" : undefined}
       >
         {this.props.includeLabel ? <label>{label}</label> : ""}
@@ -64,6 +60,7 @@ class ClosedChoiceEdit extends React.Component<
             ))
           }
         </select>
+        <FieldProblemLine field={this.props.field} />
       </div>
     );
   }

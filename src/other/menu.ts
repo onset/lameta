@@ -10,7 +10,7 @@ import {
   toggleDevTools,
 } from "./windowIpc";
 import { IHomePageMenuConnections } from "../containers/HomePage";
-import log from "./log";
+import { logPath } from "./log";
 import { ShowExportDialog } from "../components/export/ExportDialog";
 import { setUILanguage, currentUILanguage } from "./localization";
 import { t } from "@lingui/macro";
@@ -47,8 +47,6 @@ export default class LametaMenu {
   }
 
   public updateMainMenu(sessionMenu: any, peopleMenu: any) {
-    log.info("updateMainMenu");
-
     const haveProject = this.homePage.projectHolder.project !== null;
     // console.log(
     //   `updating Main Menu. haveProject=${haveProject.toLocaleString()}`
@@ -292,6 +290,13 @@ export default class LametaMenu {
           click: () => (userSettings.ShowIMDI = !userSettings.ShowIMDI),
         },
         {
+          label: t`Show Problems`,
+          visible: haveProject,
+          type: "checkbox",
+          checked: userSettings.ShowProblems,
+          click: () => (userSettings.ShowProblems = !userSettings.ShowProblems),
+        },
+        {
           label: t`Show PARADISEC previews`,
           visible: GetOtherConfigurationSettings().archiveUsesParadisec,
           // tooltip only works in macos
@@ -430,7 +435,14 @@ export default class LametaMenu {
         {
           label: t`Report a problem`,
           click: () => {
-            shell.openPath("https://saymorex.page.link/problem");
+            shell.openExternal("https://github.com/onset/lameta/issues");
+          },
+        },
+        {
+          // to attach to a problem report
+          label: t`Show Log File`,
+          click: () => {
+            shell.showItemInFolder(logPath);
           },
         },
         {

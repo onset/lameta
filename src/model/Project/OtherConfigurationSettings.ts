@@ -7,6 +7,10 @@ export type OtherConfigurationSettings = {
   // IMDI schema file name. Defaults to "IMDI_3.0.xsd".
   // Archives can specify an alternative schema.
   imdiSchema: string;
+  // The export formats that are refused while lameta's checks find problems, as the
+  // Export dialog names them: "csv", "paradisec", "imdi", "opex-plus-files",
+  // "ro-crate". Warnings do not refuse an export.
+  exportFormatsBlockedByProblems?: string[];
 };
 
 let otherConfigurationSettings: OtherConfigurationSettings = {
@@ -15,12 +19,10 @@ let otherConfigurationSettings: OtherConfigurationSettings = {
   archiveUsesParadisec: false,
   showRoCrate: false,
   fileNameRules: "ASCII",
-  imdiSchema: "IMDI_3.0.xsd"
+  imdiSchema: "IMDI_3.0.xsd",
 };
 
-export function SetOtherConfigurationSettings(
-  settings: OtherConfigurationSettings
-) {
+export function SetOtherConfigurationSettings(settings: OtherConfigurationSettings) {
   otherConfigurationSettings = settings;
 }
 export function GetOtherConfigurationSettings(): OtherConfigurationSettings {
@@ -33,6 +35,6 @@ export function resetOtherConfigurationSettings() {
     showRoCrate: false,
     configurationFullName: "",
     fileNameRules: "ASCII",
-    imdiSchema: "IMDI_3.0.xsd"
+    imdiSchema: "IMDI_3.0.xsd",
   };
 }

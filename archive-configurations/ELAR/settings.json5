@@ -5,5 +5,8 @@
   archiveUsesImdi: true,
   // ELAR uses an extended IMDI schema that supports multilingual vocabulary fields
   // (Genre, SubGenre, Role with LanguageId attribute and unbounded occurrences)
-  imdiSchema: "IMDI_3.0_elar.xsd"
+  imdiSchema: "IMDI_3.0_elar.xsd",
+  // ELAR does not want an IMDI or OPEX export that has known problems; warnings
+  // are allowed
+  exportFormatsBlockedByProblems: ["imdi", "opex-plus-files"],
 }
