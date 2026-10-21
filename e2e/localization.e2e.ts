@@ -5,6 +5,7 @@ import {
   expectFieldLabelsTranslated,
   findTextThatSkipsTheCatalogs,
   findUntranslatedText,
+  forEachSubTab,
   translationOf,
   uiLanguages,
 } from "./localization-e2e-helpers";
@@ -71,18 +72,11 @@ test("in the pseudo-locale, every label on the main screens comes from the catal
       /\.\w+$/,
       /^\d+ [KMG]?B$/,
     ];
-    const checkEveryTab = async (screen: string) => {
-      const tabs = page.locator('[role="tabpanel"] [role="tab"]');
-      const count = await tabs.count();
-      for (let i = 0; i < count; i++) {
-        const tab = tabs.nth(i);
-        if (!(await tab.isVisible())) continue;
-        await tab.click();
-        await page.waitForTimeout(300);
+    const checkEveryTab = (screen: string) =>
+      forEachSubTab(page, async (tabName) => {
         const skipped = await findTextThatSkipsTheCatalogs(page, data);
-        expect.soft(skipped, `${screen}, tab ${i + 1}`).toEqual([]);
-      }
-    };
+        expect.soft(skipped, `${screen} > ${tabName}`).toEqual([]);
+      });
     await project.goToProject();
     await checkEveryTab("Project");
     await project.goToSessions();
@@ -126,19 +120,11 @@ test.describe("Localization", () => {
 
       test("no screen shows English that the catalogs translate", async () => {
         const page = lameta.page;
-        const checkEveryTab = async (screen: string) => {
-          const tabs = page.locator('[role="tabpanel"] [role="tab"]');
-          const count = await tabs.count();
-          for (let i = 0; i < count; i++) {
-            const tab = tabs.nth(i);
-            if (!(await tab.isVisible())) continue;
-            const tabName = (await tab.textContent())?.trim();
-            await tab.click();
-            await page.waitForTimeout(300);
+        const checkEveryTab = (screen: string) =>
+          forEachSubTab(page, async (tabName) => {
             const untranslated = await findUntranslatedText(page, code);
             expect.soft(untranslated, `${screen} > ${tabName}`).toEqual([]);
-          }
-        };
+          });
 
         await project.goToProject();
         await checkEveryTab("Project");

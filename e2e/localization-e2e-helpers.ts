@@ -39,6 +39,39 @@ function readCatalog(code: string, catalog: CatalogName): Record<string, Record<
   return catalogCache.get(path);
 }
 
+// Clicks each visible sub-tab of the current screen in turn and calls `visit` once the tab is
+// selected and its panel has rendered: its markup is not empty and was the same at two polls in a
+// row. (Some panels, such as an empty Notes box, have no text to wait for.)
+export async function forEachSubTab(page: Page, visit: (tabName: string) => Promise<void>) {
+  const tabs = page.locator('[role="tabpanel"] [role="tab"]');
+  const count = await tabs.count();
+  for (let i = 0; i < count; i++) {
+    const tab = tabs.nth(i);
+    if (!(await tab.isVisible())) continue;
+    const tabName = (await tab.textContent())?.trim() || `tab ${i + 1}`;
+    await tab.click();
+    await expect(tab).toHaveAttribute("aria-selected", "true");
+    const panelId = await tab.getAttribute("aria-controls");
+    if (panelId) {
+      const panel = page.locator(`[id="${panelId}"]`);
+      await expect(panel).toBeVisible();
+      let previousSize = -1;
+      await expect
+        .poll(
+          async () => {
+            const size = (await panel.innerHTML()).length;
+            const settled = size > 0 && size === previousSize;
+            previousSize = size;
+            return settled;
+          },
+          { intervals: [100, 200, 250] },
+        )
+        .toBe(true);
+    }
+    await visit(tabName);
+  }
+}
+
 // The visible text on the page that is the English of a message that messages.po or
 // fields.po translates for this language, i.e. text that should have been translated.
 export async function findUntranslatedText(page: Page, code: string): Promise<string[]> {
