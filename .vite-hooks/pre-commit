@@ -1,1 +1,9 @@
+# While a merge is being committed, check without fixing. `vp staged` backs up and restores
+# the index, and when it fails during a merge in a linked worktree it deletes MERGE_HEAD, so
+# the merge is lost.
+if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+  vp check
+  vp lint --deny-warnings
+  exit 0
+fi
 vp staged
