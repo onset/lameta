@@ -14,7 +14,11 @@ import {
   setMacStatReaderForTests,
   setICloudSiblingCheckerForTests,
   setMaterializerForTests,
+  setMacReaderSpawnerForTests,
+  kMaxConcurrentMacReaders,
+  MacReaderProcess,
 } from "./cloudFileStatus";
+import { cloudReadGuard } from "./cloudReadGuard";
 
 describe("getCloudFileStatus", () => {
   afterEach(() => {
@@ -491,5 +495,83 @@ describe("MacCloudFileProvider setPinned (one-shot materialization)", () => {
     await Promise.resolve();
     await Promise.resolve();
     expect(provider.getStatus(p)).toBe("cloudOnly");
+  });
+});
+
+describe("MacCloudFileProvider FileProvider reader queue", () => {
+  type FakeReader = MacReaderProcess & {
+    path: string;
+    exit(code: number | null): void;
+    killed: boolean;
+  };
+  let spawned: FakeReader[];
+  const paths = Array.from({ length: 6 }, (_, i) => `/Users/me/OneDrive/proj/s${i}.session`);
+
+  function useFakeReaders() {
+    spawned = [];
+    setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive", providerName: "OneDrive" }]);
+    setMacStatReaderForTests(() => ({ isFile: true, size: 100, blocks: 0 }));
+    setMacReaderSpawnerForTests((path) => {
+      const listeners: { exit: ((c: number | null) => void)[] } = { exit: [] };
+      const reader: FakeReader = {
+        path,
+        killed: false,
+        on(event: string, listener: any) {
+          if (event === "exit") listeners.exit.push(listener);
+          return reader;
+        },
+        kill() {
+          reader.killed = true;
+          listeners.exit.forEach((l) => l(null));
+        },
+        exit(code) {
+          listeners.exit.forEach((l) => l(code));
+        },
+      };
+      spawned.push(reader);
+      return reader;
+    });
+  }
+
+  afterEach(async () => {
+    // The provider is shared across tests; cancel anything this test requested.
+    for (const p of [...paths].reverse()) await getCloudFileProvider().setPinned(p, false);
+    setMacReaderSpawnerForTests(undefined);
+    setMacStatReaderForTests(undefined);
+    setCloudSyncRootsForTests(undefined);
+    cloudReadGuard.reset();
+  });
+
+  it("runs at most kMaxConcurrentMacReaders readers and starts the next as one finishes", async () => {
+    useFakeReaders();
+    const provider = getCloudFileProvider();
+    for (const p of paths) await provider.setPinned(p, true);
+
+    expect(spawned.map((r) => r.path)).toEqual(paths.slice(0, kMaxConcurrentMacReaders));
+    // Queued files already report that they are on their way.
+    expect(provider.getStatus(paths[5])).toBe("hydrating");
+
+    spawned[0].exit(0);
+    expect(spawned.map((r) => r.path)).toEqual(paths.slice(0, kMaxConcurrentMacReaders + 1));
+  });
+
+  it("drops the queue and ends the readers when the broken-provider breaker trips", async () => {
+    useFakeReaders();
+    const provider = getCloudFileProvider();
+    for (const p of paths) await provider.setPinned(p, true);
+
+    cloudReadGuard.recordFailure(paths[0], "OneDrive");
+
+    expect(spawned.every((r) => r.killed)).toBe(true);
+    expect(spawned.length).toBe(kMaxConcurrentMacReaders);
+    for (const p of paths) expect(provider.getStatus(p)).toBe("cloudOnly");
+  });
+
+  it("does not start a second reader for a file already requested", async () => {
+    useFakeReaders();
+    const provider = getCloudFileProvider();
+    await provider.setPinned(paths[0], true);
+    await provider.setPinned(paths[0], true);
+    expect(spawned.length).toBe(1);
   });
 });

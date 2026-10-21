@@ -2,6 +2,8 @@ import fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import { getFakeCloudProviderIfActive, getFakeCloudSyncRootsIfActive } from "./fakeCloudProvider";
+import { reaction } from "mobx";
+import { cloudReadGuard } from "./cloudReadGuard";
 
 // "local" = hydrated, but OneDrive's "free up space" could dehydrate it.
 // "localPinned" = hydrated and the user (or lameta) asked to always keep it
@@ -219,6 +221,25 @@ export function setMaterializerForTests(m?: (path: string) => Promise<void>): vo
   testMaterializer = m;
 }
 
+// What the FileProvider reader needs from a child process.
+export type MacReaderProcess = {
+  on(event: "exit", listener: (code: number | null) => void): unknown;
+  on(event: "error", listener: (e: unknown) => void): unknown;
+  kill(): unknown;
+};
+let testReaderSpawner: ((path: string) => MacReaderProcess) | undefined;
+
+// Seam for the FileProvider "/bin/cat <file>" reader process, so tests can
+// drive the reader queue without spawning anything.
+export function setMacReaderSpawnerForTests(spawner?: (path: string) => MacReaderProcess): void {
+  testReaderSpawner = spawner;
+}
+
+// On a FileProvider root each download is a reader process that waits until
+// the provider delivers. Project load can request every evicted metadata file
+// at once, so cap how many wait at the same time.
+export const kMaxConcurrentMacReaders = 4;
+
 const kICloudProviderName = "iCloud Drive";
 
 function isICloudRoot(root: CloudSyncRoot | undefined): boolean {
@@ -290,7 +311,85 @@ class MacCloudFileProvider implements CloudFileProvider {
   private inFlight = new Set<string>();
   // Reader child processes keyed by normalized path, so setPinned(false) can
   // kill the blocking read.
-  private readers = new Map<string, import("child_process").ChildProcess>();
+  private readers = new Map<string, MacReaderProcess>();
+  // FileProvider files waiting for a free reader slot, keyed by normalized
+  // path, in request order. See kMaxConcurrentMacReaders.
+  private queuedReads = new Map<string, string>();
+
+  constructor() {
+    // Once the provider has failed to deliver a file during this load, stop
+    // waiting on it for the rest: drop the queue and end the readers. The
+    // breaker's own banner and Retry take it from there.
+    reaction(
+      () => cloudReadGuard.isTripped,
+      (tripped) => {
+        if (tripped) {
+          this.cancelFileProviderReads();
+        }
+      },
+    );
+  }
+
+  private cancelFileProviderReads(): void {
+    for (const key of this.queuedReads.keys()) {
+      this.inFlight.delete(key);
+    }
+    this.queuedReads.clear();
+    for (const [key, child] of [...this.readers]) {
+      this.readers.delete(key);
+      this.inFlight.delete(key);
+      try {
+        child.kill();
+      } catch {
+        // already gone
+      }
+    }
+  }
+
+  private startQueuedReads(): void {
+    while (this.readers.size < kMaxConcurrentMacReaders && this.queuedReads.size > 0) {
+      const [key, filePath] = this.queuedReads.entries().next().value!;
+      this.queuedReads.delete(key);
+      this.startReader(key, filePath);
+    }
+  }
+
+  // FileProvider root: reading any byte makes the kernel materialize the
+  // whole file, and the read blocks until done. Do it in a child process so a
+  // multi-GB blocking read never occupies Node's threadpool.
+  private startReader(key: string, filePath: string): void {
+    let child: MacReaderProcess;
+    if (testReaderSpawner) {
+      child = testReaderSpawner(filePath);
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { spawn } = require("child_process");
+      child = spawn("/bin/cat", [filePath], { stdio: "ignore" });
+    }
+    this.readers.set(key, child);
+    child.on("exit", (code: number | null) => {
+      // A reader that was cancelled is already gone from the map.
+      if (this.readers.get(key) !== child) {
+        return;
+      }
+      this.readers.delete(key);
+      if (code !== 0) {
+        // getStatus self-cleans on success; on failure fall back to cloudOnly.
+        this.inFlight.delete(key);
+        this.warnMaterializeFailedOnce(new Error(`/bin/cat exited ${code}`));
+      }
+      this.startQueuedReads();
+    });
+    child.on("error", (e: unknown) => {
+      if (this.readers.get(key) !== child) {
+        return;
+      }
+      this.readers.delete(key);
+      this.inFlight.delete(key);
+      this.warnMaterializeFailedOnce(e);
+      this.startQueuedReads();
+    });
+  }
 
   getStatus(filePath: string): CloudFileStatus {
     const root = getSyncRootForPath(filePath);
@@ -331,6 +430,7 @@ class MacCloudFileProvider implements CloudFileProvider {
       // Stop waiting: forget it and kill any blocking reader. The provider may
       // keep downloading in the background; that matches Windows' unpin caveat.
       this.inFlight.delete(key);
+      this.queuedReads.delete(key);
       const child = this.readers.get(key);
       if (child) {
         this.readers.delete(key);
@@ -339,6 +439,7 @@ class MacCloudFileProvider implements CloudFileProvider {
         } catch {
           // already gone
         }
+        this.startQueuedReads();
       }
       return;
     }
@@ -356,12 +457,12 @@ class MacCloudFileProvider implements CloudFileProvider {
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { execFile, spawn } = require("child_process");
     const root = getSyncRootForPath(filePath);
     if (isICloudRoot(root)) {
       // iCloud: brctl requests a download; it returns after requesting, not
       // after completion.
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { execFile } = require("child_process");
       execFile("brctl", ["download", filePath], (err: unknown) => {
         if (err) {
           this.inFlight.delete(key);
@@ -371,24 +472,11 @@ class MacCloudFileProvider implements CloudFileProvider {
       return;
     }
 
-    // FileProvider root: reading any byte makes the kernel materialize the
-    // whole file, and the read blocks until done. Do it in a child process so a
-    // multi-GB blocking read never occupies Node's threadpool.
-    const child = spawn("/bin/cat", [filePath], { stdio: "ignore" });
-    this.readers.set(key, child);
-    child.on("exit", (code: number | null) => {
-      this.readers.delete(key);
-      if (code !== 0) {
-        // getStatus self-cleans on success; on failure fall back to cloudOnly.
-        this.inFlight.delete(key);
-        this.warnMaterializeFailedOnce(new Error(`/bin/cat exited ${code}`));
-      }
-    });
-    child.on("error", (e: unknown) => {
-      this.readers.delete(key);
-      this.inFlight.delete(key);
-      this.warnMaterializeFailedOnce(e);
-    });
+    if (this.readers.has(key) || this.queuedReads.has(key)) {
+      return;
+    }
+    this.queuedReads.set(key, filePath);
+    this.startQueuedReads();
   }
 
   private warnMaterializeFailedOnce(e: unknown): void {
@@ -410,7 +498,7 @@ export function getCloudFileProvider(): CloudFileProvider {
   if (testAttributeReader || testPinWriter) {
     return windowsProvider;
   }
-  if (testMacStatReader || testMaterializer || testICloudSiblingChecker) {
+  if (testMacStatReader || testMaterializer || testICloudSiblingChecker || testReaderSpawner) {
     return macProvider;
   }
   // E2E_FAKE_CLOUD_PROVIDER: an e2e-controllable fake, see fakeCloudProvider.ts.
