@@ -41,6 +41,7 @@ describe("checkProjectFolders", () => {
     session.metadataFile!.contributions.push(
       new Contribution("Nobody Known", "speaker", ""),
       new Contribution("Nobody Known", "recorder", ""),
+      new Contribution("nobody known", "researcher", ""),
     );
     expect(
       checkProjectFolders(project)

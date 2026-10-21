@@ -337,6 +337,12 @@ test.describe("Problems in a brand-new ELAR project", () => {
       await entry.click();
       try {
         await expect(highlighted).toHaveAttribute("data-field-key", fieldKey, { timeout: 3000 });
+        // the field of this session or person, not of the one that was selected before
+        if (!where.startsWith("project:")) {
+          await expect(
+            page.locator("[data-testid='problem-group'][data-current='true']"),
+          ).toHaveAttribute("data-folder-key", where, { timeout: 3000 });
+        }
       } catch {
         notFound.push(`${where} ${fieldKey}`);
       }
