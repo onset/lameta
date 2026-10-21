@@ -4,6 +4,7 @@ import { Contribution } from "../file/File";
 import { Person } from "../Project/Person/Person";
 import moment from "moment";
 import { translateFieldLabel } from "../../other/localization";
+import { t } from "@lingui/core/macro";
 import { FieldDefinition } from "./FieldDefinition";
 import * as DateFns from "date-fns";
 
@@ -421,6 +422,10 @@ export class HasConsentField extends Field {
       persist: false,
     });
   }
+  // the label comes from code, not from fields.json5, so it is in messages.po, not fields.po
+  public get labelInUILanguage(): string {
+    return t`Consent`;
+  }
   public hasConsent(): boolean {
     return !!this.person.files.find((f) => f.isLabeledAsConsent());
   }
@@ -435,6 +440,10 @@ export class PersonDisplayNameField extends Field {
       englishLabel: "Person",
       persist: false,
     });
+  }
+  // the label comes from code, not from fields.json5, so it is in messages.po, not fields.po
+  public get labelInUILanguage(): string {
+    return t`Person`;
   }
   public get text(): string {
     return this.person.displayName;

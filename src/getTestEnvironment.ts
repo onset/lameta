@@ -5,6 +5,8 @@ type TestEnvironment = {
   // E2E fast project creation: when set, bypasses registration and start screen
   E2E_PROJECT_NAME: string; // If set, auto-create project with this name
   E2E_ARCHIVE_CONFIG: string; // If set, use this archive configuration (e.g., "ELAR")
+  // If set, start in this UI language, as though the user had chosen it in an earlier run
+  E2E_UI_LANGUAGE: string;
   // Path to the JSON manifest that turns on the fake cloud provider (see fakeCloudProvider.ts)
   E2E_FAKE_CLOUD_PROVIDER: string;
   // The GitHub repo whose releases the update check reads, as owner/name. Lets a test build
@@ -25,6 +27,7 @@ export function getTestEnvironment(): TestEnvironment {
     E2ERoot: runtimeEnv["E2ERoot"] || "",
     E2E_PROJECT_NAME: runtimeEnv["E2E_PROJECT_NAME"] || "",
     E2E_ARCHIVE_CONFIG: runtimeEnv["E2E_ARCHIVE_CONFIG"] || "",
+    E2E_UI_LANGUAGE: runtimeEnv["E2E_UI_LANGUAGE"] || "",
     E2E_FAKE_CLOUD_PROVIDER: runtimeEnv["E2E_FAKE_CLOUD_PROVIDER"] || "",
     LAMETA_RELEASES_REPO: runtimeEnv["LAMETA_RELEASES_REPO"] || "onset/lameta",
   };

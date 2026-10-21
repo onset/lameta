@@ -24,6 +24,9 @@ msgstr ""
 msgid "(scanned {sessionsScanned} sessions and {peopleScanned} people)"
 msgstr ""
 
+msgid "+ Add Language"
+msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
@@ -94,6 +97,9 @@ msgstr ""
 msgid "Archive"
 msgstr ""
 
+msgid "Archive Configuration"
+msgstr ""
+
 msgid "As a curator"
 msgstr "به عنوان سرپرست"
 
@@ -132,6 +138,9 @@ msgid "Cannot add files of that type"
 msgstr "نمی توان این نوع فایلها را اضافه کرد"
 
 msgid "Cannot export to IMDI while multilingual text migration is pending."
+msgstr ""
+
+msgid "Change"
 msgstr ""
 
 msgid "Change Name To:"
@@ -175,6 +184,9 @@ msgstr "نظرها"
 
 msgid "Confirm Delete"
 msgstr "تایید حذف"
+
+msgid "Consent"
+msgstr ""
 
 msgid "Contributions"
 msgstr "مشارکت"
@@ -295,6 +307,9 @@ msgstr ""
 
 msgid "Email Address"
 msgstr "آدرس ایمیل"
+
+msgid "Enter each choice, separated by commas"
+msgstr ""
 
 msgid "Example:"
 msgstr ""
@@ -446,6 +461,9 @@ msgstr "زبان ارتباط"
 msgid "Items"
 msgstr ""
 
+msgid "Lameta projects are normally set up to work with the requirements of a single archiving institution. If yours is not listed, you can use \"Other\". This will give you the default fields and vocabularies, and you can enter your own session access choices."
+msgstr ""
+
 msgid "Language Code"
 msgstr "کد زبانی"
 
@@ -572,6 +590,9 @@ msgstr "باز کردن در ایلان"
 
 msgid "Open in program associated with this file type"
 msgstr "برنامه مرتبط با این نوع پرونده را باز کنید"
+
+msgid "Other"
+msgstr ""
 
 msgid "Other Documents"
 msgstr "اسناد دیگر"
@@ -888,6 +909,9 @@ msgstr ""
 msgid "Type"
 msgstr "تایپ کردن"
 
+msgid "Type a language name or code..."
+msgstr ""
+
 msgid "Undo"
 msgstr "واگرد/ برگشت"
 
@@ -934,6 +958,9 @@ msgid "What would you like to call this project?"
 msgstr "دوست دارید نام این پروژه چه باشد؟"
 
 msgid "Writing corpus metadata..."
+msgstr ""
+
+msgid "YYYY-MM-DD"
 msgstr ""
 
 msgid "You are running lameta version:"

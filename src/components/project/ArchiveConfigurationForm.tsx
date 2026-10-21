@@ -12,6 +12,15 @@ import { Button, Collapse } from "@mui/material";
 import { lameta_dark_blue, textPrimary } from "../../containers/theme";
 
 import { TextFieldEdit } from "../TextFieldEdit";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
+import { useLingui } from "@lingui/react";
+
+// The archive configurations are named for their archives, except "default", whose label
+// AuthorityLists gives in English.
+function labelOf(choice: { id: string; label: string } | undefined) {
+  return choice?.id === "default" ? t`Other` : choice?.label;
+}
 
 interface IProps {
   archiveConfigurationField: Field;
@@ -23,18 +32,12 @@ interface IProps {
 const ArchiveConfigurationForm: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
-  const [choices, setChoices] = React.useState<
-    { value: string; label: string; configurationFullName: string }[]
-  >([]);
-  React.useEffect(() => {
-    setChoices(
-      props.authorityLists.archiveConfigurationChoices.map((choice) => ({
-        value: choice.id,
-        label: choice.label,
-        configurationFullName: choice.description,
-      })),
-    );
-  }, []);
+  useLingui(); // render again when the UI language changes, for the label of "Other"
+  const choices = props.authorityLists.archiveConfigurationChoices.map((choice) => ({
+    value: choice.id,
+    label: labelOf(choice)!,
+    configurationFullName: choice.description,
+  }));
   const [archiveConfigurationKey, setArchiveConfigurationKey] = React.useState<string>(
     props.archiveConfigurationField.text,
   );
@@ -52,7 +55,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           margin-bottom: 5px;
         `}
       >
-        Archive Configuration
+        <Trans>Archive Configuration</Trans>
       </h1>
       <Collapse in={archiveConfigurationKey == "default"}>
         <Alert
@@ -69,9 +72,11 @@ const ArchiveConfigurationForm: React.FunctionComponent<
             }
           `}
         >
-          Lameta projects are normally set up to work with the requirements of a single archiving
-          institution. If yours is not listed, you can use "Other". This will give you the default
-          fields and vocabularies, and you can enter your own session access choices.
+          <Trans>
+            Lameta projects are normally set up to work with the requirements of a single archiving
+            institution. If yours is not listed, you can use "Other". This will give you the default
+            fields and vocabularies, and you can enter your own session access choices.
+          </Trans>
         </Alert>
       </Collapse>
       <div
@@ -90,7 +95,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           name={archiveConfigurationKey} //what does this do? Maybe accessibility?
           value={{
             value: archiveConfigurationKey,
-            label: archiveConfigurationChoice?.label,
+            label: labelOf(archiveConfigurationChoice),
           }}
           onChange={(event) => {
             setArchiveConfigurationKey(event!.value);
@@ -148,7 +153,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
             })
           }
         >
-          Change
+          <Trans>Change</Trans>
         </Button>
       </div>
       <h2>{choices.find((c) => c.value === archiveConfigurationKey)?.configurationFullName}</h2>
@@ -195,7 +200,7 @@ const CustomArchiveConfiguration: React.FunctionComponent<{
     >
       <TextFieldEdit
         field={props.customChoicesField}
-        visibleInstructions={"Enter each choice, separated by commas"}
+        visibleInstructions={t`Enter each choice, separated by commas`}
       />
     </div>
   );

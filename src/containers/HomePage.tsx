@@ -16,6 +16,7 @@ import { getPath, getStartupArguments, onWindowBlur, setWindowTitle } from "../o
 import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
+import { i18n } from "../other/localization";
 
 import "./StartScreen.css";
 import log from "../other/log";
@@ -67,6 +68,7 @@ class HomePage extends React.Component<IProps, IState> {
   public projectHolder: ProjectHolder;
 
   private menu: LametaMenu;
+  private stopRebuildingMenuOnLanguageChange: () => void;
   public static homePageForTests: HomePage;
 
   constructor(props: IProps) {
@@ -194,6 +196,9 @@ class HomePage extends React.Component<IProps, IState> {
   public componentDidUpdate() {
     this.updateMenu();
   }
+  public componentWillUnmount() {
+    this.stopRebuildingMenuOnLanguageChange?.();
+  }
   private updateMenu() {
     this.menu = new LametaMenu(this);
     this.menu.setupContentMenu();
@@ -206,6 +211,12 @@ class HomePage extends React.Component<IProps, IState> {
 
   private previousFolderNames = "";
   public componentDidMount() {
+    // Menu labels are translated when the menu is built. With a project open, the Workspace
+    // rebuilds the menu, including its Session and People menus, which this one would drop.
+    this.stopRebuildingMenuOnLanguageChange = i18n.on("change", () => {
+      if (!this.projectHolder.project) this.updateMenu();
+    });
+
     // E2E fast path: if E2E_PROJECT_NAME is set, create project directly without UI
     if (shouldUseE2EFastProjectCreation()) {
       createProjectForE2E(this.projectHolder);

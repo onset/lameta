@@ -24,6 +24,9 @@ msgstr "\"{0}\"中有一个或多个字符不被允许。需要先修改该文�
 msgid "(scanned {sessionsScanned} sessions and {peopleScanned} people)"
 msgstr ""
 
+msgid "+ Add Language"
+msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr "当前位置中已存在同名文件。"
 
@@ -93,6 +96,9 @@ msgstr ""
 msgid "Archive"
 msgstr ""
 
+msgid "Archive Configuration"
+msgstr ""
+
 msgid "As a curator"
 msgstr "作为管理人员"
 
@@ -131,6 +137,9 @@ msgid "Cannot add files of that type"
 msgstr "无法添加该类型的文件"
 
 msgid "Cannot export to IMDI while multilingual text migration is pending."
+msgstr ""
+
+msgid "Change"
 msgstr ""
 
 msgid "Change Name To:"
@@ -174,6 +183,9 @@ msgstr "备注"
 
 msgid "Confirm Delete"
 msgstr "确认删除"
+
+msgid "Consent"
+msgstr ""
 
 msgid "Contributions"
 msgstr "贡献"
@@ -294,6 +306,9 @@ msgstr ""
 
 msgid "Email Address"
 msgstr "电子邮件地址"
+
+msgid "Enter each choice, separated by commas"
+msgstr ""
 
 msgid "Example:"
 msgstr ""
@@ -445,6 +460,9 @@ msgstr "界面语言"
 msgid "Items"
 msgstr ""
 
+msgid "Lameta projects are normally set up to work with the requirements of a single archiving institution. If yours is not listed, you can use \"Other\". This will give you the default fields and vocabularies, and you can enter your own session access choices."
+msgstr ""
+
 msgid "Language Code"
 msgstr "语言代码"
 
@@ -571,6 +589,9 @@ msgstr "在ELAN中打开"
 
 msgid "Open in program associated with this file type"
 msgstr "在与此文件类型关联的程序中打开"
+
+msgid "Other"
+msgstr ""
 
 msgid "Other Documents"
 msgstr "其他文件"
@@ -887,6 +908,9 @@ msgstr ""
 msgid "Type"
 msgstr "类型"
 
+msgid "Type a language name or code..."
+msgstr ""
+
 msgid "Undo"
 msgstr "撤销"
 
@@ -933,6 +957,9 @@ msgid "What would you like to call this project?"
 msgstr "您想给这个项目起什么名字？"
 
 msgid "Writing corpus metadata..."
+msgstr ""
+
+msgid "YYYY-MM-DD"
 msgstr ""
 
 msgid "You are running lameta version:"

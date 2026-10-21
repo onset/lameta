@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { Field } from "../model/field/Field";
+import { t } from "@lingui/core/macro";
 
 export interface IProps {
   field: Field;
@@ -40,7 +41,10 @@ DateFieldEdit extends React.Component<IProps & React.HTMLAttributes<HTMLDivEleme
               }
             }}
           />
-          <span className="hint">YYYY-MM-DD</span>
+          <span className="hint">
+            {/* i18n: The order of year, month and day that a date must be typed in. */}
+            {t`YYYY-MM-DD`}
+          </span>
         </div>
         <FieldProblemLine field={this.props.field} />
       </div>

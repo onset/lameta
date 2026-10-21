@@ -24,6 +24,9 @@ msgstr ""
 msgid "(scanned {sessionsScanned} sessions and {peopleScanned} people)"
 msgstr ""
 
+msgid "+ Add Language"
+msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr "Un fichier portant le même nom existe déjà dans cette localisation."
 
@@ -93,6 +96,9 @@ msgstr ""
 msgid "Archive"
 msgstr ""
 
+msgid "Archive Configuration"
+msgstr ""
+
 msgid "As a curator"
 msgstr "En tant que curateur de données"
 
@@ -131,6 +137,9 @@ msgid "Cannot add files of that type"
 msgstr "Impossible d'ajouter des fichiers de ce type"
 
 msgid "Cannot export to IMDI while multilingual text migration is pending."
+msgstr ""
+
+msgid "Change"
 msgstr ""
 
 msgid "Change Name To:"
@@ -174,6 +183,9 @@ msgstr "Commentaires"
 
 msgid "Confirm Delete"
 msgstr "Confirmer la suppression"
+
+msgid "Consent"
+msgstr ""
 
 msgid "Contributions"
 msgstr "Contributions"
@@ -294,6 +306,9 @@ msgstr ""
 
 msgid "Email Address"
 msgstr "Adresse email"
+
+msgid "Enter each choice, separated by commas"
+msgstr ""
 
 msgid "Example:"
 msgstr ""
@@ -445,6 +460,9 @@ msgstr "Langue d’interface"
 msgid "Items"
 msgstr ""
 
+msgid "Lameta projects are normally set up to work with the requirements of a single archiving institution. If yours is not listed, you can use \"Other\". This will give you the default fields and vocabularies, and you can enter your own session access choices."
+msgstr ""
+
 msgid "Language Code"
 msgstr "Code de la Langue"
 
@@ -571,6 +589,9 @@ msgstr "Ouvrir dans ELAN"
 
 msgid "Open in program associated with this file type"
 msgstr "Ouvrir dans le logiciel associé à ce type de fichier"
+
+msgid "Other"
+msgstr ""
 
 msgid "Other Documents"
 msgstr "Autres documents"
@@ -887,6 +908,9 @@ msgstr ""
 msgid "Type"
 msgstr "Type"
 
+msgid "Type a language name or code..."
+msgstr ""
+
 msgid "Undo"
 msgstr "Annuler l'action"
 
@@ -933,6 +957,9 @@ msgid "What would you like to call this project?"
 msgstr "Que voulez-vous appeler ce projet ?"
 
 msgid "Writing corpus metadata..."
+msgstr ""
+
+msgid "YYYY-MM-DD"
 msgstr ""
 
 msgid "You are running lameta version:"

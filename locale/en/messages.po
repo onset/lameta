@@ -19,6 +19,9 @@ msgstr ""
 msgid "(scanned {sessionsScanned} sessions and {peopleScanned} people)"
 msgstr ""
 
+msgid "+ Add Language"
+msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
@@ -88,6 +91,9 @@ msgstr ""
 msgid "Archive"
 msgstr ""
 
+msgid "Archive Configuration"
+msgstr ""
+
 msgid "As a curator"
 msgstr ""
 
@@ -126,6 +132,9 @@ msgid "Cannot add files of that type"
 msgstr ""
 
 msgid "Cannot export to IMDI while multilingual text migration is pending."
+msgstr ""
+
+msgid "Change"
 msgstr ""
 
 msgid "Change Name To:"
@@ -168,6 +177,9 @@ msgid "Comments"
 msgstr ""
 
 msgid "Confirm Delete"
+msgstr ""
+
+msgid "Consent"
 msgstr ""
 
 msgid "Contributions"
@@ -288,6 +300,9 @@ msgid "ElectronDropZone: preload script did not set window.electronAPI.getPathFo
 msgstr ""
 
 msgid "Email Address"
+msgstr ""
+
+msgid "Enter each choice, separated by commas"
 msgstr ""
 
 msgid "Example:"
@@ -440,6 +455,9 @@ msgstr ""
 msgid "Items"
 msgstr ""
 
+msgid "Lameta projects are normally set up to work with the requirements of a single archiving institution. If yours is not listed, you can use \"Other\". This will give you the default fields and vocabularies, and you can enter your own session access choices."
+msgstr ""
+
 msgid "Language Code"
 msgstr ""
 
@@ -565,6 +583,9 @@ msgid "Open in ELAN"
 msgstr ""
 
 msgid "Open in program associated with this file type"
+msgstr ""
+
+msgid "Other"
 msgstr ""
 
 msgid "Other Documents"
@@ -882,6 +903,9 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
+msgid "Type a language name or code..."
+msgstr ""
+
 msgid "Undo"
 msgstr ""
 
@@ -928,6 +952,9 @@ msgid "What would you like to call this project?"
 msgstr ""
 
 msgid "Writing corpus metadata..."
+msgstr ""
+
+msgid "YYYY-MM-DD"
 msgstr ""
 
 msgid "You are running lameta version:"
