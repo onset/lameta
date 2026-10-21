@@ -35,8 +35,15 @@ export default defineConfig({
     ],
   },
   lint: {
-    // ro-crate-validation is a separate package with its own package.json
-    ignorePatterns: ["dist", "locale/", "tmp/", "crowdin-backup/", "ro-crate-validation/"],
+    // ro-crate-validation and sample-data-generator are separate packages with their own package.json
+    ignorePatterns: [
+      "dist",
+      "locale/",
+      "tmp/",
+      "crowdin-backup/",
+      "ro-crate-validation/",
+      "sample-data-generator/",
+    ],
     options: {
       typeAware: true,
       typeCheck: true,
@@ -51,6 +58,26 @@ export default defineConfig({
         // `expect(object.method).toHaveBeenCalled()` on a mock is how specs check calls
         files: ["**/*.spec.ts"],
         rules: { "typescript/unbound-method": "off" },
+      },
+      {
+        // Rules files load from a data: URL through `new Function("url", "return import(url)")`
+        // so that no bundler rewrites the import(); vitest cannot import data: URLs either
+        files: [
+          "src/problems/rulesSandboxMain.ts",
+          "src/problems/rulesSandboxMain.spec.ts",
+          "src/problems/RulesFileProblems.spec.ts",
+        ],
+        rules: { "typescript/no-implied-eval": "off" },
+      },
+      {
+        // the constructor registers the instance as the module-wide finder
+        files: ["src/languageFinder/LanguageFinder.ts"],
+        rules: { "typescript/no-this-alias": "off" },
+      },
+      {
+        // vite-electron-plugin's types are a .d.ts that this config is outside the tsconfig of
+        files: ["vite.config.ts"],
+        rules: { "typescript/triple-slash-reference": "off" },
       },
     ],
   },
