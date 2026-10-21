@@ -487,10 +487,6 @@ msgstr "Marcar para exportar ou excluir"
 msgid "Media Folder"
 msgstr "Pasta de Mídia"
 
-#. js-lingui-explicit-id
-msgid "Media Folder Settings"
-msgstr ""
-
 msgid "Media Folder Settings..."
 msgstr "Configurações da pasta de mídia..."
 
@@ -956,10 +952,12 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
-msgstr "Não temos dicas específicas para esse erro. Se você não conseguir solucioná-lo\n"
+msgstr ""
+"Não temos dicas específicas para esse erro. Se você não conseguir solucioná-lo\n"
 "reiniciando o computador, informe o problema em \n"
 "https://github.com/onset/lameta/issues."
 

@@ -487,10 +487,6 @@ msgstr "Marcar para exportar o eliminar"
 msgid "Media Folder"
 msgstr "Carpeta de medios"
 
-#. js-lingui-explicit-id
-msgid "Media Folder Settings"
-msgstr ""
-
 msgid "Media Folder Settings..."
 msgstr "Configuración de la carpeta de medios..."
 
@@ -537,7 +533,8 @@ msgid "Note"
 msgstr ""
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
-msgstr "Tenga en cuenta que este es un enlace a un archivo en su carpeta de medios. Aquí, usted está renombrando el enlace, no el archivo original que se indica. Si más adelante crea una exportación que incluya este archivo, la exportación usará este nombre.\n"
+msgstr ""
+"Tenga en cuenta que este es un enlace a un archivo en su carpeta de medios. Aquí, usted está renombrando el enlace, no el archivo original que se indica. Si más adelante crea una exportación que incluya este archivo, la exportación usará este nombre.\n"
 ""
 
 msgid "Notes"
@@ -957,7 +954,8 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr "No tenemos recomendaciones específicas para este error. Si el problema no se resuelve al reiniciar su equipo, reporte este problema a https://github.com/onset/lameta/issues."
