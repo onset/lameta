@@ -40,8 +40,9 @@ function readCatalog(code: string, catalog: CatalogName): Record<string, Record<
 }
 
 // Clicks each visible sub-tab of the current screen in turn and calls `visit` once the tab is
-// selected and its panel has rendered: its markup is not empty and was the same at two polls in a
-// row. (Some panels, such as an empty Notes box, have no text to wait for.)
+// selected and its panel has rendered: its markup is not empty, was the same at two polls in a
+// row, and shows no progress bar (the Vocabulary Translations panel shows one while it scans the
+// project). Some panels, such as an empty Notes box, have no text to wait for.
 export async function forEachSubTab(page: Page, visit: (tabName: string) => Promise<void>) {
   const tabs = page.locator('[role="tabpanel"] [role="tab"]');
   const count = await tabs.count();
@@ -60,7 +61,8 @@ export async function forEachSubTab(page: Page, visit: (tabName: string) => Prom
         .poll(
           async () => {
             const size = (await panel.innerHTML()).length;
-            const settled = size > 0 && size === previousSize;
+            const loading = (await panel.locator('[role="progressbar"]:visible').count()) > 0;
+            const settled = size > 0 && size === previousSize && !loading;
             previousSize = size;
             return settled;
           },
