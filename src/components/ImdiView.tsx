@@ -304,10 +304,11 @@ export function generateImdi(
         return { imdi: "" };
       }
 
-      const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project);
-
-      ImdiBundler.cleanupConsentBundleTempDir(tempDir);
-      return { imdi };
+      try {
+        return { imdi: ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project) };
+      } finally {
+        ImdiBundler.cleanupConsentBundleTempDir(tempDir);
+      }
     }
   }
 }

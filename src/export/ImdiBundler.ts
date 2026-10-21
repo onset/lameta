@@ -520,8 +520,13 @@ export default class ImdiBundler {
       return null;
     }
 
-    const imdiXml = ImdiGenerator.generateSession(imdiMode, dummySession, project, omitNamespaces);
-    await validateImdiOrThrow(imdiXml, dummySession.displayName);
+    let imdiXml: string;
+    try {
+      imdiXml = ImdiGenerator.generateSession(imdiMode, dummySession, project, omitNamespaces);
+      await validateImdiOrThrow(imdiXml, dummySession.displayName);
+    } finally {
+      ImdiBundler.cleanupConsentBundleTempDir(dir);
+    }
 
     const directoriesToCreate: string[] = [];
     let imdiPath: string;
@@ -534,9 +539,6 @@ export default class ImdiBundler {
       directoriesToCreate.push(imdiOnlyFolderPath);
       imdiPath = Path.join(imdiOnlyFolderPath, "ConsentDocuments" + extensionWithDot);
     }
-
-    // Clean up temp directory
-    ImdiBundler.cleanupConsentBundleTempDir(dir);
 
     return {
       sessionId: "ConsentDocuments",
