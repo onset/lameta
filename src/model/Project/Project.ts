@@ -1163,9 +1163,10 @@ export class Project extends Folder {
         folders.items
           .filter((s) => s.marked)
           .filter((s) =>
-            deletionPromiseResults.some((r) => isFilled(r) && r.value.path === s.directory),
+            deletionPromiseResults.some(
+              (r) => isFilled(r) && r.value.path === s.directory && r.value.succeeded,
+            ),
           )
-          .filter((s) => deletionPromiseResults.some((r) => isFilled(r) && r.value.succeeded))
           .forEach((folder) => {
             // remove this folder from the array
             folders.items.splice(folders.items.indexOf(folder), 1);
