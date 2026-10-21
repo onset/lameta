@@ -88,30 +88,34 @@ describe("Duplicate Folder", () => {
     // ).toBeTruthy();
   });
 
-  it("nameMightHaveChanged(): if a random media file in a folder is locked, do not rename the folder or anything else", () => {
-    const originalDir = Path.join(rootDirectory, "foo");
-    fs.mkdirSync(originalDir);
-    const original = Session.fromDirectory(originalDir, new EncounteredVocabularyRegistry());
-    fs.writeFileSync(Path.join(originalDir, "lock.me"), "hello");
+  // Only Windows refuses to rename a folder that holds an open file; macOS and Linux allow it.
+  it.runIf(process.platform === "win32")(
+    "nameMightHaveChanged(): if a random media file in a folder is locked, do not rename the folder or anything else",
+    () => {
+      const originalDir = Path.join(rootDirectory, "foo");
+      fs.mkdirSync(originalDir);
+      const original = Session.fromDirectory(originalDir, new EncounteredVocabularyRegistry());
+      fs.writeFileSync(Path.join(originalDir, "lock.me"), "hello");
 
-    // we start with the normal ..../foo/foo.session
-    expect(original.metadataFile?.metadataFilePath).toBeTruthy();
-    expect(fs.existsSync(original.metadataFile!.metadataFilePath)).toBeTruthy();
+      // we start with the normal ..../foo/foo.session
+      expect(original.metadataFile?.metadataFilePath).toBeTruthy();
+      expect(fs.existsSync(original.metadataFile!.metadataFilePath)).toBeTruthy();
 
-    // NOTE: We're just locking ahead of time, and
-    // that is a limited simulation of what we're trying to deal with.
-    // We don't have a way of simulating something getting locked mid-way through a rename.
-    // open one of the files so that the rename fails
-    fs.openSync(Path.join(originalDir, "lock.me"), "r");
-    original.properties.setText("id", "baz");
-    // that lock should prevent the rename
-    expect(original.nameMightHaveChanged()).toBeFalsy();
-    const renamedDir = Path.join(rootDirectory, "baz");
-    expect(fs.existsSync(originalDir)).toBeTruthy();
-    expect(fs.existsSync(renamedDir)).toBeFalsy();
-    expect(fs.existsSync(Path.join(originalDir, "foo.session"))).toBeTruthy();
-    expect(fs.existsSync(Path.join(originalDir, "baz.session"))).toBeFalsy();
-  });
+      // NOTE: We're just locking ahead of time, and
+      // that is a limited simulation of what we're trying to deal with.
+      // We don't have a way of simulating something getting locked mid-way through a rename.
+      // open one of the files so that the rename fails
+      fs.openSync(Path.join(originalDir, "lock.me"), "r");
+      original.properties.setText("id", "baz");
+      // that lock should prevent the rename
+      expect(original.nameMightHaveChanged()).toBeFalsy();
+      const renamedDir = Path.join(rootDirectory, "baz");
+      expect(fs.existsSync(originalDir)).toBeTruthy();
+      expect(fs.existsSync(renamedDir)).toBeFalsy();
+      expect(fs.existsSync(Path.join(originalDir, "foo.session"))).toBeTruthy();
+      expect(fs.existsSync(Path.join(originalDir, "baz.session"))).toBeFalsy();
+    },
+  );
   // Simulates something grabbing a handle mid-way through a rename: the
   // per-file renames succeed, then the rename of the folder itself fails.
   // Before the rollback was added, this stranded a folder with the OLD name

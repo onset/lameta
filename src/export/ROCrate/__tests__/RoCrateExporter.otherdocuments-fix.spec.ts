@@ -1,4 +1,5 @@
 import { vi, describe, it, beforeEach, expect } from "vite-plus/test";
+import Path from "path";
 
 // Mock the staticLanguageFinder dependency BEFORE importing modules that use it
 vi.mock("../../languageFinder/LanguageFinder", () => ({
@@ -39,7 +40,7 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
     // Create the exact file mentioned in the user's request
     const letterFromJanFile = {
       getActualFilePath: () =>
-        "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\OtherDocuments\\Letter_from_Jan.txt",
+        Path.join("lameta", "edolo-rocrate", "OtherDocuments", "Letter_from_Jan.txt"),
       getModifiedDate: () => new Date("2023-01-03"),
       filePrefix: "Letter_from_Jan",
     };

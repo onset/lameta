@@ -1,4 +1,5 @@
 import { vi, describe, it, beforeEach, expect } from "vite-plus/test";
+import Path from "path";
 import { getRoCrate } from "../RoCrateExporter";
 import { createSessionId } from "../RoCrateUtils";
 import { Session } from "../../../model/Project/Session/Session";
@@ -1218,7 +1219,7 @@ describe("RoCrateExporter project document folders", () => {
     // Create a project with a specific file in otherDocsFolder that matches the user's example
     const letterFile = {
       getActualFilePath: () =>
-        "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\OtherDocuments\\Letter_from_Jan.txt",
+        Path.join("lameta", "edolo-rocrate", "OtherDocuments", "Letter_from_Jan.txt"),
       getModifiedDate: () => new Date("2023-01-03"),
       filePrefix: "Letter_from_Jan",
     };
@@ -1267,7 +1268,7 @@ describe("RoCrateExporter project document folders", () => {
     // Create a project with a specific file in descriptionFolder
     const descriptionFile = {
       getActualFilePath: () =>
-        "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\DescriptionDocuments\\Project_Overview.txt",
+        Path.join("lameta", "edolo-rocrate", "DescriptionDocuments", "Project_Overview.txt"),
       getModifiedDate: () => new Date("2023-01-04"),
       filePrefix: "Project_Overview",
     };
