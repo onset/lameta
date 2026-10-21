@@ -13,15 +13,24 @@ import { RoCrateValidator } from "../RoCrateValidator";
 describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
   let validator: RoCrateValidator;
 
+  // Tests push malformed entities (missing or null @id, empty @type) into @graph,
+  // so entities are typed as loose JSON-LD objects.
+  type JsonLdEntity = Record<string, any>;
+  type RoCrateFixture = {
+    "@context": string[];
+    "@graph": JsonLdEntity[];
+    [key: string]: any;
+  };
+
   // Helper to create a minimal valid RO-Crate
-  const createMinimalValidRoCrate = (overrides: Record<string, any> = {}) => ({
+  const createMinimalValidRoCrate = (overrides: Record<string, any> = {}): RoCrateFixture => ({
     "@context": ["https://w3id.org/ro/crate/1.2/context"],
     "@graph": [
       {
         "@id": "ro-crate-metadata.json",
         "@type": "CreativeWork",
         about: { "@id": "./" },
-        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" }
+        conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
       },
       {
         "@id": "./",
@@ -30,15 +39,15 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         description: "A test dataset",
         datePublished: "2024-01-01",
         license: { "@id": "https://creativecommons.org/licenses/by/4.0/" },
-        "ldac:subjectLanguage": [{ "@id": "#language_eng" }]
+        "ldac:subjectLanguage": [{ "@id": "#language_eng" }],
       },
       {
         "@id": "#language_eng",
         "@type": "Language",
-        name: "English"
-      }
+        name: "English",
+      },
     ],
-    ...overrides
+    ...overrides,
   });
 
   beforeEach(() => {
@@ -48,38 +57,32 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
   describe("@graph array (line 138)", () => {
     it("should fail when @graph is missing", () => {
       const roCrate = {
-        "@context": ["https://w3id.org/ro/crate/1.2/context"]
+        "@context": ["https://w3id.org/ro/crate/1.2/context"],
       };
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("@graph array")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("@graph array"));
     });
 
     it("should fail when @graph is not an array", () => {
       const roCrate = {
         "@context": ["https://w3id.org/ro/crate/1.2/context"],
-        "@graph": {}
+        "@graph": {},
       };
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("@graph array")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("@graph array"));
     });
 
     it("should pass when @graph is a valid array", () => {
       const roCrate = createMinimalValidRoCrate();
       const result = validator.validate(roCrate);
       // May have other errors/warnings, but not the @graph error
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("@graph array")
-      );
+      expect(result.errors).not.toContainEqual(expect.stringContaining("@graph array"));
     });
   });
 
@@ -90,15 +93,15 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
           {
             "@id": "ro-crate-metadata.json",
             "@type": "CreativeWork",
-            about: { "@id": "./" }
+            about: { "@id": "./" },
           },
           {
             "@id": "./",
             "@type": ["Dataset"],
             name: "Test",
-            "ldac:subjectLanguage": [{ "@id": "#lang" }]
-          }
-        ]
+            "ldac:subjectLanguage": [{ "@id": "#lang" }],
+          },
+        ],
       };
 
       const result = validator.validate(roCrate);
@@ -109,22 +112,18 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
 
     it("should warn when @context doesn't reference RO-Crate context", () => {
       const roCrate = createMinimalValidRoCrate({
-        "@context": ["https://schema.org/"]
+        "@context": ["https://schema.org/"],
       });
 
       const result = validator.validate(roCrate);
 
-      expect(result.warnings).toContainEqual(
-        expect.stringContaining("https://w3id.org/ro/crate/")
-      );
+      expect(result.warnings).toContainEqual(expect.stringContaining("https://w3id.org/ro/crate/"));
     });
 
     it("should pass when @context references RO-Crate context", () => {
       const roCrate = createMinimalValidRoCrate();
       const result = validator.validate(roCrate);
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("@context")
-      );
+      expect(result.errors).not.toContainEqual(expect.stringContaining("@context"));
     });
   });
 
@@ -135,23 +134,21 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "#language_eng",
         "@type": "Language",
-        name: "English Duplicate"
+        name: "English Duplicate",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining('Duplicate @id "#language_eng"')
+        expect.stringContaining('Duplicate @id "#language_eng"'),
       );
     });
 
     it("should pass when all @id values are unique", () => {
       const roCrate = createMinimalValidRoCrate();
       const result = validator.validate(roCrate);
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("Duplicate @id")
-      );
+      expect(result.errors).not.toContainEqual(expect.stringContaining("Duplicate @id"));
     });
   });
 
@@ -164,17 +161,15 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
             "@id": "./",
             "@type": ["Dataset"],
             name: "Test",
-            "ldac:subjectLanguage": [{ "@id": "#lang" }]
-          }
-        ]
+            "ldac:subjectLanguage": [{ "@id": "#lang" }],
+          },
+        ],
       };
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("metadata descriptor")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("metadata descriptor"));
     });
 
     it("should fail when metadata descriptor lacks @type CreativeWork", () => {
@@ -184,9 +179,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("CreativeWork")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("CreativeWork"));
     });
 
     it("should fail when metadata descriptor lacks about property", () => {
@@ -196,9 +189,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("about property")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("about property"));
     });
 
     it("should warn when conformsTo is missing on descriptor", () => {
@@ -207,9 +198,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
 
       const result = validator.validate(roCrate);
 
-      expect(result.warnings).toContainEqual(
-        expect.stringContaining("conformsTo")
-      );
+      expect(result.warnings).toContainEqual(expect.stringContaining("conformsTo"));
     });
 
     it("should accept legacy ro-crate-metadata.jsonld", () => {
@@ -217,9 +206,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"][0]["@id"] = "ro-crate-metadata.jsonld";
 
       const result = validator.validate(roCrate);
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("metadata descriptor")
-      );
+      expect(result.errors).not.toContainEqual(expect.stringContaining("metadata descriptor"));
     });
   });
 
@@ -228,14 +215,14 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       const roCrate = createMinimalValidRoCrate();
       roCrate["@graph"].push({
         "@type": "Person",
-        name: "Test Person"
+        name: "Test Person",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining("invalid @id: missing @id property")
+        expect.stringContaining("invalid @id: missing @id property"),
       );
     });
 
@@ -243,14 +230,14 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       const roCrate = createMinimalValidRoCrate();
       roCrate["@graph"].push({
         "@id": "#person1",
-        name: "Test Person"
+        name: "Test Person",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining("invalid @type: missing @type property")
+        expect.stringContaining("invalid @type: missing @type property"),
       );
     });
 
@@ -259,14 +246,14 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "",
         "@type": "Person",
-        name: "Test Person"
+        name: "Test Person",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining("@id is empty or whitespace-only")
+        expect.stringContaining("@id is empty or whitespace-only"),
       );
     });
 
@@ -275,14 +262,14 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "   ",
         "@type": "Person",
-        name: "Test Person"
+        name: "Test Person",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining("@id is empty or whitespace-only")
+        expect.stringContaining("@id is empty or whitespace-only"),
       );
     });
 
@@ -291,15 +278,13 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": null,
         "@type": "Person",
-        name: "Test Person"
+        name: "Test Person",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("@id is null")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("@id is null"));
     });
 
     it("should fail when @type is empty array", () => {
@@ -307,15 +292,13 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "#person1",
         "@type": [],
-        name: "Test Person"
+        name: "Test Person",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("@type array is empty")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("@type array is empty"));
     });
 
     it("should fail when @type array contains only empty strings", () => {
@@ -323,14 +306,14 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "#person1",
         "@type": ["", "   "],
-        name: "Test Person"
+        name: "Test Person",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining("@type array contains no valid string values")
+        expect.stringContaining("@type array contains no valid string values"),
       );
     });
 
@@ -338,15 +321,13 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       const roCrate = createMinimalValidRoCrate();
       roCrate["@graph"].push({
         "@id": "#person1",
-        "@type": "Person"
+        "@type": "Person",
         // No name
       });
 
       const result = validator.validate(roCrate);
 
-      expect(result.warnings).toContainEqual(
-        expect.stringContaining("should have a name")
-      );
+      expect(result.warnings).toContainEqual(expect.stringContaining("should have a name"));
     });
   });
 
@@ -357,15 +338,13 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         "@id": "files\\test.txt",
         "@type": "File",
         name: "Test File",
-        encodingFormat: "text/plain"
+        encodingFormat: "text/plain",
       });
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContainEqual(
-        expect.stringContaining("valid URI reference")
-      );
+      expect(result.errors).toContainEqual(expect.stringContaining("valid URI reference"));
     });
 
     it("should accept relative URI paths with forward slashes", () => {
@@ -374,22 +353,18 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         "@id": "files/test.txt",
         "@type": "File",
         name: "Test File",
-        encodingFormat: "text/plain"
+        encodingFormat: "text/plain",
       });
 
       const result = validator.validate(roCrate);
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("files/test.txt")
-      );
+      expect(result.errors).not.toContainEqual(expect.stringContaining("files/test.txt"));
     });
 
     it("should accept fragment identifiers", () => {
       const roCrate = createMinimalValidRoCrate();
       // #language_eng already exists and should be valid
       const result = validator.validate(roCrate);
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("#language_eng")
-      );
+      expect(result.errors).not.toContainEqual(expect.stringContaining("#language_eng"));
     });
 
     it("should accept absolute HTTP URIs", () => {
@@ -397,12 +372,12 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "https://example.com/resource",
         "@type": "CreativeWork",
-        name: "External Resource"
+        name: "External Resource",
       });
 
       const result = validator.validate(roCrate);
       expect(result.errors).not.toContainEqual(
-        expect.stringContaining("https://example.com/resource")
+        expect.stringContaining("https://example.com/resource"),
       );
     });
 
@@ -411,7 +386,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "_:b0",
         "@type": "GeoCoordinates",
-        name: "Location"
+        name: "Location",
       });
 
       const result = validator.validate(roCrate);
@@ -426,13 +401,11 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         "@id": "data/file.txt",
         "@type": "File",
         name: "Test File",
-        encodingFormat: "text/plain"
+        encodingFormat: "text/plain",
       });
 
       const result = validator.validate(roCrate);
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("data/file.txt")
-      );
+      expect(result.errors).not.toContainEqual(expect.stringContaining("data/file.txt"));
     });
 
     it("should accept File type aliases (AudioObject, VideoObject, etc.)", () => {
@@ -443,22 +416,18 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         "@id": "audio.mp3",
         "@type": "AudioObject",
         name: "Audio File",
-        encodingFormat: "audio/mpeg"
+        encodingFormat: "audio/mpeg",
       });
       roCrate["@graph"].push({
         "@id": "video.mp4",
         "@type": "VideoObject",
         name: "Video File",
-        encodingFormat: "video/mp4"
+        encodingFormat: "video/mp4",
       });
 
       const result = validator.validate(roCrate);
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("audio.mp3")
-      );
-      expect(result.errors).not.toContainEqual(
-        expect.stringContaining("video.mp4")
-      );
+      expect(result.errors).not.toContainEqual(expect.stringContaining("audio.mp3"));
+      expect(result.errors).not.toContainEqual(expect.stringContaining("video.mp4"));
     });
   });
 
@@ -468,14 +437,12 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "subfolder",
         "@type": "Dataset",
-        name: "Subfolder"
+        name: "Subfolder",
       });
 
       const result = validator.validate(roCrate);
 
-      expect(result.warnings).toContainEqual(
-        expect.stringContaining("should end with /")
-      );
+      expect(result.warnings).toContainEqual(expect.stringContaining("should end with /"));
     });
 
     it("should not warn when directory @id ends with /", () => {
@@ -484,17 +451,15 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "subfolder/",
         "@type": "Dataset",
-        name: "Subfolder"
+        name: "Subfolder",
       });
       // Link it from root dataset via hasPart to avoid orphaned entity warnings
       const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
-      rootDataset.hasPart = [{ "@id": "subfolder/" }];
+      rootDataset!.hasPart = [{ "@id": "subfolder/" }];
 
       const result = validator.validate(roCrate);
       // Should not warn about missing trailing slash (that's for when it doesn't end with /)
-      expect(result.warnings).not.toContainEqual(
-        expect.stringContaining("should end with /")
-      );
+      expect(result.warnings).not.toContainEqual(expect.stringContaining("should end with /"));
     });
 
     it("should not warn for Dataset with fragment @id", () => {
@@ -504,17 +469,15 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         "@id": "#ai-files",
         "@type": "Dataset",
         name: "AI Files Collection",
-        description: "Collection of .ai files"
+        description: "Collection of .ai files",
       });
       // Link it from root dataset via hasPart to avoid orphaned entity warnings
       const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
-      rootDataset.hasPart = [{ "@id": "#ai-files" }];
+      rootDataset!.hasPart = [{ "@id": "#ai-files" }];
 
       const result = validator.validate(roCrate);
       // Should not warn about missing trailing slash for fragment IDs
-      expect(result.warnings).not.toContainEqual(
-        expect.stringContaining("should end with /")
-      );
+      expect(result.warnings).not.toContainEqual(expect.stringContaining("should end with /"));
     });
   });
 
@@ -525,26 +488,24 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "#jane-doe",
         "@type": "Person",
-        name: "Jane Doe"
+        name: "Jane Doe",
       });
       // Add a People/ Dataset that incorrectly references the Person via hasPart
       roCrate["@graph"].push({
         "@id": "People/",
         "@type": "Dataset",
         name: "People",
-        hasPart: [{ "@id": "#jane-doe" }]
+        hasPart: [{ "@id": "#jane-doe" }],
       });
       // Link People/ from root via pcdm:hasMember
       const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
-      rootDataset["pcdm:hasMember"] = [{ "@id": "People/" }];
+      rootDataset!["pcdm:hasMember"] = [{ "@id": "People/" }];
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining(
-          'hasPart reference to "#jane-doe" which is type "Person"'
-        )
+        expect.stringContaining('hasPart reference to "#jane-doe" which is type "Person"'),
       );
     });
 
@@ -554,7 +515,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "#jane-doe",
         "@type": "Person",
-        name: "Jane Doe"
+        name: "Jane Doe",
       });
       // Add a File entity
       roCrate["@graph"].push({
@@ -562,7 +523,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         "@type": ["File", "ImageObject"],
         name: "photo.jpg",
         about: { "@id": "#jane-doe" },
-        isPartOf: { "@id": "People/Jane_Doe/" }
+        isPartOf: { "@id": "People/Jane_Doe/" },
       });
       // Add an intermediate Dataset for the person's files
       roCrate["@graph"].push({
@@ -571,7 +532,7 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         name: "Jane Doe files",
         about: { "@id": "#jane-doe" },
         hasPart: [{ "@id": "People/Jane_Doe/photo.jpg" }],
-        isPartOf: { "@id": "People/" }
+        isPartOf: { "@id": "People/" },
       });
       // Add People/ Dataset that references only Datasets (not Person)
       roCrate["@graph"].push({
@@ -579,18 +540,16 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
         "@type": "Dataset",
         name: "People",
         hasPart: [{ "@id": "People/Jane_Doe/" }],
-        "pcdm:memberOf": { "@id": "./" }
+        "pcdm:memberOf": { "@id": "./" },
       });
       // Link People/ from root via pcdm:hasMember
       const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
-      rootDataset["pcdm:hasMember"] = [{ "@id": "People/" }];
+      rootDataset!["pcdm:hasMember"] = [{ "@id": "People/" }];
 
       const result = validator.validate(roCrate);
 
       // Should not have errors about hasPart referencing non-File/Dataset types
-      const hasPartErrors = result.errors.filter((e) =>
-        e.includes("hasPart reference to")
-      );
+      const hasPartErrors = result.errors.filter((e) => e.includes("hasPart reference to"));
       expect(hasPartErrors).toHaveLength(0);
     });
 
@@ -600,19 +559,17 @@ describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {
       roCrate["@graph"].push({
         "@id": "#acme-corp",
         "@type": "Organization",
-        name: "ACME Corporation"
+        name: "ACME Corporation",
       });
       // Root dataset incorrectly uses hasPart to reference Organization
       const rootDataset = roCrate["@graph"].find((e) => e["@id"] === "./");
-      rootDataset.hasPart = [{ "@id": "#acme-corp" }];
+      rootDataset!.hasPart = [{ "@id": "#acme-corp" }];
 
       const result = validator.validate(roCrate);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(
-        expect.stringContaining(
-          'hasPart reference to "#acme-corp" which is type "Organization"'
-        )
+        expect.stringContaining('hasPart reference to "#acme-corp" which is type "Organization"'),
       );
     });
   });

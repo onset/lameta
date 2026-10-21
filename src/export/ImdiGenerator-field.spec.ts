@@ -1,14 +1,14 @@
 import { describe, it, beforeAll, afterAll, expect } from "vite-plus/test";
 import { printResultXml, setResultXml } from "../other/xmlUnitTestUtils";
 import * as XmlBuilder from "xmlbuilder";
-import { fieldElement } from "./Imdi-static-fns.ts";
-import { Field, FieldType } from "../model/field/Field.ts";
-import { FieldDefinition } from "../model/field/FieldDefinition.ts";
+import { fieldElement } from "./Imdi-static-fns";
+import { Field, FieldType } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
 import {
   getImdiConformantBirthDate,
   isTildeBirthYear,
   resetTildeBirthYearWarning,
-} from "./ImdiGenerator.ts";
+} from "./ImdiGenerator";
 import { setupLanguageFinderForTests } from "../languageFinder/LanguageFinder";
 
 // Set up staticLanguageFinder for ISO639-3 code lookups

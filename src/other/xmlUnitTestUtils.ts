@@ -15,32 +15,26 @@ export function setResultXml(xml: string) {
   resultDom = new DOMParser().parseFromString(resultXml);
 }
 
-export function assertAttribute(
-  xpath: string,
-  attribute: string,
-  expected: string
-) {
+export function assertAttribute(xpath: string, attribute: string, expected: string) {
   const hits = select(xpath);
   if (!hits || hits.length === 0) {
     //console.log(resultXml);
     return {
       message: () => `expected ${xpath} to exist `,
-      pass: false
+      pass: false,
     };
   }
   const xpathWithAttr = xpath + `[@${attribute}="${expected}"]`;
   const pass = select(xpathWithAttr).length > 0;
   if (pass) {
     return {
-      message: () =>
-        `expected ${xpathWithAttr} ${attribute} to be ${expected}. `,
-      pass: true
+      message: () => `expected ${xpathWithAttr} ${attribute} to be ${expected}. `,
+      pass: true,
     };
   } else {
     return {
-      message: () =>
-        `expected ${xpathWithAttr} ${attribute} to be ${expected}. `,
-      pass: false
+      message: () => `expected ${xpathWithAttr} ${attribute} to be ${expected}. `,
+      pass: false,
     };
   }
 }
@@ -55,14 +49,12 @@ export function value(xpath: string): string {
 }
 export function select(xpath: string): Node[] {
   if (resultDom === undefined) {
-    throw new Error(
-      "resultDom was undefined in select(). Make sure you called setResultXml()"
-    );
+    throw new Error("resultDom was undefined in select(). Make sure you called setResultXml()");
   }
   try {
     const nodes = XPATH.select(
       xpath,
-      resultDom
+      resultDom,
       //, resolver
     );
     return nodes as Node[];
@@ -83,29 +75,25 @@ expect.extend({
       return {
         message: () =>
           `expected ${xpath} to be '${expectedValue}' but that xpath did not match anything`,
-        pass: false
+        pass: false,
       };
     }
     let pass;
-    if (expectedValue instanceof RegExp)
-      pass = value(xpath).match(expectedValue);
+    if (expectedValue instanceof RegExp) pass = value(xpath).match(expectedValue);
     else pass = value(xpath) === expectedValue;
     if (pass) {
       return {
         message: () => `expected ${xpath} to be '${expectedValue}'`,
-        pass: true
+        pass: true,
       };
     } else {
       console.log(resultXml);
       return {
-        message: () =>
-          `expected ${xpath} to be '${expectedValue}'  but it was '${value(
-            xpath
-          )}'`,
-        pass: false
+        message: () => `expected ${xpath} to be '${expectedValue}'  but it was '${value(xpath)}'`,
+        pass: false,
       };
     }
-  }
+  },
 });
 expect.extend({
   toHaveSomeMatch(xpath: string, expectedValue: string | RegExp) {
@@ -115,19 +103,18 @@ expect.extend({
       return {
         message: () =>
           `expected ${xpath} to have some match for '${expectedValue}' but that xpath did not match anything`,
-        pass: false
+        pass: false,
       };
     }
     // the result of the xpath is an array of nodes. We want to see if any of them match.
     const pass = hits.some((node) => {
-      if (expectedValue instanceof RegExp)
-        return node.textContent?.match(expectedValue);
+      if (expectedValue instanceof RegExp) return node.textContent?.match(expectedValue);
       else return node.textContent === expectedValue;
     });
     if (pass) {
       return {
         message: () => `expected ${xpath} to be '${expectedValue}'`,
-        pass: true
+        pass: true,
       };
     } else {
       //console.log(resultXml);
@@ -137,10 +124,10 @@ expect.extend({
           // list all the hits that we found
           hits.map((node) => node.textContent).join(",") +
           "]",
-        pass: false
+        pass: false,
       };
     }
-  }
+  },
 });
 
 expect.extend({
@@ -149,17 +136,16 @@ expect.extend({
     if (matchCount !== expectedValue) {
       console.log(resultXml);
       return {
-        message: () =>
-          `expected ${xpath} to have ${expectedValue} matches, but got ${matchCount}`,
-        pass: false
+        message: () => `expected ${xpath} to have ${expectedValue} matches, but got ${matchCount}`,
+        pass: false,
       };
     }
 
     return {
       message: () => `expected ${xpath} to have ${expectedValue} matches`,
-      pass: true
+      pass: true,
     };
-  }
+  },
 });
 
 expect.extend({
@@ -168,20 +154,18 @@ expect.extend({
     if (!hits || hits.length === 0) {
       return {
         message: () => `expected ${xpath} to not exist`,
-        pass: true
+        pass: true,
       };
     }
 
     // get the xml (not just the text) of all the hits
-    const xml = hits
-      .map((node) => new XMLSerializer().serializeToString(node))
-      .join(",");
+    const xml = hits.map((node) => new XMLSerializer().serializeToString(node)).join(",");
     console.log(resultXml);
     return {
       message: () => `expected ${xpath} to not exist. Found: ${xml}`,
-      pass: false
+      pass: false,
     };
-  }
+  },
 });
 
 expect.extend({
@@ -190,9 +174,8 @@ expect.extend({
     if (!hits || hits.length === 0) {
       //      console.log(resultXml);
       return {
-        message: () =>
-          `expected ${xpath} to be '${url}' but it did not match anything`,
-        pass: false
+        message: () => `expected ${xpath} to be '${url}' but it did not match anything`,
+        pass: false,
       };
     }
     const xpathWithAttr = xpath + `[@Link="${url}"]`;
@@ -200,15 +183,15 @@ expect.extend({
     if (pass) {
       return {
         message: () => `expected ${xpathWithAttr} Link to be '${url}'`,
-        pass: true
+        pass: true,
       };
     } else {
       return {
         message: () => `expected ${xpathWithAttr} Link to be '${url}'\r\n`,
-        pass: false
+        pass: false,
       };
     }
-  }
+  },
 });
 
 expect.extend({
@@ -218,7 +201,7 @@ expect.extend({
       //      console.log(resultXml);
       return {
         message: () => `expected ${xpath} to be exist`,
-        pass: false
+        pass: false,
       };
     }
     const xpathWithAttr = xpath + `[@Type="ClosedVocabulary"]`;
@@ -226,54 +209,51 @@ expect.extend({
     if (pass) {
       return {
         message: () => `expected ${xpathWithAttr} type to be closed}'`,
-        pass: true
+        pass: true,
       };
     } else {
       return {
-        message: () =>
-          `expected ${xpathWithAttr} Link to be type to be closed. `,
-        pass: false
+        message: () => `expected ${xpathWithAttr} Link to be type to be closed. `,
+        pass: false,
       };
     }
-  }
+  },
 });
 
 expect.extend({
   toBeOpen(xpath) {
     return assertAttribute(xpath, "Type", "OpenVocabulary");
-  }
+  },
 });
 expect.extend({
   toBeOpenList(xpath) {
     return assertAttribute(xpath, "Type", "OpenVocabularyList");
-  }
+  },
 });
 expect.extend({
   toHaveAttributeValue(xpath, attributeName, attributeValue) {
     return assertAttribute(xpath, attributeName, attributeValue);
-  }
+  },
 });
 expect.extend({
   toHaveText(xpath, text) {
     if (value(xpath) === text) {
       return {
         message: () => "",
-        pass: true
+        pass: true,
       };
     } else {
       return {
-        message: () =>
-          `expected ${xpath}, which is "${value(xpath)}", to equal "${text}".`,
-        pass: false
+        message: () => `expected ${xpath}, which is "${value(xpath)}", to equal "${text}".`,
+        pass: false,
       };
     }
-  }
+  },
 });
 
 // the following is "declaration merging" which automatically retains the originasl and adds the new
 declare module "vite-plus/test" {
-  interface Assertion {
-    toMatch(expectedValue: string | RegExp): void;
+  interface Matchers<R extends void | Promise<void> = void | Promise<void>, T = unknown> {
     toHaveSomeMatch(expectedValue: string | RegExp): void;
     toHaveCount(expectedValue: number): void;
     toNotExist(): void;

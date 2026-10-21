@@ -27,17 +27,18 @@ describe("VocabularyTranslations", () => {
     });
 
     it("should use correct file path", () => {
-      expect(vocabTranslations.filePath).toBe(
-        path.join(tempDir, "vocabulary-translations.json")
-      );
+      expect(vocabTranslations.filePath).toBe(path.join(tempDir, "vocabulary-translations.json"));
     });
   });
 
   describe("load and save", () => {
     it("should save and reload data correctly", () => {
       // Add some data using the correct API
-      vocabTranslations.setGenre("folk_tale", "project", { es: "cuento popular", fr: "conte populaire" });
-      vocabTranslations.setRole("speaker", "project", { es: "hablante" });
+      vocabTranslations.setGenre("folk_tale", "custom", {
+        es: "cuento popular",
+        fr: "conte populaire",
+      });
+      vocabTranslations.setRole("speaker", "custom", { es: "hablante" });
 
       // Save
       vocabTranslations.save();
@@ -74,7 +75,7 @@ describe("VocabularyTranslations", () => {
 
   describe("genre translations", () => {
     it("should set and get genre translation", () => {
-      vocabTranslations.setGenre("myth", "project", { es: "mito" });
+      vocabTranslations.setGenre("myth", "custom", { es: "mito" });
       expect(vocabTranslations.getGenreTranslation("myth", "es")).toBe("mito");
     });
 
@@ -83,21 +84,21 @@ describe("VocabularyTranslations", () => {
     });
 
     it("should update existing genre translation", () => {
-      vocabTranslations.setGenre("myth", "project", { es: "mito original" });
+      vocabTranslations.setGenre("myth", "custom", { es: "mito original" });
       vocabTranslations.updateGenreTranslation("myth", "es", "mito actualizado");
       expect(vocabTranslations.getGenreTranslation("myth", "es")).toBe("mito actualizado");
     });
 
     it("should ensure genre entry exists with language placeholders (excluding English)", () => {
       const languageCodes = ["en", "es", "fr"];
-      vocabTranslations.ensureGenreEntry("custom_genre", "project", languageCodes);
+      vocabTranslations.ensureGenreEntry("custom_genre", "custom", languageCodes);
       expect(vocabTranslations.hasGenre("custom_genre")).toBe(true);
       // Empty placeholders are stored but getGenreTranslation returns undefined for empty strings
       // This is expected behavior - empty means "no translation yet"
       // English should NOT be included since the key itself is the English value
       expect(vocabTranslations.getGenreTranslation("custom_genre", "es")).toBeUndefined();
       expect(vocabTranslations.getGenreTranslation("custom_genre", "fr")).toBeUndefined();
-      
+
       // Verify that English is NOT in the translations object
       const genres = vocabTranslations.genres;
       expect(genres["custom_genre"].translations).not.toHaveProperty("en");
@@ -106,10 +107,10 @@ describe("VocabularyTranslations", () => {
     });
 
     it("should not overwrite existing translation when ensuring entry", () => {
-      vocabTranslations.setGenre("genre1", "project", { es: "género uno" });
+      vocabTranslations.setGenre("genre1", "custom", { es: "género uno" });
       const languageCodes = ["en", "es", "fr"];
-      vocabTranslations.ensureGenreEntry("genre1", "builtin", languageCodes);
-      
+      vocabTranslations.ensureGenreEntry("genre1", "factory-value-used-in-sessions", languageCodes);
+
       // Should preserve existing translation
       expect(vocabTranslations.getGenreTranslation("genre1", "es")).toBe("género uno");
       // French placeholder is added but returns undefined because it's empty
@@ -118,12 +119,12 @@ describe("VocabularyTranslations", () => {
 
     it("should not create duplicate entries when ensuring entry with different case", () => {
       // First add "consent" (lowercase, as might come from a session's genre id)
-      vocabTranslations.ensureGenreEntry("consent", "project", ["es", "pt"]);
+      vocabTranslations.ensureGenreEntry("consent", "custom", ["es", "pt"]);
       vocabTranslations.updateGenreTranslation("consent", "pt", "consentimento");
-      
+
       // Now ensure "Consent" (title case, as comes from HARDCODED_EXPORT_GENRES)
-      vocabTranslations.ensureGenreEntry("Consent", "builtin", ["es", "pt"]);
-      
+      vocabTranslations.ensureGenreEntry("Consent", "factory-value-used-by-export", ["es", "pt"]);
+
       // Should NOT create a duplicate - should use existing entry
       const genres = vocabTranslations.genres;
       expect(Object.keys(genres)).toHaveLength(1);
@@ -134,7 +135,7 @@ describe("VocabularyTranslations", () => {
     });
 
     it("should detect missing translations", () => {
-      vocabTranslations.setGenre("genre1", "project", { es: "género" });
+      vocabTranslations.setGenre("genre1", "custom", { es: "género" });
       // Has es, but missing fr
       expect(vocabTranslations.isGenreMissingTranslations("genre1", ["es", "fr"])).toBe(true);
       expect(vocabTranslations.isGenreMissingTranslations("genre1", ["es"])).toBe(false);
@@ -148,7 +149,7 @@ describe("VocabularyTranslations", () => {
 
   describe("role translations", () => {
     it("should set and get role translation", () => {
-      vocabTranslations.setRole("interviewer", "project", { es: "entrevistador" });
+      vocabTranslations.setRole("interviewer", "custom", { es: "entrevistador" });
       expect(vocabTranslations.getRoleTranslation("interviewer", "es")).toBe("entrevistador");
     });
 
@@ -158,12 +159,12 @@ describe("VocabularyTranslations", () => {
 
     it("should ensure role entry exists with language placeholders (excluding English)", () => {
       const languageCodes = ["en", "es", "fr"];
-      vocabTranslations.ensureRoleEntry("custom_role", "project", languageCodes);
+      vocabTranslations.ensureRoleEntry("custom_role", "custom", languageCodes);
       expect(vocabTranslations.hasRole("custom_role")).toBe(true);
       // English should NOT be included since the key itself is the English value
       expect(vocabTranslations.getRoleTranslation("custom_role", "es")).toBeUndefined();
       expect(vocabTranslations.getRoleTranslation("custom_role", "fr")).toBeUndefined();
-      
+
       // Verify that English is NOT in the translations object
       const roles = vocabTranslations.roles;
       expect(roles["custom_role"].translations).not.toHaveProperty("en");
@@ -173,12 +174,12 @@ describe("VocabularyTranslations", () => {
 
     it("should not create duplicate role entries when ensuring entry with different case", () => {
       // First add "researcher" (lowercase)
-      vocabTranslations.ensureRoleEntry("researcher", "project", ["es", "pt"]);
+      vocabTranslations.ensureRoleEntry("researcher", "custom", ["es", "pt"]);
       vocabTranslations.updateRoleTranslation("researcher", "pt", "pesquisador");
-      
+
       // Now ensure "Researcher" (title case)
-      vocabTranslations.ensureRoleEntry("Researcher", "builtin", ["es", "pt"]);
-      
+      vocabTranslations.ensureRoleEntry("Researcher", "factory-value-used-by-export", ["es", "pt"]);
+
       // Should NOT create a duplicate - should use existing entry
       const roles = vocabTranslations.roles;
       expect(Object.keys(roles)).toHaveLength(1);
@@ -189,8 +190,8 @@ describe("VocabularyTranslations", () => {
     });
 
     it("should detect missing role translations", () => {
-      vocabTranslations.setRole("role1", "project", { es: "rol" });
-      
+      vocabTranslations.setRole("role1", "custom", { es: "rol" });
+
       expect(vocabTranslations.isRoleMissingTranslations("role1", ["es", "fr"])).toBe(true);
       expect(vocabTranslations.isRoleMissingTranslations("role1", ["es"])).toBe(false);
     });
@@ -198,31 +199,33 @@ describe("VocabularyTranslations", () => {
 
   describe("special characters and Unicode", () => {
     it("should handle genre values with spaces and special characters", () => {
-      vocabTranslations.setGenre("folk tale / myth", "project", { es: "cuento popular / mito" });
-      expect(vocabTranslations.getGenreTranslation("folk tale / myth", "es")).toBe("cuento popular / mito");
+      vocabTranslations.setGenre("folk tale / myth", "custom", { es: "cuento popular / mito" });
+      expect(vocabTranslations.getGenreTranslation("folk tale / myth", "es")).toBe(
+        "cuento popular / mito",
+      );
     });
 
     it("should handle Unicode language names and translations", () => {
-      vocabTranslations.setGenre("narrative", "project", {
+      vocabTranslations.setGenre("narrative", "custom", {
         zh: "叙事",
         ar: "رواية",
-        he: "נרטיב"
+        he: "נרטיב",
       });
-      
+
       expect(vocabTranslations.getGenreTranslation("narrative", "zh")).toBe("叙事");
       expect(vocabTranslations.getGenreTranslation("narrative", "ar")).toBe("رواية");
       expect(vocabTranslations.getGenreTranslation("narrative", "he")).toBe("נרטיב");
     });
 
     it("should preserve Unicode through save/load cycle", () => {
-      vocabTranslations.setGenre("story", "project", { ja: "物語" });
-      vocabTranslations.setRole("narrator", "project", { ko: "이야기꾼" });
-      
+      vocabTranslations.setGenre("story", "custom", { ja: "物語" });
+      vocabTranslations.setRole("narrator", "custom", { ko: "이야기꾼" });
+
       vocabTranslations.save();
-      
+
       const loaded = new VocabularyTranslations(tempDir);
       loaded.load();
-      
+
       expect(loaded.getGenreTranslation("story", "ja")).toBe("物語");
       expect(loaded.getRoleTranslation("narrator", "ko")).toBe("이야기꾼");
     });
@@ -230,9 +233,9 @@ describe("VocabularyTranslations", () => {
 
   describe("genres and roles accessors", () => {
     it("should return all genre entries", () => {
-      vocabTranslations.setGenre("genre1", "project", { es: "uno" });
-      vocabTranslations.setGenre("genre2", "builtin", { es: "dos" });
-      
+      vocabTranslations.setGenre("genre1", "custom", { es: "uno" });
+      vocabTranslations.setGenre("genre2", "factory-value-used-in-sessions", { es: "dos" });
+
       const genres = vocabTranslations.genres;
       expect(Object.keys(genres)).toHaveLength(2);
       expect(genres["genre1"]).toBeDefined();
@@ -240,9 +243,9 @@ describe("VocabularyTranslations", () => {
     });
 
     it("should return all role entries", () => {
-      vocabTranslations.setRole("role1", "project", { es: "uno" });
-      vocabTranslations.setRole("role2", "builtin", { es: "dos" });
-      
+      vocabTranslations.setRole("role1", "custom", { es: "uno" });
+      vocabTranslations.setRole("role2", "factory-value-used-in-sessions", { es: "dos" });
+
       const roles = vocabTranslations.roles;
       expect(Object.keys(roles)).toHaveLength(2);
     });
@@ -251,12 +254,12 @@ describe("VocabularyTranslations", () => {
   describe("dirty tracking", () => {
     it("should track dirty state after changes", () => {
       expect(vocabTranslations.isDirty).toBe(false);
-      vocabTranslations.setGenre("test", "project", { en: "test" });
+      vocabTranslations.setGenre("test", "custom", { en: "test" });
       expect(vocabTranslations.isDirty).toBe(true);
     });
 
     it("should clear dirty state after save", () => {
-      vocabTranslations.setGenre("test", "project", { en: "test" });
+      vocabTranslations.setGenre("test", "custom", { en: "test" });
       vocabTranslations.save();
       expect(vocabTranslations.isDirty).toBe(false);
     });

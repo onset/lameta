@@ -1,12 +1,12 @@
 import { E2eProject, createNewProject } from "./various-e2e-helpers";
-import { test, expect as expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { Page } from "playwright-core";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import {
   expectMenuWithLabel,
   shouldAtLeastOnce,
   shouldHaveMultiple,
-  shouldSeeExactlyOnce
+  shouldSeeExactlyOnce,
 } from "./e2e.expects";
 
 let lameta: LametaE2ERunner;
@@ -72,7 +72,7 @@ test.describe.skip("Localization", () => {
     // tabs of the selected file
     await shouldSeeExactlyOnce(page, ["Catatan"]);
     // some fields
-    await shouldSeeExactlyOnce(["Deskripsi", "Kotak-kotak Khusus"]);
+    await shouldSeeExactlyOnce(page, ["Deskripsi", "Kotak-kotak Khusus"]);
 
     await shouldHaveMultiple(page, "Tanggal", 2); // date
 
@@ -83,7 +83,7 @@ test.describe.skip("Localization", () => {
       "Nama Lengkap", //name
       "Tahun Lahir", //birth year
       // TODO not finding this link: "Tambah Bahasa", // add language
-      "Bagaimaan Cara Menghubungi" // How to Contact
+      "Bagaimaan Cara Menghubungi", // How to Contact
     ]);
   });
 });

@@ -35,7 +35,8 @@ export default defineConfig({
     ],
   },
   lint: {
-    ignorePatterns: ["dist", "locale/"],
+    // ro-crate-validation is a separate package with its own package.json
+    ignorePatterns: ["dist", "locale/", "tmp/", "crowdin-backup/", "ro-crate-validation/"],
     options: {
       typeAware: true,
       typeCheck: true,
