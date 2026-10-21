@@ -1,5 +1,14 @@
 import { shell } from "electron";
-import * as remote from "@electron/remote";
+import {
+  addWordToSpellCheckerDictionary,
+  onContextMenu,
+  popupMenu,
+  quitApp,
+  runWebContentsCommand,
+  setApplicationMenu,
+  setWindowTitle,
+  toggleDevTools,
+} from "./windowIpc";
 import { IHomePageMenuConnections } from "../containers/HomePage";
 import log from "./log";
 import { ShowExportDialog } from "../components/export/ExportDialog";
@@ -44,7 +53,6 @@ export default class LametaMenu {
     // console.log(
     //   `updating Main Menu. haveProject=${haveProject.toLocaleString()}`
     // );
-    const mainWindow = remote.getCurrentWindow();
     const macMenu = {
       label: t`lameta`,
       submenu: [
@@ -83,7 +91,7 @@ export default class LametaMenu {
           label: t`Quit`,
           accelerator: "Command+Q",
           click() {
-            remote.app.quit();
+            quitApp();
           },
         },
       ],
@@ -335,7 +343,7 @@ export default class LametaMenu {
           label: "&Reload",
           accelerator: "CmdOrCtrl+R",
           click() {
-            mainWindow.webContents.reload();
+            window.location.reload();
           },
         },
         {
@@ -353,7 +361,7 @@ export default class LametaMenu {
           label: "Toggle &Developer Tools",
           accelerator: "Alt+CmdOrCtrl+T",
           click() {
-            mainWindow.webContents.toggleDevTools();
+            toggleDevTools();
           },
         },
         {
@@ -389,7 +397,7 @@ export default class LametaMenu {
         {
           label: "Menu Test",
           click() {
-            mainWindow.setTitle("Menu Test Invoked");
+            setWindowTitle("Menu Test Invoked");
           },
         },
       ],
@@ -452,20 +460,16 @@ export default class LametaMenu {
       template.push(devMenu);
       //template.push(testMenu);
     }
-    const menu = remote.Menu.buildFromTemplate(template as Electron.MenuItemConstructorOptions[]);
-
-    remote.Menu.setApplicationMenu(menu);
+    setApplicationMenu(template as Electron.MenuItemConstructorOptions[]);
   }
   public setupContentMenu() {
     // Set up context menu for spell checking, editing, and developer tools
     // This handler runs for all right-clicks in the app
-    remote.getCurrentWebContents().on("context-menu", (e, props) => {
+    onContextMenu((props) => {
       const { x, y, misspelledWord, dictionarySuggestions, isEditable, selectionText, editFlags } =
         props;
 
       const menuItems: Electron.MenuItemConstructorOptions[] = [];
-      const webContents = remote.getCurrentWebContents();
-
       // If there's a misspelled word, show spelling suggestions and "Add to Dictionary" option
       if (misspelledWord) {
         // Add spelling suggestions first
@@ -475,7 +479,7 @@ export default class LametaMenu {
               label: suggestion,
               click: () => {
                 // Replace the misspelled word with the selected suggestion
-                webContents.replaceMisspelling(suggestion);
+                runWebContentsCommand("replaceMisspelling", suggestion);
               },
             });
           }
@@ -486,7 +490,7 @@ export default class LametaMenu {
           label: t`Add to Dictionary`,
           click: () => {
             // Add word to Electron's built-in spell checker dictionary
-            remote.session.defaultSession.addWordToSpellCheckerDictionary(misspelledWord);
+            addWordToSpellCheckerDictionary(misspelledWord);
           },
         });
       }
@@ -504,7 +508,7 @@ export default class LametaMenu {
             label: t`Cut`,
             enabled: editFlags.canCut,
             accelerator: "CmdOrCtrl+X",
-            click: () => webContents.cut(),
+            click: () => runWebContentsCommand("cut"),
           });
         }
 
@@ -514,7 +518,7 @@ export default class LametaMenu {
             label: t`Copy`,
             enabled: editFlags.canCopy,
             accelerator: "CmdOrCtrl+C",
-            click: () => webContents.copy(),
+            click: () => runWebContentsCommand("copy"),
           });
         }
 
@@ -524,7 +528,7 @@ export default class LametaMenu {
             label: t`Paste`,
             enabled: editFlags.canPaste,
             accelerator: "CmdOrCtrl+V",
-            click: () => webContents.paste(),
+            click: () => runWebContentsCommand("paste"),
           });
         }
 
@@ -535,7 +539,7 @@ export default class LametaMenu {
             label: t`Select All`,
             enabled: editFlags.canSelectAll,
             accelerator: "CmdOrCtrl+A",
-            click: () => webContents.selectAll(),
+            click: () => runWebContentsCommand("selectAll"),
           });
         }
       }
@@ -548,14 +552,14 @@ export default class LametaMenu {
         menuItems.push({
           label: "Inspect element",
           click() {
-            webContents.inspectElement(x, y);
+            runWebContentsCommand("inspectElement", x, y);
           },
         });
       }
 
       // Only show the menu if there are items
       if (menuItems.length > 0) {
-        remote.Menu.buildFromTemplate(menuItems).popup({});
+        popupMenu(menuItems);
       }
     });
   }

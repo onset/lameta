@@ -25,7 +25,7 @@ import { ipcRenderer, OpenDialogOptions } from "electron";
 import { NotifyException } from "../Notify";
 import { IFolderType } from "../../model/Folder/Folder";
 import { analyticsEvent } from "../../other/analytics";
-import { app } from "@electron/remote";
+import { getPath } from "../../other/windowIpc";
 
 let showSpreadsheetImportDialogImpl = (_folderType: IFolderType) => {};
 
@@ -165,7 +165,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
               color="secondary"
               variant={path ? "text" : "contained"}
               onClick={() => {
-                let dir = app.getPath("documents");
+                let dir = getPath("documents");
                 // prefer to open in the same directory as the current one, if it's there
                 if (path && fs.existsSync(Path.dirname(path))) {
                   dir = Path.dirname(path);

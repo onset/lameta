@@ -1,5 +1,6 @@
 import { ElectronApplication, _electron as electron } from "playwright-core";
 import { Page } from "playwright-core";
+import { expect } from "@playwright/test";
 import fs from "fs";
 import * as Path from "path";
 import * as os from "os";
@@ -18,6 +19,19 @@ export interface LaunchOptions {
    * (e.g., "ELAR", "PARADISEC", "AILLA") for the auto-created project.
    */
   archiveConfig?: string;
+  /** Command-line arguments passed to lameta after the app path, e.g. an .sprj file to open. */
+  extraArgs?: string[];
+  /** Environment variables that override the ones the runner sets. */
+  env?: Record<string, string>;
+}
+
+/** What a test can see of a native menu item, read from the main process. */
+export interface E2eMenuItem {
+  label: string;
+  type: string;
+  enabled: boolean;
+  visible: boolean;
+  checked: boolean;
 }
 
 export class LametaE2ERunner {
@@ -64,8 +78,10 @@ export class LametaE2ERunner {
       }
     }
 
+    Object.assign(env, options?.env);
+
     const launchOptions: any = {
-      args: exePath ? undefined : ["."],
+      args: [...(exePath ? [] : ["."]), ...(options?.extraArgs ?? [])],
       executablePath: exePath,
       env,
     };
@@ -237,6 +253,81 @@ export class LametaE2ERunner {
       },
       { menuLabel, itemLabel, subMenuChoiceLabel },
     );
+  }
+
+  /** Reads the items of a top-level application menu, as Electron holds them in the main process. */
+  public async getApplicationMenuItems(menuLabel: string): Promise<E2eMenuItem[]> {
+    return await this.electronApp.evaluate(({ Menu }, menuLabel) => {
+      const menu = Menu.getApplicationMenu()?.items.find(
+        (item) => item.label.replace(/&/g, "") === menuLabel,
+      );
+      return (menu?.submenu?.items ?? []).map((item) => ({
+        label: item.label.replace(/&/g, ""),
+        type: item.type,
+        enabled: item.enabled,
+        visible: item.visible,
+        checked: item.checked,
+      }));
+    }, menuLabel);
+  }
+
+  public async getApplicationMenuLabels(): Promise<string[]> {
+    return await this.electronApp.evaluate(({ Menu }) =>
+      (Menu.getApplicationMenu()?.items ?? []).map((item) => item.label.replace(/&/g, "")),
+    );
+  }
+
+  /**
+   * From now on, popup (context) menus are recorded in the main process instead of being shown.
+   * Playwright cannot see or click native menus, so tests read and click them through
+   * getLastPopupMenu() and clickPopupMenuItem().
+   */
+  public async capturePopupMenus() {
+    await this.electronApp.evaluate(({ Menu }) => {
+      const g = globalThis as any;
+      g.__e2ePopupMenus = [];
+      Menu.prototype.popup = function () {
+        g.__e2ePopupMenus.push(this);
+      };
+    });
+  }
+
+  /** Waits for the next popup menu after `previousCount` menus have been recorded, and returns its items. */
+  public async waitForPopupMenu(previousCount: number): Promise<E2eMenuItem[]> {
+    await expect
+      .poll(() => this.getPopupMenuCount(), { timeout: 5000 })
+      .toBeGreaterThan(previousCount);
+    return await this.getLastPopupMenu();
+  }
+
+  public async getPopupMenuCount(): Promise<number> {
+    return await this.electronApp.evaluate(
+      () => ((globalThis as any).__e2ePopupMenus ?? []).length,
+    );
+  }
+
+  public async getLastPopupMenu(): Promise<E2eMenuItem[]> {
+    return await this.electronApp.evaluate(() => {
+      const menus = (globalThis as any).__e2ePopupMenus ?? [];
+      const menu = menus[menus.length - 1];
+      return (menu?.items ?? []).map((item: any) => ({
+        label: item.label,
+        type: item.type,
+        enabled: item.enabled,
+        visible: item.visible,
+        checked: item.checked,
+      }));
+    });
+  }
+
+  public async clickPopupMenuItem(label: string) {
+    await this.electronApp.evaluate((_electron, label) => {
+      const menus = (globalThis as any).__e2ePopupMenus ?? [];
+      const menu = menus[menus.length - 1];
+      const item = menu?.items.find((i: any) => i.label === label);
+      if (!item) throw new Error(`No popup menu item labeled "${label}"`);
+      item.click();
+    }, label);
   }
 
   // a soft reload lets us check what happens when you leave and come back.

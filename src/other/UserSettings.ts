@@ -5,7 +5,7 @@ import { observable, computed, makeObservable } from "mobx";
 import React from "react";
 import pkg from "package.json";
 import { getTestEnvironment } from "../getTestEnvironment";
-import { app, process } from "@electron/remote";
+import { getPath } from "./windowIpc";
 import * as Path from "path";
 import fs from "fs-extra";
 
@@ -69,14 +69,15 @@ export class UserSettings {
     if (E2E_USER_SETTINGS_STORE_NAME?.length > 0) {
       name = E2E_USER_SETTINGS_STORE_NAME;
     } else {
-      if (app.getPath) {
-        // false in unit tests
+      const userData = getPath("userData");
+      if (userData) {
+        // empty in unit tests
         // at some point during 2.3 beta, we broke the file name here,
         // leaving it named ".json"
         // So here we fix it up if we find that.
-        const brokenPath = Path.join(app.getPath("userData"), ".json");
+        const brokenPath = Path.join(userData, ".json");
         if (fs.existsSync(brokenPath)) {
-          const correctPath = Path.join(app.getPath("userData"), name + ".json");
+          const correctPath = Path.join(userData, name + ".json");
           try {
             if (!fs.existsSync(correctPath)) {
               fs.renameSync(brokenPath, correctPath);
@@ -89,15 +90,22 @@ export class UserSettings {
         }
       }
     }
+    // Vite replaces `process.env.NODE_ENV` with a constant when it builds the renderer,
+    // but here we need the value that lameta was started with.
+    const runtimeEnv = (
+      Reflect.get(globalThis as object, "process") as
+        | { env?: Record<string, string | undefined> }
+        | undefined
+    )?.env;
     this.store =
-      process.env == undefined || // unit tests
-      process.env.NODE_ENV === "test" ||
+      runtimeEnv == undefined || // unit tests
+      runtimeEnv.NODE_ENV === "test" ||
       E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
         ? new FakeStore()
         : new Store({
             name: name,
           });
-    this.sendErrors = process.env?.NODE_ENV === "production"; // developer has a menu that can toggle this
+    this.sendErrors = runtimeEnv?.NODE_ENV === "production"; // developer has a menu that can toggle this
 
     // the "imdiMode" here is legacy, so we don't want to break it by changing to "showIMDI"
     this.showIMDI = this.store.get("imdiMode", false);

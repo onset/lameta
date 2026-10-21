@@ -17,6 +17,7 @@ import { getTestEnvironment } from "../getTestEnvironment";
 import { initLaunchTest } from "./launchTest";
 import { claimSprjFiles } from "./fileAssociation";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
+import { forwardWindowEvents } from "./windowIpc";
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -121,8 +122,7 @@ async function createWindow() {
     },
   });
 
-  require("@electron/remote/main").enable(win.webContents);
-  require("@electron/remote/main").initialize();
+  forwardWindowEvents(win);
 
   // Enable spell checking for multiple languages
   session.defaultSession.setSpellCheckerLanguages(spellCheckLanguages);
@@ -274,6 +274,10 @@ ipcMain.handle("confirm-quit", async (event, ...args) => {
 ipcMain.handle("showOpenDialog", (event, options) => {
   //returns a promise which is somehow funneled to the caller in the render process
   return dialog.showOpenDialog(win!, options);
+});
+
+ipcMain.handle("showSaveDialog", (event, options) => {
+  return dialog.showSaveDialog(win!, options);
 });
 
 ipcMain.handle("showMessageBox", (event, options) => {

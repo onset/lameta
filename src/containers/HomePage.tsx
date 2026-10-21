@@ -11,8 +11,7 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
-import { app } from "@electron/remote";
-import * as remote from "@electron/remote";
+import { getPath, getStartupArguments, onWindowBlur, setWindowTitle } from "../other/windowIpc";
 import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
@@ -87,9 +86,7 @@ class HomePage extends React.Component<IProps, IState> {
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
-    //const test = require("@electron/remote").getCurrentWebContents();
-    const p = remote.process;
-    const args = remote.getGlobal("arguments");
+    const args = getStartupArguments();
     // const args = [
     //   "ignore",
     //   "ignore",
@@ -243,22 +240,13 @@ class HomePage extends React.Component<IProps, IState> {
       }
     });
 
-    // Without this timeout, one of: {remote, BrowserWindow, or getFocusedWindow()}, most likely the later,
-    // was unavailable sometimes, particularly when running production build via "yarn start" on Windows.
-    // So we give it a few seconds and catch the problem if it still fails.
-    window.setTimeout(() => {
-      try {
-        // Save when we lose focus. Review: this might take care of the quitting one, above.
-        remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
-          console.log("HomePage blur");
-          if (this.projectHolder.project) {
-            this.projectHolder.project.saveAllFilesInFolder();
-          }
-        });
-      } catch (error) {
-        log.error("Error trying to set the window blur event callback: " + error);
+    // Save when we lose focus. Review: this might take care of the quitting one, above.
+    onWindowBlur(() => {
+      console.log("HomePage blur");
+      if (this.projectHolder.project) {
+        this.projectHolder.project.saveAllFilesInFolder();
       }
-    }, 3000);
+    });
 
     // for trying to figure out https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
     window.setInterval(() => {
@@ -346,7 +334,7 @@ class HomePage extends React.Component<IProps, IState> {
 
     title += " " + pkg.version;
 
-    remote.getCurrentWindow().setTitle(title);
+    setWindowTitle(title);
     return (
       <div style={{ height: "100%" }}>
         {(this.projectHolder.project && (
@@ -434,7 +422,7 @@ class HomePage extends React.Component<IProps, IState> {
 
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
-      app.getPath("documents"),
+      getPath("documents"),
       "lameta", // we don't translate this
     );
     sentryBreadCrumb("open project dialog");

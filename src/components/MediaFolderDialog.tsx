@@ -7,7 +7,6 @@ import { useState } from "react";
 import { i18n } from "@lingui/core";
 import { t, Trans } from "@lingui/macro";
 import { ipcRenderer, OpenDialogOptions } from "electron";
-import * as remote from "@electron/remote";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,
   setMediaFolderOrEmptyForThisProjectAndMachine,
@@ -138,7 +137,7 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
           onClick={() => {
             setMediaFolderOrEmptyForThisProjectAndMachine(path);
             setOpen(false);
-            remote.getCurrentWindow().reload();
+            window.location.reload();
           }}
         >
           <Trans>OK</Trans>

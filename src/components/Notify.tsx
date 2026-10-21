@@ -7,7 +7,7 @@ import * as React from "react";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
 import { t } from "@lingui/macro";
-import * as remote from "@electron/remote";
+import { quitApp } from "../other/windowIpc";
 import { ipcRenderer } from "electron";
 
 import { Theme, ToastOptions, toast } from "react-toastify";
@@ -215,7 +215,7 @@ export function NotifyMultipleProjectFiles(
           if (response > 0) {
             revealInFolder(folder);
             if (!userSettings.DeveloperMode) {
-              window.setTimeout(() => remote.app.quit(), 1000);
+              window.setTimeout(() => quitApp(), 1000);
             }
           }
         });

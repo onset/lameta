@@ -80,6 +80,7 @@ export default defineConfig({
         "src/other/locateDependency.ts",
         "src/other/spellCheckLanguages.ts",
         "src/mainProcess/MainProcessApi.ts",
+        "src/mainProcess/windowIpc.ts",
         "src/mainProcess/MainProcessCopyManager.ts",
         "src/mainProcess/MainProcessImdiExport.ts",
         "src/mainProcess/preload/index.ts",

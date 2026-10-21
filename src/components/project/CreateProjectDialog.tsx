@@ -6,7 +6,7 @@ import fs from "fs";
 import * as Path from "path";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.css";
-import { app } from "@electron/remote";
+import { getPath } from "../../other/windowIpc";
 import { t, Trans } from "@lingui/macro";
 import {
   DialogBottomButtons,
@@ -36,7 +36,7 @@ export default class CreateProjectDialog extends React.Component<IProps, IState>
     this.props.callback(doCreate ? this.getChosenPath() : "", this.props.useSampleProject);
   }
   private getChosenPath(): string {
-    const root = getTestEnvironment().E2E ? getTestEnvironment().E2ERoot : app.getPath("documents");
+    const root = getTestEnvironment().E2E ? getTestEnvironment().E2ERoot : getPath("documents");
     return Path.join(root, "lameta", sanitize(this.state.projectName));
   }
 

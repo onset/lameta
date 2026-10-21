@@ -1,5 +1,5 @@
 import * as Path from "path";
-import { app } from "@electron/remote";
+import { getPath } from "../../other/windowIpc";
 import { ensureDirSync, pathExistsSync } from "fs-extra";
 import moment from "moment";
 
@@ -9,7 +9,7 @@ const sanitize = require("sanitize-filename");
  * Get the default save path for CSV export.
  */
 export const getPathForCsvSaving = (projectDisplayName: string): string => {
-  const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
+  const parent = Path.join(getPath("documents"), "lameta", "CSV Export");
   ensureDirSync(parent);
   return Path.join(
     parent,
@@ -23,7 +23,7 @@ export const getPathForCsvSaving = (projectDisplayName: string): string => {
  * Get the default save path for Paradisec CSV export.
  */
 export const getPathForParadisecSaving = (projectDisplayName: string): string => {
-  const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
+  const parent = Path.join(getPath("documents"), "lameta", "CSV Export");
   ensureDirSync(parent);
   return Path.join(
     parent,
@@ -38,7 +38,7 @@ export const getPathForParadisecSaving = (projectDisplayName: string): string =>
  * Adds a timestamp suffix if a folder for today already exists.
  */
 export const getPathForIMDISaving = (projectDisplayName: string, exportFormat: string): string => {
-  const parent = Path.join(app.getPath("documents"), "lameta", "IMDI Packages");
+  const parent = Path.join(getPath("documents"), "lameta", "IMDI Packages");
   ensureDirSync(parent);
 
   let folder = Path.join(

@@ -22,22 +22,21 @@ Object.defineProperty(global, "window", {
   writable: true,
 });
 
-// Mock the specific file that's causing issues
-vi.mock("@electron/remote/dist/src/common/get-electron-binding", () => ({
-  getElectronBinding: vi.fn(() => ({
-    getHiddenValue: vi.fn(() => "test-context-id"),
-  })),
+// Unit tests have no main process to ask
+vi.mock("./other/windowIpc", () => ({
+  getPath: vi.fn(() => ""),
+  getAppPath: vi.fn(() => ""),
+  getStartupArguments: vi.fn(() => null),
+  setWindowTitle: vi.fn(),
+  quitApp: vi.fn(),
+  toggleDevTools: vi.fn(),
+  addWordToSpellCheckerDictionary: vi.fn(),
+  runWebContentsCommand: vi.fn(),
+  setApplicationMenu: vi.fn(),
+  popupMenu: vi.fn(),
+  onContextMenu: vi.fn(),
+  onWindowBlur: vi.fn(),
 }));
-
-// Mock the entire @electron/remote module
-vi.mock("@electron/remote", () => ({
-  exec: vi.fn(),
-  process: vi.fn(),
-  app: { getAppPath: () => "" },
-  getElectronBinding: vi.fn(() => ({
-    getHiddenValue: vi.fn(() => "test-context-id"),
-  })),
-})); //See commit msg for info
 //
 //   getTestEnvironment: () => ({
 //     E2E: false,
