@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
-"PO-Revision-Date: 2026-07-09 19:26\n"
+"PO-Revision-Date: 2026-10-21 01:36\n"
 
 msgctxt "AILCA/accessProtocol/undefined/description"
 msgid "access is Free to all"
@@ -117,11 +117,11 @@ msgid "Restricted access"
 msgstr ""
 
 msgctxt "ELAR/accessProtocol/undefined/description"
-msgid "All users can access (requires registration)"
+msgid "Registered users can access (after registration)"
 msgstr ""
 
 msgctxt "ELAR/accessProtocol/undefined/description"
-msgid "Only Subscribers are allowed access (must apply to Depositor for access)"
+msgid "Access must be obtained from Depositor via ELAR"
 msgstr ""
 
 msgctxt "ELAR/accessProtocol/undefined/label"
@@ -129,11 +129,11 @@ msgid "O: fully open"
 msgstr ""
 
 msgctxt "ELAR/accessProtocol/undefined/label"
-msgid "U: open to users"
+msgid "U: available to registered users"
 msgstr ""
 
 msgctxt "ELAR/accessProtocol/undefined/label"
-msgid "S: open to subscribers"
+msgid "S: available upon request only"
 msgstr ""
 
 msgctxt "PARADISEC/accessProtocol/undefined/description"
