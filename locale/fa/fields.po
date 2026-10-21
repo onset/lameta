@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Persian\n"
 "Language: fa_IR\n"
-"PO-Revision-Date: 2026-10-21 01:36\n"
+"PO-Revision-Date: 2026-10-21 16:28\n"
 
 msgctxt "lameta/person/birthYear"
 msgid "Birth Year"
@@ -512,6 +512,10 @@ msgctxt "lameta/session/workingLanguages"
 msgid "Working Languages"
 msgstr "زبان های کاری"
 
+msgctxt "ELAR/person/birthYear/patternDescription"
+msgid "a year (YYYY) or a date (YYYY-MM or YYYY-MM-DD)"
+msgstr ""
+
 msgctxt "ELAR/person/birthYear/tipOnUsingThisField"
 msgid "Enter an approximation or \"?\" if unsure, and describe in the Description field below."
 msgstr ""
@@ -584,16 +588,40 @@ msgctxt "ELAR/project/continent/choices"
 msgid "Oceania"
 msgstr ""
 
+msgctxt "ELAR/project/continent/patternDescription"
+msgid "Africa, Americas, Asia, Europe or Oceania"
+msgstr ""
+
 msgctxt "ELAR/project/depositor/separatorWithCommaInstructions"
 msgid "This is usually the same person as the Collection Steward. For multiple people, separate with commas."
+msgstr ""
+
+msgctxt "ELAR/project/grantId/patternDescription"
+msgid "capital letters and digits only"
+msgstr ""
+
+msgctxt "ELAR/project/name/patternDescription"
+msgid "the collection key and grant ID, e.g. 0793-SG0123"
 msgstr ""
 
 msgctxt "ELAR/project/name/tipOnUsingThisField"
 msgid "Key + Grant Id. E.g. 0793-SG0123"
 msgstr ""
 
+msgctxt "ELAR/project/title/patternDescription"
+msgid "capitalised"
+msgstr ""
+
 msgctxt "ELAR/projectDocuments/access"
 msgid "Access"
+msgstr ""
+
+msgctxt "ELAR/projectDocuments/access/patternDescription"
+msgid "O, U or S"
+msgstr ""
+
+msgctxt "ELAR/session/access/patternDescription"
+msgid "O, U or S"
 msgstr ""
 
 msgctxt "ELAR/session/access/tipOnUsingThisField"
@@ -612,8 +640,16 @@ msgctxt "ELAR/session/genre/tipOnUsingThisField"
 msgid "Select from the drop-down menu."
 msgstr ""
 
+msgctxt "ELAR/session/id/patternDescription"
+msgid "letters a-z, numbers 0-9, dashes and underscores only"
+msgstr ""
+
 msgctxt "ELAR/session/id/tipOnUsingThisField"
 msgid "Must be a maximum of 20 characters in length and consist of letters a-z, numbers 0-9, dashes and underscores only."
+msgstr ""
+
+msgctxt "ELAR/session/keyword/patternDescription"
+msgid "capitalised on the first word only"
 msgstr ""
 
 msgctxt "ELAR/session/keyword/separatorWithCommaInstructions"
@@ -648,12 +684,24 @@ msgctxt "ELAR/session/locationContinent/choices"
 msgid "Oceania"
 msgstr ""
 
+msgctxt "ELAR/session/locationContinent/patternDescription"
+msgid "Africa, Americas, Asia, Europe or Oceania"
+msgstr ""
+
 msgctxt "ELAR/session/subgenre/tipOnUsingThisField"
 msgid "Subgenre is optional"
 msgstr ""
 
+msgctxt "ELAR/session/title/patternDescription"
+msgid "capitalised"
+msgstr ""
+
 msgctxt "ELAR/session/title/tipOnUsingThisField"
 msgid "Title should be a short, meaningful sentence"
+msgstr ""
+
+msgctxt "ELAR/session/topic/patternDescription"
+msgid "capitalised on the first word only"
 msgstr ""
 
 msgctxt "ELAR/session/topic/separatorWithCommaInstructions"
