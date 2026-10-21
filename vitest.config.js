@@ -47,7 +47,8 @@ export default defineConfig({
   plugins: [
     lingui({
       configPath: path.resolve(rootDir, "lingui.vite.config.ts"),
-      macroTransform: true,
+      // same as vite.config.ts, so tests compile the macros the way the app does
+      macroTransform: { macro: { descriptorFields: "all" } },
     }),
     react(),
     dsv(), // without this, importing genres.csv causes a failure when it sees `"foo",,"bar"`
