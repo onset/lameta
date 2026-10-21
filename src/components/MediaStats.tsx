@@ -174,21 +174,13 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
     case "Audio":
     case "Video":
       return new Promise((resolve, reject) => {
-        const stats: Stats = {};
         try {
           ffmpeg.ffprobe(file.getActualFilePath(), (err, result) => {
             if (err) {
               console.error(`error testing ffprobe on '${file.getActualFilePath()}'`);
               reject(err);
-            } else if (result && result.format && result.format.duration) {
-              stats["Length"] = humanizeDuration(1000 * result.format.duration, {
-                round: true,
-              });
-              stats["Format"] = result.format.format_long_name ?? "";
-              result.streams.forEach((stream) => {
-                processVideoStream(stream, stats);
-              });
-              resolve(stats);
+            } else {
+              resolve(statsFromProbeResult(result));
             }
           });
         } catch (err) {
@@ -200,6 +192,18 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
         reject();
       });
   }
+}
+// ffprobe reports no duration for some files, such as a stream without a
+// container duration; their other stats are still worth showing.
+export function statsFromProbeResult(result: ffmpeg.FfprobeData | undefined): Stats {
+  const stats: Stats = {};
+  const duration = result?.format?.duration;
+  stats["Length"] = duration ? humanizeDuration(1000 * duration, { round: true }) : "N/A";
+  stats["Format"] = result?.format?.format_long_name ?? "";
+  (result?.streams ?? []).forEach((stream) => {
+    processVideoStream(stream, stats);
+  });
+  return stats;
 }
 function processVideoStream(stream: ffmpeg.FfprobeStream, stats: Stats) {
   switch (stream.codec_type) {
