@@ -382,25 +382,26 @@ export class LametaE2ERunner {
         .waitFor({ state: "visible", timeout: 20000 });
     } catch {}
 
-    const ensureDialogVisible = async () => {
+    // HomePage renders #creatNewProjectLink in the same commit whose componentDidMount calls
+    // RegistrationDialog.show(), so the dialog appears a commit later than the link. Wait for
+    // the dialog or the reminder together, with enough time for that commit under load.
+    try {
+      await cancelButton
+        .or(registrationReminder)
+        .first()
+        .waitFor({ state: "visible", timeout: 5000 });
+    } catch {
+      return;
+    }
+    if (!(await cancelButton.isVisible())) {
       try {
-        await cancelButton.waitFor({ state: "visible", timeout: 1000 });
-        return true;
-      } catch {}
-
-      try {
-        await registrationReminder.waitFor({ state: "visible", timeout: 2000 });
         await registrationReminder.click();
         await cancelButton.waitFor({ state: "visible", timeout: 3000 });
-        return true;
       } catch {
-        return false;
+        return;
       }
-    };
-
-    if (await ensureDialogVisible()) {
-      await cancelButton.click();
     }
+    await cancelButton.click();
   }
 
   private async dismissPrereleaseDialogIfPresent() {
