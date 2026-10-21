@@ -44,3 +44,18 @@ two catalogs with an `include` that matches no source, so lingui empties them fo
 language. `strings:extract-json` then rewrites only `locale/en/`. After a `pnpm run
 strings:extract`, check `git status locale` and restore every non-English `fields.po` and
 `vocabularies.po` with `git checkout`.
+
+## The pre-commit hook cannot commit a merge from master (2026-10-21)
+
+The hook runs `vp check --fix` on every staged file, and a merge stages every file that the
+other side changed. Two things in `origin/master` then fail it. `tsconfig.json` leaves
+`**/*.spec.ts` and `archive-configurations/` out of the project, so the type-aware lint checks
+those files with default settings: no `node` types and `noImplicitAny` on. And about 47 files,
+such as the `crowdin-backup/` JSON and `scripts/crowdin/*.ts`, are not `vp fmt`-clean, so the
+hook rewrites them.
+
+In a linked worktree the failure is worse. The first failed run deleted `MERGE_HEAD`,
+`MERGE_MSG` and `MERGE_MODE` from `.git/worktrees/<name>/`, staged its formatting changes while
+reporting that it had reverted them, and the next run stopped at "Failed to back up original
+state". After a failed hook during a merge, check `git status` for "still merging" and compare
+`git write-tree` against the expected result before you try again.
