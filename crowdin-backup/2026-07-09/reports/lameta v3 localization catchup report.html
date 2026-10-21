@@ -236,7 +236,7 @@
     </div></li>
     <li class="phase"><span class="n">✓</span><div>
       <h3>3 · Rehearse on a scratch branch, then upload sources to V3</h3>
-      <p>A throwaway <code>REHEARSAL-l10n</code> branch proved duplicate-sharing (212 inherited Spanish translations on export), CSV column import (92/93), and the translation-upload mechanics — then was deleted. The real upload brought V3 fully current.</p>
+      <p>A throwaway <code>REHEARSAL-l10n</code> branch proved duplicate-sharing (212 inherited Spanish translations on export), CSV column import (92/93), and the translation-upload mechanics. The real upload then brought V3 fully current. (Correction, 2026-10-20: the call to delete the rehearsal branch was blocked, so the branch was not deleted, even though the original version of this page said it was.)</p>
     </div></li>
     <li class="phase"><span class="n">✓</span><div>
       <h3>4 · Recover v2 translations</h3>
@@ -264,7 +264,7 @@
   <ul class="rails">
     <li><strong>Backup-first, committed to git</strong> — TM, glossary, builds, every file, every language, every string ID, before the first mutation. Verified against the audit numbers before proceeding.</li>
     <li><strong>Root untouched</strong> — zero writes or deletions on the v2 files; the deletion script asserts branch id 66 on every candidate.</li>
-    <li><strong>Rehearsal branch</strong> — every mutating mechanic proven on a scratch branch first, then the branch deleted.</li>
+    <li><strong>Rehearsal branch</strong> — every mutating mechanic proven on a scratch branch first.</li>
     <li><strong>Non-destructive defaults</strong> — source updates keep translations; translation uploads add unapproved suggestions to empty strings only; TM pass perfect-match only.</li>
     <li><strong>Everything scripted and auditable</strong> — the recovery reports record the source of every migrated translation; all scripts are committed and rerunnable.</li>
   </ul>

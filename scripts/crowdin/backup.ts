@@ -3,7 +3,7 @@
 // be recovered from git. Read-only against Crowdin (exports/builds create
 // temporary artifacts server-side but modify no content).
 //
-//   pnpm exec tsx scripts/crowdin/backup.ts
+//   pnpm exec tsx scripts/crowdin/backup.ts [yyyy-mm-dd]
 import * as fs from "fs";
 import * as path from "path";
 import { execFileSync } from "child_process";
@@ -21,7 +21,8 @@ import {
   walk
 } from "./lib";
 
-const DATE = "2026-07-09";
+// backup folder name: an explicit date argument, or today's date
+const DATE = process.argv[2] ?? new Date().toISOString().slice(0, 10);
 const ROOT = path.join(__dirname, "..", "..", "crowdin-backup", DATE);
 
 async function pollUntilFinished(statusPath: string): Promise<void> {
