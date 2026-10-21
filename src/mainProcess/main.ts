@@ -282,13 +282,6 @@ app.on("window-all-closed", () => {
   app.quit();
 });
 
-let copyInProgress: boolean;
-ipcMain.on("copyInProgress", () => {
-  copyInProgress = true;
-});
-ipcMain.on("copyStopped", () => {
-  copyInProgress = false;
-});
 ipcMain.handle("confirm-quit", async (event, ...args) => {
   const result = await dialog.showMessageBox(win!, {
     message: args[0],
