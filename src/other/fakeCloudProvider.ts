@@ -5,6 +5,7 @@ import {
   CloudSyncRoot,
   normalizeForCompare,
 } from "./cloudFileStatus";
+import { getTestEnvironment } from "../getTestEnvironment";
 
 // An e2e-controllable fake cloud provider, so Playwright tests can exercise
 // lameta's cloud-sync UI (icons, the "<Provider> Status" card, hydrate
@@ -48,11 +49,11 @@ function loadManifestOnce(): FakeCloudManifest | undefined {
     return cachedManifest;
   }
   haveCheckedEnv = true;
-  // Indexing instead of process.env.E2E_FAKE_CLOUD_PROVIDER: Vite statically
-  // replaces `process.env` in renderer code (see getTestEnvironment.ts), which
-  // would otherwise bake in whatever this var was (usually unset) at build
-  // time instead of reading it live from the launched process.
-  const manifestPath = process["env"]["E2E_FAKE_CLOUD_PROVIDER"];
+  // Read through getTestEnvironment(), not process.env: the build replaces
+  // `process.env` (and `process["env"]`) in renderer code with a constant, which
+  // would bake in this var's build-time value (usually unset) instead of reading
+  // it from the launched process.
+  const manifestPath = getTestEnvironment().E2E_FAKE_CLOUD_PROVIDER;
   if (!manifestPath) {
     return undefined;
   }
