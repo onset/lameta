@@ -10,6 +10,7 @@ import {
 } from "../field/ConfiguredFieldDefinitions";
 import { PatientFS } from "../../other/patientFile";
 import { isMacOSMetadataFile } from "../../other/crossPlatformUtilities";
+import { isMissingCloudPlaceholder } from "../../other/cloudFileStatus";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -25,8 +26,10 @@ export class FolderMetadataFile extends File {
     const name = Path.basename(directory);
 
     let metadataPath = Path.join(directory, name + fileExtensionForMetadata);
-    //if the metadata file doesn't exist yet or has the wrong name
-    if (!fs.existsSync(metadataPath)) {
+    //if the metadata file doesn't exist yet or has the wrong name. A file that
+    // the cloud provider evicted (only an iCloud ".<name>.icloud" sibling is
+    // left) does exist; readMetadataFile requests it instead.
+    if (!fs.existsSync(metadataPath) && !isMissingCloudPlaceholder(metadataPath)) {
       // does a file exist here with the right extension but the wrong name?
       const files = fs.readdirSync(directory);
       const possibleFiles = files.filter(

@@ -42,6 +42,7 @@ import {
   getCloudFileStatus,
   getCloudFileProvider,
   getCloudProviderNameForPath,
+  isMissingCloudPlaceholder,
 } from "../../other/cloudFileStatus";
 import { cloudReadGuard, isCloudProviderReadFailure } from "../../other/cloudReadGuard";
 import { cloudFilePoller } from "../../other/cloudFilePoller";
@@ -880,7 +881,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
   // Record that this file's metadata could not be read from the cloud, and
   // leave it in a state where a later Retry can re-attempt the read.
-  private markCloudMetadataUnavailable(): void {
+  private markCloudMetadataUnavailable(tripBreaker: boolean = true): void {
     this.cloudMetadataUnavailable = true;
     // Reset so a Retry re-enters readMetadataFile for this file.
     this.haveReadMetadataFile = false;
@@ -888,6 +889,7 @@ export /*babel doesn't like this: abstract*/ class File {
     cloudReadGuard.recordFailure(
       this.metadataFilePath,
       getCloudProviderNameForPath(this.metadataFilePath),
+      tripBreaker,
     );
   }
 
@@ -900,6 +902,21 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
+      if (isMissingCloudPlaceholder(this.metadataFilePath)) {
+        // iCloud evicted this file the legacy way: only a ".<name>.icloud"
+        // sibling is on disk, and there is no read that waits for the download.
+        // Ask for it, and leave the file unread so save() won't write over it;
+        // the "couldn't download" banner's Retry reads it once it has arrived.
+        // A file that is merely not downloaded yet says nothing about whether
+        // the provider works, so this does not trip the breaker.
+        if (!cloudReadGuard.isTripped) {
+          getCloudFileProvider()
+            .setPinned(this.metadataFilePath, true)
+            .catch(() => {});
+        }
+        this.markCloudMetadataUnavailable(false);
+        return;
+      }
       if (fs.existsSync(this.metadataFilePath)) {
         const provider = getCloudFileProvider();
         // "cloudOnly"/"hydrating" are the only statuses that mean "this is a

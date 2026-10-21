@@ -70,9 +70,12 @@ class CloudReadGuard {
 
   // Record that a placeholder read failed (or was skipped because the breaker
   // was already tripped). Trips the breaker so subsequent placeholder reads in
-  // this load are skipped.
-  public recordFailure(path: string, providerName?: string): void {
-    this.tripped = true;
+  // this load are skipped, unless `trip` is false: a file that is simply not
+  // downloaded yet says nothing about whether the provider works.
+  public recordFailure(path: string, providerName?: string, trip: boolean = true): void {
+    if (trip) {
+      this.tripped = true;
+    }
     if (!this.failures.some((f) => f.path === path)) {
       this.failures.push({ path, providerName });
     }

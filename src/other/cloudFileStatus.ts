@@ -429,6 +429,26 @@ export function getCloudFileProvider(): CloudFileProvider {
   return nullProvider;
 }
 
+// True when nothing is at `filePath` but the provider can still deliver it:
+// iCloud's legacy eviction removes the file and leaves only a hidden
+// ".<name>.icloud" sibling. Code that would otherwise treat the file as never
+// created (e.g. by writing an empty metadata file there) must check this first.
+export function isMissingCloudPlaceholder(filePath: string): boolean {
+  if (fs.existsSync(filePath)) {
+    return false;
+  }
+  const provider = getCloudFileProvider();
+  if (!provider.capabilities.canFetch) {
+    return false;
+  }
+  try {
+    const status = provider.getStatus(filePath);
+    return status === "cloudOnly" || status === "hydrating";
+  } catch {
+    return false;
+  }
+}
+
 // Kept as a delegate so existing callers don't change.
 export function getCloudFileStatus(path: string): CloudFileStatus {
   return getCloudFileProvider().getStatus(path);
