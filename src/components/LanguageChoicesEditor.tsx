@@ -326,7 +326,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
                 white-space: nowrap;
               `}
             >
-              + Add Language
+              {t`+ Add Language`}
             </span>
           )}
           {/* Input and placeholder render sequentially after the prompt within the same flex flow */}

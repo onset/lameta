@@ -3,6 +3,7 @@
   ---------------------------------------------------------------------*/
 import { i18n as i18nFromLinguiCore, type Messages } from "@lingui/core";
 import userSettings from "./UserSettings";
+import { getTestEnvironment } from "../getTestEnvironment";
 import { t } from "@lingui/core/macro";
 import { compileMessage } from "@lingui/message-utils/compileMessage";
 
@@ -37,7 +38,8 @@ const catalogFolderAliases: Record<string, string[]> = {
 let olacRoles: IChoice[];
 
 export function initializeLocalization() {
-  currentUILanguage = userSettings.UILanguage;
+  const testEnv = getTestEnvironment();
+  currentUILanguage = (testEnv.E2E && testEnv.E2E_UI_LANGUAGE) || userSettings.UILanguage;
   // if the language in the settings isn't one this version supports,
   // or if there was no setting for this and we have the default (empty string)
   if (languages.indexOf(currentUILanguage) < 0) {

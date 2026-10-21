@@ -24,6 +24,9 @@ msgstr ""
 msgid "(scanned {sessionsScanned} sessions and {peopleScanned} people)"
 msgstr ""
 
+msgid "+ Add Language"
+msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr "Un archivo con el mismo nombre ya existe en la misma ubicación."
 
@@ -93,6 +96,9 @@ msgstr ""
 msgid "Archive"
 msgstr ""
 
+msgid "Archive Configuration"
+msgstr ""
+
 msgid "As a curator"
 msgstr "Como conservador"
 
@@ -131,6 +137,9 @@ msgid "Cannot add files of that type"
 msgstr "No se pueden añadir archivos de ese tipo"
 
 msgid "Cannot export to IMDI while multilingual text migration is pending."
+msgstr ""
+
+msgid "Change"
 msgstr ""
 
 msgid "Change Name To:"
@@ -174,6 +183,9 @@ msgstr "Comentarios"
 
 msgid "Confirm Delete"
 msgstr "Confirmar la eliminación"
+
+msgid "Consent"
+msgstr ""
 
 msgid "Contributions"
 msgstr "Contribuciones"
@@ -294,6 +306,9 @@ msgstr ""
 
 msgid "Email Address"
 msgstr "Correo electrónico"
+
+msgid "Enter each choice, separated by commas"
+msgstr ""
 
 msgid "Example:"
 msgstr ""
@@ -445,6 +460,9 @@ msgstr "Idioma de la Interfaz"
 msgid "Items"
 msgstr ""
 
+msgid "Lameta projects are normally set up to work with the requirements of a single archiving institution. If yours is not listed, you can use \"Other\". This will give you the default fields and vocabularies, and you can enter your own session access choices."
+msgstr ""
+
 msgid "Language Code"
 msgstr "Código de la lengua"
 
@@ -572,6 +590,9 @@ msgstr "Abrir en ELAN"
 
 msgid "Open in program associated with this file type"
 msgstr "Abrir en un programa asociado a este tipo de archivo"
+
+msgid "Other"
+msgstr ""
 
 msgid "Other Documents"
 msgstr "Otros documentos"
@@ -888,6 +909,9 @@ msgstr ""
 msgid "Type"
 msgstr "Tipo"
 
+msgid "Type a language name or code..."
+msgstr ""
+
 msgid "Undo"
 msgstr "Deshacer"
 
@@ -934,6 +958,9 @@ msgid "What would you like to call this project?"
 msgstr "¿Cómo desea llamar este proyecto?"
 
 msgid "Writing corpus metadata..."
+msgstr ""
+
+msgid "YYYY-MM-DD"
 msgstr ""
 
 msgid "You are running lameta version:"

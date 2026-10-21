@@ -4,6 +4,7 @@ import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 import _ from "lodash";
 import { LanguageOption, languagePillHoverStyle, LanguagePillForSingle } from "./LanguagePill";
 import { observer } from "mobx-react";
+import { t } from "@lingui/core/macro";
 
 const saymore_orange = "#e69664";
 
@@ -86,7 +87,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
           DropdownIndicator: null,
         }}
         className="select"
-        placeholder="Type a language name or code..."
+        placeholder={t`Type a language name or code...`}
         isClearable={true}
         loadOptions={debouncedLoadMatchingOptions}
         value={currentValue}

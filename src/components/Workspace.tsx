@@ -15,6 +15,7 @@ import { PeopleIcon } from "./people/PeopleIcon";
 import { PeopleTab } from "./people/PeopleTab";
 import { SessionsTab } from "./session/SessionsTab";
 import LametaMenu from "../other/menu";
+import { i18n } from "../other/localization";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { analyticsLocation } from "../other/analytics";
@@ -54,6 +55,7 @@ const kTabRowHeight = 38;
 class Home extends React.Component<IProps> {
   private disposeTopTabReaction: mobx.IReactionDisposer;
   private disposeShowProblemsReaction: mobx.IReactionDisposer;
+  private stopRebuildingMenusOnLanguageChange: () => void;
   private stopWatchingProblems: () => void;
   private stopRunningRulesFile: () => void;
 
@@ -105,6 +107,10 @@ class Home extends React.Component<IProps> {
       () => userSettings.ShowProblems,
       () => this.UpdateMenus(kTopTabs.indexOf(navigationState.topTab)),
     );
+    // menu labels are translated when the menu is built
+    this.stopRebuildingMenusOnLanguageChange = i18n.on("change", () =>
+      this.UpdateMenus(kTopTabs.indexOf(navigationState.topTab)),
+    );
   }
 
   public componentDidUpdate(prevProps: IProps) {
@@ -120,6 +126,7 @@ class Home extends React.Component<IProps> {
   public componentWillUnmount() {
     this.disposeTopTabReaction();
     this.disposeShowProblemsReaction();
+    this.stopRebuildingMenusOnLanguageChange();
     this.stopWatchingProblems();
     this.stopRunningRulesFile();
   }
