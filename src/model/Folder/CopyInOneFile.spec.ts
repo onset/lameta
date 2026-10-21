@@ -23,6 +23,7 @@ vi.mock("../../components/Notify", async (importOriginal) => {
 import { Project } from "../Project/Project";
 import { Session } from "../Project/Session/Session";
 import { CopyManager } from "../../other/CopyManager";
+import { NotifyException, NotifyWarning } from "../../components/Notify";
 
 mobx.configure({ enforceActions: "never" });
 
@@ -103,5 +104,39 @@ describe("Folder.copyInOneFileAsync", () => {
     const first = session.copyInOneFileAsync(makeSource("notes.txt"));
     await expect(session.copyInOneFileAsync(makeSource("notes.txt"))).rejects.toThrow();
     await first;
+  });
+});
+
+describe("Folder.copyInFiles", () => {
+  beforeEach(() => {
+    vi.mocked(NotifyException).mockClear();
+    vi.mocked(NotifyWarning).mockClear();
+  });
+
+  it("notifies the user when a selected file has vanished", async () => {
+    const filesBefore = session.files.length;
+    await session.copyInFiles([Path.join(sourceDir, "gone.txt")]);
+    await vi.waitFor(() => expect(NotifyException).toHaveBeenCalledTimes(1));
+    expect(session.files.length).toBe(filesBefore);
+  });
+
+  it("notifies the user when the copy throws before it starts", async () => {
+    const spy = vi
+      .spyOn(CopyManager, "safeAsyncCopyFileWithErrorNotification")
+      .mockImplementation(() => {
+        throw new Error("ENOENT");
+      });
+    const filesBefore = session.files.length;
+    await session.copyInFiles([makeSource("soon-gone.txt")]);
+    await vi.waitFor(() => expect(NotifyException).toHaveBeenCalledTimes(1));
+    spy.mockRestore();
+    expect(session.files.length).toBe(filesBefore);
+  });
+
+  it("does not notify twice for a failure copyInOneFileAsync already reported", async () => {
+    await session.copyInFiles([makeSource("x.session")]);
+    await vi.waitFor(() => expect(NotifyWarning).toHaveBeenCalledTimes(1));
+    await new Promise((r) => setTimeout(r, 20));
+    expect(NotifyException).not.toHaveBeenCalled();
   });
 });

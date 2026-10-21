@@ -34,6 +34,9 @@ import temp from "temp";
 export type IFolderType = "project" | "session" | "person" | "project documents";
 
 // Project, Session, or Person
+/** A copyInOneFileAsync rejection whose cause the user has already been notified of. */
+export class CopyInFailureAlreadyNotified extends Error {}
+
 export abstract class Folder {
   // help with a hard to track down bug where folders are deleted but later something tries to save them.
   public wasDeleted = false;
@@ -143,7 +146,9 @@ export abstract class Folder {
     return new Promise((resolve, reject) => {
       if (["session", "person", "meta"].includes(getExtension(pathToOriginalFile)?.toLowerCase())) {
         NotifyWarning(t`Cannot add files of that type` + ` (${getExtension(pathToOriginalFile)}`);
-        reject(new Error(`Cannot add files of that type: ${pathToOriginalFile}`));
+        reject(
+          new CopyInFailureAlreadyNotified(`Cannot add files of that type: ${pathToOriginalFile}`),
+        );
         return;
       }
       const n = sanitizeForArchive(newFileName ? newFileName : Path.basename(pathToOriginalFile));
@@ -165,7 +170,7 @@ export abstract class Folder {
         (linkInsteadOfCopy && fs.existsSync(linkDest))
       ) {
         NotifyWarning(t`There is already a file here with the name` + ` (${n})`);
-        reject(new Error(`There is already a file at ${dest}`));
+        reject(new CopyInFailureAlreadyNotified(`There is already a file at ${dest}`));
         return;
       }
 
@@ -182,15 +187,23 @@ export abstract class Folder {
         const f = new OtherFile(dest, this.customVocabularies, true);
         f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
         f.copyProgress = t`Copy Requested...`;
+        // CopyManager notifies the user when the copy itself fails, but not when it throws
+        // before starting (e.g. the source vanished).
+        let copyStarted = false;
         window.setTimeout(
           () =>
-            CopyManager.safeAsyncCopyFileWithErrorNotification(
-              pathToOriginalFile,
-              dest,
-              (progress: string) => {
-                f.copyProgress = progress;
-              },
-            )
+            Promise.resolve()
+              .then(() => {
+                const copying = CopyManager.safeAsyncCopyFileWithErrorNotification(
+                  pathToOriginalFile,
+                  dest,
+                  (progress: string) => {
+                    f.copyProgress = progress;
+                  },
+                );
+                copyStarted = true;
+                return copying;
+              })
               .then(() => {
                 const pendingFile = this.files.find(
                   (x) => x.pathInFolderToLinkFileOrLocalCopy === dest,
@@ -200,7 +213,7 @@ export abstract class Folder {
                     // not translating for now
                     `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`,
                   );
-                  reject(new Error(`No pending file for ${dest}`));
+                  reject(new CopyInFailureAlreadyNotified(`No pending file for ${dest}`));
                   return;
                 }
                 pendingFile!.finishLoading();
@@ -216,7 +229,7 @@ export abstract class Folder {
                     error, // not translating for now
                     `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`,
                   );
-                  reject(error instanceof Error ? error : new Error(String(error)));
+                  reject(new CopyInFailureAlreadyNotified(String(error)));
                   return;
                 }
                 this.files.splice(fileIndex, 1);
@@ -226,7 +239,13 @@ export abstract class Folder {
                 } catch (removeError) {
                   console.error(`could not remove partial copy ${dest}: ${String(removeError)}`);
                 }
-                reject(error instanceof Error ? error : new Error(String(error)));
+                reject(
+                  copyStarted
+                    ? new CopyInFailureAlreadyNotified(String(error))
+                    : error instanceof Error
+                      ? error
+                      : new Error(String(error)),
+                );
               }),
           0,
         );
@@ -243,8 +262,13 @@ export abstract class Folder {
     runInAction(() => {
       for (const p of paths) {
         // Callers expect the new files to be listed (still copying) when this returns, not
-        // copied. copyInOneFileAsync notifies the user of each failure itself.
-        this.copyInOneFileAsync(p).catch((err) => console.error(`copyInFiles: ${String(err)}`));
+        // copied.
+        this.copyInOneFileAsync(p).catch((err) => {
+          console.error(`copyInFiles: ${String(err)}`);
+          if (!(err instanceof CopyInFailureAlreadyNotified))
+            // not translating for now
+            NotifyException(err, `lameta could not add ${p}`);
+        });
       }
     });
   }
