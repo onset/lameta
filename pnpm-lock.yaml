@@ -624,9 +624,6 @@ importers:
       electron-devtools-installer:
         specifier: 4.0.0
         version: 4.0.0
-      electron-playwright-helpers:
-        specifier: 3.1.2
-        version: 3.1.2
       gettext-parser:
         specifier: 9.1.1
         version: 9.1.1
@@ -1425,11 +1422,6 @@ packages:
   '@electron/asar@3.4.1':
     resolution: {integrity: sha512-i4/rNPRS84t0vSRa2HorerGRXWyF4vThfHesw0dmcWHp+cspK743UanA0suA5Q5y8kzY2y6YKrvbIUn69BCAiA==}
     engines: {node: '>=10.12.0'}
-    hasBin: true
-
-  '@electron/asar@4.3.1':
-    resolution: {integrity: sha512-6pI64z/tMSBkUTZLQFYhs2YiB7fS9sKA6gy7/2nH1Ju7GGwT32UPsj4Mxsws5NMmtR6C0zYdXVxEU/rGqJRCJA==}
-    engines: {node: '>=22.12.0'}
     hasBin: true
 
   '@electron/fuses@1.8.0':
@@ -3702,10 +3694,6 @@ packages:
     resolution: {integrity: sha512-ZStVWYcWI7g87/PgjPJSIIhwQXOaw4/XeXU+pWqMMktSLHaGMLHdyPPN7Cmao7+Cr7fYufA16npdtMndYciHNw==}
     engines: {node: '>= 10.0.0'}
     deprecated: Please use @electron/notarize moving forward.  There is no API change, just a package name change
-
-  electron-playwright-helpers@3.1.2:
-    resolution: {integrity: sha512-YQLbe5qglTHlcvKHUnetGfkk9buepcyLwbX2ALZlsps9GYtepj01BD7XoFe/YLuMy7HPejyV+2rwz/pehE5B6g==}
-    engines: {node: '>=22.12.0'}
 
   electron-publish@26.16.0:
     resolution: {integrity: sha512-Vt3KzQIiw9BImvNOYtndg9Mjki+tl4+1sQiC/+G5j8khWaENOJFWodiB+sUl6yyHwtd37avehskdtPw7f8y/+Q==}
@@ -7393,11 +7381,6 @@ snapshots:
       glob: 7.2.3
       minimatch: 3.1.5
 
-  '@electron/asar@4.3.1':
-    dependencies:
-      glob: 13.0.6
-      minimatch: 10.2.5
-
   '@electron/fuses@1.8.0':
     dependencies:
       chalk: 4.1.2
@@ -9673,10 +9656,6 @@ snapshots:
       fs-extra: 9.1.0
     transitivePeerDependencies:
       - supports-color
-
-  electron-playwright-helpers@3.1.2:
-    dependencies:
-      '@electron/asar': 4.3.1
 
   electron-publish@26.16.0(supports-color@8.1.1):
     dependencies:
