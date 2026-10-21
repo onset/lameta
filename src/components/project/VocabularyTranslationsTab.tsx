@@ -19,6 +19,7 @@ import {
   lameta_dark_blue,
   textPrimary,
   lameta_light_orange_background,
+  error_color,
 } from "../../containers/theme";
 import LinearProgress from "@mui/material/LinearProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -405,7 +406,6 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
   ({ project }) => {
     const [isScanning, setIsScanning] = useState(false);
     const [scanProgress, setScanProgress] = useState(0);
-    const [scanMessage, setScanMessage] = useState("");
     const [scanError, setScanError] = useState<string | null>(null);
     const [hasScanned, setHasScanned] = useState(false);
     const [lastScanResult, setLastScanResult] = useState<ScanResult | null>(null);
@@ -441,17 +441,11 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
       setScanError(null);
       setIsScanning(true);
       setScanProgress(0);
-      setScanMessage(t`Starting scan...`);
 
       let hadError = false;
       try {
-        const result = await scanProjectForVocabulary(
-          project,
-          languageCodes,
-          (progress, message) => {
-            setScanProgress(progress);
-            setScanMessage(message);
-          },
+        const result = await scanProjectForVocabulary(project, languageCodes, (progress) =>
+          setScanProgress(progress),
         );
 
         updateTranslationsFromScan(translations, result, languageCodes);
@@ -466,13 +460,11 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
           error instanceof Error ? error.message : t`Unknown error while scanning vocabulary`;
         setScanError(errorMessage);
         setScanProgress(0);
-        setScanMessage(t`Scan failed`);
         NotifyError(t`Vocabulary scan failed`, errorMessage);
       } finally {
         setIsScanning(false);
         if (!hadError) {
           setScanProgress(100);
-          setScanMessage(t`Scan complete`);
         }
       }
     }, [project, languageCodes, translations, isScanning]);
@@ -513,6 +505,8 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
       : 0;
     const exportStringMissingCount = translations.getExportStringMissingCount(languageCodes);
     const totalMissing = genreMissingCount + roleMissingCount + exportStringMissingCount;
+    const sessionsScanned = lastScanResult?.sessionsScanned ?? 0;
+    const peopleScanned = lastScanResult?.peopleScanned ?? 0;
 
     if (languageCodes.length < 2) {
       return (
@@ -578,12 +572,22 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
               </span>
               <LinearProgress variant="determinate" value={scanProgress} />
             </>
+          ) : scanError ? (
+            <span
+              data-testid="vocabulary-scan-error"
+              css={css`
+                color: ${error_color};
+              `}
+            >
+              <Trans>Vocabulary scan failed: {scanError}</Trans>
+            </span>
           ) : hasScanned ? (
             <div
               css={css`
                 display: flex;
                 align-items: center;
                 gap: 8px;
+                flex-wrap: wrap;
               `}
             >
               {totalMissing > 0 ? (
@@ -601,6 +605,18 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
                     <Trans>All translations complete</Trans>
                   </span>
                 </>
+              )}
+              {lastScanResult && (
+                <span
+                  data-testid="vocabulary-scan-result"
+                  css={css`
+                    color: #666;
+                  `}
+                >
+                  <Trans>
+                    (scanned {sessionsScanned} sessions and {peopleScanned} people)
+                  </Trans>
+                </span>
               )}
             </div>
           ) : (
