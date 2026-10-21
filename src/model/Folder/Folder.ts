@@ -157,7 +157,13 @@ export abstract class Folder {
         Path.basename(pathToOriginalFile) + kLinkExtensionWithFullStop,
       );
 
-      if (fs.existsSync(dest) || (linkInsteadOfCopy && fs.existsSync(linkDest))) {
+      // A pending copy has no file on disk yet, so look in this.files as well. That also
+      // guarantees that a file at dest after a failed copy is one this call created.
+      if (
+        fs.existsSync(dest) ||
+        this.files.some((x) => x.pathInFolderToLinkFileOrLocalCopy === dest) ||
+        (linkInsteadOfCopy && fs.existsSync(linkDest))
+      ) {
         NotifyWarning(t`There is already a file here with the name` + ` (${n})`);
         reject(new Error(`There is already a file at ${dest}`));
         return;
@@ -214,6 +220,12 @@ export abstract class Folder {
                   return;
                 }
                 this.files.splice(fileIndex, 1);
+                // don't leave a partial copy behind, or a retry would find "a file already here"
+                try {
+                  fs.removeSync(dest);
+                } catch (removeError) {
+                  console.error(`could not remove partial copy ${dest}: ${String(removeError)}`);
+                }
                 reject(error instanceof Error ? error : new Error(String(error)));
               }),
           0,

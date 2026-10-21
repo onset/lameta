@@ -84,4 +84,24 @@ describe("Folder.copyInOneFileAsync", () => {
     expect(session.files.length).toBe(filesBefore);
     spy.mockRestore();
   });
+
+  it("removes a partial copy when the copy fails, so a retry can succeed", async () => {
+    const source = makeSource("notes.txt");
+    const spy = vi
+      .spyOn(CopyManager, "safeAsyncCopyFileWithErrorNotification")
+      .mockImplementation((_from, to) => {
+        fs.writeFileSync(to, "partial");
+        return Promise.reject("copy failed");
+      });
+    await expect(session.copyInOneFileAsync(source)).rejects.toThrow();
+    spy.mockRestore();
+    expect(fs.existsSync(Path.join(session.directory, "notes.txt"))).toBe(false);
+    await expect(session.copyInOneFileAsync(source)).resolves.toBeUndefined();
+  });
+
+  it("rejects a second file with the same name while the first is still copying", async () => {
+    const first = session.copyInOneFileAsync(makeSource("notes.txt"));
+    await expect(session.copyInOneFileAsync(makeSource("notes.txt"))).rejects.toThrow();
+    await first;
+  });
 });
