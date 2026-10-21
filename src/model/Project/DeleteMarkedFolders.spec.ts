@@ -10,13 +10,15 @@ vi.mock("../../components/ConfirmDeleteDialog/ConfirmDeleteDialog", () => ({
   },
 }));
 
-// Trashing "fails" for any folder whose name contains "Locked".
+// Trashing "fails" for any folder whose name contains "Locked", and rejects for "Broken".
 vi.mock("../../other/crossPlatformUtilities", async (importOriginal) => {
   const original = await importOriginal<typeof import("../../other/crossPlatformUtilities")>();
   return {
     ...original,
     asyncTrashWithContext: <T>(path: string, context: T) =>
-      Promise.resolve({ succeeded: !Path.basename(path).includes("Locked"), path, context }),
+      Path.basename(path).includes("Broken")
+        ? Promise.reject(new Error("trash failed"))
+        : Promise.resolve({ succeeded: !Path.basename(path).includes("Locked"), path, context }),
   };
 });
 
@@ -54,5 +56,28 @@ describe("Project.deleteMarkedFolders", () => {
     expect(project.persons.items).not.toContain(deletable);
     expect(project.persons.items).toContain(locked);
     expect(locked.wasDeleted).toBe(false);
+  });
+
+  it("goes on saving a folder whose deletion rejected", async () => {
+    const project = Project.fromDirectory(temp.mkdirSync("lameta deleteMarkedFolders test"));
+    const broken = project.addPerson("Broken");
+    const deletable = project.addPerson("Deletable");
+    broken.marked = true;
+    deletable.marked = true;
+
+    project.deleteMarkedFolders("person");
+    await pendingDeletion;
+
+    expect(project.persons.items).toContain(broken);
+    expect(project.persons.items).not.toContain(deletable);
+    expect(broken.beingDeleted).toBe(false);
+
+    broken.properties.setText("description", "edited after the failed delete");
+    broken.saveAllFilesInFolder();
+    const reloaded = Project.fromDirectory(project.directory);
+    const person = reloaded.persons.items.find((p) => p.directory === broken.directory);
+    expect(person?.properties.getTextStringOrEmpty("description")).toBe(
+      "edited after the failed delete",
+    );
   });
 });

@@ -1126,18 +1126,18 @@ export class Project extends Folder {
       const deletionPromises = new Array<
         Promise<{ succeeded: boolean; path: string; context: Folder }>
       >();
-      originalFolders
-        .filter((s) => s.marked)
-        .forEach((folder) => {
-          folder.beingDeleted = true; // prevent trying to save if lameta loses focus
-          const p = asyncTrashWithContext<Folder>(folder.directory, folder);
-          deletionPromises.push(p);
-        });
+      const markedFolders = originalFolders.filter((s) => s.marked);
+      markedFolders.forEach((folder) => {
+        folder.beingDeleted = true; // prevent trying to save if lameta loses focus
+        const p = asyncTrashWithContext<Folder>(folder.directory, folder);
+        deletionPromises.push(p);
+      });
 
       const deletionPromiseResults = await Promise.allSettled(deletionPromises);
       // for each folder that was deleted, remove it from the array
       runInAction(() => {
-        deletionPromiseResults.forEach((p) => {
+        // deletionPromiseResults[i] is the result for markedFolders[i]
+        deletionPromiseResults.forEach((p, i) => {
           const fp = p as PromiseFulfilledResult<{
             succeeded: boolean;
             path: string;
@@ -1153,6 +1153,8 @@ export class Project extends Folder {
               NotifyWarning(`Could not delete ${folder.directory}`);
             }
           } else {
+            // the folder stays in the list, so it must go on saving its edits
+            markedFolders[i].beingDeleted = false;
             NotifyError(`Unexpected error in deletion promise`); // we do a try catch so it should not be possible to get an unfufilled promise
           }
         });
