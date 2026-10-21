@@ -48,7 +48,9 @@ export const _FileList: React.FunctionComponent<{
   }, [props.folder, props.folder?.files?.length]);
   useLingui();
   const [, setSelectedFile] = React.useState(undefined);
-  getMediaFolderOrEmptyForThisProjectAndMachine();
+  // Called only for its warning when the project id is empty; the lazy initializer runs it
+  // once per mount instead of on every render.
+  React.useState(() => getMediaFolderOrEmptyForThisProjectAndMachine());
   // What this mobxDummy is about:
   // What happens inside the component tables cells are invisible to mobx; it doesn't
   // have a way of knowing that these are reliant on the filename of the file.
