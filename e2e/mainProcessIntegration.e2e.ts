@@ -179,6 +179,8 @@ test.describe("Popup menus", () => {
         require("electron").ipcRenderer.listenerCount("windowIpc.contextMenu"),
       ),
     ).toBe(1);
+    // and no other path recorded a second menu for this right-click
+    expect(await lameta.getPopupMenuCount()).toBe(1);
 
     await lameta.electronApp.evaluate(({ clipboard }) => clipboard.writeText(""));
     await lameta.clickPopupMenuItem("Copy");
