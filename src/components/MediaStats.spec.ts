@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { decideMediaStatsFlow, IMediaStatsCacheHost } from "./MediaStats";
 
 function makeHost(
   isCloudFileNotPresent: boolean,
-  cached: Record<string, string> | undefined
+  cached: Record<string, string> | undefined,
 ): IMediaStatsCacheHost {
   return {
     isCloudFileNotPresent,
-    getCachedMediaStats: () => cached
+    getCachedMediaStats: () => cached,
   };
 }
 

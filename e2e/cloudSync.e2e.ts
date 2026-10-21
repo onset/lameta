@@ -53,8 +53,8 @@ test.describe("Cloud sync UI (fake provider)", () => {
       JSON.stringify({
         syncRoots: [{ path: projectDirectory, providerName: "FakeDrive" }],
         cloudOnly: [mediaFilePath],
-        hydrateDelayMs: 500
-      })
+        hydrateDelayMs: 500,
+      }),
     );
     // Must be set before launch(): LametaE2ERunner.launch() spreads
     // process.env into the Electron process's env at spawn time.
@@ -88,7 +88,7 @@ test.describe("Cloud sync UI (fake provider)", () => {
       "Edolo sample",
       "Sessions",
       "ETR009",
-      "ETR009_Careful.mp3"
+      "ETR009_Careful.mp3",
     );
     if (!fs.existsSync(sourceMp3)) {
       throw new Error(`Source sample mp3 not found at ${sourceMp3}`);
@@ -108,17 +108,13 @@ test.describe("Cloud sync UI (fake provider)", () => {
     // can appear before the background copy finishes (a known race -- see
     // the comments in FileList-e2e-helpers.ts's addFile()), so poll instead
     // of asserting once.
-    await expect
-      .poll(() => fs.existsSync(mediaFilePath), { timeout: 10000 })
-      .toBe(true);
+    await expect.poll(() => fs.existsSync(mediaFilePath), { timeout: 10000 }).toBe(true);
 
     // (b) The row shows the "online-only" cloud status icon (an svg with
     // role="img" whose accessible name comes from its <title>; see
     // CloudStatusIcon.tsx).
     const fileRow = page.getByRole("row").filter({ has: fileCell });
-    await expect(fileRow.getByRole("img", { name: /Online-only/ })).toBeVisible(
-      { timeout: 10000 }
-    );
+    await expect(fileRow.getByRole("img", { name: /Online-only/ })).toBeVisible({ timeout: 10000 });
 
     // (c) Selecting the file shows the "FakeDrive Status" card with a
     // "Download this file to my computer" button instead of a preview
@@ -126,11 +122,11 @@ test.describe("Cloud sync UI (fake provider)", () => {
     // file isCloudFileNotPresent; see CloudFilePanel.tsx).
     await fileCell.click();
     const statusHeading = page.getByRole("heading", {
-      name: "FakeDrive Status"
+      name: "FakeDrive Status",
     });
     await expect(statusHeading).toBeVisible({ timeout: 10000 });
     const downloadButton = page.getByRole("button", {
-      name: "Download this file to my computer"
+      name: "Download this file to my computer",
     });
     await expect(downloadButton).toBeVisible();
 
@@ -143,8 +139,8 @@ test.describe("Cloud sync UI (fake provider)", () => {
 
     // The row's "online-only" icon is gone too (a local file shows no cloud
     // icon at all, per CloudStatusIcon.tsx's current design).
-    await expect(
-      fileRow.getByRole("img", { name: /Online-only/ })
-    ).not.toBeVisible({ timeout: 5000 });
+    await expect(fileRow.getByRole("img", { name: /Online-only/ })).not.toBeVisible({
+      timeout: 5000,
+    });
   });
 });

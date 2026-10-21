@@ -255,6 +255,9 @@
     "vite-plus": "catalog:",
     "vitest": "catalog:"
   },
+  "optionalDependencies": {
+    "fswin": "^3.25.1108"
+  },
   "engines": {
     "node": "24.15.0",
     "pnpm": "12.14.0"
@@ -270,8 +273,5 @@
     "electron-builder": "upgrade from 25 to 26 broke, package just hangs.",
     "react-dropzone": "They broke electron in 14.3.0 https://github.com/react-dropzone/react-dropzone/issues/1411"
   },
-  "productName": "lameta",
-  "optionalDependencies": {
-    "fswin": "^3.25.1108"
-  }
+  "productName": "lameta"
 }

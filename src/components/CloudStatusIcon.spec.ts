@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { getCloudDisplayStatus } from "./CloudStatusIcon";
 
 describe("getCloudDisplayStatus", () => {
@@ -7,9 +7,7 @@ describe("getCloudDisplayStatus", () => {
   });
 
   it("shows the offline cloud for a cloud-only file while offline", () => {
-    expect(getCloudDisplayStatus("cloudOnly", false, true)).toBe(
-      "cloudOnlyOffline"
-    );
+    expect(getCloudDisplayStatus("cloudOnly", false, true)).toBe("cloudOnlyOffline");
   });
 
   it("shows sync arrows while hydrating online", () => {
@@ -17,9 +15,7 @@ describe("getCloudDisplayStatus", () => {
   });
 
   it("shows the offline cloud while hydrating offline, since the download cannot progress", () => {
-    expect(getCloudDisplayStatus("hydrating", false, true)).toBe(
-      "cloudOnlyOffline"
-    );
+    expect(getCloudDisplayStatus("hydrating", false, true)).toBe("cloudOnlyOffline");
   });
 
   // Checkmarks for locally-available files are currently disabled (see the

@@ -6,7 +6,7 @@ import {
   NotifyFileAccessProblem,
   NotifyNoBigDeal,
   NotifyRenameProblem,
-  NotifyWarning
+  NotifyWarning,
 } from "../components/Notify";
 import { t } from "@lingui/macro";
 
@@ -39,17 +39,12 @@ export class PatientFS {
   // cloud-provider hydration failure that should fail softly rather than pop a
   // toast per file -- see cloudReadGuard).
   public static readFileSyncNoNotify(path: string): string {
-    return PatientFS.patientFileOperationSync(() =>
-      fs.readFileSync(path, "utf8")
-    );
+    return PatientFS.patientFileOperationSync(() => fs.readFileSync(path, "utf8"));
   }
-  public static writeFileSyncWithNotifyThenRethrow(
-    path: string,
-    contents: string
-  ) {
+  public static writeFileSyncWithNotifyThenRethrow(path: string, contents: string) {
     try {
       return PatientFS.patientFileOperationSync(() =>
-        fs.writeFileSync(path, contents, { encoding: "utf8" })
+        fs.writeFileSync(path, contents, { encoding: "utf8" }),
       );
     } catch (err) {
       NotifyFileAccessProblem(`Could not write ${path}`, err);
@@ -59,7 +54,7 @@ export class PatientFS {
 
   public static assertWritePermissionWithNotification(
     path: string,
-    thingWeWereTryingToDo: string
+    thingWeWereTryingToDo: string,
   ): boolean {
     try {
       // from https://stackoverflow.com/a/64386424/723299
@@ -79,22 +74,15 @@ export class PatientFS {
   public static renameSync(from: string, to: string) {
     PatientFS.patientFileOperationSync(() => fs.renameSync(from, to));
   }
-  public static renameSyncWithNotifyAndRethrow(
-    from: string,
-    to: string,
-    fileType?: string
-  ) {
+  public static renameSyncWithNotifyAndRethrow(from: string, to: string, fileType?: string) {
     try {
       PatientFS.patientFileOperationSync(() => fs.renameSync(from, to));
     } catch (err) {
-      if (
-        err.code === "EBUSY" &&
-        (fileType === "Video" || fileType === "Audio")
-      ) {
+      if (err.code === "EBUSY" && (fileType === "Video" || fileType === "Audio")) {
         // this is a special case we've seen before.
         NotifyError(
           `${getCannotRenameFileMsg()} ` +
-            t`Restart lameta and do the rename before playing the video again.`
+            t`Restart lameta and do the rename before playing the video again.`,
         );
       } else {
         NotifyRenameProblem(err, from);
@@ -111,7 +99,7 @@ export class PatientFS {
         if (attempt > 1) {
           // there is no way to asynchronously show any UI, but after a long wait in which we finally got through, it might help to tell people what caused the a delay.
           NotifyNoBigDeal(
-            `There was a delay in accessing a file... perhaps a file-sync service, or antivirus is interfering.`
+            `There was a delay in accessing a file... perhaps a file-sync service, or antivirus is interfering.`,
           );
         }
         return result;
@@ -130,16 +118,14 @@ export class PatientFS {
   }
 
   private static sleepForShortWhile() {
-    console.error(
-      "patientFile:sleepForShortWhile because file wasn't available..."
-    );
+    console.error("patientFile:sleepForShortWhile because file wasn't available...");
     //"sleep" would probably work on mac/linux. But the equivalent "timeout" on windows fails when there is no keyboad input.
     // So we're doing a ping. Note that a ping of "-n 1" is 0ms on windows, oddly, while "-n 2" takes about a second
     // LAM-117: Fix - arguments must be passed as separate array elements, not a single string.
     // Previously was ["-n 2 127.0.0.1"] which caused ping to fail with "Bad parameter 2".
     // https://linear.app/lameta/issue/LAM-117
     child_process.spawnSync("ping", ["-n", "2", "127.0.0.1"], {
-      shell: true
+      shell: true,
     });
   }
 }

@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vite-plus/test";
 import { Session } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import * as NotifyModule from "../../components/Notify";
@@ -26,10 +26,7 @@ function makeSavedSession(): {
   const tmp = temp.mkdirSync("externally-changed-session");
   const folder = Path.join(tmp, "ETR009");
   fs.mkdirSync(folder);
-  const session = Session.fromDirectory(
-    folder,
-    new EncounteredVocabularyRegistry()
-  );
+  const session = Session.fromDirectory(folder, new EncounteredVocabularyRegistry());
   session.properties.setText("id", "ETR009");
   session.saveAllFilesInFolder();
   const sessionFilePath = session.metadataFile!.metadataFilePath;
@@ -38,9 +35,7 @@ function makeSavedSession(): {
 }
 
 function setAsideSiblings(folder: string): string[] {
-  return fs
-    .readdirSync(folder)
-    .filter((f) => f.includes("changed on another computer"));
+  return fs.readdirSync(folder).filter((f) => f.includes("changed on another computer"));
 }
 
 // Rewrite the file with different content AND a distinctly different mtime, as
@@ -60,12 +55,8 @@ describe("a metadata file changed on disk underneath lameta", () => {
     const { folder, session, sessionFilePath } = makeSavedSession();
     const file = session.metadataFile!;
 
-    const warnSpy = vi
-      .spyOn(NotifyModule, "NotifyWarning")
-      .mockImplementation(() => {});
-    const errorSpy = vi
-      .spyOn(NotifyModule, "NotifyError")
-      .mockImplementation(() => {});
+    const warnSpy = vi.spyOn(NotifyModule, "NotifyWarning").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(NotifyModule, "NotifyError").mockImplementation(() => {});
 
     // user A's edit arrives on disk (a whole valid session file, different
     // content) while B's lameta still has the session in memory.
@@ -92,9 +83,7 @@ describe("a metadata file changed on disk underneath lameta", () => {
 
     // Exactly one gentle warning; no raw error toast.
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(String(warnSpy.mock.calls[0][0]).toLowerCase()).toContain(
-      "outside of lameta"
-    );
+    expect(String(warnSpy.mock.calls[0][0]).toLowerCase()).toContain("outside of lameta");
     expect(errorSpy).not.toHaveBeenCalled();
     expect(file.metadataChangedExternally).toBe(true);
 
@@ -104,18 +93,14 @@ describe("a metadata file changed on disk underneath lameta", () => {
     file.save();
     expect(setAsideSiblings(folder).length).toBe(1);
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(fs.readFileSync(sessionFilePath, "utf8")).toContain(
-      "SECOND EDIT BY USER B"
-    );
+    expect(fs.readFileSync(sessionFilePath, "utf8")).toContain("SECOND EDIT BY USER B");
   });
 
   it("does NOT set aside on mere mtime churn (sync engine rewrote byte-identical content)", () => {
     const { folder, session, sessionFilePath } = makeSavedSession();
     const file = session.metadataFile!;
 
-    const warnSpy = vi
-      .spyOn(NotifyModule, "NotifyWarning")
-      .mockImplementation(() => {});
+    const warnSpy = vi.spyOn(NotifyModule, "NotifyWarning").mockImplementation(() => {});
 
     // The sync engine rewrites the exact same bytes lameta last wrote, only
     // bumping the mtime -- no real edit.
@@ -128,8 +113,6 @@ describe("a metadata file changed on disk underneath lameta", () => {
     expect(setAsideSiblings(folder).length).toBe(0);
     expect(warnSpy).not.toHaveBeenCalled();
     expect(file.metadataChangedExternally).toBe(false);
-    expect(fs.readFileSync(sessionFilePath, "utf8")).toContain(
-      "EDIT AFTER CHURN"
-    );
+    expect(fs.readFileSync(sessionFilePath, "utf8")).toContain("EDIT AFTER CHURN");
   });
 });

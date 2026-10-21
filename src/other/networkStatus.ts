@@ -6,18 +6,12 @@ import { observable, runInAction } from "mobx";
 // the user that a requested cloud file cannot arrive right now.
 export const networkStatus = observable({
   isOnline:
-    typeof navigator === "undefined" || navigator.onLine === undefined
-      ? true
-      : navigator.onLine
+    typeof navigator === "undefined" || navigator.onLine === undefined ? true : navigator.onLine,
 });
 
 if (typeof window !== "undefined" && window.addEventListener) {
-  window.addEventListener("online", () =>
-    runInAction(() => (networkStatus.isOnline = true))
-  );
-  window.addEventListener("offline", () =>
-    runInAction(() => (networkStatus.isOnline = false))
-  );
+  window.addEventListener("online", () => runInAction(() => (networkStatus.isOnline = true)));
+  window.addEventListener("offline", () => runInAction(() => (networkStatus.isOnline = false)));
 }
 
 export function setOnlineForTests(isOnline: boolean): void {

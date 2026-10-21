@@ -3,7 +3,7 @@ import {
   CloudFileProvider,
   CloudFileStatus,
   CloudSyncRoot,
-  normalizeForCompare
+  normalizeForCompare,
 } from "./cloudFileStatus";
 
 // An e2e-controllable fake cloud provider, so Playwright tests can exercise
@@ -61,19 +61,12 @@ function loadManifestOnce(): FakeCloudManifest | undefined {
     const parsed = JSON.parse(raw);
     cachedManifest = {
       syncRoots: Array.isArray(parsed.syncRoots) ? parsed.syncRoots : [],
-      cloudOnly: Array.isArray(parsed.cloudOnly)
-        ? parsed.cloudOnly.map(normalizeForCompare)
-        : [],
+      cloudOnly: Array.isArray(parsed.cloudOnly) ? parsed.cloudOnly.map(normalizeForCompare) : [],
       hydrateDelayMs:
-        typeof parsed.hydrateDelayMs === "number"
-          ? parsed.hydrateDelayMs
-          : kDefaultHydrateDelayMs
+        typeof parsed.hydrateDelayMs === "number" ? parsed.hydrateDelayMs : kDefaultHydrateDelayMs,
     };
   } catch (e) {
-    console.warn(
-      `fakeCloudProvider: failed to load manifest at ${manifestPath}`,
-      e
-    );
+    console.warn(`fakeCloudProvider: failed to load manifest at ${manifestPath}`, e);
     cachedManifest = undefined;
   }
   return cachedManifest;

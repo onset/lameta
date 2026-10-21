@@ -1,11 +1,11 @@
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
-import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
+import { describe, it, expect, afterEach, beforeEach, vi } from "vite-plus/test";
 import {
   getFakeCloudProviderIfActive,
   getFakeCloudSyncRootsIfActive,
-  resetFakeCloudProviderForTests
+  resetFakeCloudProviderForTests,
 } from "./fakeCloudProvider";
 
 function writeManifest(manifest: unknown): string {
@@ -43,19 +43,17 @@ describe("fakeCloudProvider", () => {
     process.env.E2E_FAKE_CLOUD_PROVIDER = writeManifest({
       syncRoots: [{ path: "/fake/root", providerName: "FakeDrive" }],
       cloudOnly: [cloudOnlyPath],
-      hydrateDelayMs: 500
+      hydrateDelayMs: 500,
     });
 
     const provider = getFakeCloudProviderIfActive();
     expect(provider).toBeDefined();
     expect(provider!.capabilities).toEqual({ canPin: false, canFetch: true });
     expect(provider!.getStatus(cloudOnlyPath)).toBe("cloudOnly");
-    expect(provider!.getStatus("/fake/root/session/other-file.txt")).toBe(
-      "local"
-    );
+    expect(provider!.getStatus("/fake/root/session/other-file.txt")).toBe("local");
 
     expect(getFakeCloudSyncRootsIfActive()).toEqual([
-      { path: "/fake/root", providerName: "FakeDrive" }
+      { path: "/fake/root", providerName: "FakeDrive" },
     ]);
   });
 
@@ -64,13 +62,11 @@ describe("fakeCloudProvider", () => {
     process.env.E2E_FAKE_CLOUD_PROVIDER = writeManifest({
       syncRoots: [{ path: "/Fake/Root", providerName: "FakeDrive" }],
       cloudOnly: [cloudOnlyPath],
-      hydrateDelayMs: 500
+      hydrateDelayMs: 500,
     });
 
     const provider = getFakeCloudProviderIfActive()!;
-    expect(provider.getStatus("/fake/root/session/audio.mp3")).toBe(
-      "cloudOnly"
-    );
+    expect(provider.getStatus("/fake/root/session/audio.mp3")).toBe("cloudOnly");
   });
 
   it("loads the manifest only once -- a later rewrite of the file is not picked up", () => {
@@ -78,7 +74,7 @@ describe("fakeCloudProvider", () => {
     const manifestPath = writeManifest({
       syncRoots: [{ path: "/fake/root", providerName: "FakeDrive" }],
       cloudOnly: [cloudOnlyPath],
-      hydrateDelayMs: 500
+      hydrateDelayMs: 500,
     });
     process.env.E2E_FAKE_CLOUD_PROVIDER = manifestPath;
 
@@ -91,15 +87,13 @@ describe("fakeCloudProvider", () => {
       JSON.stringify({
         syncRoots: [{ path: "/fake/root", providerName: "FakeDrive" }],
         cloudOnly: ["/fake/root/session/other.mp3"],
-        hydrateDelayMs: 500
-      })
+        hydrateDelayMs: 500,
+      }),
     );
 
     // Still using the manifest cached at first use.
     expect(provider.getStatus(cloudOnlyPath)).toBe("cloudOnly");
-    expect(getFakeCloudProviderIfActive()!.getStatus(cloudOnlyPath)).toBe(
-      "cloudOnly"
-    );
+    expect(getFakeCloudProviderIfActive()!.getStatus(cloudOnlyPath)).toBe("cloudOnly");
   });
 
   it("setPinned(true) moves a cloud-only file to hydrating, then to local after hydrateDelayMs", () => {
@@ -108,7 +102,7 @@ describe("fakeCloudProvider", () => {
     process.env.E2E_FAKE_CLOUD_PROVIDER = writeManifest({
       syncRoots: [{ path: "/fake/root", providerName: "FakeDrive" }],
       cloudOnly: [cloudOnlyPath],
-      hydrateDelayMs: 500
+      hydrateDelayMs: 500,
     });
 
     const provider = getFakeCloudProviderIfActive()!;
@@ -128,7 +122,7 @@ describe("fakeCloudProvider", () => {
     process.env.E2E_FAKE_CLOUD_PROVIDER = writeManifest({
       syncRoots: [{ path: "/fake/root", providerName: "FakeDrive" }],
       cloudOnly: [cloudOnlyPath],
-      hydrateDelayMs: 500
+      hydrateDelayMs: 500,
     });
 
     const provider = getFakeCloudProviderIfActive()!;
@@ -149,7 +143,7 @@ describe("fakeCloudProvider", () => {
     process.env.E2E_FAKE_CLOUD_PROVIDER = writeManifest({
       syncRoots: [{ path: "/fake/root", providerName: "FakeDrive" }],
       cloudOnly: [cloudOnlyPath],
-      hydrateDelayMs: 500
+      hydrateDelayMs: 500,
     });
 
     const provider = getFakeCloudProviderIfActive()!;

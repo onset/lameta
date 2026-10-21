@@ -8,7 +8,7 @@ import { describe, it, beforeEach, expect, afterEach, vi } from "vite-plus/test"
 
 temp.track();
 describe("Duplicate Folder", () => {
-  let rootDirectory;
+  let rootDirectory: string;
   beforeEach(async () => {
     rootDirectory = temp.mkdirSync("testDuplicateFolder");
   });
@@ -22,10 +22,7 @@ describe("Duplicate Folder", () => {
     fs.writeFileSync(Path.join(originalDir, "aFile.txt"), "hello");
     fs.writeFileSync(Path.join(originalDir, "foo_someMedia.txt"), "hello");
 
-    const original = Session.fromDirectory(
-      originalDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const original = Session.fromDirectory(originalDir, new EncounteredVocabularyRegistry());
     original.properties.setText("id", "foo");
     original.saveFolderMetaData();
     expect(original.metadataFile?.metadataFilePath).toBeTruthy();
@@ -39,9 +36,7 @@ describe("Duplicate Folder", () => {
     const renamedDir = Path.join(rootDirectory, "bar");
     expect(fs.existsSync(originalDir)).toBeFalsy();
     expect(fs.existsSync(Path.join(renamedDir, "aFile.txt"))).toBeTruthy();
-    expect(
-      fs.existsSync(Path.join(renamedDir, "bar_someMedia.txt"))
-    ).toBeTruthy();
+    expect(fs.existsSync(Path.join(renamedDir, "bar_someMedia.txt"))).toBeTruthy();
     expect(fs.existsSync(Path.join(renamedDir, "bar.session"))).toBeTruthy();
     expect(fs.existsSync(Path.join(renamedDir, "foo.session"))).toBeFalsy();
   });
@@ -51,10 +46,7 @@ describe("Duplicate Folder", () => {
     fs.mkdirSync(originalDir);
     fs.writeFileSync(Path.join(originalDir, "foo_someMedia.txt"), "hello");
 
-    const original = Session.fromDirectory(
-      originalDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const original = Session.fromDirectory(originalDir, new EncounteredVocabularyRegistry());
     // we start with the norma ..../foo/foo.session
     expect(original.metadataFile?.metadataFilePath).toBeTruthy();
     expect(fs.existsSync(original.metadataFile!.metadataFilePath)).toBeTruthy();
@@ -63,10 +55,7 @@ describe("Duplicate Folder", () => {
 
     // now we have the problematic .../bar/foo.session we want to test
     expect(fs.existsSync(Path.join(changedDir, "foo.session"))).toBeTruthy();
-    const reloadedFolder = Session.fromDirectory(
-      changedDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const reloadedFolder = Session.fromDirectory(changedDir, new EncounteredVocabularyRegistry());
 
     // prior to lameta 2.3.2, we would now have both bar/foo.session and bar/bar.session,
     // and bar/foo_someMedia.txt
@@ -102,10 +91,7 @@ describe("Duplicate Folder", () => {
   it("nameMightHaveChanged(): if a random media file in a folder is locked, do not rename the folder or anything else", () => {
     const originalDir = Path.join(rootDirectory, "foo");
     fs.mkdirSync(originalDir);
-    const original = Session.fromDirectory(
-      originalDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const original = Session.fromDirectory(originalDir, new EncounteredVocabularyRegistry());
     fs.writeFileSync(Path.join(originalDir, "lock.me"), "hello");
 
     // we start with the normal ..../foo/foo.session
@@ -141,10 +127,7 @@ describe("Duplicate Folder", () => {
     fs.writeFileSync(Path.join(originalDir, "foo_someMedia.txt"), "hello");
     fs.writeFileSync(Path.join(originalDir, "unrelated.txt"), "hello");
 
-    const original = Session.fromDirectory(
-      originalDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const original = Session.fromDirectory(originalDir, new EncounteredVocabularyRegistry());
     original.properties.setText("id", "foo");
     original.saveFolderMetaData();
     original.saveAllFilesInFolder(false);
@@ -152,18 +135,16 @@ describe("Duplicate Folder", () => {
 
     const newDir = Path.join(rootDirectory, "baz");
     const realRenameSync = PatientFS.renameSync.bind(PatientFS);
-    const spy = vi
-      .spyOn(PatientFS, "renameSync")
-      .mockImplementation((from: string, to: string) => {
-        if (from === originalDir && to === newDir) {
-          const err: NodeJS.ErrnoException = new Error(
-            "simulated lock landed after the files were renamed"
-          );
-          err.code = "EPERM";
-          throw err;
-        }
-        return realRenameSync(from, to);
-      });
+    const spy = vi.spyOn(PatientFS, "renameSync").mockImplementation((from: string, to: string) => {
+      if (from === originalDir && to === newDir) {
+        const err: NodeJS.ErrnoException = new Error(
+          "simulated lock landed after the files were renamed",
+        );
+        err.code = "EPERM";
+        throw err;
+      }
+      return realRenameSync(from, to);
+    });
     try {
       original.properties.setText("id", "baz");
       expect(original.nameMightHaveChanged()).toBeFalsy();
@@ -177,9 +158,7 @@ describe("Duplicate Folder", () => {
     expect(fs.readdirSync(originalDir).sort()).toEqual(filesBefore);
     // and the in-memory model must agree with the disk
     expect(fs.existsSync(original.metadataFile!.metadataFilePath)).toBeTruthy();
-    expect(original.metadataFile!.metadataFilePath).toBe(
-      Path.join(originalDir, "foo.session")
-    );
+    expect(original.metadataFile!.metadataFilePath).toBe(Path.join(originalDir, "foo.session"));
 
     // having recovered, a later rename (lock gone) must succeed completely
     expect(original.nameMightHaveChanged()).toBeTruthy();
@@ -188,9 +167,7 @@ describe("Duplicate Folder", () => {
     expect(fs.existsSync(Path.join(newDir, "baz.session"))).toBeTruthy();
     expect(fs.existsSync(Path.join(newDir, "baz_someMedia.txt"))).toBeTruthy();
     expect(fs.existsSync(Path.join(newDir, "unrelated.txt"))).toBeTruthy();
-    expect(
-      fs.readdirSync(newDir).filter((f) => f.startsWith("foo"))
-    ).toEqual([]);
+    expect(fs.readdirSync(newDir).filter((f) => f.startsWith("foo"))).toEqual([]);
   });
 
   // TODO: test when a folder already has two sessions? We could pick the bigger one?

@@ -35,10 +35,7 @@ test.describe("Rename under file-lock contention", () => {
     lameta = new LametaE2ERunner();
     page = await lameta.launch();
     await lameta.cancelRegistration();
-    project = await createNewProject(
-      lameta,
-      "RenameContention" + Math.random().toString()
-    );
+    project = await createNewProject(lameta, "RenameContention" + Math.random().toString());
     fileList = new E2eFileList(lameta, page, project.projectDirectory);
   });
   test.afterEach(async () => {
@@ -51,14 +48,8 @@ test.describe("Rename under file-lock contention", () => {
     await setFullName("Paul Hewson");
     await page.waitForTimeout(1000);
 
-    const personDir = Path.join(
-      project.projectDirectory,
-      "People",
-      "Paul_Hewson"
-    );
-    expect(fs.existsSync(Path.join(personDir, "Paul_Hewson.person"))).toBe(
-      true
-    );
+    const personDir = Path.join(project.projectDirectory, "People", "Paul_Hewson");
+    expect(fs.existsSync(Path.join(personDir, "Paul_Hewson.person"))).toBe(true);
     const mediaPath = Path.join(personDir, "Paul_Hewson_foo.txt");
     await fileList.addFile("Paul_Hewson_foo.txt", { page, path: mediaPath });
     await fileList.selectFile("Paul_Hewson.person");
@@ -85,30 +76,23 @@ test.describe("Rename under file-lock contention", () => {
               ? fs.readdirSync(personDir).some((f) => f.startsWith("Bono"))
               : false,
           {
-            message:
-              "the rename attempt never started (no file transiently got the new name)",
-            timeout: 30_000
-          }
+            message: "the rename attempt never started (no file transiently got the new name)",
+            timeout: 30_000,
+          },
         )
         .toBe(true);
 
       // then poll until the folder is back to exactly its old contents
       await expect
-        .poll(
-          () =>
-            fs.existsSync(personDir) ? fs.readdirSync(personDir).sort() : [],
-          {
-            message:
-              "after a failed rename, the folder must return to exactly its old contents (rollback)",
-            timeout: 60_000
-          }
-        )
+        .poll(() => (fs.existsSync(personDir) ? fs.readdirSync(personDir).sort() : []), {
+          message:
+            "after a failed rename, the folder must return to exactly its old contents (rollback)",
+          timeout: 60_000,
+        })
         .toEqual(filesBefore);
       expect(
-        fs.existsSync(
-          Path.join(project.projectDirectory, "People", "Bono")
-        ),
-        "no folder with the new name may exist after a failed rename"
+        fs.existsSync(Path.join(project.projectDirectory, "People", "Bono")),
+        "no folder with the new name may exist after a failed rename",
       ).toBe(false);
     } finally {
       holder.kill();
@@ -126,10 +110,8 @@ test.describe("Rename under file-lock contention", () => {
     expect(fs.existsSync(Path.join(newDir, "Ali_G.person"))).toBe(true);
     expect(fs.existsSync(Path.join(newDir, "Ali_G_foo.txt"))).toBe(true);
     expect(
-      fs
-        .readdirSync(newDir)
-        .filter((f) => f.startsWith("Paul_Hewson") || f.startsWith("Bono")),
-      "no files with stale names may remain"
+      fs.readdirSync(newDir).filter((f) => f.startsWith("Paul_Hewson") || f.startsWith("Bono")),
+      "no files with stale names may remain",
     ).toEqual([]);
   });
 });
@@ -146,13 +128,10 @@ function holdFileOpen(file: string, seconds: number): Promise<ChildProcess> {
     $h.Close();
   `;
   const child = spawn("powershell", ["-NoProfile", "-Command", ps], {
-    stdio: ["ignore", "pipe", "inherit"]
+    stdio: ["ignore", "pipe", "inherit"],
   });
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error("file holder never became ready")),
-      15000
-    );
+    const timer = setTimeout(() => reject(new Error("file holder never became ready")), 15000);
     child.stdout!.on("data", (d) => {
       if (d.toString().includes("HELD")) {
         clearTimeout(timer);

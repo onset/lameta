@@ -1,20 +1,12 @@
 import fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import {
-  getFakeCloudProviderIfActive,
-  getFakeCloudSyncRootsIfActive
-} from "./fakeCloudProvider";
+import { getFakeCloudProviderIfActive, getFakeCloudSyncRootsIfActive } from "./fakeCloudProvider";
 
 // "local" = hydrated, but OneDrive's "free up space" could dehydrate it.
 // "localPinned" = hydrated and the user (or lameta) asked to always keep it
 // on this device (IS_PINNED).
-export type CloudFileStatus =
-  | "local"
-  | "localPinned"
-  | "cloudOnly"
-  | "hydrating"
-  | "unknown";
+export type CloudFileStatus = "local" | "localPinned" | "cloudOnly" | "hydrating" | "unknown";
 
 export function isLocallyAvailable(status: CloudFileStatus): boolean {
   return status === "local" || status === "localPinned";
@@ -35,7 +27,7 @@ interface FswinModule {
   getAttributesSync: AttributeReader;
   setAttributesAsync: (
     path: string,
-    attributes: { IS_PINNED?: boolean; IS_UNPINNED?: boolean }
+    attributes: { IS_PINNED?: boolean; IS_UNPINNED?: boolean },
   ) => Promise<boolean>;
 }
 
@@ -88,15 +80,13 @@ function statusFromAttributes(
         IS_RECALL_ON_OPEN: boolean;
         IS_PINNED?: boolean;
       }
-    | undefined
+    | undefined,
 ): CloudFileStatus {
   if (!attributes) {
     return "unknown";
   }
   const isPlaceholder =
-    attributes.IS_OFFLINE ||
-    attributes.IS_RECALL_ON_DATA_ACCESS ||
-    attributes.IS_RECALL_ON_OPEN;
+    attributes.IS_OFFLINE || attributes.IS_RECALL_ON_DATA_ACCESS || attributes.IS_RECALL_ON_OPEN;
   if (isPlaceholder) {
     return attributes.IS_PINNED ? "hydrating" : "cloudOnly";
   }
@@ -151,13 +141,11 @@ async function writePinAttribute(path: string, pinned: boolean): Promise<void> {
   // Only ever clear IS_PINNED to unpin -- never set IS_UNPINNED, which would
   // invite OneDrive to dehydrate the file. Unpinning should just stop asking
   // for it to be kept local, not push it back to the cloud.
-  const attributes = pinned
-    ? { IS_PINNED: true, IS_UNPINNED: false }
-    : { IS_PINNED: false };
+  const attributes = pinned ? { IS_PINNED: true, IS_UNPINNED: false } : { IS_PINNED: false };
   const succeeded = await fswin.setAttributesAsync(path, attributes);
   if (!succeeded) {
     throw new Error(
-      `cloudFileStatus: fswin.setAttributesAsync failed to ${pinned ? "pin" : "unpin"} ${path}`
+      `cloudFileStatus: fswin.setAttributesAsync failed to ${pinned ? "pin" : "unpin"} ${path}`,
     );
   }
 }
@@ -221,17 +209,13 @@ export function setMacStatReaderForTests(reader?: MacStatReader): void {
 }
 
 // Seam for the ".<basename>.icloud" legacy-placeholder sibling existence check.
-export function setICloudSiblingCheckerForTests(
-  checker?: (path: string) => boolean
-): void {
+export function setICloudSiblingCheckerForTests(checker?: (path: string) => boolean): void {
   testICloudSiblingChecker = checker;
 }
 
 // Seam for the one-shot materialization (brctl / cat). Resolves once the
 // request is *initiated*, not once the download completes.
-export function setMaterializerForTests(
-  m?: (path: string) => Promise<void>
-): void {
+export function setMaterializerForTests(m?: (path: string) => Promise<void>): void {
   testMaterializer = m;
 }
 
@@ -250,7 +234,7 @@ export function statusFromMacStat(
     underICloudRoot: boolean;
     inFlight: boolean;
     hasICloudSibling: boolean;
-  }
+  },
 ): CloudFileStatus {
   // Not under any sync root: not our concern, and this bounds sparse-file
   // (size>0, blocks==0) false positives to cloud folders.
@@ -278,10 +262,7 @@ export function statusFromMacStat(
 // The legacy iCloud placeholder sibling for a missing file:
 //   /a/b/foo.mp3  ->  /a/b/.foo.mp3.icloud
 function iCloudSiblingPath(filePath: string): string {
-  return path.join(
-    path.dirname(filePath),
-    "." + path.basename(filePath) + ".icloud"
-  );
+  return path.join(path.dirname(filePath), "." + path.basename(filePath) + ".icloud");
 }
 
 function readMacStat(filePath: string): MacStat | undefined {
@@ -321,13 +302,12 @@ class MacCloudFileProvider implements CloudFileProvider {
     const underICloud = isICloudRoot(root);
     try {
       const stat = readMacStat(filePath);
-      const hasICloudSibling =
-        !stat && underICloud ? iCloudSiblingExists(filePath) : false;
+      const hasICloudSibling = !stat && underICloud ? iCloudSiblingExists(filePath) : false;
       const status = statusFromMacStat(stat, {
         underSyncRoot: true,
         underICloudRoot: underICloud,
         inFlight,
-        hasICloudSibling
+        hasICloudSibling,
       });
       // Self-clean: once a requested file has materialized (become "local"),
       // drop it from the in-flight set. This is how "hydrating" transitions to
@@ -463,11 +443,9 @@ export interface CloudSyncRoot {
 
 let testCloudSyncRoots: CloudSyncRoot[] | undefined;
 
-export function setCloudSyncRootsForTests(
-  roots?: (string | CloudSyncRoot)[]
-): void {
+export function setCloudSyncRootsForTests(roots?: (string | CloudSyncRoot)[]): void {
   testCloudSyncRoots = roots?.map((r) =>
-    typeof r === "string" ? { path: r, providerName: "OneDrive" } : r
+    typeof r === "string" ? { path: r, providerName: "OneDrive" } : r,
   );
   cachedSyncRoots = undefined;
 }
@@ -490,7 +468,7 @@ const friendlyProviderNames: Record<string, string> = {
   GoogleDrive: "Google Drive",
   DriveFS: "Google Drive",
   iCloudDrive: "iCloud Drive",
-  Box: "Box"
+  Box: "Box",
 };
 
 // Parses `reg query <syncRootManagerKey> /s` output. Each sync root is a key
@@ -516,8 +494,7 @@ export function parseSyncRootManagerOutput(output: string): CloudSyncRoot[] {
     if (value) {
       roots.push({
         path: value[1],
-        providerName:
-          friendlyProviderNames[currentProviderId] ?? currentProviderId
+        providerName: friendlyProviderNames[currentProviderId] ?? currentProviderId,
       });
     }
   }
@@ -553,7 +530,7 @@ function readSyncRootsFromCloudStorage(): CloudSyncRoot[] {
       if (entry.isDirectory()) {
         roots.push({
           path: path.join(cloudStorage, entry.name),
-          providerName: providerNameFromCloudStorageDir(entry.name)
+          providerName: providerNameFromCloudStorageDir(entry.name),
         });
       }
     }
@@ -574,10 +551,7 @@ function readSyncRootsFromCloudStorage(): CloudSyncRoot[] {
       try {
         const resolved = fs.realpathSync(linkPath);
         const resolvedNorm = normalizeForCompare(resolved);
-        if (
-          resolvedNorm === cloudStorageNorm ||
-          resolvedNorm.startsWith(cloudStorageNorm + "/")
-        ) {
+        if (resolvedNorm === cloudStorageNorm || resolvedNorm.startsWith(cloudStorageNorm + "/")) {
           const seg =
             resolved
               .slice(cloudStorage.length)
@@ -585,7 +559,7 @@ function readSyncRootsFromCloudStorage(): CloudSyncRoot[] {
               .split(/[/\\]/)[0] || path.basename(resolved);
           roots.push({
             path: linkPath,
-            providerName: providerNameFromCloudStorageDir(seg)
+            providerName: providerNameFromCloudStorageDir(seg),
           });
         }
       } catch {
@@ -606,11 +580,11 @@ function readSyncRootsFromCloudStorage(): CloudSyncRoot[] {
       if (fs.existsSync(path.join(iCloudRoot, "Desktop"))) {
         roots.push({
           path: path.join(home, "Desktop"),
-          providerName: kICloudProviderName
+          providerName: kICloudProviderName,
         });
         roots.push({
           path: path.join(home, "Documents"),
-          providerName: kICloudProviderName
+          providerName: kICloudProviderName,
         });
       }
     }
@@ -629,11 +603,11 @@ function readSyncRootsFromRegistry(): CloudSyncRoot[] {
     // Lazy require for the same reason as fswin above.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { execFileSync } = require("child_process");
-    const output: string = execFileSync(
-      "reg",
-      ["query", syncRootManagerKey, "/s"],
-      { encoding: "utf8", windowsHide: true, timeout: 3000 }
-    );
+    const output: string = execFileSync("reg", ["query", syncRootManagerKey, "/s"], {
+      encoding: "utf8",
+      windowsHide: true,
+      timeout: 3000,
+    });
     return parseSyncRootManagerOutput(output);
   } catch (e) {
     console.warn("cloudFileStatus: failed to enumerate cloud sync roots", e);
@@ -659,13 +633,11 @@ function getCloudSyncRoots(): CloudSyncRoot[] {
       for (const envRoot of [
         process.env.OneDrive,
         process.env.OneDriveConsumer,
-        process.env.OneDriveCommercial
+        process.env.OneDriveCommercial,
       ]) {
         if (
           envRoot &&
-          !roots.some(
-            (r) => normalizeForCompare(r.path) === normalizeForCompare(envRoot)
-          )
+          !roots.some((r) => normalizeForCompare(r.path) === normalizeForCompare(envRoot))
         ) {
           roots.push({ path: envRoot, providerName: "OneDrive" });
         }
@@ -707,10 +679,7 @@ export function getSyncRootForPath(p: string): CloudSyncRoot | undefined {
   const normalized = normalizeForCompare(p);
   return getCloudSyncRoots().find((root) => {
     const normalizedRoot = normalizeForCompare(root.path);
-    return (
-      normalized === normalizedRoot ||
-      normalized.startsWith(normalizedRoot + sep)
-    );
+    return normalized === normalizedRoot || normalized.startsWith(normalizedRoot + sep);
   });
 }
 

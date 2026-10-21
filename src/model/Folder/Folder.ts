@@ -395,7 +395,7 @@ export abstract class Folder {
     // full of files carrying the new name.
     const rollbackSnapshots = this.files.map((f) => ({
       file: f,
-      snapshot: f.getRenameRollbackSnapshot()
+      snapshot: f.getRenameRollbackSnapshot(),
     }));
     this.files.forEach((f) => {
       try {
@@ -425,7 +425,7 @@ export abstract class Folder {
         } catch (rollbackErr) {
           console.error(
             `renameFilesAndFolders(): rollback failed for ${snapshot.describedFileOrLinkFilePath}`,
-            rollbackErr
+            rollbackErr,
           );
         }
       }
@@ -511,10 +511,7 @@ export abstract class Folder {
     metadataFileExtensionWithDot: string,
   ) {
     if (!fs.existsSync(expectedMetadataFilePath)) {
-      const matchingPaths = this.findZombieMetadataFiles(
-        directory,
-        metadataFileExtensionWithDot
-      );
+      const matchingPaths = this.findZombieMetadataFiles(directory, metadataFileExtensionWithDot);
       // If the file we intend to save to doesn't exist but a file with the
       // right extension and the wrong name does, rename it to what we expect;
       // otherwise the save below would create a second metadata file and leave
@@ -529,7 +526,7 @@ export abstract class Folder {
         } catch (err) {
           NotifyException(
             err,
-            `lameta was not able to fix the name of ${zombiePath} to fit the folder name.` // intentionally not adding the translation list
+            `lameta was not able to fix the name of ${zombiePath} to fit the folder name.`, // intentionally not adding the translation list
           );
           // not sure what to do now....
         }

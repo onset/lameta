@@ -40,15 +40,13 @@ export type MediaStatsFlow =
 // Decide, without touching the file's content, whether to show cached stats,
 // show a "not available on this device yet" message, or go probe the file.
 // Pulled out of the component so it can be unit-tested without React/ffmpeg/ExifReader.
-export function decideMediaStatsFlow(
-  file: IMediaStatsCacheHost
-): MediaStatsFlow {
+export function decideMediaStatsFlow(file: IMediaStatsCacheHost): MediaStatsFlow {
   const cached = file.getCachedMediaStats();
   if (cached) {
     return {
       kind: "cached",
       stats: cached,
-      recordedWhileCloudOnly: file.isCloudFileNotPresent
+      recordedWhileCloudOnly: file.isCloudFileNotPresent,
     };
   }
   if (file.isCloudFileNotPresent) {
@@ -57,96 +55,94 @@ export function decideMediaStatsFlow(
   return { kind: "probe" };
 }
 
-export const MediaStats: React.FunctionComponent<{ file: File }> = observer(
-  (props) => {
-    const [message, setMessage] = useState<string>("");
-    const [stats, setStats] = useState<Stats>({});
+export const MediaStats: React.FunctionComponent<{ file: File }> = observer((props) => {
+  const [message, setMessage] = useState<string>("");
+  const [stats, setStats] = useState<Stats>({});
 
-    useEffect(() => {
-      const flow = decideMediaStatsFlow(props.file);
-      switch (flow.kind) {
-        case "cached":
-          setMessage("");
-          setStats(
-            flow.recordedWhileCloudOnly
-              ? {
-                  ...flow.stats,
-                  [t`Note`]: t`recorded when the file was last on this device`
-                }
-              : flow.stats
-          );
-          break;
-        case "blocked":
-          setMessage("");
-          setStats({
-            [t`Status`]: t`Available after this file is made available on this device`
-          });
-          break;
-        case "probe":
-          setMessage("Processing...");
-          getStatsFromFileAsync(props.file)
-            .then((s) => {
-              setStats(s);
-              setMessage("");
-              if (!s.error) {
-                props.file.setCachedMediaStats(s, {
-                  sizeBytes: props.file.getSizeInBytes(),
-                  mtimeMs: props.file.getMtimeMs()
-                });
+  useEffect(() => {
+    const flow = decideMediaStatsFlow(props.file);
+    switch (flow.kind) {
+      case "cached":
+        setMessage("");
+        setStats(
+          flow.recordedWhileCloudOnly
+            ? {
+                ...flow.stats,
+                [t`Note`]: t`recorded when the file was last on this device`,
               }
-            })
-            .catch((err) => {
-              // ffprobe can reject (corrupt file, unsupported codec, or a cloud
-              // file that failed to hydrate). Without this, the panel stays stuck
-              // on "Processing..." forever with no recovery. Surface the failure
-              // instead of swallowing the rejection.
-              console.warn(
-                `getStatsFromFileAsync failed for ${props.file.getActualFilePath()}: ${err}`
-              );
-              setMessage("");
-              setStats({
-                [t`Status`]: t`Could not read media information for this file.`
+            : flow.stats,
+        );
+        break;
+      case "blocked":
+        setMessage("");
+        setStats({
+          [t`Status`]: t`Available after this file is made available on this device`,
+        });
+        break;
+      case "probe":
+        setMessage("Processing...");
+        getStatsFromFileAsync(props.file)
+          .then((s) => {
+            setStats(s);
+            setMessage("");
+            if (!s.error) {
+              props.file.setCachedMediaStats(s, {
+                sizeBytes: props.file.getSizeInBytes(),
+                mtimeMs: props.file.getMtimeMs(),
               });
+            }
+          })
+          .catch((err) => {
+            // ffprobe can reject (corrupt file, unsupported codec, or a cloud
+            // file that failed to hydrate). Without this, the panel stays stuck
+            // on "Processing..." forever with no recovery. Surface the failure
+            // instead of swallowing the rejection.
+            console.warn(
+              `getStatsFromFileAsync failed for ${props.file.getActualFilePath()}: ${err}`,
+            );
+            setMessage("");
+            setStats({
+              [t`Status`]: t`Could not read media information for this file.`,
             });
-          break;
-      }
-    }, [props.file, props.file.cloudStatus]);
+          });
+        break;
+    }
+  }, [props.file, props.file.cloudStatus]);
 
-    const columns = [
-      {
-        id: "key",
-        Header: "Stat",
-        width: 120,
-        accessor: (key) => key
-      },
-      {
-        id: "value",
-        Header: "Value",
-        //width: 200,
-        accessor: (key) => (stats[key] ? stats[key].toString() : "---")
-      }
-    ];
+  const columns = [
+    {
+      id: "key",
+      Header: "Stat",
+      width: 120,
+      accessor: (key) => key,
+    },
+    {
+      id: "value",
+      Header: "Value",
+      //width: 200,
+      accessor: (key) => (stats[key] ? stats[key].toString() : "---"),
+    },
+  ];
 
-    return (
-      <div>
-        {message.toString()}
-        <ReactTable
-          css={css`
-            border: solid red;
-            overflow: auto;
-          `}
-          className={"mediaStatsTable"}
-          showPagination={false}
-          defaultPageSize={10000}
-          data={Object.keys(stats)}
-          sorted={[{ id: "key", desc: false }]}
-          columns={columns}
-          minRows={0}
-        />
-      </div>
-    );
-  }
-);
+  return (
+    <div>
+      {message.toString()}
+      <ReactTable
+        css={css`
+          border: solid red;
+          overflow: auto;
+        `}
+        className={"mediaStatsTable"}
+        showPagination={false}
+        defaultPageSize={10000}
+        data={Object.keys(stats)}
+        sorted={[{ id: "key", desc: false }]}
+        columns={columns}
+        minRows={0}
+      />
+    </div>
+  );
+});
 
 function roundToOneDecimalPlace(n: number): number {
   return Math.round(10 * n) / 10;
@@ -156,9 +152,7 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
     case "Image":
       return new Promise((resolve, reject) => {
         try {
-          const ext = Path.extname(file.getActualFilePath())
-            .toLowerCase()
-            .replace(/\./g, "");
+          const ext = Path.extname(file.getActualFilePath()).toLowerCase().replace(/\./g, "");
           if (ext === "bmp") {
             resolve({ error: "lameta cannot read metadata of bmp files." });
           }
@@ -185,17 +179,12 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
         try {
           ffmpeg.ffprobe(file.getActualFilePath(), (err, result) => {
             if (err) {
-              console.error(
-                `error testing ffprobe on '${file.getActualFilePath()}'`
-              );
+              console.error(`error testing ffprobe on '${file.getActualFilePath()}'`);
               reject(err);
             } else if (result && result.format && result.format.duration) {
-              stats["Length"] = humanizeDuration(
-                1000 * result.format.duration,
-                {
-                  round: true
-                }
-              );
+              stats["Length"] = humanizeDuration(1000 * result.format.duration, {
+                round: true,
+              });
               stats["Format"] = result.format.format_long_name ?? "";
               result.streams.forEach((stream) => {
                 processVideoStream(stream, stats);
@@ -268,7 +257,7 @@ function readSyncEnoughForTags(path) {
   const kMaxBytes = 1024 * 1024; // (first meg... being conservative)
   const buf = Buffer.alloc(kMaxBytes);
   const fd = fs.openSync(path, "r");
-  fs.readSync(fd, buf, 0, kMaxBytes, 0);
+  fs.readSync(fd, new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength), 0, kMaxBytes, 0);
   fs.closeSync(fd);
   return buf;
 }

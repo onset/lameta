@@ -31,7 +31,7 @@ export function getStatusOfFile(f: File): {
     return {
       missing: false,
       status: "copyInProgress",
-      info: f.copyProgress
+      info: f.copyProgress,
     };
   }
 
@@ -41,20 +41,19 @@ export function getStatusOfFile(f: File): {
       status: "normalFile",
       info: t({
         id: "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}",
-        values: { path: f.getActualFilePath() }
-      })
+        values: { path: f.getActualFilePath() },
+      }),
     };
   }
 
   // Read only the observable cloudStatus here -- this runs per row on every
   // render, so it must never call fswin/getCloudFileStatus() itself.
   if (f.isCloudFileNotPresent) {
-    const providerName =
-      getCloudProviderNameForPath(f.getActualFilePath()) ?? t`Cloud`;
+    const providerName = getCloudProviderNameForPath(f.getActualFilePath()) ?? t`Cloud`;
     return {
       missing: false,
       status: "cloudOnly",
-      info: t`This file is online-only (${providerName}). Select it to see how to make it available on this device.`
+      info: t`This file is online-only (${providerName}). Select it to see how to make it available on this device.`,
     };
   }
 
@@ -62,12 +61,12 @@ export function getStatusOfFile(f: File): {
     if (f.isLinkFile()) {
       const info = t({
         id: "Linked to {p}",
-        values: { p: f.getActualFilePath() }
+        values: { p: f.getActualFilePath() },
       });
       return {
         missing: false,
         status: "goodLink",
-        info
+        info,
       };
     } else if (hasFileNamingProblem(f.getActualFilePath())) {
       const message = t`This file does not comply with the file naming rules of the current archive.`;
@@ -75,13 +74,13 @@ export function getStatusOfFile(f: File): {
       return {
         missing: false,
         status: "fileNamingProblem",
-        info: message
+        info: message,
       };
     } else
       return {
         missing: false,
         status: "normalFile",
-        info: `${f.getActualFilePath()}`
+        info: `${f.getActualFilePath()}`,
       };
   }
 
@@ -91,17 +90,17 @@ export function getStatusOfFile(f: File): {
     return {
       missing: true,
       status: "noMediaFolderConnection",
-      info: t`This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings.`
+      info: t`This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings.`,
     };
   if (!fs.existsSync(mediaFolder)) {
     const info = t({
       id: "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
-      values: { m: mediaFolder }
+      values: { m: mediaFolder },
     });
     return {
       missing: true,
       status: "noMediaFolderConnection",
-      info
+      info,
     };
   }
 
@@ -112,24 +111,21 @@ export function getStatusOfFile(f: File): {
       status: "missing",
       info: t({
         id: `lameta expected to find a .link file at {e}`,
-        values: { e: f.pathInFolderToLinkFileOrLocalCopy }
-      })
+        values: { e: f.pathInFolderToLinkFileOrLocalCopy },
+      }),
     };
 
   // we have the link file. We have the media folder. But we cannot find the file itself.
   const subpath = fs.readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf-8");
-  const expected = Path.join(
-    getMediaFolderOrEmptyForThisProjectAndMachine(),
-    subpath
-  );
+  const expected = Path.join(getMediaFolderOrEmptyForThisProjectAndMachine(), subpath);
   const info = t({
     id: "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
-    values: { m: mediaFolder, e: expected }
+    values: { m: mediaFolder, e: expected },
   });
   return {
     missing: true,
     status: "missing",
-    info
+    info,
   };
 }
 
@@ -169,10 +165,7 @@ export const FileStatusBlock: React.FunctionComponent<{
     return null;
   }
 
-  const color =
-    fileStatus.status === "noMediaFolderConnection"
-      ? lameta_orange
-      : error_color;
+  const color = fileStatus.status === "noMediaFolderConnection" ? lameta_orange : error_color;
 
   return (
     <div
@@ -210,7 +203,7 @@ export const FileStatusBlock: React.FunctionComponent<{
               else {
                 props.folder.renameChildWithFilenameMinusExtension(
                   props.file,
-                  sanitizeForArchive(Path.parse(props.fileName).name)
+                  sanitizeForArchive(Path.parse(props.fileName).name),
                 );
               }
             }}
@@ -219,7 +212,7 @@ export const FileStatusBlock: React.FunctionComponent<{
             style={{
               backgroundColor: error_color,
               color: "white",
-              border: "1px solid white"
+              border: "1px solid white",
             }}
           >
             <Trans comment="label on a button that shows when a Session or Person file name has characters that are not allowed">

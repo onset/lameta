@@ -28,16 +28,13 @@ export class AutoFetchCloudFiles {
 
   public constructor(
     private readonly dwellMs: number = kDefaultAutoFetchDwellMs,
-    private readonly isOnline: () => boolean = () => networkStatus.isOnline
+    private readonly isOnline: () => boolean = () => networkStatus.isOnline,
   ) {}
 
   // Call whenever the user's selection changes. `thresholdBytes` is the
   // current AutoFetchCloudFilesUnderMB setting, already converted to bytes
   // (0 = never auto-fetch, Infinity = always).
-  public onSelectionChanged(
-    file: AutoFetchableFile | undefined,
-    thresholdBytes: number
-  ): void {
+  public onSelectionChanged(file: AutoFetchableFile | undefined, thresholdBytes: number): void {
     if (this.dwellTimer !== undefined) {
       clearTimeout(this.dwellTimer);
       this.dwellTimer = undefined;

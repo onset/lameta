@@ -1,12 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  AutoFetchCloudFiles,
-  mbToBytes,
-  AutoFetchableFile
-} from "./autoFetchCloudFiles";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vite-plus/test";
+import { AutoFetchCloudFiles, mbToBytes, AutoFetchableFile } from "./autoFetchCloudFiles";
 
 function makeFile(
-  overrides: { cloudStatus?: string; sizeBytes?: number } = {}
+  overrides: { cloudStatus?: string; sizeBytes?: number } = {},
 ): AutoFetchableFile & { fetchCount: number } {
   const file: any = {
     cloudStatus: overrides.cloudStatus ?? "cloudOnly",
@@ -15,7 +11,7 @@ function makeFile(
     makeAvailableOffline: async () => {
       file.fetchCount++;
       file.cloudStatus = "local";
-    }
+    },
   };
   return file;
 }

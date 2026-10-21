@@ -1,24 +1,21 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vite-plus/test";
 import fs from "fs";
 import * as Path from "path";
 import {
   collectMetadataFilePaths,
   prefetchCloudFiles,
-  prefetchCloudMetadata
+  prefetchCloudMetadata,
 } from "./cloudMetadataPrefetch";
 import {
   setMacStatReaderForTests,
   setMaterializerForTests,
-  setCloudSyncRootsForTests
+  setCloudSyncRootsForTests,
 } from "./cloudFileStatus";
 import { cloudReadGuard } from "./cloudReadGuard";
 
 // A unique temp project directory for the tests that need real Sessions/People
 // folders on disk (collectMetadataFilePaths enumerates directories via fs).
-const scratchRoot = Path.join(
-  process.env.TMPDIR || "/tmp",
-  "cloudMetadataPrefetch-spec"
-);
+const scratchRoot = Path.join(process.env.TMPDIR || "/tmp", "cloudMetadataPrefetch-spec");
 
 function touch(filePath: string) {
   fs.mkdirSync(Path.dirname(filePath), { recursive: true });
@@ -54,7 +51,7 @@ describe("collectMetadataFilePaths", () => {
       Path.join(projectDir, "Proj1.sprj"),
       Path.join(projectDir, "Sessions", "s1", "s1.session"),
       Path.join(projectDir, "Sessions", "s2", "s2.session"),
-      Path.join(projectDir, "People", "p1", "p1.person")
+      Path.join(projectDir, "People", "p1", "p1.person"),
     ]);
   });
 
@@ -68,23 +65,13 @@ describe("collectMetadataFilePaths", () => {
 
     const paths = collectMetadataFilePaths(projectDir);
 
-    expect(paths).toContain(
-      Path.join(projectDir, "Sessions", "s1", "s1_Careful.mp3.meta")
-    );
-    expect(paths).toContain(
-      Path.join(projectDir, "Sessions", "s1", "s1_Photo.jpg.meta")
-    );
-    expect(paths).toContain(
-      Path.join(projectDir, "People", "p1", "p1_Consent.pdf.meta")
-    );
+    expect(paths).toContain(Path.join(projectDir, "Sessions", "s1", "s1_Careful.mp3.meta"));
+    expect(paths).toContain(Path.join(projectDir, "Sessions", "s1", "s1_Photo.jpg.meta"));
+    expect(paths).toContain(Path.join(projectDir, "People", "p1", "p1_Consent.pdf.meta"));
     // The folder's own metadata file is still there.
-    expect(paths).toContain(
-      Path.join(projectDir, "Sessions", "s1", "s1.session")
-    );
+    expect(paths).toContain(Path.join(projectDir, "Sessions", "s1", "s1.session"));
     // The media file itself (no .meta suffix) is not collected.
-    expect(paths).not.toContain(
-      Path.join(projectDir, "Sessions", "s1", "s1_Careful.mp3")
-    );
+    expect(paths).not.toContain(Path.join(projectDir, "Sessions", "s1", "s1_Careful.mp3"));
   });
 
   it("includes .meta sidecars in DescriptionDocuments and OtherDocuments", () => {
@@ -95,24 +82,16 @@ describe("collectMetadataFilePaths", () => {
 
     const paths = collectMetadataFilePaths(projectDir);
 
-    expect(paths).toContain(
-      Path.join(projectDir, "DescriptionDocuments", "readme.txt.meta")
-    );
-    expect(paths).toContain(
-      Path.join(projectDir, "OtherDocuments", "budget.xls.meta")
-    );
-    expect(paths).not.toContain(
-      Path.join(projectDir, "OtherDocuments", "notes.txt")
-    );
+    expect(paths).toContain(Path.join(projectDir, "DescriptionDocuments", "readme.txt.meta"));
+    expect(paths).toContain(Path.join(projectDir, "OtherDocuments", "budget.xls.meta"));
+    expect(paths).not.toContain(Path.join(projectDir, "OtherDocuments", "notes.txt"));
   });
 
   it("tolerates a project with no Sessions/People/doc folders (just the .sprj)", () => {
     const projectDir = Path.join(scratchRoot, "Empty");
     fs.rmSync(projectDir, { recursive: true, force: true });
     fs.mkdirSync(projectDir, { recursive: true });
-    expect(collectMetadataFilePaths(projectDir)).toEqual([
-      Path.join(projectDir, "Empty.sprj")
-    ]);
+    expect(collectMetadataFilePaths(projectDir)).toEqual([Path.join(projectDir, "Empty.sprj")]);
   });
 });
 
@@ -128,9 +107,7 @@ describe("prefetchCloudFiles", () => {
   });
 
   it("requests hydration for cloud-only files and skips already-local ones", () => {
-    setCloudSyncRootsForTests([
-      { path: "/Users/me/OneDrive/Proj", providerName: "OneDrive" }
-    ]);
+    setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive/Proj", providerName: "OneDrive" }]);
     const materialize = vi.fn().mockResolvedValue(undefined);
     setMaterializerForTests(materialize);
 
@@ -146,25 +123,19 @@ describe("prefetchCloudFiles", () => {
   });
 
   it("returns 0 and fires nothing when there are no cloud-only files", () => {
-    setCloudSyncRootsForTests([
-      { path: "/Users/me/OneDrive/Proj", providerName: "OneDrive" }
-    ]);
+    setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive/Proj", providerName: "OneDrive" }]);
     const materialize = vi.fn().mockResolvedValue(undefined);
     setMaterializerForTests(materialize);
     setMacStatReaderForTests(() => hydrated);
 
-    const n = prefetchCloudFiles([
-      "/Users/me/OneDrive/Proj/Sessions/s1/s1.session"
-    ]);
+    const n = prefetchCloudFiles(["/Users/me/OneDrive/Proj/Sessions/s1/s1.session"]);
 
     expect(n).toBe(0);
     expect(materialize).not.toHaveBeenCalled();
   });
 
   it("skips paths that are not under any cloud sync root", () => {
-    setCloudSyncRootsForTests([
-      { path: "/Users/me/OneDrive/Proj", providerName: "OneDrive" }
-    ]);
+    setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive/Proj", providerName: "OneDrive" }]);
     const materialize = vi.fn().mockResolvedValue(undefined);
     setMaterializerForTests(materialize);
     setMacStatReaderForTests(() => dataless);
@@ -176,9 +147,7 @@ describe("prefetchCloudFiles", () => {
   });
 
   it("does nothing when the cloud circuit breaker is tripped", () => {
-    setCloudSyncRootsForTests([
-      { path: "/Users/me/OneDrive/Proj", providerName: "OneDrive" }
-    ]);
+    setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive/Proj", providerName: "OneDrive" }]);
     const materialize = vi.fn().mockResolvedValue(undefined);
     setMaterializerForTests(materialize);
     setMacStatReaderForTests(() => dataless);
@@ -186,9 +155,7 @@ describe("prefetchCloudFiles", () => {
     cloudReadGuard.recordFailure("/Users/me/OneDrive/Proj/whatever.session");
     expect(cloudReadGuard.isTripped).toBe(true);
 
-    const n = prefetchCloudFiles([
-      "/Users/me/OneDrive/Proj/Sessions/s1/s1.session"
-    ]);
+    const n = prefetchCloudFiles(["/Users/me/OneDrive/Proj/Sessions/s1/s1.session"]);
 
     expect(n).toBe(0);
     expect(materialize).not.toHaveBeenCalled();
@@ -210,9 +177,7 @@ describe("prefetchCloudMetadata (end-to-end over a temp project)", () => {
   it("collects and prefetches every cloud-only metadata file in the project", () => {
     const projectDir = makeProject("MyProject", ["s1", "s2"], ["p1", "p2"]);
 
-    setCloudSyncRootsForTests([
-      { path: projectDir, providerName: "OneDrive" }
-    ]);
+    setCloudSyncRootsForTests([{ path: projectDir, providerName: "OneDrive" }]);
     const materialize = vi.fn().mockResolvedValue(undefined);
     setMaterializerForTests(materialize);
     // Every metadata file is a cloud-only placeholder.
@@ -230,16 +195,14 @@ describe("prefetchCloudMetadata (end-to-end over a temp project)", () => {
         Path.join(projectDir, "Sessions", "s1", "s1.session"),
         Path.join(projectDir, "Sessions", "s2", "s2.session"),
         Path.join(projectDir, "People", "p1", "p1.person"),
-        Path.join(projectDir, "People", "p2", "p2.person")
-      ].sort()
+        Path.join(projectDir, "People", "p2", "p2.person"),
+      ].sort(),
     );
   });
 
   it("does not fire when the metadata files are already local", () => {
     const projectDir = makeProject("AllLocal", ["s1"], ["p1"]);
-    setCloudSyncRootsForTests([
-      { path: projectDir, providerName: "OneDrive" }
-    ]);
+    setCloudSyncRootsForTests([{ path: projectDir, providerName: "OneDrive" }]);
     const materialize = vi.fn().mockResolvedValue(undefined);
     setMaterializerForTests(materialize);
     setMacStatReaderForTests(() => hydrated);

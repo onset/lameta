@@ -3,7 +3,7 @@ import Path from "path";
 import { Session } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import temp from "temp";
-import { describe, it, beforeEach, expect } from "vitest";
+import { describe, it, beforeEach, expect } from "vite-plus/test";
 
 temp.track();
 
@@ -30,44 +30,31 @@ describe("zombie metadata repair at save time", () => {
   it("saveFolderMetaData() renames a single misnamed metadata file instead of creating a second one", () => {
     const dir = Path.join(rootDirectory, "foo");
     fs.mkdirSync(dir);
-    const session = Session.fromDirectory(
-      dir,
-      new EncounteredVocabularyRegistry()
-    );
+    const session = Session.fromDirectory(dir, new EncounteredVocabularyRegistry());
     session.properties.setText("id", "foo");
     session.saveFolderMetaData();
     expect(fs.existsSync(Path.join(dir, "foo.session"))).toBeTruthy();
 
     // someone/something renames the metadata file behind our back
-    fs.renameSync(
-      Path.join(dir, "foo.session"),
-      Path.join(dir, "stale.session")
-    );
+    fs.renameSync(Path.join(dir, "foo.session"), Path.join(dir, "stale.session"));
 
     session.saveFolderMetaData();
 
-    const sessionFiles = fs
-      .readdirSync(dir)
-      .filter((f) => f.endsWith(".session"));
+    const sessionFiles = fs.readdirSync(dir).filter((f) => f.endsWith(".session"));
     expect(sessionFiles).toEqual(["foo.session"]);
   });
 
   it("saveFolderMetaData() still works when the metadata file is simply missing", () => {
     const dir = Path.join(rootDirectory, "bar");
     fs.mkdirSync(dir);
-    const session = Session.fromDirectory(
-      dir,
-      new EncounteredVocabularyRegistry()
-    );
+    const session = Session.fromDirectory(dir, new EncounteredVocabularyRegistry());
     session.properties.setText("id", "bar");
     session.saveFolderMetaData();
 
     fs.rmSync(Path.join(dir, "bar.session"));
     session.saveFolderMetaData();
 
-    const sessionFiles = fs
-      .readdirSync(dir)
-      .filter((f) => f.endsWith(".session"));
+    const sessionFiles = fs.readdirSync(dir).filter((f) => f.endsWith(".session"));
     expect(sessionFiles).toEqual(["bar.session"]);
   });
 });

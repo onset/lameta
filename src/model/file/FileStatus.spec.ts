@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { OtherFile } from "./File";
 import { getStatusOfFile, getLinkStatusIconPath } from "./FileStatus";
 import * as fs from "fs-extra";

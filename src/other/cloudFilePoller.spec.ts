@@ -1,10 +1,10 @@
-import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
+import { describe, it, expect, afterEach, beforeEach, vi } from "vite-plus/test";
 import { cloudFilePoller, kCloudPollIntervalMs, PollableFile } from "./cloudFilePoller";
 
 function makeFile(initialStatus: string): PollableFile {
   return {
     cloudStatus: initialStatus,
-    updateCloudStatus: vi.fn()
+    updateCloudStatus: vi.fn(),
   };
 }
 

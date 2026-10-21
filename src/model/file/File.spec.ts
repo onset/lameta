@@ -7,10 +7,7 @@ import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
 import { describe, it, afterEach, vi } from "vite-plus/test";
-import {
-  setAttributeReaderForTests,
-  setPinWriterForTests
-} from "../../other/cloudFileStatus";
+import { setAttributeReaderForTests, setPinWriterForTests } from "../../other/cloudFileStatus";
 import { cloudFilePoller } from "../../other/cloudFilePoller";
 import { PatientFS } from "../../other/patientFile";
 import { cloudReadGuard } from "../../other/cloudReadGuard";
@@ -22,9 +19,9 @@ function getPretendAudioFile(): string {
 }
 
 function writeSessionFile(contents: string): {
-  tmpFolder;
-  sessionFolder;
-  filePath;
+  tmpFolder: string;
+  sessionFolder: string;
+  filePath: string;
 } {
   const tmpFolder = temp.mkdirSync();
   const sessionFolder = Path.join(tmpFolder, "test");
@@ -36,7 +33,7 @@ function writeSessionFile(contents: string): {
   <?xml version="1.0" encoding="utf-8"?>
   <Session>
     ${contents}
-  </Session>`
+  </Session>`,
   );
   return { tmpFolder, sessionFolder, filePath };
 }
@@ -46,10 +43,7 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
 
   // note, we are using a session to run these just because we need something
   // concrete. It would be an improvement to do it in some more generic way.
-  const f = new SessionMetadataFile(
-    sessionFolder,
-    new EncounteredVocabularyRegistry()
-  );
+  const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
   fs.removeSync(filePath); // remove the old file, just to make sure
   f.save(/*forceSave*/ true);
   try {
@@ -91,10 +85,7 @@ describe("file", () => {
     const notes: string = "<you> & me > 1 \"quote\" 'single quote'";
     f.setTextProperty("notes", notes);
     f.save();
-    const f2 = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const f2 = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     expect(f2.getTextField("notes").text).toBe(notes);
   });
 
@@ -103,10 +94,7 @@ describe("file", () => {
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     f.setTextProperty("customone", "hello");
     f.save();
-    const f2 = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const f2 = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     expect(f2.getTextField("customone").text).toBe("hello");
   });
 
@@ -116,10 +104,7 @@ describe("file", () => {
       <title type="string">Test Session</title>
     `);
 
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Should normalize to ISO date with time discarded
     expect(f.getTextProperty("date")).toBe("2011-11-22");
@@ -140,10 +125,7 @@ describe("file", () => {
       <title type="string">Test Session</title>
     `);
 
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Ambiguous; we should clear the date
     expect(f.getTextProperty("date")).toBe("");
@@ -180,15 +162,14 @@ describe("file", () => {
          *  If there are other attributes
          *  If there is nested xml
          */
-      }
+      },
     );
   });
 });
 
 describe("FolderMetadataFile", () => {
   it("can roundtrip sample session file", () => {
-    const originalPath =
-      "./sample data/Edolo sample/Sessions/ETR009/ETR009.session";
+    const originalPath = "./sample data/Edolo sample/Sessions/ETR009/ETR009.session";
     const originalXml: string = fs.readFileSync(originalPath, "utf8");
     const newDir = Path.join(temp.dir, "ETR009");
     if (fs.existsSync(newDir)) {
@@ -198,10 +179,7 @@ describe("FolderMetadataFile", () => {
     const newPath = Path.join(newDir, "ETR009.session");
     fs.writeFileSync(newPath, originalXml, "utf8");
 
-    const f = new SessionMetadataFile(
-      newDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(newDir, new EncounteredVocabularyRegistry());
     f.save();
     const newXml: string = fs.readFileSync(newPath, "utf8");
     // console.log("-----------------------------");
@@ -247,10 +225,7 @@ describe("Genre normalization during reading", () => {
       <title type="string">Test Session</title>
     `);
 
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that genre label was normalized to ID
     expect(f.getTextProperty("genre")).toBe("procedural_discourse");
@@ -268,10 +243,7 @@ describe("Genre normalization during reading", () => {
       <title type="string">Test Session</title>
     `);
 
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that Dialog was normalized to dialog
     expect(f.getTextProperty("genre")).toBe("dialog");
@@ -289,10 +261,7 @@ describe("Genre normalization during reading", () => {
       <title type="string">Test Session</title>
     `);
 
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that case insensitive matching works
     expect(f.getTextProperty("genre")).toBe("procedural_discourse");
@@ -310,10 +279,7 @@ describe("Genre normalization during reading", () => {
       <title type="string">Test Session</title>
     `);
 
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that unknown genre is left as-is
     expect(f.getTextProperty("genre")).toBe("custom_unknown_genre");
@@ -331,10 +297,7 @@ describe("Genre normalization during reading", () => {
       <title type="string">Test Session</title>
     `);
 
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that ID form is preserved
     expect(f.getTextProperty("genre")).toBe("procedural_discourse");
@@ -352,10 +315,7 @@ describe("Genre normalization during reading", () => {
       <title type="string">Test Session</title>
     `);
 
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that empty genre is handled properly (returns empty string)
     expect(f.getTextProperty("genre")).toBe("");
@@ -374,10 +334,7 @@ describe("Genre normalization during reading", () => {
     `);
 
     // Create session file - this triggers genre normalization
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that genre was normalized
     expect(f.getTextProperty("genre")).toBe("procedural_discourse");
@@ -385,9 +342,7 @@ describe("Genre normalization during reading", () => {
     // Save the file and check if the XML contains the normalized value
     f.save(false, true); // force save
     const savedXml = fs.readFileSync(filePath, "utf8");
-    expect(savedXml).toContain(
-      '<Genre type="string">procedural_discourse</Genre>'
-    );
+    expect(savedXml).toContain('<Genre type="string">procedural_discourse</Genre>');
 
     try {
       fs.removeSync(tmpFolder);
@@ -403,10 +358,7 @@ describe("Genre normalization during reading", () => {
     `);
 
     // Create session file - this triggers genre normalization during loading
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that genre was normalized
     expect(f.getTextProperty("genre")).toBe("procedural_discourse");
@@ -416,9 +368,7 @@ describe("Genre normalization during reading", () => {
     f.save(); // should save because file is dirty
 
     const savedXml = fs.readFileSync(filePath, "utf8");
-    expect(savedXml).toContain(
-      '<Genre type="string">procedural_discourse</Genre>'
-    );
+    expect(savedXml).toContain('<Genre type="string">procedural_discourse</Genre>');
 
     try {
       fs.removeSync(tmpFolder);
@@ -434,10 +384,7 @@ describe("Genre normalization during reading", () => {
     `);
 
     // Create session file - no normalization needed (already in ID form)
-    const f = new SessionMetadataFile(
-      sessionFolder,
-      new EncounteredVocabularyRegistry()
-    );
+    const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
 
     // Check that genre was preserved as-is (no normalization)
     expect(f.getTextProperty("genre")).toBe("procedural_discourse");
@@ -462,18 +409,15 @@ describe("File cached media stats", () => {
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     const identity = {
       sizeBytes: f.getSizeInBytes(),
-      mtimeMs: f.getMtimeMs()
+      mtimeMs: f.getMtimeMs(),
     };
     f.setCachedMediaStats({ Length: "1:02", Format: "MPEG Audio" }, identity);
     f.save();
 
-    const f2 = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const f2 = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     expect(f2.getCachedMediaStats()).toEqual({
       Length: "1:02",
-      Format: "MPEG Audio"
+      Format: "MPEG Audio",
     });
   });
 
@@ -488,16 +432,13 @@ describe("File cached media stats", () => {
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     f.setCachedMediaStats(
       { Length: "1:02" },
-      { sizeBytes: f.getSizeInBytes(), mtimeMs: f.getMtimeMs() }
+      { sizeBytes: f.getSizeInBytes(), mtimeMs: f.getMtimeMs() },
     );
     f.save();
 
     fs.appendFileSync(mediaFilePath, "more bytes, changing the size");
 
-    const f2 = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const f2 = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     expect(f2.getCachedMediaStats()).toBeUndefined();
   });
 
@@ -506,17 +447,14 @@ describe("File cached media stats", () => {
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     f.setCachedMediaStats(
       { Length: "1:02" },
-      { sizeBytes: f.getSizeInBytes(), mtimeMs: f.getMtimeMs() }
+      { sizeBytes: f.getSizeInBytes(), mtimeMs: f.getMtimeMs() },
     );
     f.save();
 
     const future = new Date(Date.now() + 60_000);
     fs.utimesSync(mediaFilePath, future, future);
 
-    const f2 = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const f2 = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     expect(f2.getCachedMediaStats()).toBeUndefined();
   });
 
@@ -525,7 +463,7 @@ describe("File cached media stats", () => {
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     const identity = {
       sizeBytes: f.getSizeInBytes(),
-      mtimeMs: f.getMtimeMs()
+      mtimeMs: f.getMtimeMs(),
     };
     f.setCachedMediaStats({ Length: "1:02" }, identity);
     f.save();
@@ -555,7 +493,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: true,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: false
+      IS_PINNED: false,
     });
   }
 
@@ -572,18 +510,13 @@ describe("File cloudStatus", () => {
   it("soft-fails (no throw) and records a cloud failure when a placeholder metadata read fails", () => {
     const mediaFilePath = getPretendAudioFile();
     // Seed a real .meta on disk so existsSync passes during the reload.
-    const seed = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const seed = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     seed.save();
 
     cloudReadGuard.reset();
     setPinWriterForTests(async () => {});
     setAttributeReaderForTests(makeCloudPlaceholderReader());
-    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(
-      throwCloudReadError
-    );
+    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(throwCloudReadError);
 
     let threw = false;
     let f: OtherFile | undefined;
@@ -601,10 +534,7 @@ describe("File cloudStatus", () => {
 
   it("does not read or pin further placeholders once the breaker is tripped", () => {
     const mediaFilePath = getPretendAudioFile();
-    const seed = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const seed = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     seed.save();
 
     cloudReadGuard.reset();
@@ -634,18 +564,13 @@ describe("File cloudStatus", () => {
     // saving it would destroy the real file on disk (and sync the empty
     // version back). save() must skip it -- even a forced save.
     const mediaFilePath = getPretendAudioFile();
-    const seed = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const seed = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     seed.save(); // real .meta exists on disk
 
     cloudReadGuard.reset();
     setPinWriterForTests(async () => {});
     setAttributeReaderForTests(makeCloudPlaceholderReader());
-    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(
-      throwCloudReadError
-    );
+    vi.spyOn(PatientFS, "readFileSyncNoNotify").mockImplementation(throwCloudReadError);
 
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     expect(f.cloudMetadataUnavailable).toBe(true);
@@ -661,7 +586,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: true,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: false
+      IS_PINNED: false,
     }));
 
     const mediaFilePath = getPretendAudioFile();
@@ -678,10 +603,7 @@ describe("File cloudStatus", () => {
     // which hydrates it; simulate OneDrive by flipping the reader to
     // hydrated attrs once the pin lands.
     const mediaFilePath = getPretendAudioFile();
-    const first = new OtherFile(
-      mediaFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const first = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
     first.save(); // writes the .meta so the reload below actually reads it
 
     let hydrated = false;
@@ -692,7 +614,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: !hydrated,
       IS_RECALL_ON_DATA_ACCESS: !hydrated,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: hydrated
+      IS_PINNED: hydrated,
     }));
 
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
@@ -707,7 +629,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: false
+      IS_PINNED: false,
     }));
 
     const mediaFilePath = getPretendAudioFile();
@@ -726,7 +648,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: false
+      IS_PINNED: false,
     }));
 
     const mediaFilePath = getPretendAudioFile();
@@ -736,7 +658,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
 
     await f.makeAvailableOffline();
@@ -754,7 +676,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
 
     const mediaFilePath = getPretendAudioFile();
@@ -765,7 +687,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: false
+      IS_PINNED: false,
     }));
 
     await f.stopWaiting();
@@ -779,7 +701,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     const mediaFilePath = getPretendAudioFile();
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
@@ -793,7 +715,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     f.updateCloudStatus();
     expect(f.cloudStatus).toBe("localPinned");
@@ -804,7 +726,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     f.updateCloudStatus();
     expect(f.cloudStatus).toBe("hydrating");
@@ -815,7 +737,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     const mediaFilePath = getPretendAudioFile();
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
@@ -829,7 +751,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     const mediaFilePath = getPretendAudioFile();
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
@@ -847,7 +769,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     const mediaFilePath = getPretendAudioFile();
     const f = new OtherFile(mediaFilePath, new EncounteredVocabularyRegistry());
@@ -858,7 +780,7 @@ describe("File cloudStatus", () => {
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     f.updateCloudStatus();
 

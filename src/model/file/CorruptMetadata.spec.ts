@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vite-plus/test";
 import { OtherFile } from "./File";
 import { Session, SessionMetadataFile } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
@@ -76,10 +76,7 @@ describe("corrupt/truncated metadata files", () => {
     try {
       // First half of a valid file -- an interrupted cloud sync writes exactly
       // this kind of half-written file.
-      const truncated = validSessionXml.slice(
-        0,
-        Math.floor(validSessionXml.length / 2)
-      );
+      const truncated = validSessionXml.slice(0, Math.floor(validSessionXml.length / 2));
       fs.writeFileSync(sessionFilePath, truncated);
 
       let threw = false;
@@ -104,28 +101,20 @@ describe("corrupt/truncated metadata files", () => {
       // devices while offline and both changes later sync: a second copy
       // named after the sync engine's conflict convention, sitting right next
       // to the original.
-      const conflictedCopyPath = Path.join(
-        sessionFolder,
-        "ETR009 (conflicted copy).session"
-      );
+      const conflictedCopyPath = Path.join(sessionFolder, "ETR009 (conflicted copy).session");
       fs.writeFileSync(conflictedCopyPath, validSessionXml);
 
       let threw = false;
       let session: Session | undefined;
       try {
-        session = Session.fromDirectory(
-          sessionFolder,
-          new EncounteredVocabularyRegistry()
-        );
+        session = Session.fromDirectory(sessionFolder, new EncounteredVocabularyRegistry());
       } catch (e) {
         threw = true;
       }
 
       expect(threw).toBe(false);
       // The real session still loads and reads correctly.
-      expect(session!.metadataFile!.getTextProperty("title")).toBe(
-        "Test Session"
-      );
+      expect(session!.metadataFile!.getTextProperty("title")).toBe("Test Session");
 
       // Documented current behavior: lameta has no special handling for a
       // sync engine's "(conflicted copy)" naming convention. Folder.loadChildFiles
@@ -136,7 +125,7 @@ describe("corrupt/truncated metadata files", () => {
       // unrecognized document. It is NOT parsed as session metadata, merged,
       // or flagged to the user as a conflict.
       const conflictedAsOtherFile = session!.files.find(
-        (f) => f.pathInFolderToLinkFileOrLocalCopy === conflictedCopyPath
+        (f) => f.pathInFolderToLinkFileOrLocalCopy === conflictedCopyPath,
       );
       expect(conflictedAsOtherFile).toBeDefined();
     } finally {
@@ -157,14 +146,12 @@ describe("corrupt/truncated metadata files", () => {
     const f = new OtherFile(
       mediaFilePath,
       new EncounteredVocabularyRegistry(),
-      /*partialLoadWhileCopyingInThisFile*/ true
+      /*partialLoadWhileCopyingInThisFile*/ true,
     );
 
-    const notifySpy = vi
-      .spyOn(NotifyModule, "NotifyException")
-      .mockImplementation(() => {
-        /* swallow */
-      });
+    const notifySpy = vi.spyOn(NotifyModule, "NotifyException").mockImplementation(() => {
+      /* swallow */
+    });
 
     let threw = false;
     try {
@@ -198,14 +185,12 @@ describe("corrupt/truncated metadata files", () => {
     const f = new OtherFile(
       mediaFilePath,
       new EncounteredVocabularyRegistry(),
-      /*partialLoadWhileCopyingInThisFile*/ true
+      /*partialLoadWhileCopyingInThisFile*/ true,
     );
 
-    const notifySpy = vi
-      .spyOn(NotifyModule, "NotifyException")
-      .mockImplementation(() => {
-        /* swallow */
-      });
+    const notifySpy = vi.spyOn(NotifyModule, "NotifyException").mockImplementation(() => {
+      /* swallow */
+    });
 
     expect(() => f.finishLoading()).toThrow();
     expect(notifySpy).toHaveBeenCalledTimes(1);

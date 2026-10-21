@@ -70,17 +70,11 @@ function folderMetadataPaths(parentDir: string, extension: string): string[] {
 export function collectMetadataFilePaths(projectDir: string): string[] {
   const paths: string[] = [];
   paths.push(Path.join(projectDir, Path.basename(projectDir) + ".sprj"));
-  paths.push(
-    ...folderMetadataPaths(Path.join(projectDir, "Sessions"), ".session")
-  );
-  paths.push(
-    ...folderMetadataPaths(Path.join(projectDir, "People"), ".person")
-  );
+  paths.push(...folderMetadataPaths(Path.join(projectDir, "Sessions"), ".session"));
+  paths.push(...folderMetadataPaths(Path.join(projectDir, "People"), ".person"));
   // ProjectDocuments loads these two folders the same way, reading each file's
   // .meta sidecar serially.
-  paths.push(
-    ...metaSidecarPaths(Path.join(projectDir, "DescriptionDocuments"))
-  );
+  paths.push(...metaSidecarPaths(Path.join(projectDir, "DescriptionDocuments")));
   paths.push(...metaSidecarPaths(Path.join(projectDir, "OtherDocuments")));
   return paths;
 }
@@ -114,7 +108,7 @@ export function prefetchCloudFiles(paths: string[]): number {
   }
 
   console.log(
-    `☁️  [cloudMetadataPrefetch] Prefetching ${placeholders.length} cloud-only metadata file(s) in parallel so project load doesn't block one-at-a-time`
+    `☁️  [cloudMetadataPrefetch] Prefetching ${placeholders.length} cloud-only metadata file(s) in parallel so project load doesn't block one-at-a-time`,
   );
 
   for (const p of placeholders) {

@@ -255,13 +255,11 @@ class FolderList extends React.Component<IProps, any> {
                 // the UI on the old, now-unusable selection.
                 if (selectedFolderIndex > -1) {
                   try {
-                    this.props.folders.items[
-                      selectedFolderIndex
-                    ].saveAllFilesInFolder();
+                    this.props.folders.items[selectedFolderIndex].saveAllFilesInFolder();
                   } catch (err) {
                     console.error(
                       "Error saving the outgoing folder while switching selection; continuing anyway.",
-                      err
+                      err,
                     );
                   }
                 }

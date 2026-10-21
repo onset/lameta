@@ -72,9 +72,7 @@ test.describe("vanished session must not wound the app", () => {
     await createSession("victim");
     // force victim to save so its folder/files exist on disk
     await selectSession("keeper");
-    await expect
-      .poll(() => fs.existsSync(sessionDir("victim")), { timeout: 10_000 })
-      .toBe(true);
+    await expect.poll(() => fs.existsSync(sessionDir("victim")), { timeout: 10_000 }).toBe(true);
 
     // The session vanishes from disk behind the app's back.
     fs.rmSync(sessionDir("victim"), { recursive: true, force: true });

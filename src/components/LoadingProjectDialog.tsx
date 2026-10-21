@@ -4,10 +4,7 @@ import { t } from "@lingui/macro";
 import { Dialog, DialogContent, LinearProgress } from "@mui/material";
 import { DialogMiddle } from "./LametaDialog";
 import { Project, ProjectHolder } from "../model/Project/Project";
-import {
-  getCloudFileProvider,
-  getCloudProviderNameForPath
-} from "../other/cloudFileStatus";
+import { getCloudFileProvider, getCloudProviderNameForPath } from "../other/cloudFileStatus";
 import { collectMetadataFilePaths } from "../other/cloudMetadataPrefetch";
 
 export interface LoadingProgress {
@@ -63,8 +60,7 @@ export const getLoadPlan = (directory: string): LoadPlan => {
   if (hasCloudEvictedMetadata(directory)) {
     let cloudProviderName: string;
     try {
-      cloudProviderName =
-        getCloudProviderNameForPath(directory) ?? t`the cloud`;
+      cloudProviderName = getCloudProviderNameForPath(directory) ?? t`the cloud`;
     } catch {
       cloudProviderName = t`the cloud`;
     }
@@ -85,7 +81,7 @@ export const shouldUseAsyncLoading = (directory: string): boolean =>
 export const loadProject = async (
   directory: string,
   onProgress?: (progress: LoadingProgress) => void,
-  plan?: LoadPlan
+  plan?: LoadPlan,
 ): Promise<Project> => {
   const { useAsync } = plan ?? getLoadPlan(directory);
   if (useAsync) {
@@ -100,7 +96,7 @@ export const loadProject = async (
 export const loadProjectIntoHolder = async (
   directory: string,
   projectHolder: ProjectHolder,
-  onProgress?: (progress: LoadingProgress) => void
+  onProgress?: (progress: LoadingProgress) => void,
 ): Promise<void> => {
   const project = await loadProject(directory, onProgress);
   projectHolder.setProject(project);
@@ -120,13 +116,10 @@ export const LoadingProjectDialog: React.FunctionComponent<{
   // Use overall progress for the percentage so it never goes backwards
   const percentage =
     props.progress.overallTotal > 0
-      ? Math.round(
-          (props.progress.overallCurrent / props.progress.overallTotal) * 100
-        )
+      ? Math.round((props.progress.overallCurrent / props.progress.overallTotal) * 100)
       : 0;
 
-  const phaseLabel =
-    props.progress.phase === "sessions" ? t`Sessions` : t`People`;
+  const phaseLabel = props.progress.phase === "sessions" ? t`Sessions` : t`People`;
 
   // When cloud files are being fetched, the wait is dominated by the download,
   // not by our per-item work, so lead with that instead of the phase.

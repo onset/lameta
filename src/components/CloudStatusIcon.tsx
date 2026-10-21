@@ -8,7 +8,7 @@ import { File } from "../model/file/File";
 import {
   CloudFileStatus,
   getCloudProviderNameForPath,
-  isUnderCloudSyncRoot
+  isUnderCloudSyncRoot,
 } from "../other/cloudFileStatus";
 import { networkStatus } from "../other/networkStatus";
 
@@ -26,7 +26,7 @@ export type CloudDisplayStatus =
 export function getCloudDisplayStatus(
   cloudStatus: CloudFileStatus,
   isOnline: boolean,
-  isUnderSyncRoot: boolean
+  isUnderSyncRoot: boolean,
 ): CloudDisplayStatus | undefined {
   switch (cloudStatus) {
     case "cloudOnly":
@@ -48,20 +48,15 @@ export function getCloudDisplayStatus(
   }
 }
 
-export function getCloudDisplayStatusOfFile(
-  file: File
-): CloudDisplayStatus | undefined {
+export function getCloudDisplayStatusOfFile(file: File): CloudDisplayStatus | undefined {
   return getCloudDisplayStatus(
     file.cloudStatus,
     networkStatus.isOnline,
-    isUnderCloudSyncRoot(file.getActualFilePath())
+    isUnderCloudSyncRoot(file.getActualFilePath()),
   );
 }
 
-function getTooltip(
-  status: CloudDisplayStatus,
-  providerName: string
-): string {
+function getTooltip(status: CloudDisplayStatus, providerName: string): string {
   switch (status) {
     case "cloudOnly":
       return t`Online-only (${providerName}). The content of this file is not on this computer.`;
@@ -99,7 +94,7 @@ export const CloudStatusGlyph: React.FunctionComponent<{
     width: size,
     height: size,
     viewBox: "0 0 24 24",
-    role: "img" as const
+    role: "img" as const,
   };
   const title = <title>{getTooltip(status, providerName ?? t`Cloud`)}</title>;
   switch (status) {

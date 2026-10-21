@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vite-plus/test";
 import { Session } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { PatientFS } from "../../other/patientFile";
@@ -20,10 +20,7 @@ function makeSavedSession(): { folder: string; session: Session } {
   const tmp = temp.mkdirSync("vanished-session");
   const folder = Path.join(tmp, "vic");
   fs.mkdirSync(folder);
-  const session = Session.fromDirectory(
-    folder,
-    new EncounteredVocabularyRegistry()
-  );
+  const session = Session.fromDirectory(folder, new EncounteredVocabularyRegistry());
   session.properties.setText("id", "vic");
   session.saveAllFilesInFolder();
   return { folder, session };
@@ -43,12 +40,8 @@ describe("a session folder that vanished from disk", () => {
     fs.removeSync(folder);
     expect(fs.existsSync(folder)).toBe(false);
 
-    const warnSpy = vi
-      .spyOn(NotifyModule, "NotifyWarning")
-      .mockImplementation(() => {});
-    const errorSpy = vi
-      .spyOn(NotifyModule, "NotifyError")
-      .mockImplementation(() => {});
+    const warnSpy = vi.spyOn(NotifyModule, "NotifyWarning").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(NotifyModule, "NotifyError").mockImplementation(() => {});
     const accessSpy = vi
       .spyOn(NotifyModule, "NotifyFileAccessProblem")
       .mockImplementation(() => {});
@@ -68,9 +61,7 @@ describe("a session folder that vanished from disk", () => {
     // exactly one gentle warning, regardless of how many saves were attempted
     expect(warnSpy).toHaveBeenCalledTimes(1);
     // and it should be worded as an external move/deletion, not a lameta bug
-    expect(String(warnSpy.mock.calls[0][0]).toLowerCase()).toContain(
-      "outside of lameta"
-    );
+    expect(String(warnSpy.mock.calls[0][0]).toLowerCase()).toContain("outside of lameta");
     // no write was attempted, the folder is still gone, and the data survives
     expect(writeSpy).not.toHaveBeenCalled();
     expect(fs.existsSync(folder)).toBe(false);
@@ -102,8 +93,6 @@ describe("a session folder that vanished from disk", () => {
 
     expect(file.fileMissing).toBe(false);
     expect(fs.existsSync(file.metadataFilePath)).toBe(true);
-    expect(fs.readFileSync(file.metadataFilePath, "utf8")).toContain(
-      "edited after return"
-    );
+    expect(fs.readFileSync(file.metadataFilePath, "utf8")).toContain("edited after return");
   });
 });

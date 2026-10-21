@@ -660,7 +660,7 @@ export default class ImdiGenerator {
       "access",
       "notes", // ELAR says not to export Notes to IMDI
       "accessDescription", // output by addAccess()
-      kMediaStatsCacheKey // internal cache of probed media stats, not archival metadata
+      kMediaStatsCacheKey, // internal cache of probed media stats, not archival metadata
     ];
     if (target instanceof Person) {
       blacklist.push("description"); // gets its own element

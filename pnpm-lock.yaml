@@ -320,9 +320,6 @@ importers:
       glob:
         specifier: 9.3.5
         version: 9.3.5
-      graceful-fs:
-        specifier: 4.2.11
-        version: 4.2.11
       history:
         specifier: 4.10.1
         version: 4.10.1
@@ -753,6 +750,10 @@ importers:
       vitest:
         specifier: 5.0.5
         version: 5.0.5(@types/node@16.11.22)(@vitest/browser-preview@5.0.5)(@vitest/ui@5.0.5)(@voidzero-dev/vite-plus-core@1.3.0(@types/node@16.11.22)(jiti@2.4.1)(terser@5.51.2)(tsx@4.16.2)(typescript@5.5.3))(happy-dom@8.9.0(encoding@0.1.13))
+    optionalDependencies:
+      fswin:
+        specifier: ^3.25.1108
+        version: 3.25.1108
 
 packages:
 
@@ -6104,6 +6105,10 @@ packages:
     resolution: {integrity: sha512-WvJ193OHa0GHPEL+AycEJgxvBEwyfRkN1vhjca23OaPVMCaLCXTd5qAu82AjTcgP1UJmytkOKb63Ypde7raDIg==}
     engines: {node: '>=0.6'}
     deprecated: This package is no longer supported.
+
+  fswin@3.25.1108:
+    resolution: {integrity: sha512-GyWixip07xo7+8oWheDynqdTn96h7W9Nlv6mHTK/jfDXAD+sSucWuqrk5mipLJKxe7vOsM22bisJPyGgLjdoIw==}
+    engines: {node: '>= 8.0'}
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
@@ -18574,6 +18579,9 @@ snapshots:
       inherits: 2.0.4
       mkdirp: 0.5.6
       rimraf: 2.7.1
+
+  fswin@3.25.1108:
+    optional: true
 
   function-bind@1.1.2: {}
 

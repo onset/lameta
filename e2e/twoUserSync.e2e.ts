@@ -107,16 +107,14 @@ test.describe("Two-user cloud-sync hazards (experiment)", () => {
     // disk while B's lameta still holds the session in memory
     fs.writeFileSync(
       sessionFile("stalecase"),
-      savedXml.replace("original note text", "REMOTE EDIT FROM USER A")
+      savedXml.replace("original note text", "REMOTE EDIT FROM USER A"),
     );
 
     // B looks at the session: does the UI show A's edit or the stale memory?
     await selectSession("stalecase");
     await project.goToNotesOfThisSession();
     const shownNotes = await page.getByTestId("field-notes-edit").innerText();
-    logFinding(
-      `after remote edit synced down, B's UI shows notes: "${shownNotes.trim()}"`
-    );
+    logFinding(`after remote edit synced down, B's UI shows notes: "${shownNotes.trim()}"`);
     await page.getByRole("tab", { name: "Session", exact: true }).first().click();
 
     // B edits a DIFFERENT field (location) and it saves
@@ -124,10 +122,7 @@ test.describe("Two-user cloud-sync hazards (experiment)", () => {
     await selectSession("parking"); // forces save of stalecase
 
     await expect
-      .poll(
-        () => fs.readFileSync(sessionFile("stalecase"), "utf8"),
-        { timeout: 10_000 }
-      )
+      .poll(() => fs.readFileSync(sessionFile("stalecase"), "utf8"), { timeout: 10_000 })
       .toContain("location typed by user B");
     const finalXml = fs.readFileSync(sessionFile("stalecase"), "utf8");
     const remoteEditSurvived = finalXml.includes("REMOTE EDIT FROM USER A");
@@ -143,20 +138,20 @@ test.describe("Two-user cloud-sync hazards (experiment)", () => {
     const setAsideHoldsRemoteEdit = setAside.some((f) =>
       fs
         .readFileSync(Path.join(sessionDir("stalecase"), f), "utf8")
-        .includes("REMOTE EDIT FROM USER A")
+        .includes("REMOTE EDIT FROM USER A"),
     );
     const nothingLost = remoteEditSurvived || setAsideHoldsRemoteEdit;
     logFinding(
       `after B saved another field: canonical file still holds A's edit? ${remoteEditSurvived}; set-aside sibling(s) preserving A's edit: [${setAside.join(
-        ", "
-      )}]`
+        ", ",
+      )}]`,
     );
     logFinding(
       nothingLost
         ? `user A's remote edit was NOT lost (preserved ${
             setAsideHoldsRemoteEdit ? "in a set-aside sibling" : "in place"
           }); B's own edit is in the canonical file`
-        : "user A's remote edit was SILENTLY REVERTED by user B's save (stale in-memory state written over it, no set-aside copy)"
+        : "user A's remote edit was SILENTLY REVERTED by user B's save (stale in-memory state written over it, no set-aside copy)",
     );
     // B's own edit must have landed in the canonical file regardless.
     expect(finalXml).toContain("location typed by user B");
@@ -165,9 +160,7 @@ test.describe("Two-user cloud-sync hazards (experiment)", () => {
   test("remote delete: user A deleted the session; B edits it afterwards", async () => {
     await createSession("delcase", "Delete Victim");
     await selectSession("parking");
-    await expect
-      .poll(() => fs.existsSync(sessionFile("delcase")), { timeout: 10_000 })
-      .toBe(true);
+    await expect.poll(() => fs.existsSync(sessionFile("delcase")), { timeout: 10_000 }).toBe(true);
 
     // user A deletes the session; sync engine removes it on B's disk
     fs.rmSync(sessionDir("delcase"), { recursive: true, force: true });
@@ -179,14 +172,14 @@ test.describe("Two-user cloud-sync hazards (experiment)", () => {
       logFinding("after remote delete, B could still type into the session");
     } catch (e) {
       logFinding(
-        `after remote delete, B's UI broke trying to edit the session: ${String(e).split("\n")[0]}`
+        `after remote delete, B's UI broke trying to edit the session: ${String(e).split("\n")[0]}`,
       );
     }
     try {
       await selectSession("parking");
     } catch (e) {
       logFinding(
-        `after remote delete, B could not even select another session: ${String(e).split("\n")[0]}`
+        `after remote delete, B could not even select another session: ${String(e).split("\n")[0]}`,
       );
     }
     await page.waitForTimeout(2000);
@@ -195,7 +188,7 @@ test.describe("Two-user cloud-sync hazards (experiment)", () => {
     logFinding(
       recreated
         ? "B's save RESURRECTED the deleted session (it will sync back to user A)"
-        : `B's save did not resurrect the deleted session; dir exists: ${fs.existsSync(sessionDir("delcase"))}`
+        : `B's save did not resurrect the deleted session; dir exists: ${fs.existsSync(sessionDir("delcase"))}`,
     );
   });
   test("remote rename: user A renamed the session; B edits it afterwards", async () => {
@@ -207,10 +200,7 @@ test.describe("Two-user cloud-sync hazards (experiment)", () => {
 
     // user A renames the session id on their machine → folder + files rename,
     // and the sync engine applies that on B's disk:
-    fs.renameSync(
-      sessionFile("renbefore"),
-      Path.join(sessionDir("renbefore"), "renafter.session")
-    );
+    fs.renameSync(sessionFile("renbefore"), Path.join(sessionDir("renbefore"), "renafter.session"));
     fs.renameSync(sessionDir("renbefore"), sessionDir("renafter"));
     // (contents of renafter.session still say id "renbefore"; on A's machine
     // it would say "renafter" — patch that too for realism)
@@ -226,18 +216,14 @@ test.describe("Two-user cloud-sync hazards (experiment)", () => {
     const sessionsRoot = Path.join(project.projectDirectory, "Sessions");
     const tree = fs
       .readdirSync(sessionsRoot)
-      .map(
-        (d) =>
-          `${d}: [${fs.readdirSync(Path.join(sessionsRoot, d)).join(", ")}]`
-      )
+      .map((d) => `${d}: [${fs.readdirSync(Path.join(sessionsRoot, d)).join(", ")}]`)
       .join(" | ");
     logFinding(`after remote rename + local edit, Sessions tree: ${tree}`);
     const oldRecreated = fs.existsSync(sessionDir("renbefore"));
     logFinding(
       oldRecreated
         ? "B's save RECREATED the old-named folder → project now has BOTH old and new folders; when this syncs back, user A sees a duplicated session"
-        : "B's save did not recreate the old-named folder"
+        : "B's save did not recreate the old-named folder",
     );
   });
-
 });

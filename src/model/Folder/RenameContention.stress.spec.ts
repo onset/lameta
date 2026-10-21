@@ -2,7 +2,7 @@ import fs from "fs";
 import Path from "path";
 import { spawn, ChildProcess } from "child_process";
 import temp from "temp";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vite-plus/test";
 import { Session } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 
@@ -22,14 +22,14 @@ import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyR
   Windows-only: on POSIX an open handle does not block rename, so the whole
   contention class doesn't exist there. Slow (retries sleep ~1s), so opt-in:
 
-     LAMETA_STRESS=1 yarn vitest run RenameContention
+     LAMETA_STRESS=1 vp test run RenameContention
 
   Real-provider mode: point it at a directory inside an actual syncing
   OneDrive/Dropbox root and the sync engine itself is the adversary — no
   artificial meddler is spawned, and media files are made big enough that
   uploads are still in flight when the renames land:
 
-     LAMETA_STRESS=1 LAMETA_STRESS_DIR=C:\\OneDrive-tests\\OneDrive yarn vitest run RenameContention
+     LAMETA_STRESS=1 LAMETA_STRESS_DIR=C:\\OneDrive-tests\\OneDrive vp test run RenameContention
 
   If this test fails, it found a real robustness bug; a pass after N cycles is
   evidence the PatientFS retry strategy is holding up.
@@ -37,8 +37,7 @@ import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyR
 
 const RENAME_CYCLES = 12;
 
-const stressEnabled =
-  process.platform === "win32" && !!process.env.LAMETA_STRESS;
+const stressEnabled = process.platform === "win32" && !!process.env.LAMETA_STRESS;
 // When targeting a real cloud-synced directory, the provider is the meddler.
 const realProviderDir = process.env.LAMETA_STRESS_DIR;
 const mediaFileBytes = realProviderDir ? 8 * 1024 * 1024 : 32;
@@ -80,10 +79,7 @@ describe.skipIf(!stressEnabled)("Rename contention stress (PatientFS)", () => {
 
   beforeAll(async () => {
     if (realProviderDir) {
-      rootDirectory = Path.join(
-        realProviderDir,
-        `renameContention-${process.pid}`
-      );
+      rootDirectory = Path.join(realProviderDir, `renameContention-${process.pid}`);
       fs.mkdirSync(rootDirectory, { recursive: true });
       return; // no artificial meddler; the sync engine is the adversary
     }
@@ -93,17 +89,13 @@ describe.skipIf(!stressEnabled)("Rename contention stress (PatientFS)", () => {
     meddler = spawn(
       "powershell",
       ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", scriptPath, "-target", rootDirectory],
-      { stdio: ["ignore", "pipe", "inherit"] }
+      { stdio: ["ignore", "pipe", "inherit"] },
     );
     await new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(
-        () => reject(new Error("meddler never became ready")),
-        15000
-      );
+      const timer = setTimeout(() => reject(new Error("meddler never became ready")), 15000);
       meddler.stdout!.on("data", (d) => {
         const s = d.toString();
-        for (const line of s.split(/\r?\n/))
-          if (line.startsWith("HELD")) meddlerHolds.push(line);
+        for (const line of s.split(/\r?\n/)) if (line.startsWith("HELD")) meddlerHolds.push(line);
         if (s.includes("MEDDLER-READY")) {
           clearTimeout(timer);
           resolve();
@@ -132,15 +124,12 @@ describe.skipIf(!stressEnabled)("Rename contention stress (PatientFS)", () => {
       fs.mkdirSync(dir);
       // In real-provider mode these are big enough that the sync engine is
       // still uploading them while we rename.
-      const fakeMedia = Buffer.alloc(mediaFileBytes, 7);
+      const fakeMedia = new Uint8Array(mediaFileBytes).fill(7);
       fs.writeFileSync(Path.join(dir, `${startName}_video.mp4`), fakeMedia);
       fs.writeFileSync(Path.join(dir, `${startName}_audio.wav`), fakeMedia);
       fs.writeFileSync(Path.join(dir, "unrelated.txt"), "not renamed");
 
-      const session = Session.fromDirectory(
-        dir,
-        new EncounteredVocabularyRegistry()
-      );
+      const session = Session.fromDirectory(dir, new EncounteredVocabularyRegistry());
       session.properties.setText("id", startName);
       session.saveFolderMetaData();
 
@@ -153,9 +142,7 @@ describe.skipIf(!stressEnabled)("Rename contention stress (PatientFS)", () => {
       }
       expect(warm, "warmup rename never succeeded").toBe(true);
       let expectedName = "warmup";
-      const expectedFileCount = fs.readdirSync(
-        Path.join(rootDirectory, expectedName)
-      ).length;
+      const expectedFileCount = fs.readdirSync(Path.join(rootDirectory, expectedName)).length;
 
       const anomalies: string[] = [];
       const failedRenames: number[] = [];
@@ -188,12 +175,10 @@ describe.skipIf(!stressEnabled)("Rename contention stress (PatientFS)", () => {
         // Invariant 1: exactly one directory, under the name the model believes in
         const dirs = fs
           .readdirSync(rootDirectory)
-          .filter((f) =>
-            fs.statSync(Path.join(rootDirectory, f)).isDirectory()
-          );
+          .filter((f) => fs.statSync(Path.join(rootDirectory, f)).isDirectory());
         if (dirs.length !== 1 || dirs[0] !== expectedName) {
           anomalies.push(
-            `cycle ${i}: expected single dir "${expectedName}", found [${dirs.join(", ")}]`
+            `cycle ${i}: expected single dir "${expectedName}", found [${dirs.join(", ")}]`,
           );
           break; // state is corrupt; later cycles would just cascade
         }
@@ -204,34 +189,34 @@ describe.skipIf(!stressEnabled)("Rename contention stress (PatientFS)", () => {
         const sessionFiles = files.filter((f) => f.endsWith(".session"));
         if (sessionFiles.length !== 1) {
           anomalies.push(
-            `cycle ${i}: expected 1 .session file, found [${sessionFiles.join(", ")}]`
+            `cycle ${i}: expected 1 .session file, found [${sessionFiles.join(", ")}]`,
           );
         } else if (sessionFiles[0] !== `${expectedName}.session`) {
           anomalies.push(
-            `cycle ${i}: .session file is "${sessionFiles[0]}" but folder is "${expectedName}"`
+            `cycle ${i}: .session file is "${sessionFiles[0]}" but folder is "${expectedName}"`,
           );
         }
         if (files.length !== expectedFileCount) {
           anomalies.push(
-            `cycle ${i}: expected ${expectedFileCount} files, found ${files.length}: [${files.join(", ")}]`
+            `cycle ${i}: expected ${expectedFileCount} files, found ${files.length}: [${files.join(", ")}]`,
           );
         }
         const stragglers = files.filter(
           (f) =>
             /^(cycle\d+|warmup)/.test(f) &&
             !f.startsWith(expectedName + ".") &&
-            !f.startsWith(expectedName + "_")
+            !f.startsWith(expectedName + "_"),
         );
         if (stragglers.length > 0) {
           anomalies.push(
-            `cycle ${i}: files left behind with a stale name: [${stragglers.join(", ")}]`
+            `cycle ${i}: files left behind with a stale name: [${stragglers.join(", ")}]`,
           );
         }
 
         // Invariant 3: the in-memory model points at a file that exists
         if (!fs.existsSync(session.metadataFile!.metadataFilePath)) {
           anomalies.push(
-            `cycle ${i}: model's metadataFilePath ${session.metadataFile!.metadataFilePath} does not exist on disk`
+            `cycle ${i}: model's metadataFilePath ${session.metadataFile!.metadataFilePath} does not exist on disk`,
           );
         }
       }
@@ -239,7 +224,7 @@ describe.skipIf(!stressEnabled)("Rename contention stress (PatientFS)", () => {
       const retriedCycles = cycleDurations.filter((d) => d > 900).length;
       console.log(
         `meddler holds: ${meddlerHolds.length}, cycles that hit the PatientFS retry path (>900ms): ${retriedCycles}, ` +
-          `renames that gave up: [${failedRenames.join(",")}], durations: ${cycleDurations.join(",")}`
+          `renames that gave up: [${failedRenames.join(",")}], durations: ${cycleDurations.join(",")}`,
       );
       // If the meddler never grabbed anything, this run was not a real torture
       // test — fail loudly rather than report false confidence. (In
@@ -247,6 +232,6 @@ describe.skipIf(!stressEnabled)("Rename contention stress (PatientFS)", () => {
       // report retry counts and trust the invariants.)
       if (!realProviderDir) expect(meddlerHolds.length).toBeGreaterThan(0);
       expect(anomalies, anomalies.join("\n")).toEqual([]);
-    }
+    },
   );
 });

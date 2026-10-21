@@ -1,12 +1,7 @@
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { kMediaStatsCacheKey } from "../model/file/File";
-import {
-  setResultXml,
-  xexpect as expect,
-  count,
-  value
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect, count, value } from "../other/xmlUnitTestUtils";
 import temp from "temp";
 import * as fs from "fs-extra";
 import assert from "assert";
@@ -87,7 +82,7 @@ describe("Imdi generation for images", () => {
 
     f!.setCachedMediaStats(
       { Length: "42s", Format: "MPEG Audio" },
-      { sizeBytes: f!.getSizeInBytes(), mtimeMs: f!.getMtimeMs() }
+      { sizeBytes: f!.getSizeInBytes(), mtimeMs: f!.getMtimeMs() },
     );
     expect(f!.getCachedMediaStats()).toBeTruthy();
 

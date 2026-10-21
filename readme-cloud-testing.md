@@ -24,15 +24,15 @@ Implementation background that shapes these tests:
 
 ## Tester's toolbox
 
-| Action | How |
-|---|---|
-| Evict an iCloud file (make it cloud-only) | `brctl evict <file>` in Terminal, or Finder → right-click → Remove Download |
-| Evict a OneDrive/Dropbox/GDrive file | Finder → right-click → Remove Download, or `fileproviderctl evict <file>` |
-| Check whether a file is really dataless | `stat -f "blocks=%b size=%z" <file>` → dataless = `blocks=0` with `size>0` |
-| Force download outside lameta | open the file in Finder, or `brctl download <file>` (iCloud) |
-| Go offline | Wi-Fi off in menu bar (see also the "LAN but no internet" case below) |
-| Pause OneDrive without going offline | OneDrive menu-bar icon → Pause syncing |
-| Watch lameta's logs | run a dev build (`yarn dev`) and watch the terminal, or Console.app filtered to lameta |
+| Action                                    | How                                                                                        |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Evict an iCloud file (make it cloud-only) | `brctl evict <file>` in Terminal, or Finder → right-click → Remove Download                |
+| Evict a OneDrive/Dropbox/GDrive file      | Finder → right-click → Remove Download, or `fileproviderctl evict <file>`                  |
+| Check whether a file is really dataless   | `stat -f "blocks=%b size=%z" <file>` → dataless = `blocks=0` with `size>0`                 |
+| Force download outside lameta             | open the file in Finder, or `brctl download <file>` (iCloud)                               |
+| Go offline                                | Wi-Fi off in menu bar (see also the "LAN but no internet" case below)                      |
+| Pause OneDrive without going offline      | OneDrive menu-bar icon → Pause syncing                                                     |
+| Watch lameta's logs                       | run a dev build (`pnpm run dev`) and watch the terminal, or Console.app filtered to lameta |
 
 Use a **throwaway copy** of a real project for anything in the data-loss section.
 Keep a pristine zip of it outside any cloud folder so you can diff afterwards
@@ -127,7 +127,7 @@ no half-written files.
 - [ ] **Offline UI coherence.** While offline with a cloud-only file selected:
       row icons show the crossed-out cloud, card says "…appears to be offline",
       Download button is grey/disabled, "Show in Finder" still works. Going back
-      online re-enables the button *without* reselecting or restarting.
+      online re-enables the button _without_ reselecting or restarting.
 - [ ] **Router up, internet down.** Unplug the router's WAN side (or block the
       provider's traffic) while Wi-Fi stays associated. The OS still reports
       "online", so lameta will allow a Download that cannot complete.
@@ -147,7 +147,7 @@ engine moves data underneath it. Diff against your pristine copy after each.
       local), edit session titles/notes, quit, go online, let it sync. On a
       second machine (or web view), confirm the edits arrived and no
       "conflicted copy" files appeared.
-- [ ] **Two-machine conflict.** Edit the *same session* on two machines while
+- [ ] **Two-machine conflict.** Edit the _same session_ on two machines while
       one is offline, then reconnect. The provider will create a conflict file
       (`ETR009 (conflicted copy).session`, `-DESKTOP-XYZ` suffixes, etc.).
       Reopen in lameta. Documented (unit-tested) behavior: the real session
@@ -198,7 +198,7 @@ engine moves data underneath it. Diff against your pristine copy after each.
       extremes behave.
 - [ ] A genuinely **sparse** local file inside the cloud folder if you can make
       one (`dd if=/dev/zero of=sparse bs=1 count=1 seek=100m` then evict/restore)
-      — and one *outside* any cloud folder (must show no cloud UI at all).
+      — and one _outside_ any cloud folder (must show no cloud UI at all).
 - [ ] Filenames with spaces, `é`/diacritics (NFC/NFD!), emoji, very long names;
       a session folder > 200 chars deep. Evict, reopen, download.
 - [ ] Case games: rename `Sound.WAV` → `sound.wav` on one machine while evicted
@@ -251,6 +251,6 @@ Quick pass on Windows 10/11 + OneDrive to confirm nothing regressed:
    with `cloudFileStatus:` or mentioning the cloud read guard, and the exact
    error `{ code, errno, syscall }` if shown.
 4. Whether the provider's own client showed an error dialog at the same time
-   (a design goal is that lameta *prevents* triggering those storms).
+   (a design goal is that lameta _prevents_ triggering those storms).
 5. For suspected data loss: the `diff -r` against your pristine copy, plus the
    provider's web-UI version history for the affected file.

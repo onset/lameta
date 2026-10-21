@@ -28,11 +28,8 @@ export const CloudUnavailableBanner: React.FunctionComponent<{
   }
 
   // If every failure is from the same provider, name it; otherwise stay generic.
-  const providerNames = Array.from(
-    new Set(failures.map((f) => f.providerName).filter(Boolean))
-  );
-  const providerName =
-    providerNames.length === 1 ? (providerNames[0] as string) : t`the cloud`;
+  const providerNames = Array.from(new Set(failures.map((f) => f.providerName).filter(Boolean)));
+  const providerName = providerNames.length === 1 ? (providerNames[0] as string) : t`the cloud`;
 
   const message =
     count === 1
@@ -66,10 +63,21 @@ export const CloudUnavailableBanner: React.FunctionComponent<{
       `}
       data-testid="cloud-unavailable-banner"
     >
-      <span css={css`font-size: 18px;`} aria-hidden={true}>
+      <span
+        css={css`
+          font-size: 18px;
+        `}
+        aria-hidden={true}
+      >
         ⚠️
       </span>
-      <span css={css`flex: 1;`}>{message}</span>
+      <span
+        css={css`
+          flex: 1;
+        `}
+      >
+        {message}
+      </span>
       <button
         onClick={onRetry}
         disabled={retrying}

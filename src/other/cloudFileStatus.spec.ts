@@ -13,7 +13,7 @@ import {
   providerNameFromCloudStorageDir,
   setMacStatReaderForTests,
   setICloudSiblingCheckerForTests,
-  setMaterializerForTests
+  setMaterializerForTests,
 } from "./cloudFileStatus";
 
 describe("getCloudFileStatus", () => {
@@ -27,7 +27,7 @@ describe("getCloudFileStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: true,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: false
+      IS_PINNED: false,
     }));
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("cloudOnly");
   });
@@ -37,7 +37,7 @@ describe("getCloudFileStatus", () => {
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: true,
-      IS_PINNED: false
+      IS_PINNED: false,
     }));
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("cloudOnly");
   });
@@ -46,7 +46,7 @@ describe("getCloudFileStatus", () => {
     setAttributeReaderForTests(() => ({
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
-      IS_RECALL_ON_OPEN: false
+      IS_RECALL_ON_OPEN: false,
     }));
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("local");
   });
@@ -68,7 +68,7 @@ describe("getCloudFileStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("hydrating");
   });
@@ -78,7 +78,7 @@ describe("getCloudFileStatus", () => {
       IS_OFFLINE: true,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: false
+      IS_PINNED: false,
     }));
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("cloudOnly");
   });
@@ -88,7 +88,7 @@ describe("getCloudFileStatus", () => {
       IS_OFFLINE: false,
       IS_RECALL_ON_DATA_ACCESS: false,
       IS_RECALL_ON_OPEN: false,
-      IS_PINNED: true
+      IS_PINNED: true,
     }));
     expect(getCloudFileStatus("C:\\fake\\path.mp3")).toBe("localPinned");
   });
@@ -121,9 +121,9 @@ describe("getCloudFileProvider().setPinned", () => {
   it("propagates a rejection from the writer", async () => {
     setPinWriterForTests(() => Promise.reject(new Error("write failed")));
 
-    await expect(
-      getCloudFileProvider().setPinned("C:\\fake\\path.mp3", true)
-    ).rejects.toThrow(/write failed/);
+    await expect(getCloudFileProvider().setPinned("C:\\fake\\path.mp3", true)).rejects.toThrow(
+      /write failed/,
+    );
   });
 
   it("reports canPin true when the attribute-reader seam is set", () => {
@@ -149,17 +149,13 @@ describe("isUnderCloudSyncRoot", () => {
 
   it("matches files under a sync root, case- and separator-insensitively", () => {
     setCloudSyncRootsForTests(["C:\\Users\\me\\OneDrive"]);
-    expect(isUnderCloudSyncRoot("C:\\Users\\me\\OneDrive\\proj\\a.mp3")).toBe(
-      true
-    );
+    expect(isUnderCloudSyncRoot("C:\\Users\\me\\OneDrive\\proj\\a.mp3")).toBe(true);
     expect(isUnderCloudSyncRoot("c:/users/me/onedrive/proj/a.mp3")).toBe(true);
   });
 
   it("does not match sibling folders that merely share the root as a name prefix", () => {
     setCloudSyncRootsForTests(["C:\\Users\\me\\OneDrive"]);
-    expect(
-      isUnderCloudSyncRoot("C:\\Users\\me\\OneDriveBackup\\a.mp3")
-    ).toBe(false);
+    expect(isUnderCloudSyncRoot("C:\\Users\\me\\OneDriveBackup\\a.mp3")).toBe(false);
     expect(isUnderCloudSyncRoot("C:\\Elsewhere\\a.mp3")).toBe(false);
   });
 
@@ -182,14 +178,10 @@ describe("getCloudProviderNameForPath", () => {
   it("names the sync engine that owns the path", () => {
     setCloudSyncRootsForTests([
       { path: "C:\\Users\\me\\Dropbox", providerName: "Dropbox" },
-      { path: "C:\\Users\\me\\OneDrive", providerName: "OneDrive" }
+      { path: "C:\\Users\\me\\OneDrive", providerName: "OneDrive" },
     ]);
-    expect(
-      getCloudProviderNameForPath("C:\\Users\\me\\Dropbox\\proj\\a.mp3")
-    ).toBe("Dropbox");
-    expect(
-      getCloudProviderNameForPath("C:\\Users\\me\\OneDrive\\proj\\a.mp3")
-    ).toBe("OneDrive");
+    expect(getCloudProviderNameForPath("C:\\Users\\me\\Dropbox\\proj\\a.mp3")).toBe("Dropbox");
+    expect(getCloudProviderNameForPath("C:\\Users\\me\\OneDrive\\proj\\a.mp3")).toBe("OneDrive");
     expect(getCloudProviderNameForPath("C:\\Elsewhere\\a.mp3")).toBeUndefined();
   });
 });
@@ -213,13 +205,13 @@ describe("parseSyncRootManagerOutput", () => {
     "",
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\SyncRootManager\\OneDrive!S-1-5-21-111!Personal|ae8e\\UserSyncRoots",
     "    S-1-5-21-111    REG_SZ    C:\\Users\\me\\OneDrive",
-    ""
+    "",
   ].join("\r\n");
 
   it("finds each provider's sync root with a friendly name", () => {
     expect(parseSyncRootManagerOutput(regOutput)).toEqual([
       { path: "C:\\Users\\me\\Dropbox", providerName: "Dropbox" },
-      { path: "C:\\Users\\me\\OneDrive", providerName: "OneDrive" }
+      { path: "C:\\Users\\me\\OneDrive", providerName: "OneDrive" },
     ]);
   });
 
@@ -234,11 +226,11 @@ describe("parseSyncRootManagerOutput", () => {
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\SyncRootManager\\GoogleDrive!S-1-5-21-111!acct\\UserSyncRoots",
       "    S-1-5-21-111    REG_SZ    G:\\My Drive",
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\SyncRootManager\\pCloud!S-1-5-21-111!acct\\UserSyncRoots",
-      "    S-1-5-21-111    REG_SZ    P:\\pCloud Drive"
+      "    S-1-5-21-111    REG_SZ    P:\\pCloud Drive",
     ].join("\r\n");
     expect(parseSyncRootManagerOutput(output)).toEqual([
       { path: "G:\\My Drive", providerName: "Google Drive" },
-      { path: "P:\\pCloud Drive", providerName: "pCloud" }
+      { path: "P:\\pCloud Drive", providerName: "pCloud" },
     ]);
   });
 
@@ -254,34 +246,25 @@ describe("statusFromMacStat", () => {
     underSyncRoot: true,
     underICloudRoot: false,
     inFlight: false,
-    hasICloudSibling: false
+    hasICloudSibling: false,
   };
 
   it("classifies a dataless placeholder (size>0, blocks==0) as cloudOnly", () => {
-    expect(
-      statusFromMacStat({ isFile: true, size: 100, blocks: 0 }, base)
-    ).toBe("cloudOnly");
+    expect(statusFromMacStat({ isFile: true, size: 100, blocks: 0 }, base)).toBe("cloudOnly");
   });
 
   it("classifies a dataless placeholder that is in-flight as hydrating", () => {
     expect(
-      statusFromMacStat(
-        { isFile: true, size: 100, blocks: 0 },
-        { ...base, inFlight: true }
-      )
+      statusFromMacStat({ isFile: true, size: 100, blocks: 0 }, { ...base, inFlight: true }),
     ).toBe("hydrating");
   });
 
   it("classifies a file with blocks>0 as local", () => {
-    expect(
-      statusFromMacStat({ isFile: true, size: 100, blocks: 8 }, base)
-    ).toBe("local");
+    expect(statusFromMacStat({ isFile: true, size: 100, blocks: 8 }, base)).toBe("local");
   });
 
   it("treats a zero-length file as local, not a placeholder", () => {
-    expect(statusFromMacStat({ isFile: true, size: 0, blocks: 0 }, base)).toBe(
-      "local"
-    );
+    expect(statusFromMacStat({ isFile: true, size: 0, blocks: 0 }, base)).toBe("local");
   });
 
   it("classifies a missing file with an .icloud sibling under iCloud as cloudOnly", () => {
@@ -289,8 +272,8 @@ describe("statusFromMacStat", () => {
       statusFromMacStat(undefined, {
         ...base,
         underICloudRoot: true,
-        hasICloudSibling: true
-      })
+        hasICloudSibling: true,
+      }),
     ).toBe("cloudOnly");
   });
 
@@ -300,17 +283,14 @@ describe("statusFromMacStat", () => {
         ...base,
         underICloudRoot: true,
         hasICloudSibling: true,
-        inFlight: true
-      })
+        inFlight: true,
+      }),
     ).toBe("hydrating");
   });
 
   it("returns unknown for a path not under any sync root", () => {
     expect(
-      statusFromMacStat(
-        { isFile: true, size: 100, blocks: 0 },
-        { ...base, underSyncRoot: false }
-      )
+      statusFromMacStat({ isFile: true, size: 100, blocks: 0 }, { ...base, underSyncRoot: false }),
     ).toBe("unknown");
   });
 
@@ -321,12 +301,8 @@ describe("statusFromMacStat", () => {
 
 describe("providerNameFromCloudStorageDir", () => {
   it("maps a CloudStorage directory name to a friendly provider name", () => {
-    expect(providerNameFromCloudStorageDir("OneDrive-Personal")).toBe(
-      "OneDrive"
-    );
-    expect(
-      providerNameFromCloudStorageDir("GoogleDrive-user@gmail.com")
-    ).toBe("Google Drive");
+    expect(providerNameFromCloudStorageDir("OneDrive-Personal")).toBe("OneDrive");
+    expect(providerNameFromCloudStorageDir("GoogleDrive-user@gmail.com")).toBe("Google Drive");
     expect(providerNameFromCloudStorageDir("Dropbox-Work")).toBe("Dropbox");
     expect(providerNameFromCloudStorageDir("Box-me@work.com")).toBe("Box");
   });
@@ -343,17 +319,13 @@ describe("darwin-style sync-root matching", () => {
 
   it("matches files under a forward-slash root, case-insensitively", () => {
     setCloudSyncRootsForTests([
-      { path: "/Users/me/Library/CloudStorage/OneDrive-Personal", providerName: "OneDrive" }
+      { path: "/Users/me/Library/CloudStorage/OneDrive-Personal", providerName: "OneDrive" },
     ]);
     expect(
-      isUnderCloudSyncRoot(
-        "/Users/me/Library/CloudStorage/OneDrive-Personal/proj/a.mp3"
-      )
+      isUnderCloudSyncRoot("/Users/me/Library/CloudStorage/OneDrive-Personal/proj/a.mp3"),
     ).toBe(true);
     expect(
-      getCloudProviderNameForPath(
-        "/users/ME/library/cloudstorage/onedrive-personal/proj/a.mp3"
-      )
+      getCloudProviderNameForPath("/users/ME/library/cloudstorage/onedrive-personal/proj/a.mp3"),
     ).toBe("OneDrive");
   });
 
@@ -364,9 +336,7 @@ describe("darwin-style sync-root matching", () => {
   });
 
   it("matches a home-dir symlink alias root", () => {
-    setCloudSyncRootsForTests([
-      { path: "/Users/me/OneDrive", providerName: "OneDrive" }
-    ]);
+    setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive", providerName: "OneDrive" }]);
     expect(isUnderCloudSyncRoot("/Users/me/OneDrive/proj/a.mp3")).toBe(true);
   });
 
@@ -399,40 +369,34 @@ describe("MacCloudFileProvider getStatus", () => {
   it("maps a dataless placeholder under a sync root to cloudOnly", () => {
     setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive", providerName: "OneDrive" }]);
     setMacStatReaderForTests(() => ({ isFile: true, size: 100, blocks: 0 }));
-    expect(getCloudFileProvider().getStatus("/Users/me/OneDrive/a.mp3")).toBe(
-      "cloudOnly"
-    );
+    expect(getCloudFileProvider().getStatus("/Users/me/OneDrive/a.mp3")).toBe("cloudOnly");
   });
 
   it("maps a hydrated file (blocks>0) to local", () => {
     setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive", providerName: "OneDrive" }]);
     setMacStatReaderForTests(() => ({ isFile: true, size: 100, blocks: 8 }));
-    expect(getCloudFileProvider().getStatus("/Users/me/OneDrive/a.mp3")).toBe(
-      "local"
-    );
+    expect(getCloudFileProvider().getStatus("/Users/me/OneDrive/a.mp3")).toBe("local");
   });
 
   it("returns unknown for a path not under any sync root", () => {
     setCloudSyncRootsForTests([{ path: "/Users/me/OneDrive", providerName: "OneDrive" }]);
     setMacStatReaderForTests(() => ({ isFile: true, size: 100, blocks: 0 }));
-    expect(
-      getCloudFileProvider().getStatus("/Users/me/Elsewhere/a.mp3")
-    ).toBe("unknown");
+    expect(getCloudFileProvider().getStatus("/Users/me/Elsewhere/a.mp3")).toBe("unknown");
   });
 
   it("maps a missing file with an .icloud sibling under an iCloud root to cloudOnly", () => {
     setCloudSyncRootsForTests([
       {
         path: "/Users/me/Library/Mobile Documents/com~apple~CloudDocs",
-        providerName: "iCloud Drive"
-      }
+        providerName: "iCloud Drive",
+      },
     ]);
     setMacStatReaderForTests(() => undefined);
     setICloudSiblingCheckerForTests(() => true);
     expect(
       getCloudFileProvider().getStatus(
-        "/Users/me/Library/Mobile Documents/com~apple~CloudDocs/a.mp3"
-      )
+        "/Users/me/Library/Mobile Documents/com~apple~CloudDocs/a.mp3",
+      ),
     ).toBe("cloudOnly");
   });
 
@@ -440,15 +404,15 @@ describe("MacCloudFileProvider getStatus", () => {
     setCloudSyncRootsForTests([
       {
         path: "/Users/me/Library/Mobile Documents/com~apple~CloudDocs",
-        providerName: "iCloud Drive"
-      }
+        providerName: "iCloud Drive",
+      },
     ]);
     setMacStatReaderForTests(() => undefined);
     setICloudSiblingCheckerForTests(() => false);
     expect(
       getCloudFileProvider().getStatus(
-        "/Users/me/Library/Mobile Documents/com~apple~CloudDocs/a.mp3"
-      )
+        "/Users/me/Library/Mobile Documents/com~apple~CloudDocs/a.mp3",
+      ),
     ).toBe("unknown");
   });
 
@@ -457,9 +421,7 @@ describe("MacCloudFileProvider getStatus", () => {
     setMacStatReaderForTests(() => {
       throw new Error("boom");
     });
-    expect(getCloudFileProvider().getStatus("/Users/me/OneDrive/a.mp3")).toBe(
-      "unknown"
-    );
+    expect(getCloudFileProvider().getStatus("/Users/me/OneDrive/a.mp3")).toBe("unknown");
   });
 });
 
@@ -477,9 +439,7 @@ describe("MacCloudFileProvider setPinned (one-shot materialization)", () => {
 
     let dataless = true;
     setMacStatReaderForTests(() =>
-      dataless
-        ? { isFile: true, size: 100, blocks: 0 }
-        : { isFile: true, size: 100, blocks: 8 }
+      dataless ? { isFile: true, size: 100, blocks: 0 } : { isFile: true, size: 100, blocks: 8 },
     );
 
     const provider = getCloudFileProvider();

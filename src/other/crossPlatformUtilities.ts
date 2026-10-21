@@ -10,9 +10,7 @@ import { globSync } from "glob";
 // manager" action. Shared by the file-list context menu and the cloud status
 // card so the wording stays consistent.
 export function revealInFolderLabel(): string {
-  return process.platform === "darwin"
-    ? t`Show in Finder`
-    : t`Show in File Explorer`;
+  return process.platform === "darwin" ? t`Show in Finder` : t`Show in File Explorer`;
 }
 
 export function revealInFolder(path: string) {

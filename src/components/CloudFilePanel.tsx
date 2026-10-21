@@ -6,19 +6,10 @@ import { observer } from "mobx-react";
 import { t, Trans, Plural } from "@lingui/macro";
 import { File } from "../model/file/File";
 import { NotifyError } from "./Notify";
-import {
-  getCloudFileProvider,
-  getCloudProviderNameForPath
-} from "../other/cloudFileStatus";
-import {
-  revealInFolder,
-  revealInFolderLabel
-} from "../other/crossPlatformUtilities";
+import { getCloudFileProvider, getCloudProviderNameForPath } from "../other/cloudFileStatus";
+import { revealInFolder, revealInFolderLabel } from "../other/crossPlatformUtilities";
 import { networkStatus } from "../other/networkStatus";
-import {
-  CloudDisplayStatus,
-  getCloudDisplayStatusOfFile
-} from "./CloudStatusIcon";
+import { CloudDisplayStatus, getCloudDisplayStatusOfFile } from "./CloudStatusIcon";
 
 // Palette from the "OneDrive Status" design (claude.ai/design):
 const cardGreen = "#6a9a3a";
@@ -73,7 +64,7 @@ const PanelStatusIcon: React.FunctionComponent<{
     css: css`
       flex-shrink: 0;
       color: ${cardGreen};
-    `
+    `,
   };
   const cloudPath = (
     <path
@@ -155,8 +146,7 @@ export const CloudFileFetchControl: React.FunctionComponent<{
   const hydrating = file.cloudStatus === "hydrating";
   const displayStatus = getCloudDisplayStatusOfFile(file) ?? "cloudOnly";
   // "OneDrive", "Dropbox", ... whichever sync engine owns this folder.
-  const providerName =
-    getCloudProviderNameForPath(file.getActualFilePath()) ?? t`Cloud`;
+  const providerName = getCloudProviderNameForPath(file.getActualFilePath()) ?? t`Cloud`;
 
   return (
     <div
@@ -168,7 +158,8 @@ export const CloudFileFetchControl: React.FunctionComponent<{
         border: 1.5px solid ${cardGreen};
         border-radius: 14px;
         padding: 22px 26px;
-        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04),
+        box-shadow:
+          0 1px 2px rgba(16, 24, 40, 0.04),
           0 6px 18px rgba(16, 24, 40, 0.06);
       `}
     >
@@ -230,7 +221,7 @@ export const CloudFileFetchControl: React.FunctionComponent<{
                 file.makeAvailableOffline().catch((err) => {
                   NotifyError(
                     t`lameta was not able to make this file available on this device.`,
-                    `${err}`
+                    `${err}`,
                   );
                 });
               } else {
@@ -262,9 +253,7 @@ export const CloudFileFetchControl: React.FunctionComponent<{
               color: ${titleColor};
             `}
           >
-            <Trans>
-              Tell {providerName} that I want this file on my computer
-            </Trans>
+            <Trans>Tell {providerName} that I want this file on my computer</Trans>
           </span>
         </label>
       ) : hydrating ? (
@@ -305,7 +294,7 @@ export const CloudFileFetchControl: React.FunctionComponent<{
             file.makeAvailableOffline().catch((err) => {
               NotifyError(
                 t`lameta was not able to make this file available on this device.`,
-                `${err}`
+                `${err}`,
               );
             });
           }}
@@ -412,8 +401,8 @@ export const CloudFileFetchControl: React.FunctionComponent<{
         >
           {minutesSinceRequest < 1 ? (
             <Trans>
-              You requested this file less than a minute ago. lameta will
-              show it when it becomes available.
+              You requested this file less than a minute ago. lameta will show it when it becomes
+              available.
             </Trans>
           ) : (
             <Plural
@@ -430,15 +419,14 @@ export const CloudFileFetchControl: React.FunctionComponent<{
 
 // Shown instead of the media/text/pdf preview when the file's content has not
 // been fetched from the cloud. See file.isCloudFileNotPresent.
-export const CloudFilePanel: React.FunctionComponent<{ file: File }> =
-  observer((props) => {
-    return (
-      <div
-        css={css`
-          padding: 0 24px 24px 0;
-        `}
-      >
-        <CloudFileFetchControl file={props.file} />
-      </div>
-    );
-  });
+export const CloudFilePanel: React.FunctionComponent<{ file: File }> = observer((props) => {
+  return (
+    <div
+      css={css`
+        padding: 0 24px 24px 0;
+      `}
+    >
+      <CloudFileFetchControl file={props.file} />
+    </div>
+  );
+});

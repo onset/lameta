@@ -64,6 +64,12 @@ msgstr ""
 msgid "All translations complete"
 msgstr ""
 
+msgid "Always"
+msgstr ""
+
+msgid "Always available on this device."
+msgstr ""
+
 msgid "Archive"
 msgstr ""
 
@@ -81,6 +87,15 @@ msgid "Attempt Fix"
 msgstr ""
 
 msgid "Audio"
+msgstr ""
+
+msgid "Automatically make cloud files available if smaller than"
+msgstr ""
+
+msgid "Available after this file is made available on this device"
+msgstr ""
+
+msgid "Available on this device. {providerName} may free up this space if the file goes unused."
 msgstr ""
 
 msgid "CSV export complete"
@@ -125,6 +140,9 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+msgid "Cloud"
+msgstr ""
+
 msgid "Comments"
 msgstr ""
 
@@ -156,6 +174,9 @@ msgid "Copying..."
 msgstr ""
 
 msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
+msgstr ""
+
+msgid "Could not read media information for this file."
 msgstr ""
 
 msgid "Create"
@@ -215,6 +236,9 @@ msgstr ""
 msgid "Description Documents"
 msgstr ""
 
+msgid "Dismiss"
+msgstr ""
+
 msgid "Do not quit"
 msgstr ""
 
@@ -225,6 +249,9 @@ msgid "Done, with {0} warnings"
 msgstr ""
 
 msgid "Download"
+msgstr ""
+
+msgid "Download this file to my computer"
 msgstr ""
 
 msgid "Duplicate Person"
@@ -323,6 +350,9 @@ msgstr ""
 msgid "Genres"
 msgstr ""
 
+msgid "Getting project information from {0}..."
+msgstr ""
+
 msgid "Grant"
 msgstr ""
 
@@ -363,6 +393,12 @@ msgid "Import {chosenCount} Sessions"
 msgstr ""
 
 msgid "Importing..."
+msgstr ""
+
+msgid "In cloud only, and this computer appears to be offline."
+msgstr ""
+
+msgid "In cloud only, lameta cannot read it yet."
 msgstr ""
 
 msgid "Indicates that this is the father or mother's primary language."
@@ -434,6 +470,9 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+msgid "Never"
+msgstr ""
+
 msgid "New Person"
 msgstr ""
 
@@ -449,6 +488,9 @@ msgstr ""
 msgid "Not important to the archive, but will be included"
 msgstr ""
 
+msgid "Note"
+msgstr ""
+
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
 msgstr ""
 
@@ -462,6 +504,12 @@ msgid "OPEX + Files"
 msgstr ""
 
 msgid "One or more files are still being copied into your project."
+msgstr ""
+
+msgid "Online-only ({providerName}), and this computer appears to be offline, so the file cannot be downloaded right now."
+msgstr ""
+
+msgid "Online-only ({providerName}). The content of this file is not on this computer."
 msgstr ""
 
 msgid "Open"
@@ -572,6 +620,12 @@ msgstr ""
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr ""
 
+msgid "Retry"
+msgstr ""
+
+msgid "Retrying…"
+msgstr ""
+
 msgid "Role"
 msgstr ""
 
@@ -671,6 +725,12 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+msgid "Stop waiting"
+msgstr ""
+
+msgid "Tell {providerName} that I want this file on my computer"
+msgstr ""
+
 msgid "Text"
 msgstr ""
 
@@ -681,6 +741,9 @@ msgid "The IMDI files were validated."
 msgstr ""
 
 msgid "The columns here are based on your project's metadata languages."
+msgstr ""
+
+msgid "The file \"{originalName}\" was changed outside of lameta, perhaps by a file-synchronization service such as OneDrive or Dropbox, or on another computer. To avoid losing that change, lameta kept it next to the original with the name \"{keptName}\"."
 msgstr ""
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
@@ -720,6 +783,9 @@ msgid "This XML conforms to the IMDI schema."
 msgstr ""
 
 msgid "This file does not comply with the file naming rules of the current archive."
+msgstr ""
+
+msgid "This file is online-only ({providerName}). Select it to see how to make it available on this device."
 msgstr ""
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
@@ -770,6 +836,9 @@ msgstr ""
 msgid "Vocabulary scan failed"
 msgstr ""
 
+msgid "Waiting"
+msgstr ""
+
 msgid ""
 "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
@@ -795,6 +864,9 @@ msgid "You cannot add folders."
 msgstr ""
 
 msgid "You need at least two metadata languages defined to use vocabulary translations. Please add metadata languages in the Languages tab."
+msgstr ""
+
+msgid "You requested this file less than a minute ago. lameta will show it when it becomes available."
 msgstr ""
 
 msgid "ZIP Archive"
@@ -830,6 +902,12 @@ msgstr ""
 msgid "lameta could not rename the directory."
 msgstr ""
 
+msgid "lameta couldn't download 1 file from {providerName}. It may be offline or busy right now."
+msgstr ""
+
+msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
+msgstr ""
+
 msgid "lameta expected to find a .link file at {e}"
 msgstr ""
 
@@ -837,6 +915,9 @@ msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName
 msgstr ""
 
 msgid "lameta was not able to delete the file."
+msgstr ""
+
+msgid "lameta was not able to make this file available on this device."
 msgstr ""
 
 msgid "lameta was not able to put this file in the trash"
@@ -858,6 +939,12 @@ msgstr ""
 msgid "missing"
 msgstr ""
 
+msgid "recorded when the file was last on this device"
+msgstr ""
+
+msgid "the cloud"
+msgstr ""
+
 msgid "{0} Marked Sessions"
 msgstr ""
 
@@ -865,6 +952,15 @@ msgid "{0} of {1} items processed"
 msgstr ""
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
+msgstr ""
+
+msgid "{minutesSinceRequest, plural, one {# minute since you requested this file. lameta will show it when it becomes available.} other {# minutes since you requested this file. lameta will show it when it becomes available.}}"
+msgstr ""
+
+msgid "{providerName} Status"
+msgstr ""
+
+msgid "{providerName} is downloading this file to this computer."
 msgstr ""
 
 msgid "{totalMissing} items need translation"
