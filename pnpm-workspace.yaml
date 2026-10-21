@@ -4,7 +4,7 @@ blockExoticSubdeps: false
 allowBuilds:
   core-js@2.6.12 || 3.49.0: true
   core-js-pure@3.49.0: true
-  esbuild@0.21.5: true
+  esbuild@0.21.5 || 0.28.2: true
   exifreader@3.16.0: true
   ffmpeg-ffprobe-static@6.1.2-rc.1: true
   # chokidar 2 falls back to polling without it; its native build is for macOS only
