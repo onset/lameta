@@ -322,19 +322,10 @@ type FieldDefinitionCustomizationCatalog = {
   session?: FieldDefinitionCustomization[];
   person?: FieldDefinitionCustomization[];
 };
-export type FieldDefinitionCustomizationRecord = {
-  area: string;
-  factoryDefinition: FieldDefinition;
-  customization: FieldDefinitionCustomization;
-  newDefinition: FieldDefinition;
-};
 // exported for unit test use
-export function computeMergedCatalog(catalogOfConfiguration: FieldDefinitionCustomizationCatalog): {
-  mergedCatalog: FieldDefinitionCatalog;
-  customizations: Array<FieldDefinitionCustomizationRecord>;
-} {
-  // customizations is just used for UI in the ArchiveConfigurationSummary component
-  const customizations = [] as Array<FieldDefinitionCustomizationRecord>;
+export function computeMergedCatalog(
+  catalogOfConfiguration: FieldDefinitionCustomizationCatalog,
+): FieldDefinitionCatalog {
   const mergedCatalog: FieldDefinitionCatalog = {
     common: [],
     project: [],
@@ -374,12 +365,6 @@ export function computeMergedCatalog(catalogOfConfiguration: FieldDefinitionCust
               factoryDefinition,
               configurationEntry,
             );
-            customizations.push({
-              area,
-              factoryDefinition,
-              customization: configurationEntry,
-              newDefinition,
-            });
             return newDefinition;
           }
         }
@@ -388,7 +373,7 @@ export function computeMergedCatalog(catalogOfConfiguration: FieldDefinitionCust
       },
     );
   }
-  return { mergedCatalog, customizations: customizations };
+  return mergedCatalog;
 }
 export function loadAndMergeFieldChoices(configurationName: string) {
   const path = locateDependencyForFilesystemCall(`archive-configurations/${configurationName}`);
@@ -428,7 +413,7 @@ export function prepareGlobalFieldDefinitionCatalog(configurationName: string) {
   Object.assign(fieldDefinitionsOfCurrentConfig, x);
 }
 export function makeFieldDefinitionCatalog(configurationName: string): FieldDefinitionCatalog {
-  return loadAndMergeFieldChoices(configurationName).mergedCatalog;
+  return loadAndMergeFieldChoices(configurationName);
 }
 // todo: move to Project?
 export { fieldDefinitionsOfCurrentConfig }; // does not include custom fields

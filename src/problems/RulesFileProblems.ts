@@ -12,7 +12,6 @@ import { Session } from "../model/Project/Session/Session";
 import ImdiGenerator, { IMDIMode } from "../export/ImdiGenerator";
 import { withWarningsDiscarded } from "../export/ExportWarningCollector";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
-import userSettings from "../other/UserSettings";
 import { findBuiltInRulesFile } from "./rulesFile";
 import {
   IRulesFileError,
@@ -24,8 +23,6 @@ import { makeRulesSandboxScript } from "./rulesSandboxScript";
 
 // how long to wait after the last change to the project before running the rules again
 const kRerunDelayMilliseconds = 1500;
-// how long to wait after the local rules file is saved; editors may write it twice
-const kRulesFileSavedDelayMilliseconds = 100;
 const kTimeoutMilliseconds = 10000;
 const kMaxProblems = 2000;
 
@@ -44,20 +41,9 @@ const runInMainProcessSandbox: RulesSandboxExecutor = (input, timeout) =>
     timeout,
   );
 
-export interface IRulesFileLocation {
-  path: string;
-  isLocal: boolean;
-}
-
-// The rules file for the project's archive configuration: the user's local file if
-// they chose one, else the one lameta ships, else none.
-export function getRulesFileLocation(project: Project): IRulesFileLocation | undefined {
-  const configurationName = project.properties.getTextStringOrEmpty("archiveConfigurationName");
-  const local = userSettings.getProblemRulesFile(configurationName);
-  if (local) return { path: local, isLocal: true };
-  const builtIn = findBuiltInRulesFile(configurationName);
-  return builtIn ? { path: builtIn, isLocal: false } : undefined;
-}
+// Finds the rules file for an archive configuration. The default finds the one that
+// lameta ships; tests pass their own.
+export type RulesFileFinder = (configurationName: string) => string | undefined;
 
 // The tags of the project's metadata languages, such as ["en", "es"]
 function metadataLanguageTags(project: Project): string[] {
@@ -82,7 +68,10 @@ export class RulesFileProblems {
     sessionsGenerated: 0,
   };
 
-  constructor(private executor: RulesSandboxExecutor = runInMainProcessSandbox) {
+  constructor(
+    private executor: RulesSandboxExecutor = runInMainProcessSandbox,
+    private findRulesFile: RulesFileFinder = (name) => findBuiltInRulesFile(name),
+  ) {
     makeObservable(this, {
       problems: observable.ref,
       errors: observable.ref,
@@ -125,16 +114,18 @@ export class RulesFileProblems {
       errors,
       milliseconds: 0,
     });
-    const location = getRulesFileLocation(project);
-    if (!location) return nothing([]);
+    const path = this.findRulesFile(
+      project.properties.getTextStringOrEmpty("archiveConfigurationName"),
+    );
+    if (!path) return nothing([]);
     let rulesSource: string;
     try {
-      rulesSource = fs.readFileSync(location.path, "utf8");
+      rulesSource = fs.readFileSync(path, "utf8");
     } catch (e) {
       return nothing([
         {
           kind: "load",
-          message: `lameta could not read the rules file ${location.path}: ${(e as Error).message}`,
+          message: `lameta could not read the rules file ${path}: ${(e as Error).message}`,
         },
       ]);
     }
@@ -251,22 +242,9 @@ export class RulesFileProblems {
       () => scheduleRun(kRerunDelayMilliseconds),
     );
 
-    // Run again when the user chooses another rules file, and, for a local file,
-    // whenever it is saved.
-    let fileWatcher: fs.FSWatcher | undefined;
-    const disposeRulesFileWatch = autorun(() => {
-      const location = getRulesFileLocation(project);
-      fileWatcher?.close();
-      fileWatcher = undefined;
-      if (location?.isLocal && fs.existsSync(location.path)) {
-        try {
-          fileWatcher = fs.watch(location.path, () =>
-            scheduleRun(kRulesFileSavedDelayMilliseconds),
-          );
-        } catch {
-          // the run reports a file it cannot read
-        }
-      }
+    // Run now, and again when the archive configuration, and so its rules file, changes
+    const disposeConfigurationWatch = autorun(() => {
+      project.properties.getTextStringOrEmpty("archiveConfigurationName");
       scheduleRun(0);
     });
 
@@ -328,8 +306,7 @@ export class RulesFileProblems {
     return () => {
       stopped = true;
       if (runTimer) clearTimeout(runTimer);
-      fileWatcher?.close();
-      disposeRulesFileWatch();
+      disposeConfigurationWatch();
       disposeMetadataLanguages();
       disposeCorpus();
       disposeSessionList();

@@ -62,7 +62,7 @@ async function run(rulesSource: string, input: Partial<IRulesSandboxInput> = {})
 }
 
 describe("rulesSandboxMain", () => {
-  it("maps each reported node to its place in lameta and marks it in an excerpt", async () => {
+  it("maps each reported node to its place in lameta", async () => {
     const output = await run(
       header +
         `export function checkSession(doc, report) {
@@ -85,13 +85,6 @@ describe("rulesSandboxMain", () => {
         fileName: "ETR009_a.wav",
       },
     });
-    expect(
-      // happy-dom changes the case of element names; Chromium keeps it
-      p.excerpt!.filter((l) => l.marked).map((l) => l.text.trim().toLowerCase()),
-    ).toEqual(["<resourcelink>etr009/etr009_a.wav</resourcelink>"]);
-    expect(p.excerpt!.map((l) => l.text.trim().toLowerCase())).toContain("<mediafile>");
-    // no namespace declarations or lameta-source comments in the excerpt
-    expect(p.excerpt!.some((l) => /xmlns|lameta-source/.test(l.text))).toBe(false);
   });
 
   it("knows which session a node from checkAcrossSessions is in", async () => {

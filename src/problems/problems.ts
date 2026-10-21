@@ -18,8 +18,6 @@ export interface IProblem extends IProblemWording {
   sessionId?: string;
   // the rules file's problems that it found in the sessions together
   acrossSessions?: boolean;
-  // for a rules file's problem, a few lines of the IMDI around it
-  excerpt?: IRulesFileProblem["excerpt"];
 }
 
 export function fromFieldProblem(p: IFieldProblem): IProblem {
@@ -52,7 +50,6 @@ export function fromRulesFileProblem(p: IRulesFileProblem): IProblem {
     target: p.target,
     sessionId: p.sessionId ?? (p.target?.folderType === "session" ? p.target.folderId : undefined),
     acrossSessions: p.from === "checkAcrossSessions",
-    excerpt: p.excerpt,
   };
 }
 

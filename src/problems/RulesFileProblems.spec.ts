@@ -5,7 +5,6 @@ import temp from "temp";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
-import userSettings from "../other/UserSettings";
 import { makeLametaSourceReader } from "../export/lametaSourceComment";
 import { RulesFileProblems } from "./RulesFileProblems";
 import { rulesSandboxMain } from "./rulesSandboxMain";
@@ -48,7 +47,6 @@ function loadEdoloUnderElarWithTwoSessions(): Project {
 describe("RulesFileProblems", () => {
   afterEach(() => {
     vi.useRealTimers();
-    userSettings.setProblemRulesFile("ELAR", undefined);
   });
 
   it("checks generated IMDI and generates again only the session that changed", async () => {
@@ -64,10 +62,13 @@ describe("RulesFileProblems", () => {
          report({ id: "title", message: "Title is " + title.textContent, node: title });
        }`,
     );
-    userSettings.setProblemRulesFile("ELAR", rulesPath);
-    const runner = new RulesFileProblems(async (input) => ({
-      value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
-    }));
+    const findRulesFile = () => rulesPath;
+    const runner = new RulesFileProblems(
+      async (input) => ({
+        value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
+      }),
+      findRulesFile,
+    );
     const stop = runner.watch(project);
     await vi.advanceTimersByTimeAsync(10);
 
@@ -100,10 +101,13 @@ describe("RulesFileProblems", () => {
     const project = loadEdoloUnderElarWithTwoSessions();
     const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
     fs.writeFileSync(rulesPath, "export const interfaceVersion = 1;");
-    userSettings.setProblemRulesFile("ELAR", rulesPath);
-    const runner = new RulesFileProblems(async () => ({
-      value: { problems: [], errors: [], milliseconds: 0 },
-    }));
+    const findRulesFile = () => rulesPath;
+    const runner = new RulesFileProblems(
+      async () => ({
+        value: { problems: [], errors: [], milliseconds: 0 },
+      }),
+      findRulesFile,
+    );
     const stop = runner.watch(project);
     await vi.advanceTimersByTimeAsync(10);
     expect(runner.timing.sessionsGenerated).toBe(2);
@@ -126,8 +130,8 @@ describe("RulesFileProblems", () => {
   it("reports a rules file it cannot read", async () => {
     vi.useFakeTimers();
     const project = loadEdoloUnderElarWithTwoSessions();
-    userSettings.setProblemRulesFile("ELAR", "c:/no/such/rules.js");
-    const runner = new RulesFileProblems(async () => ({ value: undefined }));
+    const findRulesFile = () => "c:/no/such/rules.js";
+    const runner = new RulesFileProblems(async () => ({ value: undefined }), findRulesFile);
     const stop = runner.watch(project);
     await vi.advanceTimersByTimeAsync(10);
     expect(runner.errors.map((e) => e.kind)).toEqual(["load"]);
@@ -139,8 +143,8 @@ describe("RulesFileProblems", () => {
     const project = loadEdoloUnderElarWithTwoSessions();
     const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
     fs.writeFileSync(rulesPath, "export const interfaceVersion = 1;");
-    userSettings.setProblemRulesFile("ELAR", rulesPath);
-    const runner = new RulesFileProblems(async () => ({ timedOut: true }));
+    const findRulesFile = () => rulesPath;
+    const runner = new RulesFileProblems(async () => ({ timedOut: true }), findRulesFile);
     const stop = runner.watch(project);
     await vi.advanceTimersByTimeAsync(10);
     expect(runner.errors.map((e) => e.kind)).toEqual(["timeout"]);
@@ -157,14 +161,14 @@ describe("RulesFileProblems", () => {
        export const format = "imdi";
        export function checkCorpus(doc, report) { report({ id: "a", message: "a" }); }`,
     );
-    userSettings.setProblemRulesFile("ELAR", rulesPath);
+    const findRulesFile = () => rulesPath;
     let fail = false;
     const runner = new RulesFileProblems(async (input) => {
       if (fail) throw new Error("the sandbox is gone");
       return {
         value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
       };
-    });
+    }, findRulesFile);
     const stop = runner.watch(project);
     await vi.advanceTimersByTimeAsync(10);
     expect(runner.problems.map((p) => p.checkId)).toEqual(["a"]);
@@ -176,34 +180,6 @@ describe("RulesFileProblems", () => {
     expect(runner.errors.map((e) => e.kind)).toEqual(["load"]);
     // and the export's check reports it too
     expect((await runner.checkNow(project)).errors.map((e) => e.kind)).toEqual(["load"]);
-    stop();
-  });
-
-  it("runs again soon after the local rules file is saved", async () => {
-    const project = loadEdoloUnderElarWithTwoSessions();
-    const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
-    const rules = (message: string) =>
-      `export const interfaceVersion = 1;
-       export const format = "imdi";
-       export function checkCorpus(doc, report) { report({ id: "a", message: "${message}" }); }`;
-    fs.writeFileSync(rulesPath, rules("before"));
-    userSettings.setProblemRulesFile("ELAR", rulesPath);
-    const runner = new RulesFileProblems(async (input) => ({
-      value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
-    }));
-    const stop = runner.watch(project);
-    const waitFor = async (message: string) => {
-      const start = Date.now();
-      while (runner.problems[0]?.message !== message) {
-        if (Date.now() - start > 3000) throw new Error("no re-run");
-        await new Promise((r) => setTimeout(r, 20));
-      }
-      return Date.now() - start;
-    };
-    await waitFor("before");
-    fs.writeFileSync(rulesPath, rules("after"));
-    // well under the 1.5 s that a change to the project waits
-    expect(await waitFor("after")).toBeLessThan(1000);
     stop();
   });
 });
