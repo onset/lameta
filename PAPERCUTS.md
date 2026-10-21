@@ -18,29 +18,3 @@ if an ancestor with overflow hidden ends above the menu's bottom.
 `playwright.config.ts` has no build step, so `npx playwright test` drives whatever
 `yarn build` last wrote. A source edit has no effect on an e2e run until you build. Cost: two
 test runs that measured the old bundle and reported the defect as fixed.
-
-## `yarn strings:extract-code` alone empties `fields.po` and `vocabularies.po` (2026-10-20)
-
-`strings:extract-code` runs `lingui extract --clean`, which drops every message that the code
-does not contain. The archive configurations' strings in `locale/en/fields.po` and
-`locale/en/vocabularies.po` come from `strings:extract-json`, so after the code extraction
-alone, almost all of them are gone from those two files. Run `yarn strings:extract`, which
-runs both, or restore the two files with `git checkout`.
-
-## `yarn build` uses whatever translation catalogs were last compiled (2026-10-20)
-
-`locale/*/*.js` are not committed; `yarn strings:compile` makes them, and only `yarn
-fullbuild` runs it. After `yarn build` alone, a string added since the last compile is
-missing from the catalog, and a production build shows its placeholders literally:
-"Problems must be fixed before {archiveName} will accept this export." An e2e run on such a
-build fails on text that is correct in the source. Run `yarn strings:compile` before
-`yarn build` when strings have changed.
-
-## `strings:extract` empties the translated `fields.po` and `vocabularies.po` (2026-10-21)
-
-Since the Crowdin sort-out (#79), `locale/<lang>/fields.po` and `vocabularies.po` hold
-translations. `strings:extract-code` runs `lingui extract --clean`, and `.linguirc` lists those
-two catalogs with an `include` that matches no source, so lingui empties them for every
-language. `strings:extract-json` then rewrites only `locale/en/`. After a `pnpm run
-strings:extract`, check `git status locale` and restore every non-English `fields.po` and
-`vocabularies.po` with `git checkout`.

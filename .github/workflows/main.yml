@@ -139,7 +139,7 @@ jobs:
           security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
           rm "$RUNNER_TEMP/certificate.p12"
 
-      - name: Run full build (includes locale compilation)
+      - name: Run full build (includes string extraction)
         run: vp run fullbuild
 
       - name: Build/publish Electron app
