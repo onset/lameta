@@ -50,43 +50,43 @@ export default class LametaMenu {
       submenu: [
         {
           label: t`About lameta`,
-          selector: "orderFrontStandardAboutPanel:"
+          selector: "orderFrontStandardAboutPanel:",
         },
         {
-          type: "separator"
+          type: "separator",
         },
         {
           label: t`Services`,
-          submenu: []
+          submenu: [],
         },
         {
-          type: "separator"
+          type: "separator",
         },
         {
           label: t`Hide lameta`,
           accelerator: "Command+H",
-          selector: "hide:"
+          selector: "hide:",
         },
         {
           label: t`Hide Others`,
           accelerator: "Command+Shift+H",
-          selector: "hideOtherApplications:"
+          selector: "hideOtherApplications:",
         },
         {
           label: t`Show All`,
-          selector: "unhideAllApplications:"
+          selector: "unhideAllApplications:",
         },
         {
-          type: "separator"
+          type: "separator",
         },
         {
           label: t`Quit`,
           accelerator: "Command+Q",
           click() {
             remote.app.quit();
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
     const editMenu = {
       label: t`Edit`,
@@ -94,31 +94,31 @@ export default class LametaMenu {
         {
           label: t`Undo`,
           accelerator: "CmdOrCtrl+Z",
-          selector: "undo:"
+          selector: "undo:",
         },
         {
           label: t`Redo`,
           accelerator: "Shift+CmdOrCtrl+Z",
-          selector: "redo:"
+          selector: "redo:",
         },
         { type: "separator" },
         { label: t`Cut`, accelerator: "CmdOrCtrl+X", selector: "cut:" },
         {
           label: t`Copy`,
           accelerator: "CmdOrCtrl+C",
-          selector: "copy:"
+          selector: "copy:",
         },
         {
           label: t`Paste`,
           accelerator: "CmdOrCtrl+V",
-          selector: "paste:"
+          selector: "paste:",
         },
         {
           label: t`Select All`,
           accelerator: "CmdOrCtrl+A",
-          selector: "selectAll:"
-        }
-      ]
+          selector: "selectAll:",
+        },
+      ],
     };
 
     const fileMenu = {
@@ -127,7 +127,7 @@ export default class LametaMenu {
         {
           label: "&" + t`Open Project...`,
           accelerator: "CmdOrCtrl+O",
-          click: () => this.homePage.openProject()
+          click: () => this.homePage.openProject(),
         },
         {
           // Mystery: if we have label: "&" + t`Create Project...`, then this actually gets run
@@ -135,11 +135,11 @@ export default class LametaMenu {
           // an alt+f,alt+c
           // But later, this came back.
           label: t`Create Project...`,
-          click: () => this.homePage.createProject(false)
+          click: () => this.homePage.createProject(false),
         },
         {
           label: "&" + t`Start Screen`,
-          click: () => this.homePage.projectHolder.setProject(null)
+          click: () => this.homePage.projectHolder.setProject(null),
         },
         { type: "separator" },
         {
@@ -148,16 +148,16 @@ export default class LametaMenu {
           enabled: haveProject,
           click: () => {
             ShowExportDialog();
-          }
+          },
         },
         {
           label: "&" + t`Media Folder Settings...`,
           enabled: haveProject,
           click: () => {
             ShowMediaFolderDialog();
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
     if (fileMenu && process.platform !== "darwin") {
       fileMenu.submenu.push({ type: "separator" });
@@ -176,16 +176,16 @@ export default class LametaMenu {
               accelerator: "CmdOrCtrl+-",
               click: () => {
                 userSettingsSingleton.ZoomFont(-1);
-              }
+              },
             },
             {
               label: t`Larger`,
               accelerator: "CmdOrCtrl+=",
               click: () => {
                 userSettingsSingleton.ZoomFont(1);
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
           label: t`Interface Language`,
@@ -197,7 +197,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("en");
               },
-              checked: currentUILanguage === "en"
+              checked: currentUILanguage === "en",
             },
             {
               label: "Español",
@@ -205,7 +205,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("es");
               },
-              checked: currentUILanguage === "es"
+              checked: currentUILanguage === "es",
             },
             {
               label: "简体中文",
@@ -213,7 +213,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("zh-CN");
               },
-              checked: currentUILanguage === "zh-CN"
+              checked: currentUILanguage === "zh-CN",
             },
             {
               label: "Français",
@@ -221,7 +221,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("fr");
               },
-              checked: currentUILanguage === "fr"
+              checked: currentUILanguage === "fr",
             },
             {
               label: "Bahasa Indonesia",
@@ -229,7 +229,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("id");
               },
-              checked: currentUILanguage === "id"
+              checked: currentUILanguage === "id",
             },
             {
               label: "فارسی",
@@ -237,7 +237,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("fa");
               },
-              checked: currentUILanguage === "fa"
+              checked: currentUILanguage === "fa",
             },
             {
               label: "Portuguesa, Brasileiro",
@@ -245,7 +245,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("pt-BR");
               },
-              checked: currentUILanguage === "pt-BR"
+              checked: currentUILanguage === "pt-BR",
             },
             {
               label: "русский язык",
@@ -253,7 +253,7 @@ export default class LametaMenu {
               click: () => {
                 setUILanguage("ru");
               },
-              checked: currentUILanguage === "ru"
+              checked: currentUILanguage === "ru",
             },
             userSettings.DeveloperMode
               ? {
@@ -262,16 +262,16 @@ export default class LametaMenu {
                   click: () => {
                     setUILanguage("ps");
                   },
-                  checked: currentUILanguage === "ps"
+                  checked: currentUILanguage === "ps",
                 }
               : { type: "separator" },
             {
               label: t`Help translate`,
               click: () => {
                 shell.openPath("https://crowdin.com/project/saymorex"); // haven't been able to correct this URL yet
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
           label: t`Show IMDI previews`,
@@ -281,7 +281,7 @@ export default class LametaMenu {
             "Show IMDI output preview panels and indicate which fields don't have direct IMDI mappings",
           type: "checkbox",
           checked: userSettings.ShowIMDI,
-          click: () => (userSettings.ShowIMDI = !userSettings.ShowIMDI)
+          click: () => (userSettings.ShowIMDI = !userSettings.ShowIMDI),
         },
         {
           label: t`Show PARADISEC previews`,
@@ -290,8 +290,7 @@ export default class LametaMenu {
           tooltip: "Show PARADISEC output preview panels",
           type: "checkbox",
           checked: userSettings.ParadisecMode,
-          click: () =>
-            (userSettings.ParadisecMode = !userSettings.ParadisecMode)
+          click: () => (userSettings.ParadisecMode = !userSettings.ParadisecMode),
         },
         {
           label: Project.getMultilingualConversionPending()
@@ -304,15 +303,12 @@ export default class LametaMenu {
             : "Show language tags on multilingual fields (unknown languages always show ????)",
           type: "checkbox",
           // Force checked when migration is pending so users can verify language assignments
-          checked:
-            Project.getMultilingualConversionPending() ||
-            userSettings.ShowLanguageTags,
+          checked: Project.getMultilingualConversionPending() || userSettings.ShowLanguageTags,
           // Disable while migration is pending - tags must be visible during migration
           enabled: !Project.getMultilingualConversionPending(),
-          click: () =>
-            (userSettings.ShowLanguageTags = !userSettings.ShowLanguageTags)
-        }
-      ]
+          click: () => (userSettings.ShowLanguageTags = !userSettings.ShowLanguageTags),
+        },
+      ],
     };
     // sessionMenu,
     // peopleMenu,
@@ -324,43 +320,41 @@ export default class LametaMenu {
           type: "checkbox",
           checked: userSettings.DisableSavingProjectData,
           click() {
-            userSettings.DisableSavingProjectData =
-              !userSettings.DisableSavingProjectData;
-          }
+            userSettings.DisableSavingProjectData = !userSettings.DisableSavingProjectData;
+          },
         },
         {
           label: "Do not enforce any file naming",
           type: "checkbox",
           checked: userSettings.IgnoreFileNamingRules,
           click() {
-            userSettings.IgnoreFileNamingRules =
-              !userSettings.IgnoreFileNamingRules;
-          }
+            userSettings.IgnoreFileNamingRules = !userSettings.IgnoreFileNamingRules;
+          },
         },
         {
           label: "&Reload",
           accelerator: "CmdOrCtrl+R",
           click() {
             mainWindow.webContents.reload();
-          }
+          },
         },
         {
           label: "Soft Reload",
           accelerator: "CmdOrCtrl+Shift+R",
-          click: () => this.homePage.softReload()
+          click: () => this.homePage.softReload(),
         },
         {
           label: "Abandon Copying",
           click() {
             CopyManager.abandonCopying(true);
-          }
+          },
         },
         {
           label: "Toggle &Developer Tools",
           accelerator: "Alt+CmdOrCtrl+T",
           click() {
             mainWindow.webContents.toggleDevTools();
-          }
+          },
         },
         {
           label: "Send errors to sentry",
@@ -369,27 +363,25 @@ export default class LametaMenu {
           click() {
             userSettings.SendErrors = !userSettings.SendErrors;
             initializeSentry(userSettings.SendErrors);
-          }
+          },
         },
         {
           label: "Test throw (for testing Sentry)",
           click() {
             initializeSentry(true);
-            throw new Error(
-              "Test throw from menu " + Date.now().toLocaleString()
-            );
-          }
+            throw new Error("Test throw from menu " + Date.now().toLocaleString());
+          },
         },
         {
           label: "Test alert dialog",
           click() {
             ShowMessageDialog({
               title: `The title`,
-              text: "the text"
+              text: "the text",
             });
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
     const testMenu = {
       label: "Test",
@@ -398,9 +390,9 @@ export default class LametaMenu {
           label: "Menu Test",
           click() {
             mainWindow.setTitle("Menu Test Invoked");
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
     const helpMenu = {
       label: t`Help`,
@@ -409,30 +401,30 @@ export default class LametaMenu {
           label: t`Registration...`,
           click: () => {
             RegistrationDialog.show();
-          }
+          },
         },
         {
           label: t`Report a problem`,
           click: () => {
             shell.openPath("https://saymorex.page.link/problem");
-          }
+          },
         },
         {
-          type: "separator"
+          type: "separator",
         },
         {
           label: t`Credits`,
-          click: () => ShowCreditsDialog()
+          click: () => ShowCreditsDialog(),
         },
         {
           label: t`Show Release Notes`,
-          click: () => ShowReleasesDialog()
+          click: () => ShowReleasesDialog(),
         },
         {
           label: "lameta " + pkg.version,
-          enabled: false
-        }
-      ]
+          enabled: false,
+        },
+      ],
     };
 
     const template = Array<any>();
@@ -460,9 +452,7 @@ export default class LametaMenu {
       template.push(devMenu);
       //template.push(testMenu);
     }
-    const menu = remote.Menu.buildFromTemplate(
-      template as Electron.MenuItemConstructorOptions[]
-    );
+    const menu = remote.Menu.buildFromTemplate(template as Electron.MenuItemConstructorOptions[]);
 
     remote.Menu.setApplicationMenu(menu);
   }
@@ -470,15 +460,8 @@ export default class LametaMenu {
     // Set up context menu for spell checking, editing, and developer tools
     // This handler runs for all right-clicks in the app
     remote.getCurrentWebContents().on("context-menu", (e, props) => {
-      const {
-        x,
-        y,
-        misspelledWord,
-        dictionarySuggestions,
-        isEditable,
-        selectionText,
-        editFlags
-      } = props;
+      const { x, y, misspelledWord, dictionarySuggestions, isEditable, selectionText, editFlags } =
+        props;
 
       const menuItems: Electron.MenuItemConstructorOptions[] = [];
       const webContents = remote.getCurrentWebContents();
@@ -493,7 +476,7 @@ export default class LametaMenu {
               click: () => {
                 // Replace the misspelled word with the selected suggestion
                 webContents.replaceMisspelling(suggestion);
-              }
+              },
             });
           }
           menuItems.push({ type: "separator" });
@@ -503,10 +486,8 @@ export default class LametaMenu {
           label: t`Add to Dictionary`,
           click: () => {
             // Add word to Electron's built-in spell checker dictionary
-            remote.session.defaultSession.addWordToSpellCheckerDictionary(
-              misspelledWord
-            );
-          }
+            remote.session.defaultSession.addWordToSpellCheckerDictionary(misspelledWord);
+          },
         });
       }
 
@@ -523,7 +504,7 @@ export default class LametaMenu {
             label: t`Cut`,
             enabled: editFlags.canCut,
             accelerator: "CmdOrCtrl+X",
-            click: () => webContents.cut()
+            click: () => webContents.cut(),
           });
         }
 
@@ -533,7 +514,7 @@ export default class LametaMenu {
             label: t`Copy`,
             enabled: editFlags.canCopy,
             accelerator: "CmdOrCtrl+C",
-            click: () => webContents.copy()
+            click: () => webContents.copy(),
           });
         }
 
@@ -543,7 +524,7 @@ export default class LametaMenu {
             label: t`Paste`,
             enabled: editFlags.canPaste,
             accelerator: "CmdOrCtrl+V",
-            click: () => webContents.paste()
+            click: () => webContents.paste(),
           });
         }
 
@@ -554,7 +535,7 @@ export default class LametaMenu {
             label: t`Select All`,
             enabled: editFlags.canSelectAll,
             accelerator: "CmdOrCtrl+A",
-            click: () => webContents.selectAll()
+            click: () => webContents.selectAll(),
           });
         }
       }
@@ -568,7 +549,7 @@ export default class LametaMenu {
           label: "Inspect element",
           click() {
             webContents.inspectElement(x, y);
-          }
+          },
         });
       }
 

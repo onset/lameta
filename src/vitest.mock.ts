@@ -16,17 +16,17 @@ Object.defineProperty(global, "window", {
     location: { href: "http://localhost:3000" },
     document: {
       createElement: vi.fn(() => ({ style: {} })),
-      body: { appendChild: vi.fn() }
-    }
+      body: { appendChild: vi.fn() },
+    },
   },
-  writable: true
+  writable: true,
 });
 
 // Mock the specific file that's causing issues
 vi.mock("@electron/remote/dist/src/common/get-electron-binding", () => ({
   getElectronBinding: vi.fn(() => ({
-    getHiddenValue: vi.fn(() => "test-context-id")
-  }))
+    getHiddenValue: vi.fn(() => "test-context-id"),
+  })),
 }));
 
 // Mock the entire @electron/remote module
@@ -35,8 +35,8 @@ vi.mock("@electron/remote", () => ({
   process: vi.fn(),
   app: { getAppPath: () => "" },
   getElectronBinding: vi.fn(() => ({
-    getHiddenValue: vi.fn(() => "test-context-id")
-  }))
+    getHiddenValue: vi.fn(() => "test-context-id"),
+  })),
 })); //See commit msg for info
 //
 //   getTestEnvironment: () => ({

@@ -22,7 +22,7 @@ import * as mobx from "mobx";
 // "observed" to write more idiomatic MobX code.
 mobx.configure({
   enforceActions: "never",
-  useProxies: "always"
+  useProxies: "always",
 });
 
 app.whenReady().then(async () => {
@@ -54,7 +54,7 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
         "confirm-quit",
         t`One or more files are still being copied into your project.`,
         t`Do not quit`,
-        t`Abandon files that are still copying`
+        t`Abandon files that are still copying`,
       )
       .then((result) => {
         if (result.response === 1) {

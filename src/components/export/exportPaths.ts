@@ -13,25 +13,23 @@ export const getPathForCsvSaving = (projectDisplayName: string): string => {
   ensureDirSync(parent);
   return Path.join(
     parent,
-    `${sanitize(projectDisplayName)} - lameta CSV Export - ${moment(
-      new Date()
-    ).format("YYYY-MM-DD")}.zip`
+    `${sanitize(projectDisplayName)} - lameta CSV Export - ${moment(new Date()).format(
+      "YYYY-MM-DD",
+    )}.zip`,
   );
 };
 
 /**
  * Get the default save path for Paradisec CSV export.
  */
-export const getPathForParadisecSaving = (
-  projectDisplayName: string
-): string => {
+export const getPathForParadisecSaving = (projectDisplayName: string): string => {
   const parent = Path.join(app.getPath("documents"), "lameta", "CSV Export");
   ensureDirSync(parent);
   return Path.join(
     parent,
-    `${sanitize(projectDisplayName)} - lameta Paradisec Export - ${moment(
-      new Date()
-    ).format("YYYY-MM-DD")}.csv`
+    `${sanitize(projectDisplayName)} - lameta Paradisec Export - ${moment(new Date()).format(
+      "YYYY-MM-DD",
+    )}.csv`,
   );
 };
 
@@ -39,22 +37,15 @@ export const getPathForParadisecSaving = (
  * Get the default save path for IMDI/OPEX export.
  * Adds a timestamp suffix if a folder for today already exists.
  */
-export const getPathForIMDISaving = (
-  projectDisplayName: string,
-  exportFormat: string
-): string => {
-  const parent = Path.join(
-    app.getPath("documents"),
-    "lameta",
-    "IMDI Packages"
-  );
+export const getPathForIMDISaving = (projectDisplayName: string, exportFormat: string): string => {
+  const parent = Path.join(app.getPath("documents"), "lameta", "IMDI Packages");
   ensureDirSync(parent);
 
   let folder = Path.join(
     parent,
-    `${sanitize(projectDisplayName)} - lameta ${exportFormat} Export - ${moment(
-      new Date()
-    ).format("YYYY-MM-DD")}`
+    `${sanitize(projectDisplayName)} - lameta ${exportFormat} Export - ${moment(new Date()).format(
+      "YYYY-MM-DD",
+    )}`,
   );
   // Just that is what we would *like* to have, the problem is that since we are saving
   // a folder, and not a file, on subsequent saves the File Dialog will show *inside*

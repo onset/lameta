@@ -10,9 +10,7 @@ import { app } from "@electron/remote";
 
 // Note: this can't be called from the main process, because it uses `remote` to get at the app path.
 // The main process has to use "electron/app" to get it.
-export function locateDependencyForFilesystemCall(
-  relativePath: string
-): string {
+export function locateDependencyForFilesystemCall(relativePath: string): string {
   const appPath = app.getAppPath();
   const adjustedPath = Path.join(appPath, relativePath);
   // print cwd

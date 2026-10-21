@@ -55,7 +55,7 @@ export class UserSettings {
       sendErrors: observable,
       ignoreFileNamingRules: observable,
       disableSavingProjectData: observable,
-      HowUsing: computed
+      HowUsing: computed,
     });
 
     // NB: something really strange happened here; if we access process here directly, it doesn't get the name.
@@ -63,8 +63,7 @@ export class UserSettings {
     // Also, if we copy getTestEnvironment() into this file, it doesn't work.
     // Only works if we call from the other file. As if that file is in a different module with different acces to process.env.
     // We know that vite is vicious about breaking process.env, so it has to be something to do with that.
-    const E2E_USER_SETTINGS_STORE_NAME =
-      getTestEnvironment().E2E_USER_SETTINGS_STORE_NAME;
+    const E2E_USER_SETTINGS_STORE_NAME = getTestEnvironment().E2E_USER_SETTINGS_STORE_NAME;
 
     let name = "lameta-user-settings";
     if (E2E_USER_SETTINGS_STORE_NAME?.length > 0) {
@@ -77,10 +76,7 @@ export class UserSettings {
         // So here we fix it up if we find that.
         const brokenPath = Path.join(app.getPath("userData"), ".json");
         if (fs.existsSync(brokenPath)) {
-          const correctPath = Path.join(
-            app.getPath("userData"),
-            name + ".json"
-          );
+          const correctPath = Path.join(app.getPath("userData"), name + ".json");
           try {
             if (!fs.existsSync(correctPath)) {
               fs.renameSync(brokenPath, correctPath);
@@ -99,7 +95,7 @@ export class UserSettings {
       E2E_USER_SETTINGS_STORE_NAME === "none" // like we're running for the first time
         ? new FakeStore()
         : new Store({
-            name: name
+            name: name,
           });
     this.sendErrors = process.env?.NODE_ENV === "production"; // developer has a menu that can toggle this
 
@@ -114,10 +110,7 @@ export class UserSettings {
     // no: sentry is not initialized yet, so let it call this itself when it is initialized
     //      setUserInfoForErrorReporting(this.Email, this.HowUsing);
     this.uiFontZoom = this.store.get("uiFontZoom", "1.0");
-    this.disableSavingProjectData = this.store.get(
-      "disableSavingProjectData",
-      false
-    );
+    this.disableSavingProjectData = this.store.get("disableSavingProjectData", false);
   }
 
   public get SendErrors() {
@@ -260,7 +253,7 @@ export function useUserSetting(name: string, defaultValue: string) {
     (value: string) => {
       userSettingsSingleton.Set(name, value);
       setX(value);
-    }
+    },
   ];
 }
 export function getMediaFolderOrEmptyForProjectAndMachine(projectId: string) {
@@ -271,9 +264,6 @@ export function getMediaFolderOrEmptyForProjectAndMachine(projectId: string) {
   // );
   return userSettingsSingleton.GetMediaFolder(projectId) || "";
 }
-export function setMediaFolderOrEmptyForProjectAndMachine(
-  projectId: string,
-  path: string
-) {
+export function setMediaFolderOrEmptyForProjectAndMachine(projectId: string, path: string) {
   userSettingsSingleton.SetMediaFolder(projectId, path);
 }

@@ -66,9 +66,7 @@ export function createProjectForE2E(projectHolder: ProjectHolder): boolean {
     userSettings.PreviousProjectDirectory = directory;
     return true;
   } catch (err) {
-    NotifyError(
-      `E2E: lameta had a problem while creating the project at ${directory}: ${err}`
-    );
+    NotifyError(`E2E: lameta had a problem while creating the project at ${directory}: ${err}`);
     return false;
   }
 }

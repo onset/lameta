@@ -16,14 +16,10 @@ const activeToasts: string[] = [];
 const errorToastProps: ToastOptions = {
   type: "error",
   theme: "colored" as Theme,
-  autoClose: 10000
+  autoClose: 10000,
 };
 
-function notify(
-  message: string,
-  details?: string | React.ReactNode,
-  options?: ToastOptions
-) {
+function notify(message: string, details?: string | React.ReactNode, options?: ToastOptions) {
   // the delay helps with messages that we wouldn't see on startup becuase the react window isn't ready for it
   window.setTimeout(() => {
     const key = message + details;
@@ -52,8 +48,8 @@ function notify(
 
           onClose: () => {
             activeToasts.splice(activeToasts.indexOf(key), 1);
-          }
-        }
+          },
+        },
       );
     }
   }, 0);
@@ -81,16 +77,13 @@ function getEBUSYProblemsTips(): JSX.Element {
   return (
     <ul>
       <li>
-        Are your files managed by a synchronization software like OneDrive or
-        Dropbox? These programs can grab onto lameta files and interfere.
+        Are your files managed by a synchronization software like OneDrive or Dropbox? These
+        programs can grab onto lameta files and interfere.
       </li>
+      <li>Is the file open in another program? If not, try restarting your computer.</li>
       <li>
-        Is the file open in another program? If not, try restarting your
-        computer.
-      </li>
-      <li>
-        Is your anti-virus interfering with lameta? Normally there is a way to
-        tell it that lameta is safe.
+        Is your anti-virus interfering with lameta? Normally there is a way to tell it that lameta
+        is safe.
       </li>
     </ul>
   );
@@ -102,21 +95,18 @@ function getEACCESProblemsTips(): JSX.Element {
     <ul>
       {/* I get this error with file meddler grabbing, thus this message */}
       <li>
-        Are your files managed by a synchronization software like OneDrive or
-        Dropbox? These programs can grab onto lameta files and interfere.
+        Are your files managed by a synchronization software like OneDrive or Dropbox? These
+        programs can grab onto lameta files and interfere.
       </li>
       <li>
-        Is your anti-virus interfering with lameta? Normally there is a way to
-        tell it that lameta is safe.
+        Is your anti-virus interfering with lameta? Normally there is a way to tell it that lameta
+        is safe.
       </li>
+      <li>Is the file marked as 'read-only' in Finder/File Explorer? You can change that.</li>
       <li>
-        Is the file marked as 'read-only' in Finder/File Explorer? You can
-        change that.
-      </li>
-      <li>
-        Are you on a computer network where an administrator may have limited
-        lameta's write permissions? Look at the permissions in Finder/File
-        Explorer. Ask a network administrator for help.
+        Are you on a computer network where an administrator may have limited lameta's write
+        permissions? Look at the permissions in Finder/File Explorer. Ask a network administrator
+        for help.
       </li>
     </ul>
   );
@@ -165,11 +155,7 @@ export function NotifyFileAccessProblem(message: string, err: any) {
   //     );
 }
 
-export function NotifyException(
-  err: Error,
-  message?: string,
-  details?: string
-) {
+export function NotifyException(err: Error, message?: string, details?: string) {
   const errWas = ` Error was: ${err.message}`;
   NotifyError(message ? message : errWas, details ?? "" + errWas);
   sentryException(err);
@@ -179,7 +165,7 @@ export function NotifyNoBigDeal(message: string) {
     type: "warning",
     autoClose: 2000,
     hideProgressBar: true,
-    closeButton: false
+    closeButton: false,
   });
 }
 
@@ -199,11 +185,11 @@ export function NotifySuccess(message: string, onClick?: () => void) {
     type: "success",
     onClick: onClick,
     autoClose: 2000,
-    hideProgressBar: true
+    hideProgressBar: true,
   });
 }
 export function NotifyUpdateAvailable(
-  open: () => void
+  open: () => void,
   //download: DownloadFunction
 ) {
   notify(t`Update available`, <a onClick={open}>{t`View Release Notes`}</a>);
@@ -213,7 +199,7 @@ export function NotifyMultipleProjectFiles(
   displayName: string,
   projectType: string,
   name: string,
-  folder: string
+  folder: string,
 ) {
   NotifyErrorWithClick(
     t`There is a problem with the files in the folder for ${displayName}. Click for more information.`,
@@ -223,7 +209,7 @@ export function NotifyMultipleProjectFiles(
           buttons: [t`Cancel`, t`Show me the folder with the problem`],
           title: t`Something is wrong here...`,
           message: t`There are more than one files of type "${projectType}" in this folder, and there can only be one.`,
-          detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`
+          detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`,
         })
         .then((response) => {
           if (response > 0) {
@@ -233,6 +219,6 @@ export function NotifyMultipleProjectFiles(
             }
           }
         });
-    }
+    },
   );
 }
