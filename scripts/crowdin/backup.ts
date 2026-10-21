@@ -18,7 +18,7 @@ import {
   downloadToFile,
   sleep,
   countNonEmptyMsgstr,
-  walk
+  walk,
 } from "./lib";
 
 // backup folder name: an explicit date argument, or today's date
@@ -46,7 +46,7 @@ async function main() {
   const files = await apiAll(`/projects/${PROJECT_ID}/files?recursion=1`);
   fs.writeFileSync(
     path.join(ROOT, "manifest.json"),
-    JSON.stringify({ fetchedAt: DATE, project, branches, files }, null, 2)
+    JSON.stringify({ fetchedAt: DATE, project, branches, files }, null, 2),
   );
   console.log(`  ${files.length} files, ${branches.length} branches`);
 
@@ -76,7 +76,7 @@ async function main() {
   // 4. Full translation builds: root (v2) and V3 branch
   for (const [label, branchId] of [
     ["root-build", undefined],
-    ["v3-build", V3_BRANCH_ID]
+    ["v3-build", V3_BRANCH_ID],
   ] as const) {
     const dir = path.join(ROOT, label);
     if (fs.existsSync(dir)) continue;
@@ -84,13 +84,15 @@ async function main() {
     const body: any = {
       skipUntranslatedStrings: false,
       skipUntranslatedFiles: false,
-      exportApprovedOnly: false
+      exportApprovedOnly: false,
     };
     if (branchId) body.branchId = branchId;
-    const build = (await api(`/projects/${PROJECT_ID}/translations/builds`, {
-      method: "POST",
-      body
-    })).data;
+    const build = (
+      await api(`/projects/${PROJECT_ID}/translations/builds`, {
+        method: "POST",
+        body,
+      })
+    ).data;
     await pollUntilFinished(`/projects/${PROJECT_ID}/translations/builds/${build.id}`);
     const dl = (await api(`/projects/${PROJECT_ID}/translations/builds/${build.id}/download`)).data;
     const zip = path.join(ROOT, `${label}.zip`);
@@ -99,7 +101,7 @@ async function main() {
     execFileSync("powershell.exe", [
       "-NoProfile",
       "-Command",
-      `Expand-Archive -LiteralPath '${zip}' -DestinationPath '${dir}' -Force`
+      `Expand-Archive -LiteralPath '${zip}' -DestinationPath '${dir}' -Force`,
     ]);
   }
 
@@ -126,7 +128,7 @@ async function main() {
       const res = (
         await api(`/projects/${PROJECT_ID}/translations/exports`, {
           method: "POST",
-          body: { targetLanguageId: lang.crowdinId, fileIds: [f.id] }
+          body: { targetLanguageId: lang.crowdinId, fileIds: [f.id] },
         })
       ).data;
       await downloadToFile(res.url, dest);
@@ -153,11 +155,11 @@ async function main() {
           identifier: s.identifier,
           text: s.text,
           context: s.context,
-          isHidden: s.isHidden
+          isHidden: s.isHidden,
         })),
         null,
-        1
-      )
+        1,
+      ),
     );
   }
 
@@ -171,7 +173,7 @@ async function main() {
   const messagesPos = walk(rootBuild).filter((p) => p.endsWith("messages.po"));
   for (const p of messagesPos) {
     console.log(
-      `root-build ${path.relative(rootBuild, p)}: ${countNonEmptyMsgstr(p)} non-empty msgstr`
+      `root-build ${path.relative(rootBuild, p)}: ${countNonEmptyMsgstr(p)} non-empty msgstr`,
     );
   }
   const genres = walk(rootBuild).filter((p) => p.endsWith("genres.csv"));
