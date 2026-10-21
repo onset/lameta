@@ -41,6 +41,18 @@ export default defineConfig({
       typeAware: true,
       typeCheck: true,
     },
+    overrides: [
+      {
+        // Playwright requires `async ({}) =>` when a test or hook uses no fixtures
+        files: ["e2e/**"],
+        rules: { "no-empty-pattern": "off" },
+      },
+      {
+        // `expect(object.method).toHaveBeenCalled()` on a mock is how specs check calls
+        files: ["**/*.spec.ts"],
+        rules: { "typescript/unbound-method": "off" },
+      },
+    ],
   },
   resolve: {
     alias: {

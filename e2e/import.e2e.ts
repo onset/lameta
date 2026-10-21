@@ -1,4 +1,4 @@
-import { test, expect as expect, Page } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import fs from "fs";
@@ -33,7 +33,7 @@ test.describe("Import Session", () => {
 9/11/2020,,without title,RC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Joe Strummer,Recorder,,,,,,,,
 9/12/2020,Minim�qui�dolore�ex�eu�pariatur�eu�cupidatat�sint�esse�dolore�elit�labore�proident�officia.,something,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Yesterday,This one has a bad date,foobar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-`
+`,
     );
     await lameta.mockShowOpenDialog([csvPath]);
     await page.getByRole("button", { name: "Choose File" }).click();

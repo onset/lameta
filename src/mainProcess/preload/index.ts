@@ -12,7 +12,7 @@ if (process?.env?.SMOKE_THROW_IN_PRELOAD === "1") {
 try {
   // need for drag n' drop of files.
   (window as any).electronAPI = {
-    getPathForFile: (file: File) => webUtils.getPathForFile(file)
+    getPathForFile: (file: File) => webUtils.getPathForFile(file),
   };
   try {
     ipcRenderer.send("preload-ready");
@@ -24,5 +24,3 @@ try {
   console.error("[Preload] Failed to set window.electronAPI:", error);
   throw error;
 }
-
-export {};

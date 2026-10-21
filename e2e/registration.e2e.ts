@@ -1,4 +1,4 @@
-import { test, expect as expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { Page } from "playwright-core";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 

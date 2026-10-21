@@ -1,12 +1,9 @@
 import * as Path from "path";
 import { Page } from "playwright-core";
-import { expect as expect } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 const { _electron: electron } = require("playwright");
-export async function createNewProject(
-  lameta: LametaE2ERunner,
-  name: string
-): Promise<E2eProject> {
+export async function createNewProject(lameta: LametaE2ERunner, name: string): Promise<E2eProject> {
   const p = new E2eProject(lameta);
   await p.createNewProject(name);
   return p;
@@ -39,17 +36,11 @@ export class E2eProject {
       await this.page.waitForTimeout(50);
     }
     expect(ok).toBeEnabled();
-    this.projectDirectory = Path.join(
-      process.env.E2ERoot!,
-      "lameta",
-      projectName
-    );
+    this.projectDirectory = Path.join(process.env.E2ERoot!, "lameta", projectName);
     await ok.click();
     const w = await this.lameta.electronApp.firstWindow();
     // Wait for the workspace UI to be ready - the project tab is always visible after project load
-    await this.page
-      .getByTestId("project-tab")
-      .waitFor({ state: "visible", timeout: 10000 });
+    await this.page.getByTestId("project-tab").waitFor({ state: "visible", timeout: 10000 });
 
     return w;
   }
@@ -92,16 +83,12 @@ export class E2eProject {
   public async goToSessions() {
     await this.page.getByTestId("sessions-tab").click();
     // Wait for the sessions tab UI to be ready - specifically the New Session button
-    await this.page
-      .getByTestId("new-session-button")
-      .waitFor({ state: "visible", timeout: 10000 });
+    await this.page.getByTestId("new-session-button").waitFor({ state: "visible", timeout: 10000 });
   }
   public async goToPeople() {
     await this.page.getByTestId("people-tab").click();
     // Wait for the people tab UI to be ready - specifically the New Person button
-    await this.page
-      .getByTestId("new-person-button")
-      .waitFor({ state: "visible", timeout: 10000 });
+    await this.page.getByTestId("new-person-button").waitFor({ state: "visible", timeout: 10000 });
   }
   public async addSession() {
     await this.page.getByTestId("new-session-button").click();
@@ -154,21 +141,15 @@ export class E2eProject {
     await this.page.waitForTimeout(1000);
 
     // The PersonLanguageList automatically shows an empty language slot if there are no languages
-    const languageSelector = this.page.locator(
-      '.select input[role="combobox"]'
-    );
+    const languageSelector = this.page.locator('.select input[role="combobox"]');
     const languageSelectorVisible = await languageSelector.isVisible();
 
     if (!languageSelectorVisible) {
-      throw new Error(
-        "Language selector not visible - person form may not be loaded"
-      );
+      throw new Error("Language selector not visible - person form may not be loaded");
     }
 
     // Fill in the language using AsyncSelect
-    const languageInput = this.page
-      .locator('.select input[role="combobox"]')
-      .first();
+    const languageInput = this.page.locator('.select input[role="combobox"]').first();
     await languageInput.click();
     await languageInput.fill(languageName);
 
@@ -243,19 +224,16 @@ import { LaunchOptions } from "./lametaE2ERunner";
 export async function launchWithProject(
   lameta: LametaE2ERunner,
   projectName: string,
-  archiveConfig?: string
+  archiveConfig?: string,
 ): Promise<E2eProject> {
   // Add unique suffix to prevent project collisions between tests
   const uniqueProjectName = `${projectName} ${Date.now()}`;
   await lameta.launch({ projectName: uniqueProjectName, archiveConfig });
 
   // Wait for the workspace UI to be ready
-  await lameta.page
-    .getByTestId("project-tab")
-    .waitFor({ state: "visible", timeout: 15000 });
+  await lameta.page.getByTestId("project-tab").waitFor({ state: "visible", timeout: 15000 });
 
   const project = new E2eProject(lameta);
   project.projectDirectory = lameta.projectDirectory;
   return project;
 }
-

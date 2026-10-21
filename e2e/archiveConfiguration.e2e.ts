@@ -1,4 +1,4 @@
-import { test, expect as expect, Page } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./various-e2e-helpers";
 import { shouldSeeExactlyOnce, shouldAtLeastOnce } from "./e2e.expects";
@@ -22,7 +22,7 @@ test.describe("ArchiveConfiguration", () => {
 
     // Now wait for the project to be loaded and sessions tab to be available
     await page.waitForSelector('[data-testid="sessions-tab"]', {
-      timeout: 10000
+      timeout: 10000,
     });
     //fileList = new E2eFileList(lameta, page, project.projectDirectory);
   });
@@ -34,12 +34,10 @@ test.describe("ArchiveConfiguration", () => {
     await shouldSeeExactlyOnce(page, ["Other"]);
 
     // Wait for the custom access choices field to be visible and ready for interaction
-    const customAccessChoicesInput = page.getByTestId(
-      "field-customAccessChoices-edit"
-    );
+    const customAccessChoicesInput = page.getByTestId("field-customAccessChoices-edit");
     await customAccessChoicesInput.waitFor({
       state: "visible",
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Click and fill the input
@@ -52,9 +50,7 @@ test.describe("ArchiveConfiguration", () => {
     // Some select implementations render duplicate option nodes; assert visibility at least once
     await shouldAtLeastOnce(page, ["good", "bad"]);
     await project.goToProjectConfiguration();
-    await page
-      .getByTestId("field-customAccessChoices-edit")
-      .fill("good, bad, ugly");
+    await page.getByTestId("field-customAccessChoices-edit").fill("good, bad, ugly");
     await project.goToSessions();
     await page.locator("#access-chooser").click();
     await shouldAtLeastOnce(page, ["good", "bad", "ugly"]);
@@ -68,9 +64,7 @@ test.describe("ArchiveConfiguration", () => {
     await page.waitForTimeout(500); // Give it time to load the project tab content
 
     // Check that collection tab is visible
-    const collectionTab = page.locator(
-      `[data-testid="project-collection-tab"]`
-    );
+    const collectionTab = page.locator(`[data-testid="project-collection-tab"]`);
     const visible = await collectionTab.isVisible();
     expect(visible).toBeTruthy();
 
@@ -82,16 +76,14 @@ test.describe("ArchiveConfiguration", () => {
 
     // Wait for the app to reload after configuration change
     await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // check that this tab is there now
     await project.goToProjectCollection();
 
     // check for one of the expected fields
-    await page
-      .locator('[data-testid="field-collectionSteward-edit"]')
-      .fill("Steward McGill");
+    await page.locator('[data-testid="field-collectionSteward-edit"]').fill("Steward McGill");
 
     // check the access protocols
     await project.goToSessions();
@@ -100,7 +92,7 @@ test.describe("ArchiveConfiguration", () => {
     await shouldSeeExactlyOnce(page, [
       "O: fully open",
       "U: available to registered users",
-      "S: available upon request only"
+      "S: available upon request only",
     ]);
   });
 });
