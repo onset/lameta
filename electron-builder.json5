@@ -57,6 +57,8 @@
     "!node_modules/ffmpeg-ffprobe-static/bin/*/ffmpeg*",
   ],
   extraFiles: [],
+  // makes ffprobe universal for the universal Mac app
+  beforePack: "build/universalFfprobe.js",
   asarUnpack: ["**/node_modules/fswin/**"],
   directories: {
     buildResources: "resources",
@@ -74,6 +76,8 @@
   },
   mac: {
     target: { target: "default", arch: ["universal"] },
+    // the one file that is the same in the x64 and arm64 apps, because build/universalFfprobe.js made it universal
+    x64ArchFiles: "**/node_modules/ffmpeg-ffprobe-static/ffprobe",
     icon: "build/mac.icns",
     hardenedRuntime: true,
     artifactName: "${productName}-mac-${version}.${ext}",
