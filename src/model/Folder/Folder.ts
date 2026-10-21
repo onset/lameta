@@ -23,7 +23,7 @@ import { CopyManager, getExtension } from "../../other/CopyManager";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { sentryBreadCrumb } from "../../other/errorHandling";
 import filesize from "filesize";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/patientFile";
 import { isMissingCloudPlaceholder } from "../../other/cloudFileStatus";

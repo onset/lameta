@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { Project } from "../../model/Project/Project";
@@ -33,7 +33,7 @@ export const SessionsTab = observer(
           }}
         >
           <Trans>New Session</Trans>
-        </button>
+        </button>,
       );
       // console.log(
       //   `SessionTab render length:${this.props.project.sessions.items.length} selected:${this.props.project.sessions.selected.index}`
@@ -59,5 +59,5 @@ export const SessionsTab = observer(
         </ComponentTab>
       );
     }
-  }
+  },
 );

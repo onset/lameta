@@ -13,7 +13,7 @@ import { IHomePageMenuConnections } from "../containers/HomePage";
 import { logPath } from "./log";
 import { ShowExportDialog } from "../components/export/ExportDialog";
 import { setUILanguage, currentUILanguage } from "./localization";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import userSettings from "./UserSettings";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import { initializeSentry } from "./errorHandling";

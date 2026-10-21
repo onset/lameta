@@ -1,7 +1,7 @@
 /* removed emotion jsx declaration */
 import { css } from "@emotion/react";
 import * as React from "react";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { CopyManager } from "../other/CopyManager";
 import { ipcRenderer } from "electron";
 import { useInterval } from "./UseInterval";

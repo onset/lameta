@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { RadioGroup, Radio } from "react-radio-group";
 
 export const SMRadioGroup = RadioGroup;

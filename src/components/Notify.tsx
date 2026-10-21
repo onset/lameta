@@ -6,7 +6,7 @@ import { revealInFolder } from "../other/crossPlatformUtilities";
 import * as React from "react";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { quitApp } from "../other/windowIpc";
 import { ipcRenderer } from "electron";
 import log from "../other/log";
@@ -139,8 +139,8 @@ export function NotifyFileAccessProblem(message: string, err: any) {
       {x[err.code]
         ? x[err.code]
         : t`We don't have specific tips for this error. If you cannot solve it by
-          restarting your computer, please report the problem to
-          https://github.com/onset/lameta/issues.`}
+restarting your computer, please report the problem to
+https://github.com/onset/lameta/issues.`}
     </div>
   );
 

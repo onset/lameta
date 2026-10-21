@@ -3,7 +3,8 @@ import { css, keyframes } from "@emotion/react";
 
 import * as React from "react";
 import { observer } from "mobx-react";
-import { t, Trans, Plural } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans, Plural } from "@lingui/react/macro";
 import { File } from "../model/file/File";
 import { NotifyError } from "./Notify";
 import { getCloudFileProvider, getCloudProviderNameForPath } from "../other/cloudFileStatus";

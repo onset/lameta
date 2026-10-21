@@ -1,7 +1,8 @@
 import { css } from "@emotion/react";
 import * as React from "react";
 import { observer } from "mobx-react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { SeverityIcon } from "./SeverityIcon";
 import { ProblemWording } from "./ProblemWording";
 import IconButton from "@mui/material/IconButton";
@@ -649,7 +650,7 @@ function groupProblems(
     else if (p.from === "checkCorpus") add(t`Project`, 0, problem, "project");
     else
       add(
-        t`Session ${p.sessionId}`,
+        t`Session ${p.sessionId ?? ""}`,
         1 + indexOrEnd(sessionIds, p.sessionId ?? ""),
         problem,
         "session",

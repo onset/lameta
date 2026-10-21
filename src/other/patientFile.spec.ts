@@ -8,7 +8,7 @@ vi.mock("child_process", () => ({
   spawnSync: vi.fn((command: string, args: string[]) => {
     spawnSyncCalls.push({ command, args });
     return { status: 0 };
-  })
+  }),
 }));
 
 // Mock fs for controlled behavior
@@ -29,8 +29,8 @@ vi.mock("fs", async (importOriginal) => {
         }
         // Subsequent calls: succeed
         return "file contents";
-      })
-    }
+      }),
+    },
   };
 });
 
@@ -41,11 +41,11 @@ vi.mock("../components/Notify", () => ({
   NotifyNoBigDeal: vi.fn(),
   NotifyRenameProblem: vi.fn(),
   NotifyWarning: vi.fn(),
-  getCannotRenameFileMsg: vi.fn(() => "Cannot rename file")
+  getCannotRenameFileMsg: vi.fn(() => "Cannot rename file"),
 }));
 
-vi.mock("@lingui/macro", () => ({
-  t: (strings: TemplateStringsArray) => strings[0]
+vi.mock("@lingui/core/macro", () => ({
+  t: (strings: TemplateStringsArray) => strings[0],
 }));
 
 describe("PatientFS", () => {

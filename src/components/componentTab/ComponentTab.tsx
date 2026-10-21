@@ -11,7 +11,7 @@ import FolderList from "../FolderList";
 import { SearchContext, normalizeSearchTerm } from "../SearchContext";
 import { css } from "@emotion/react";
 import { highlightMatches } from "../highlighting";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { i18n as appI18n } from "../../other/localization";
 
 interface IProps {

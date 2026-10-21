@@ -4,8 +4,6 @@ import { getStatusOfFile, getLinkStatusIconPath } from "./FileStatus";
 import * as fs from "fs-extra";
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
-import { i18nUnitTestPrep } from "../../other/localization";
-i18nUnitTestPrep();
 
 function getPretendFile(): OtherFile {
   const path = temp.path({ suffix: ".mp3" }) as string;

@@ -1,9 +1,9 @@
 import * as React from "react";
 import { css } from "@emotion/react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import {
   FieldDefinitionCustomizationRecord,
-  loadAndMergeFieldChoices
+  loadAndMergeFieldChoices,
 } from "./model/field/ConfiguredFieldDefinitions";
 import { FieldDefinition } from "./model/field/FieldDefinition";
 import { AuthorityLists } from "./model/Project/AuthorityLists/AuthorityLists";
@@ -17,29 +17,21 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
     authorityLists: AuthorityLists;
   } & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
-  const [customizations, setCustomizations] = React.useState<
-    FieldDefinitionCustomizationRecord[]
-  >([]);
+  const [customizations, setCustomizations] = React.useState<FieldDefinitionCustomizationRecord[]>(
+    [],
+  );
 
   React.useEffect(() => {
-    setCustomizations(
-      loadAndMergeFieldChoices(props.configurationName).customizations
-    );
+    setCustomizations(loadAndMergeFieldChoices(props.configurationName).customizations);
   }, [props.configurationName]);
-  const projectCustomizations = customizations.filter(
-    (c) => c.area === "project"
-  );
-  const sessionCustomizations = customizations.filter(
-    (c) => c.area === "session"
-  );
-  const personCustomizations = customizations.filter(
-    (c) => c.area === "person"
-  );
+  const projectCustomizations = customizations.filter((c) => c.area === "project");
+  const sessionCustomizations = customizations.filter((c) => c.area === "session");
+  const personCustomizations = customizations.filter((c) => c.area === "person");
   console.log("****", props.configurationName);
 
   const currentConfiguration: { choices: IChoice[] } | undefined =
     props.authorityLists.accessProtocolLists.find(
-      (p) => p.archiveConfigurationName == props.configurationName
+      (p) => p.archiveConfigurationName == props.configurationName,
     );
 
   if (!currentConfiguration) {
@@ -207,7 +199,7 @@ export { ArchiveConfigurationSummary };
 function describeChange(
   area: string,
   factory: FieldDefinition,
-  newDef: FieldDefinition
+  newDef: FieldDefinition,
 ): React.ReactNode {
   const diffs: React.ReactNode[] = [];
   const label = `${factory.englishLabel}`;
@@ -224,20 +216,16 @@ function describeChange(
   const newDefVisibility = newDef.visibility || "always";
   if (factoryVisibility !== newDefVisibility) {
     if (factoryVisibility === "never" && newDefVisibility === "always")
-      diffs.push(
-        <span>{`The ${label} field, which is normally hidden, will be shown.`}</span>
-      );
+      diffs.push(<span>{`The ${label} field, which is normally hidden, will be shown.`}</span>);
     else if (factoryVisibility === "always" && newDefVisibility === "never")
-      diffs.push(
-        <span>{`The ${label} field, which is normally shown, will be hidden.`}</span>
-      );
+      diffs.push(<span>{`The ${label} field, which is normally shown, will be hidden.`}</span>);
     else
       diffs.push(
         <span>
           {`The ${label} field, which is normally ${visibilityToText(
-            factoryVisibility
+            factoryVisibility,
           )}, will be ${visibilityToText(newDefVisibility)}.`}
-        </span>
+        </span>,
       );
   }
   // Description
@@ -247,7 +235,7 @@ function describeChange(
         {`The description of the ${label} field, normally ${
           factory.description ? `"${factory.description}"` : "empty"
         }, will be "${newDef.description}".`}
-      </span>
+      </span>,
     );
   }
   // Multilingualism
@@ -256,10 +244,8 @@ function describeChange(
       <span key={`${label}-${diffs.length}`}>
         {`The ${label} field, which is normally ${
           factory.multilingual ? "multilingual" : "single-language"
-        }, will be ${
-          newDef.multilingual ? "multilingual" : "single-language"
-        }.`}
-      </span>
+        }, will be ${newDef.multilingual ? "multilingual" : "single-language"}.`}
+      </span>,
     );
   }
   return (

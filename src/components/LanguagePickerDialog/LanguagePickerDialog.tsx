@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import ReactModal from "react-modal";
 import "./LanguagePickerDialog.css";
 import CloseOnEscape from "react-close-on-escape";
@@ -22,10 +22,7 @@ interface IState {
 // to guide people to dealing with languages we don't know about, either because our index is out of
 // date or because the language doesn't have an iso code yet. But I had to put that stuff and hold
 // and dumb it down to a simple dumb form. That explains all the unused code... we will return to this.
-export default class LanguagePickerDialog extends React.Component<
-  IProps,
-  IState
-> {
+export default class LanguagePickerDialog extends React.Component<IProps, IState> {
   private static singleton: LanguagePickerDialog;
   constructor(props: IProps) {
     super(props);
@@ -34,16 +31,14 @@ export default class LanguagePickerDialog extends React.Component<
       field: undefined,
       langCode: "",
       name: "",
-      suggestions: []
+      suggestions: [],
       //topSuggestion: {}
     };
     LanguagePickerDialog.singleton = this;
   }
   private handleCloseModal(doSave: boolean) {
     if (doSave && this.state.field) {
-      this.state.field.setValueFromString(
-        this.state.langCode + " : " + this.state.name
-      );
+      this.state.field.setValueFromString(this.state.langCode + " : " + this.state.name);
     }
     this.setState({ isOpen: false });
   }
@@ -54,7 +49,7 @@ export default class LanguagePickerDialog extends React.Component<
         field,
         langCode: "",
         name: "",
-        isOpen: true
+        isOpen: true,
       });
       return;
     }
@@ -67,7 +62,7 @@ export default class LanguagePickerDialog extends React.Component<
         field,
         langCode: parts[0].trim(),
         name: parts[1].trim(),
-        isOpen: true
+        isOpen: true,
       });
     } else {
       alert(`Could not parse code and language: '${field.text}'`);
@@ -79,12 +74,12 @@ export default class LanguagePickerDialog extends React.Component<
 
   private onSuggestionsFetchRequested({ value }) {
     this.setState({
-      suggestions: this.getSuggestions(value)
+      suggestions: this.getSuggestions(value),
     });
   }
   private onSuggestionsClearRequested() {
     this.setState({
-      suggestions: []
+      suggestions: [],
     });
   }
   private getSuggestions(value) {
@@ -115,17 +110,15 @@ export default class LanguagePickerDialog extends React.Component<
   }
   public render() {
     const codePattern = /^[a-zA-Z]{2,3}(-[a-zA-Z]{2,3})?$/;
-    const haveValidFields =
-      codePattern.test(this.state.langCode) && this.state.name.length > 0;
+    const haveValidFields = codePattern.test(this.state.langCode) && this.state.name.length > 0;
     const suggestions = this.state.suggestions;
-    const topSuggestionCode =
-      suggestions.length > 0 ? suggestions[0].code.three : "";
+    const topSuggestionCode = suggestions.length > 0 ? suggestions[0].code.three : "";
     const value = this.state.langCode;
     const inputProps = {
       placeholder: "Type language name or code",
       value,
       onChange: (event, { newValue }) => this.setState({ langCode: newValue }),
-      autoFocus: true
+      autoFocus: true,
     };
     return (
       <CloseOnEscape

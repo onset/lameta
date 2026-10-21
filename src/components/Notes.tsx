@@ -4,7 +4,8 @@ import { Field } from "../model/field/Field";
 import { TextFieldEdit } from "./TextFieldEdit";
 import { InfoIndicator } from "./FieldIndicators";
 import { css } from "@emotion/react";
-import { Trans, t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 export const Notes: React.FunctionComponent<{
@@ -37,11 +38,7 @@ export const Notes: React.FunctionComponent<{
           padding-right: 0; // i don't know why the default as a right padding but I want the info icon to align with the right edge of the text field
         `}
       >
-        <TextFieldEdit
-          hideLabel={true}
-          field={props.field}
-          className={"fill-form"}
-        />
+        <TextFieldEdit hideLabel={true} field={props.field} className={"fill-form"} />
       </form>
     </div>
   );

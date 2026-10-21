@@ -9,7 +9,8 @@ import "./FileList.css";
 import { revealInFolder, revealInFolderLabel } from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
 import { translateFileType } from "../other/localization";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react";
@@ -322,7 +323,7 @@ export const _FileList: React.FunctionComponent<{
             className={"cmd-add-files"}
             onClick={async () => await showAddFilesDialog(props.folder, setSelectedFile)}
           >
-            <Trans> Add Files</Trans>
+            <Trans>Add Files</Trans>
           </button>
         </div>
         <ReactTable

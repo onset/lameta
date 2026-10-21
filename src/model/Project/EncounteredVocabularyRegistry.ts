@@ -1,4 +1,4 @@
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { Dictionary } from "typescript-collections";
 
 // a class that has a list of custom vocabularies. Each has a name, and a list of terms. For each vocab, it keeps a function that is used

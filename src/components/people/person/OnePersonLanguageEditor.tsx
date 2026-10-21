@@ -5,7 +5,7 @@ import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
 import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { ToggleIconButton } from "./ToggleIconButton";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 export const OnePersonLanguageEditor: React.FunctionComponent<{
   language: IPersonLanguage;

@@ -9,12 +9,10 @@ import { FieldSet } from "../model/field/FieldSet";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
-import { i18nUnitTestPrep } from "../other/localization";
 import { checkField, checkProjectFields, getRuleSeverity } from "./fieldRules";
 
 mobx.configure({ enforceActions: "never" });
 temp.track();
-i18nUnitTestPrep();
 
 const slots = ["en", "es"];
 

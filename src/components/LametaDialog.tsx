@@ -2,7 +2,8 @@ import { css } from "@emotion/react";
 import "./commonDialog.css";
 import * as React from "react";
 import { useState } from "react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { Button, Dialog, DialogContent } from "@mui/material";
 
 const kDialogTopPadding = "24px";

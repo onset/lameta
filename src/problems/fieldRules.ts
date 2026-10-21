@@ -1,4 +1,4 @@
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { i18n as appI18n } from "../other/localization";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";

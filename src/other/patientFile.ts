@@ -8,7 +8,7 @@ import {
   NotifyRenameProblem,
   NotifyWarning,
 } from "../components/Notify";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 
 /* Do what we can to co-exist with things like antivirus scanners and file-sync
     services that can temporarily lock files. On Windows (only), a process

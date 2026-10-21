@@ -16,7 +16,7 @@ import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { languageSlotColors } from "../../containers/theme";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 import { FieldDefinition } from "../field/FieldDefinition";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { analyticsEvent } from "../../other/analytics";
 import userSettings from "../../other/UserSettings";
 import {
