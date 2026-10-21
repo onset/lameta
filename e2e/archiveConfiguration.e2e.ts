@@ -2,7 +2,6 @@ import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { createNewProject, E2eProject } from "./various-e2e-helpers";
 import { shouldSeeExactlyOnce, shouldAtLeastOnce } from "./e2e.expects";
-import { xorBy } from "lodash";
 
 let lameta: LametaE2ERunner;
 let page: Page;

@@ -150,7 +150,7 @@ function roundToOneDecimalPlace(n: number): number {
 function getStatsFromFileAsync(file: File): Promise<Stats> {
   switch (file.type) {
     case "Image":
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         try {
           const ext = Path.extname(file.getActualFilePath()).toLowerCase().replace(/\./g, "");
           if (ext === "bmp") {

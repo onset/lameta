@@ -7,7 +7,7 @@ import { CloudUnavailableBanner } from "../components/CloudUnavailableBanner";
 import * as React from "react";
 import { observable, makeObservable } from "mobx";
 import { observer } from "mobx-react";
-import { Project, ProjectHolder } from "../model/Project/Project";
+import { ProjectHolder } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import { OpenDialogOptions, ipcRenderer } from "electron";
@@ -25,12 +25,11 @@ import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import { MessageDialog, ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../other/errorHandling";
-import { NotifyError, NotifyRenameProblem, NotifyWarning } from "../components/Notify";
+import { NotifyError } from "../components/Notify";
 import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 import { copyDirSync } from "../other/crossPlatformUtilities";
-import { getTestEnvironment } from "../getTestEnvironment";
 import { shouldUseE2EFastProjectCreation, createProjectForE2E } from "./E2EProjectCreation";
 
 import { Slide, ToastContainer } from "react-toastify";
@@ -253,7 +252,7 @@ class HomePage extends React.Component<IProps, IState> {
     }
 
     // Save when we're quitting. Review: does this cover shutdown?
-    window.addEventListener("beforeunload", (e) => {
+    window.addEventListener("beforeunload", () => {
       if (this.projectHolder.project && this.projectHolder.project.saveAllFilesInFolder) {
         this.projectHolder.project.saveAllFilesInFolder();
       }

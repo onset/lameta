@@ -50,11 +50,11 @@ export function initializeLocalization() {
     }
   });
 
-  setUILanguage(currentUILanguage, false);
+  setUILanguage(currentUILanguage);
   olacRoles = loadOLACRoles();
 }
 
-export function setUILanguage(code: string, reload: boolean = true) {
+export function setUILanguage(code: string) {
   currentUILanguage = code;
   moment.locale(currentUILanguage); // this is a global change
 
@@ -370,7 +370,7 @@ function getMatch(
 }
 
 export function i18nUnitTestPrep() {
-  i18n.loadLocaleData(i18n.locale, { plurals: (x) => "other" }); // silence i18n error  i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
+  i18n.loadLocaleData(i18n.locale, { plurals: () => "other" }); // silence i18n error  i18n.loadLocaleData(i18n.locale, { plurals: (x) => x }); // silence i18n error
 }
 
 /**

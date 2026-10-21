@@ -42,7 +42,7 @@ export class FolderMetadataFile extends File {
           PatientFS.renameSync(pathToFileWithUnexpectedName, metadataPath);
           console.log(`renamed ${pathToFileWithUnexpectedName} to ${metadataPath}`);
           // ok good, we're all set
-        } catch (err) {
+        } catch {
           // ah well
           console.error(
             `Could not rename ${pathToFileWithUnexpectedName} to ${metadataPath}, using ${pathToFileWithUnexpectedName} instead`,
@@ -108,7 +108,7 @@ export class FolderMetadataFile extends File {
       //console.log("Setting prop from fields.json5: " + field.key);
     });
   }
-  protected specialLoadingOfField(tag: string, propertiesFromXml: any): boolean {
+  protected specialLoadingOfField(_tag: string, _propertiesFromXml: any): boolean {
     //console.log("FolderMetaDataFile.specialHandlingOfField");
     return false;
   }

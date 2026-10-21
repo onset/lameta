@@ -76,7 +76,7 @@ export function NotifyError(message: string, details?: string) {
 export function getCannotRenameFileMsg() {
   return t`lameta  was not able to rename that file.`;
 }
-export function NotifyRenameProblem(err: any, path: string) {
+export function NotifyRenameProblem(err: any) {
   const msg = getCannotRenameFileMsg();
   if (err.code === "EPERM" || err.code === "EACCES" || err.code === "EBUSY") {
     NotifyFileAccessProblem(msg, err);

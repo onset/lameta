@@ -5,7 +5,7 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState } from "react";
 import { i18n } from "@lingui/core";
-import { t, Trans } from "@lingui/macro";
+import { Trans } from "@lingui/macro";
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,
@@ -24,7 +24,7 @@ import {
 let staticShowMediaFolderDialog: () => void = () => {};
 export { staticShowMediaFolderDialog as ShowMediaFolderDialog };
 
-export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
+export const MediaFolderDialog: React.FunctionComponent<{}> = () => {
   const [path, setPath] = useState<string>(
     getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)",
   );

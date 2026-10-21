@@ -1,8 +1,7 @@
-import { describe, expect, it, beforeEach, afterEach, vi, beforeAll } from "vite-plus/test";
+import { describe, expect, it, beforeEach, afterEach, beforeAll } from "vite-plus/test";
 import {
   isBuiltInGenre,
   isBuiltInRole,
-  scanProjectForVocabulary,
   updateTranslationsFromScan,
   HARDCODED_EXPORT_GENRES,
   HARDCODED_EXPORT_ROLES,

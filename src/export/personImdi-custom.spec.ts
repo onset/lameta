@@ -1,26 +1,13 @@
-import {
-  describe,
-  it,
-  beforeAll,
-  beforeEach,
-  afterEach,
-  afterAll
-} from "vite-plus/test";
+import { describe, it, beforeAll, beforeEach, afterAll } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
-import {
-  setResultXml,
-  xexpect as expect,
-  count
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect } from "../other/xmlUnitTestUtils";
 import * as mobx from "mobx";
 import temp from "temp";
-import { FieldDefinition } from "../model/field/FieldDefinition";
-import { Field } from "../model/field/Field";
 
 mobx.configure({
-  enforceActions: "never"
+  enforceActions: "never",
 });
 let project: Project;
 let person: Person;
@@ -42,9 +29,7 @@ beforeEach(() => {
 });
 
 const generate = () => {
-  setResultXml(
-    generator.actor(person, "pretend-role", pretendSessionDate) as string
-  );
+  setResultXml(generator.actor(person, "pretend-role", pretendSessionDate) as string);
 };
 describe("actor imdi export", () => {
   it("should not include Notes in the Keys", () => {

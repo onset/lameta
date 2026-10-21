@@ -177,7 +177,7 @@ export abstract class Folder {
                 f.copyProgress = progress;
               },
             )
-              .then((successfulDestinationPath) => {
+              .then(() => {
                 const pendingFile = this.files.find(
                   (x) => x.pathInFolderToLinkFileOrLocalCopy === dest,
                 );

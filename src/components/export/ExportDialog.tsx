@@ -226,7 +226,6 @@ export const ExportDialog: React.FunctionComponent<{
   });
   const [exportLog, setExportLog] = useState<string[]>([]);
   const cancelRequestedRef = useRef(false);
-  const exportPathRef = useRef<string>("");
 
   // Listen for file-level progress events from main process
   useEffect(() => {
@@ -379,8 +378,7 @@ export const ExportDialog: React.FunctionComponent<{
     };
 
     try {
-      const folderFilter =
-        whichSessionsOption === "all" ? (f: Folder) => true : (f: Folder) => f.marked;
+      const folderFilter = whichSessionsOption === "all" ? () => true : (f: Folder) => f.marked;
 
       // RO-Crate doesn't need a path parameter, other exports do
       if (path || exportFormat === "ro-crate") {

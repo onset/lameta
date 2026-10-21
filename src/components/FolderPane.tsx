@@ -27,9 +27,7 @@ import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
 import userSettings from "../other/UserSettings";
 import * as URL from "url";
-import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
 import { FileStatusBlock } from "../model/file/FileStatus";
-import { useEffect } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
@@ -57,11 +55,6 @@ export interface IProps {
 
 // avoids a console error every time react-player tries to come up with a preview of the video
 const dummyPreviewImage: string = URL.pathToFileURL(`assets/invisible.png`).toString();
-
-const FileDisplay = observer((props: { folder: Folder }) => {
-  const selectedFile = props.folder.selectedFile;
-  return selectedFile ? <div>Current File: {selectedFile.getTextProperty("filename")}</div> : null;
-});
 
 export const FolderPane: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivElement>> =
   observer((props) => {
@@ -163,7 +156,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
     }, [fileTabRequest, props.folder.selectedFile]);
 
     // search context (for highlighting the Notes tab label when a match is inside notes)
-    const { searchTerm } = React.useContext(SearchContext);
+    React.useContext(SearchContext);
 
     // tabIndex: number,
     // setTabIndex: (index: number) => void,
@@ -186,7 +179,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
       return <br />;
     }
     const notesField = file.properties.getTextField("notes");
-    const filename = file.getTextProperty("filename");
+    file.getTextProperty("filename");
     // Reading media/text/pdf content would hydrate (fully download) a
     // cloud-only OneDrive placeholder file, which can be huge and slow. Show
     // CloudFilePanel instead until the user explicitly fetches it.
@@ -415,7 +408,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
                   languageFinder={props.project.languageFinder}
                   //customFieldNames={props.customFieldNames}
                   fieldThatControlsFileNames={"id"}
-                  fieldThatControlsFileNamesMightHaveChanged={(key) =>
+                  fieldThatControlsFileNamesMightHaveChanged={() =>
                     (props.folder as Session).nameMightHaveChanged()
                   }
                   validateFieldThatControlsFileNames={(value) =>

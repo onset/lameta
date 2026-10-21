@@ -8,7 +8,6 @@ import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyException } from "../components/Notify";
-import { debug } from "winston";
 
 export const kEol: string = require("os").EOL;
 

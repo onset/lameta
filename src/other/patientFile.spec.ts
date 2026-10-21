@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vite-plus/test";
+import { describe, it, expect, vi, beforeEach } from "vite-plus/test";
 
 // Track all spawnSync calls
 let spawnSyncCalls: Array<{ command: string; args: string[] }> = [];
@@ -8,7 +8,7 @@ vi.mock("child_process", () => ({
   spawnSync: vi.fn((command: string, args: string[]) => {
     spawnSyncCalls.push({ command, args });
     return { status: 0 };
-  })
+  }),
 }));
 
 // Mock fs for controlled behavior
@@ -19,7 +19,7 @@ vi.mock("fs", async (importOriginal) => {
     ...originalFs,
     default: {
       ...originalFs,
-      readFileSync: vi.fn((path: string) => {
+      readFileSync: vi.fn((_path: string) => {
         readFileSyncCallCount++;
         if (readFileSyncCallCount === 1) {
           // First call: throw EBUSY to trigger sleep
@@ -29,8 +29,8 @@ vi.mock("fs", async (importOriginal) => {
         }
         // Subsequent calls: succeed
         return "file contents";
-      })
-    }
+      }),
+    },
   };
 });
 
@@ -41,11 +41,11 @@ vi.mock("../components/Notify", () => ({
   NotifyNoBigDeal: vi.fn(),
   NotifyRenameProblem: vi.fn(),
   NotifyWarning: vi.fn(),
-  getCannotRenameFileMsg: vi.fn(() => "Cannot rename file")
+  getCannotRenameFileMsg: vi.fn(() => "Cannot rename file"),
 }));
 
 vi.mock("@lingui/macro", () => ({
-  t: (strings: TemplateStringsArray) => strings[0]
+  t: (strings: TemplateStringsArray) => strings[0],
 }));
 
 describe("PatientFS", () => {

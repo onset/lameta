@@ -1,7 +1,6 @@
-import { vi, describe, it, beforeAll, afterAll } from "vite-plus/test";
+import { describe, it, beforeAll, afterAll } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
-import { Session } from "../model/Project/Session/Session";
 import { setResultXml, xexpect as expect } from "../other/xmlUnitTestUtils";
 import temp from "temp";
 
@@ -14,12 +13,7 @@ beforeAll(() => {
   projectDir = temp.mkdirSync("lameta sessionOpex.spec");
   project = Project.fromDirectory(projectDir);
   const session = project.addSession();
-  opexXml = ImdiGenerator.generateSession(
-    IMDIMode.OPEX,
-    session,
-    project,
-    true /*omit namespace*/
-  );
+  opexXml = ImdiGenerator.generateSession(IMDIMode.OPEX, session, project, true /*omit namespace*/);
   setResultXml(opexXml);
 });
 afterAll(() => {
@@ -31,8 +25,8 @@ describe("session opex export", () => {
     // xpaths with namespaces are a hassle so we regex it out
     expect(opexXml).toEqual(
       expect.stringMatching(
-        /<?xml.*?>\s*<opex:OPEXMetadata.*>\s*<opex:DescriptiveMetadata.*>\s*<METATRANSCRIPT.*/
-      )
+        /<?xml.*?>\s*<opex:OPEXMetadata.*>\s*<opex:DescriptiveMetadata.*>\s*<METATRANSCRIPT.*/,
+      ),
     );
   });
 });

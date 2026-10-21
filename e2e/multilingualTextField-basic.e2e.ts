@@ -2,7 +2,6 @@ import { test, expect, Page } from "@playwright/test";
 import {
   getDescriptionField,
   addLanguageViaMenu,
-  getDescriptionSlot,
   getDescriptionEditor,
   deleteLanguageFromDescription,
   countSlotsInDescription,
@@ -10,7 +9,7 @@ import {
   teardownMultilingualTestContext,
   waitForSessionForm,
   MultilingualTestContext,
-  hoverOverDescriptionField
+  hoverOverDescriptionField,
 } from "./multilingualTextField-e2e-helpers";
 
 // Working languages configured for this test file.
@@ -29,10 +28,7 @@ let page: Page;
 
 test.describe("Multilingual Text Fields - Basic Operations", () => {
   test.beforeAll(async () => {
-    context = await setupMultilingualTestContextFast(
-      "MultilingualBasic",
-      kWorkingLanguages
-    );
+    context = await setupMultilingualTestContextFast("MultilingualBasic", kWorkingLanguages);
     page = context.page;
   });
 
@@ -85,9 +81,7 @@ test.describe("Multilingual Text Fields - Basic Operations", () => {
     await expect(cancelBtn).toBeVisible();
 
     // A language selector input should be visible
-    const languageInput = descriptionField.locator(
-      '.select input[role="combobox"]'
-    );
+    const languageInput = descriptionField.locator('.select input[role="combobox"]');
     await expect(languageInput.first()).toBeVisible();
   });
 
@@ -218,12 +212,8 @@ test.describe("Multilingual Text Fields - Basic Operations", () => {
     await deleteLanguageFromDescription(page, "fr");
 
     // Working language slots should still be there
-    await expect(
-      descriptionField.getByTestId("translation-slot-en")
-    ).toBeVisible();
-    await expect(
-      descriptionField.getByTestId("translation-slot-fr")
-    ).not.toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-en")).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-fr")).not.toBeVisible();
 
     slots = countSlotsInDescription(page);
     await expect(slots).toHaveCount(kWorkingLanguages.length);
@@ -248,9 +238,7 @@ test.describe("Multilingual Text Fields - Basic Operations", () => {
 
     // Should still have working languages + 1 French (duplicate not added)
     const afterDuplicateAttempt = countSlotsInDescription(page);
-    await expect(afterDuplicateAttempt).toHaveCount(
-      kWorkingLanguages.length + 1
-    );
+    await expect(afterDuplicateAttempt).toHaveCount(kWorkingLanguages.length + 1);
   });
 
   test("selecting a language adds a new translation slot", async () => {
@@ -290,12 +278,8 @@ test.describe("Multilingual Text Fields - Basic Operations", () => {
     const descriptionField = getDescriptionField(page);
 
     // Both English and Spanish should be visible as protected slots
-    await expect(
-      descriptionField.getByTestId("translation-slot-en")
-    ).toBeVisible();
-    await expect(
-      descriptionField.getByTestId("translation-slot-es")
-    ).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-en")).toBeVisible();
+    await expect(descriptionField.getByTestId("translation-slot-es")).toBeVisible();
 
     // Click English color bar - delete menu item should be disabled (protected)
     const englishColorBar = descriptionField.getByTestId("slot-color-bar-en");
@@ -329,10 +313,10 @@ test.describe("Multilingual Text Fields - Basic Operations", () => {
 
     // Get their background colors
     const englishColor = await englishColorBar.evaluate(
-      (el) => window.getComputedStyle(el).backgroundColor
+      (el) => window.getComputedStyle(el).backgroundColor,
     );
     const spanishColor = await spanishColorBar.evaluate(
-      (el) => window.getComputedStyle(el).backgroundColor
+      (el) => window.getComputedStyle(el).backgroundColor,
     );
 
     // Colors should be different

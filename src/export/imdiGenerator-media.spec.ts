@@ -3,13 +3,11 @@ import { Project } from "../model/Project/Project";
 import { kMediaStatsCacheKey } from "../model/file/File";
 import { setResultXml, xexpect as expect, count, value } from "../other/xmlUnitTestUtils";
 import temp from "temp";
-import * as fs from "fs-extra";
 import assert from "assert";
-import { describe, it, vi, beforeAll, afterAll } from "vite-plus/test";
+import { describe, it, beforeAll, afterAll } from "vite-plus/test";
 
 temp.track(); // cleanup on exit: doesn't work
 
-let rootDirectory: string;
 let project: Project;
 describe("Imdi generation for images", () => {
   afterAll(() => {

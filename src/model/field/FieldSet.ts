@@ -1,15 +1,9 @@
 import { Dictionary } from "typescript-collections";
 import assert from "assert";
 const camelcase = require("camelcase");
-import {
-  Field,
-  FieldType,
-  HasConsentField,
-  PersonDisplayNameField
-} from "./Field";
+import { Field, FieldType, HasConsentField, PersonDisplayNameField } from "./Field";
 import { FieldDefinition } from "./FieldDefinition";
 import { Person } from "../Project/Person/Person";
-import { Folder } from "../Folder/Folder";
 
 export class FieldSet extends Dictionary<string, Field> {
   public setText(key: string, value: string) {
@@ -28,9 +22,7 @@ export class FieldSet extends Dictionary<string, Field> {
       // Reduce noise in tests: 'type' is optional and frequently missing on synthetic files.
       // Log other missing keys as warnings instead of errors.
       if (key !== "type")
-        console.warn(
-          `This FieldSet has no value with key: ${key}. It has [${this.keys()}]`
-        );
+        console.warn(`This FieldSet has no value with key: ${key}. It has [${this.keys()}]`);
       throw Error("This FieldSet has no value with key: " + key);
     } else {
       return f;
@@ -48,7 +40,7 @@ export class FieldSet extends Dictionary<string, Field> {
     // In fields.json5, all tags in SayMore Classic which are not camelCase have a "xmlTag".
 
     const match = this.values().find(
-      (field) => field.definition && field.definition.xmlTag === tag
+      (field) => field.definition && field.definition.xmlTag === tag,
     );
     if (match) {
       return match.key;
@@ -98,9 +90,7 @@ export class FieldSet extends Dictionary<string, Field> {
   }
   public addTextProperty(key: string, value: string) {
     if (this.getHasValue(key)) {
-      throw new Error(
-        `Cannot add a new field for ${key} because it already exists`
-      );
+      throw new Error(`Cannot add a new field for ${key} because it already exists`);
     }
     this.setValue(key, new Field(key, FieldType.Text, value));
   }
@@ -120,7 +110,7 @@ export class FieldSet extends Dictionary<string, Field> {
   public changeKeyOfCustomField(field: Field, newKey: string) {
     assert(
       this.containsKey(field.key),
-      "Could not find existing field with the old key in the properties dictionary"
+      "Could not find existing field with the old key in the properties dictionary",
     );
     this.remove(field.key);
     field.key = newKey;

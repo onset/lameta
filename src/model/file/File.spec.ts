@@ -3,7 +3,6 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
-import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
 import { describe, it, afterEach, vi } from "vite-plus/test";
@@ -52,7 +51,7 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
   } finally {
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   }
@@ -70,7 +69,7 @@ describe("FolderMetadataFile constructor", () => {
   it("should make the appropriate metadata file if it doesn't exist", () => {
     //temp.track();
     const dir = temp.mkdirSync("blah");
-    const f = new SessionMetadataFile(dir, new EncounteredVocabularyRegistry());
+    new SessionMetadataFile(dir, new EncounteredVocabularyRegistry());
     const files = fs.readdirSync(dir);
     expect(files.length).toBe(1);
     expect(files[0].indexOf(".session")).toBeGreaterThan(0);
@@ -99,7 +98,7 @@ describe("file", () => {
   });
 
   it("parses unambiguous US date+time without creating a note", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Date type="date">11/22/2011 4:26:36 AM</Date>
       <title type="string">Test Session</title>
     `);
@@ -114,13 +113,13 @@ describe("file", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       // ignore cleanup errors
     }
   });
 
   it("flags ambiguous date like 2/2/2022 and clears the date", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Date type="date">2/2/2022</Date>
       <title type="string">Test Session</title>
     `);
@@ -135,7 +134,7 @@ describe("file", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       // ignore cleanup errors
     }
   });
@@ -220,7 +219,7 @@ describe("FolderMetadataFile", () => {
 
 describe("Genre normalization during reading", () => {
   it("should map known genre label to ID when reading session", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Genre type="string">Procedural Discourse</Genre>
       <title type="string">Test Session</title>
     `);
@@ -232,13 +231,13 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });
 
   it("should map Dialog label to dialog ID when reading session", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Genre type="string">Dialog</Genre>
       <title type="string">Test Session</title>
     `);
@@ -250,13 +249,13 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });
 
   it("should handle case insensitive genre label mapping when reading session", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Genre type="string">procedural discourse</Genre>
       <title type="string">Test Session</title>
     `);
@@ -268,13 +267,13 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });
 
   it("should leave unknown genre unchanged when reading session", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Genre type="string">custom_unknown_genre</Genre>
       <title type="string">Test Session</title>
     `);
@@ -286,13 +285,13 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });
 
   it("should preserve genre ID when already in ID form", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Genre type="string">procedural_discourse</Genre>
       <title type="string">Test Session</title>
     `);
@@ -304,13 +303,13 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });
 
   it("should handle empty genre value when reading session", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Genre type="string"></Genre>
       <title type="string">Test Session</title>
     `);
@@ -322,7 +321,7 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });
@@ -346,7 +345,7 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });
@@ -372,13 +371,13 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });
 
   it("should not mark file as dirty when no normalization occurs", () => {
-    const { tmpFolder, sessionFolder, filePath } = writeSessionFile(`
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Genre type="string">procedural_discourse</Genre>
       <title type="string">Test Session</title>
     `);
@@ -397,7 +396,7 @@ describe("Genre normalization during reading", () => {
 
     try {
       fs.removeSync(tmpFolder);
-    } catch (e) {
+    } catch {
       console.error("could not remove test folder " + tmpFolder);
     }
   });

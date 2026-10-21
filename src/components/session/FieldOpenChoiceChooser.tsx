@@ -82,7 +82,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
           label: props.field.text,
         };
   }
-  const { searchTerm } = React.useContext(SearchContext);
+  React.useContext(SearchContext);
   return (
     <div
       className={"field " + props.className}
@@ -98,7 +98,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
         placeholder=""
         /* This is a complete mystery, why I have to go in and do so much hand-styling to get a non-gargantuan react-select*/
         styles={{
-          control: (provided, state) => ({
+          control: (provided) => ({
             ...provided,
             minHeight: "2em",
             height: "2em",

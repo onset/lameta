@@ -1,10 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import { Project } from "../../../model/Project/Project";
-import {
-  createMockProject,
-  createMockSession
-} from "./test-utils/rocrate-test-setup";
+import { createMockProject } from "./test-utils/rocrate-test-setup";
 
 describe("RoCrateExporter Empty Description", () => {
   let mockProject: Project;
@@ -13,8 +10,8 @@ describe("RoCrateExporter Empty Description", () => {
     mockProject = createMockProject({
       metadata: {
         title: "Test Project",
-        projectDescription: "" // Empty description field exists but is empty
-      }
+        projectDescription: "", // Empty description field exists but is empty
+      },
     });
   });
 
@@ -22,14 +19,10 @@ describe("RoCrateExporter Empty Description", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     // Find the root dataset
-    const rootDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
+    const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
 
     expect(rootDataset).toBeDefined();
-    expect(rootDataset.description).toBe(
-      "No description provided for this project."
-    );
+    expect(rootDataset.description).toBe("No description provided for this project.");
     expect(rootDataset.description).not.toBe("");
   });
 
@@ -46,14 +39,10 @@ describe("RoCrateExporter Empty Description", () => {
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     // Find the root dataset
-    const rootDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
+    const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
 
     expect(rootDataset).toBeDefined();
-    expect(rootDataset.description).toBe(
-      "No description provided for this project."
-    );
+    expect(rootDataset.description).toBe("No description provided for this project.");
     expect(rootDataset.description).not.toBe("   ");
   });
 
@@ -63,17 +52,14 @@ describe("RoCrateExporter Empty Description", () => {
       .fn()
       .mockImplementation((key: string, defaultValue: string = "") => {
         if (key === "title") return "Test Project";
-        if (key === "projectDescription")
-          return "This is a real project description";
+        if (key === "projectDescription") return "This is a real project description";
         return defaultValue;
       });
 
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     // Find the root dataset
-    const rootDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
+    const rootDataset = result["@graph"].find((item: any) => item["@id"] === "./");
 
     expect(rootDataset).toBeDefined();
     expect(rootDataset.description).toBe("This is a real project description");

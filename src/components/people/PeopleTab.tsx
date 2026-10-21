@@ -19,10 +19,10 @@ export const PeopleTab = observer(
         <button
           key="newPerson"
           data-testid="new-person-button"
-          onClick={(e) => this.props.project.addPerson()}
+          onClick={() => this.props.project.addPerson()}
         >
           <Trans>New Person</Trans>
-        </button>
+        </button>,
       );
       const fileListButtons = [
         {
@@ -30,8 +30,8 @@ export const PeopleTab = observer(
           enabled: (selectedFile: File) => selectedFile.canRenameForConsent(),
           onClick: (f) => {
             (f as File).renameForConsent();
-          }
-        }
+          },
+        },
       ];
 
       return (
@@ -59,5 +59,5 @@ export const PeopleTab = observer(
         </ComponentTab>
       );
     }
-  }
+  },
 );

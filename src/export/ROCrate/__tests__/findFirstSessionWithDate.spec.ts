@@ -7,10 +7,7 @@ import { EncounteredVocabularyRegistry } from "../../../model/Project/Encountere
 import { setupLanguageFinderForTests } from "../../../languageFinder/LanguageFinder";
 import { FolderMetadataFile } from "../../../model/file/FolderMetaDataFile";
 import { findFirstSessionWithDate } from "../RoCrateExporter";
-import {
-  makeLdacCompliantPersonEntry,
-  makeEntriesFromParticipant
-} from "../RoCratePeople";
+import { makeLdacCompliantPersonEntry } from "../RoCratePeople";
 
 describe("findFirstSessionWithDate", () => {
   beforeAll(() => {
@@ -25,7 +22,7 @@ describe("findFirstSessionWithDate", () => {
 
   it("should return undefined when sessions array is empty", () => {
     const mockProject = {
-      sessions: { items: [] }
+      sessions: { items: [] },
     } as any;
     expect(findFirstSessionWithDate(mockProject)).toBeUndefined();
   });
@@ -36,23 +33,21 @@ describe("findFirstSessionWithDate", () => {
         items: [
           {
             metadataFile: {
-              getTextProperty: (key: string) => (key === "date" ? "" : "")
-            }
+              getTextProperty: (key: string) => (key === "date" ? "" : ""),
+            },
           },
           {
             metadataFile: {
-              getTextProperty: (key: string) =>
-                key === "date" ? "2010-06-06" : ""
-            }
+              getTextProperty: (key: string) => (key === "date" ? "2010-06-06" : ""),
+            },
           },
           {
             metadataFile: {
-              getTextProperty: (key: string) =>
-                key === "date" ? "2015-01-01" : ""
-            }
-          }
-        ]
-      }
+              getTextProperty: (key: string) => (key === "date" ? "2015-01-01" : ""),
+            },
+          },
+        ],
+      },
     } as any;
 
     const result = findFirstSessionWithDate(mockProject);
@@ -66,18 +61,16 @@ describe("findFirstSessionWithDate", () => {
         items: [
           {
             metadataFile: {
-              getTextProperty: (key: string) =>
-                key === "date" ? "not-a-date" : ""
-            }
+              getTextProperty: (key: string) => (key === "date" ? "not-a-date" : ""),
+            },
           },
           {
             metadataFile: {
-              getTextProperty: (key: string) =>
-                key === "date" ? "2020-03-15" : ""
-            }
-          }
-        ]
-      }
+              getTextProperty: (key: string) => (key === "date" ? "2020-03-15" : ""),
+            },
+          },
+        ],
+      },
     } as any;
 
     const result = findFirstSessionWithDate(mockProject);
@@ -91,16 +84,16 @@ describe("findFirstSessionWithDate", () => {
         items: [
           {
             metadataFile: {
-              getTextProperty: (key: string) => ""
-            }
+              getTextProperty: () => "",
+            },
           },
           {
             metadataFile: {
-              getTextProperty: (key: string) => ""
-            }
-          }
-        ]
-      }
+              getTextProperty: () => "",
+            },
+          },
+        ],
+      },
     } as any;
 
     expect(findFirstSessionWithDate(mockProject)).toBeUndefined();
@@ -125,10 +118,7 @@ describe("Person age calculation with first dated session", () => {
 </Person>`;
 
     fs.writeFileSync(path.join(tempDir, `${personId}.person`), personXml);
-    const personFile = new PersonMetadataFile(
-      tempDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const personFile = new PersonMetadataFile(tempDir, new EncounteredVocabularyRegistry());
 
     // Simulate a project where first session has no date, but second session does
     const mockProject = {
@@ -138,18 +128,18 @@ describe("Person age calculation with first dated session", () => {
             // ETR008-like session with no date
             metadataFile: {
               getTextProperty: (key: string, defaultValue?: string) =>
-                key === "date" ? "" : defaultValue || ""
-            }
+                key === "date" ? "" : defaultValue || "",
+            },
           },
           {
             // ETR009-like session with date 2010-06-06
             metadataFile: {
               getTextProperty: (key: string, defaultValue?: string) =>
-                key === "date" ? "2010-06-06" : defaultValue || ""
-            }
-          }
-        ]
-      }
+                key === "date" ? "2010-06-06" : defaultValue || "",
+            },
+          },
+        ],
+      },
     } as any;
 
     // Get the session date using our helper function
@@ -162,10 +152,8 @@ describe("Person age calculation with first dated session", () => {
       metadataFile: personFile,
       knownFields: [],
       ageOn: (refDate: Date) => {
-        return personFile.properties
-          .getDateField("birthYear")
-          .yearsSince(refDate);
-      }
+        return personFile.properties.getDateField("birthYear").yearsSince(refDate);
+      },
     } as any;
 
     // Apply LDAC compliance which should add ldac:age
@@ -188,10 +176,7 @@ describe("Person age calculation with first dated session", () => {
 </Person>`;
 
     fs.writeFileSync(path.join(tempDir, `${personId}.person`), personXml);
-    const personFile = new PersonMetadataFile(
-      tempDir,
-      new EncounteredVocabularyRegistry()
-    );
+    const personFile = new PersonMetadataFile(tempDir, new EncounteredVocabularyRegistry());
 
     // Project with no dated sessions
     const mockProject = {
@@ -199,11 +184,11 @@ describe("Person age calculation with first dated session", () => {
         items: [
           {
             metadataFile: {
-              getTextProperty: () => ""
-            }
-          }
-        ]
-      }
+              getTextProperty: () => "",
+            },
+          },
+        ],
+      },
     } as any;
 
     const sessionDate = findFirstSessionWithDate(mockProject);
@@ -213,10 +198,8 @@ describe("Person age calculation with first dated session", () => {
       metadataFile: personFile,
       knownFields: [],
       ageOn: (refDate: Date) => {
-        return personFile.properties
-          .getDateField("birthYear")
-          .yearsSince(refDate);
-      }
+        return personFile.properties.getDateField("birthYear").yearsSince(refDate);
+      },
     } as any;
 
     const personEntry: any = { "@type": "Person", name: "Test Person" };

@@ -9,7 +9,7 @@ import { useState } from "react";
 import { lameta_orange } from "../containers/theme";
 
 // This is in the upper right corner of the screen.
-export const CopyingStatus: React.FunctionComponent<{}> = (props) => {
+export const CopyingStatus: React.FunctionComponent<{}> = () => {
   const [message, setMessage] = useState("");
   useInterval(() => {
     setMessage(CopyManager.filesAreStillCopying() ? t`Copying...` : "");

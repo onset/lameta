@@ -9,23 +9,22 @@
  * ensureSubjectLanguage function), see RoCrateValidator.spec.ts.
  */
 import { vi, describe, it, beforeEach, expect } from "vite-plus/test";
-import * as fs from "fs-extra";
 
 // Mock the staticLanguageFinder dependency BEFORE importing modules that use it
 vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 // Mock fs-extra
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1000,
-    birthtime: new Date("2023-01-01")
-  })
+    birthtime: new Date("2023-01-01"),
+  }),
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
@@ -35,10 +34,7 @@ import { Project } from "../../../model/Project/Project";
 import { Person } from "../../../model/Project/Person/Person";
 import { FieldDefinition } from "../../../model/field/FieldDefinition";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
-import {
-  validateRoCrateWithCategories,
-  ValidationResult
-} from "../../../components/RoCrate/validation";
+import { validateRoCrateWithCategories } from "../../../components/RoCrate/validation";
 
 describe("RoCrateExporter Validation Tests", () => {
   let mockProject: Project;
@@ -46,59 +42,57 @@ describe("RoCrateExporter Validation Tests", () => {
 
   beforeEach(() => {
     // Mock the field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      [
-        {
-          key: "title",
-          englishLabel: "Title",
-          xmlTag: "Title",
-          persist: true,
-          type: "Text",
-          multilingual: false,
-          isCustom: false,
-          showOnAutoForm: true
-        } as FieldDefinition,
-        {
-          key: "description",
-          englishLabel: "Description",
-          xmlTag: "Description",
-          persist: true,
-          type: "Text",
-          multilingual: false,
-          isCustom: false,
-          showOnAutoForm: true
-        } as FieldDefinition,
-        {
-          key: "genre",
-          englishLabel: "Genre",
-          xmlTag: "Genre",
-          vocabularyFile: "genres.json",
-          persist: true,
-          type: "Text",
-          multilingual: false,
-          isCustom: false,
-          showOnAutoForm: true,
-          rocrate: {
-            key: "ldac:linguisticGenre",
-            array: true,
-            template: {
-              "@id": "[v]",
-              "@type": "DefinedTerm"
-            }
-          }
-        } as FieldDefinition,
-        {
-          key: "access",
-          englishLabel: "Access",
-          xmlTag: "Access",
-          persist: true,
-          type: "Text",
-          multilingual: false,
-          isCustom: false,
-          showOnAutoForm: true
-        } as FieldDefinition
-      ]
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([
+      {
+        key: "title",
+        englishLabel: "Title",
+        xmlTag: "Title",
+        persist: true,
+        type: "Text",
+        multilingual: false,
+        isCustom: false,
+        showOnAutoForm: true,
+      } as FieldDefinition,
+      {
+        key: "description",
+        englishLabel: "Description",
+        xmlTag: "Description",
+        persist: true,
+        type: "Text",
+        multilingual: false,
+        isCustom: false,
+        showOnAutoForm: true,
+      } as FieldDefinition,
+      {
+        key: "genre",
+        englishLabel: "Genre",
+        xmlTag: "Genre",
+        vocabularyFile: "genres.json",
+        persist: true,
+        type: "Text",
+        multilingual: false,
+        isCustom: false,
+        showOnAutoForm: true,
+        rocrate: {
+          key: "ldac:linguisticGenre",
+          array: true,
+          template: {
+            "@id": "[v]",
+            "@type": "DefinedTerm",
+          },
+        },
+      } as FieldDefinition,
+      {
+        key: "access",
+        englishLabel: "Access",
+        xmlTag: "Access",
+        persist: true,
+        type: "Text",
+        multilingual: false,
+        isCustom: false,
+        showOnAutoForm: true,
+      } as FieldDefinition,
+    ]);
 
     vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([
       {
@@ -106,19 +100,19 @@ describe("RoCrateExporter Validation Tests", () => {
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Person"
-          }
-        }
+            "@type": "Person",
+          },
+        },
       } as FieldDefinition,
       {
         key: "language",
         rocrate: {
           template: {
             "@id": "[v]",
-            "@type": "Language"
-          }
-        }
-      } as FieldDefinition
+            "@type": "Language",
+          },
+        },
+      } as FieldDefinition,
     ]);
 
     // Mock project
@@ -132,7 +126,7 @@ describe("RoCrateExporter Validation Tests", () => {
           type: "Text",
           multilingual: false,
           isCustom: false,
-          showOnAutoForm: true
+          showOnAutoForm: true,
         },
         {
           key: "description",
@@ -140,8 +134,8 @@ describe("RoCrateExporter Validation Tests", () => {
           type: "Text",
           multilingual: false,
           isCustom: false,
-          showOnAutoForm: true
-        }
+          showOnAutoForm: true,
+        },
       ],
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
@@ -152,27 +146,27 @@ describe("RoCrateExporter Validation Tests", () => {
         }),
         properties: {
           getHasValue: vi.fn().mockReturnValue(false),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
       authorityLists: {
         accessChoicesOfCurrentProtocol: [
           {
             label: "public",
-            description: "Public access"
+            description: "Public access",
           },
           {
             label: "restricted",
-            description: "Restricted access"
+            description: "Restricted access",
           },
           {
             label: "unspecified",
-            description: "Unspecified access"
-          }
-        ]
+            description: "Unspecified access",
+          },
+        ],
       },
-      findPerson: vi.fn().mockReturnValue(undefined)
+      findPerson: vi.fn().mockReturnValue(undefined),
     } as any;
 
     // Mock session
@@ -185,7 +179,7 @@ describe("RoCrateExporter Validation Tests", () => {
           type: "Text",
           multilingual: false,
           isCustom: false,
-          showOnAutoForm: true
+          showOnAutoForm: true,
         },
         {
           key: "description",
@@ -193,7 +187,7 @@ describe("RoCrateExporter Validation Tests", () => {
           type: "Text",
           multilingual: false,
           isCustom: false,
-          showOnAutoForm: true
+          showOnAutoForm: true,
         },
         {
           key: "genre",
@@ -208,9 +202,9 @@ describe("RoCrateExporter Validation Tests", () => {
             array: true,
             template: {
               "@id": "[v]",
-              "@type": "DefinedTerm"
-            }
-          }
+              "@type": "DefinedTerm",
+            },
+          },
         },
         {
           key: "access",
@@ -218,29 +212,27 @@ describe("RoCrateExporter Validation Tests", () => {
           type: "Text",
           multilingual: false,
           isCustom: false,
-          showOnAutoForm: true
-        }
+          showOnAutoForm: true,
+        },
       ],
       metadataFile: {
-        getTextProperty: vi
-          .fn()
-          .mockImplementation((key: string, defaultValue: string = "") => {
-            if (key === "title") return "Test Session";
-            if (key === "description") return "Test session description";
-            if (key === "access") return "public";
-            if (key === "genre") return "dialog";
-            if (key === "languages") return "";
-            return defaultValue;
-          }),
+        getTextProperty: vi.fn().mockImplementation((key: string, defaultValue: string = "") => {
+          if (key === "title") return "Test Session";
+          if (key === "description") return "Test session description";
+          if (key === "access") return "public";
+          if (key === "genre") return "dialog";
+          if (key === "languages") return "";
+          return defaultValue;
+        }),
         properties: {
           getHasValue: vi.fn().mockImplementation((key: string) => {
             return ["title", "description", "access", "genre"].includes(key);
           }),
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       },
       files: [],
-      getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+      getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
     } as any;
   });
 
@@ -257,13 +249,13 @@ describe("RoCrateExporter Validation Tests", () => {
       if (validation.errors.length > 0) {
         console.log(
           "Validation errors:",
-          validation.errors.map((e) => e.message)
+          validation.errors.map((e) => e.message),
         );
       }
       if (validation.warnings.length > 0) {
         console.log(
           "Validation warnings:",
-          validation.warnings.map((w) => w.message)
+          validation.warnings.map((w) => w.message),
         );
       }
 
@@ -279,7 +271,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
       // Should have metadata descriptor
       const metadataDescriptor = graph.find(
-        (item: any) => item["@id"] === "ro-crate-metadata.json"
+        (item: any) => item["@id"] === "ro-crate-metadata.json",
       );
       expect(metadataDescriptor).toBeDefined();
       expect(metadataDescriptor["@type"]).toBe("CreativeWork");
@@ -309,8 +301,8 @@ describe("RoCrateExporter Validation Tests", () => {
           name: "http://schema.org/name",
           description: "http://schema.org/description",
           datePublished: "http://schema.org/datePublished",
-          license: "http://schema.org/license"
-        }
+          license: "http://schema.org/license",
+        },
       ]);
     });
   });
@@ -322,9 +314,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
       const rootDataset = graph.find((item: any) => item["@id"] === "./");
       expect(rootDataset.conformsTo).toBeDefined();
-      expect(rootDataset.conformsTo["@id"]).toBe(
-        "https://w3id.org/ldac/profile#Object"
-      );
+      expect(rootDataset.conformsTo["@id"]).toBe("https://w3id.org/ldac/profile#Object");
 
       const validation = await validateRoCrateWithCategories(roCrateData);
       // Should be able to validate without critical errors
@@ -332,21 +322,19 @@ describe("RoCrateExporter Validation Tests", () => {
     });
 
     it("should handle genre mapping to LDAC linguistic genres", async () => {
-      mockSession.metadataFile!.getTextProperty = vi
-        .fn()
-        .mockImplementation((key: string) => {
-          if (key === "title") return "Test Session";
-          if (key === "description") return "Test session description";
-          if (key === "access") return "public";
-          if (key === "genre") return "dialog"; // Maps to ldac:Dialogue
-          return "";
-        });
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
+        if (key === "title") return "Test Session";
+        if (key === "description") return "Test session description";
+        if (key === "access") return "public";
+        if (key === "genre") return "dialog"; // Maps to ldac:Dialogue
+        return "";
+      });
 
       mockSession.metadataFile!.properties = {
         getHasValue: vi.fn().mockImplementation((key: string) => {
           return ["title", "description", "access", "genre"].includes(key);
         }),
-        forEach: vi.fn()
+        forEach: vi.fn(),
       } as any;
 
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
@@ -357,11 +345,11 @@ describe("RoCrateExporter Validation Tests", () => {
 
       console.log(
         "mockSession.knownFields:",
-        mockSession.knownFields.map((f) => f.key)
+        mockSession.knownFields.map((f) => f.key),
       );
       console.log(
         "genre field:",
-        mockSession.knownFields.find((f) => f.key === "genre")
+        mockSession.knownFields.find((f) => f.key === "genre"),
       );
       console.log("rootDataset properties:", Object.keys(rootDataset));
       console.log("rootDataset content:", JSON.stringify(rootDataset, null, 2));
@@ -371,8 +359,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
       // Should have genre definition in graph
       const genreDefinition = graph.find(
-        (item: any) =>
-          item["@type"] === "DefinedTerm" && item["@id"].includes("Dialogue")
+        (item: any) => item["@type"] === "DefinedTerm" && item["@id"].includes("Dialogue"),
       );
       expect(genreDefinition).toBeDefined();
 
@@ -383,22 +370,18 @@ describe("RoCrateExporter Validation Tests", () => {
 
   describe("Access Control and Licensing", () => {
     it("should handle public access properly", async () => {
-      mockSession.metadataFile!.getTextProperty = vi
-        .fn()
-        .mockImplementation((key: string) => {
-          if (key === "access") return "public";
-          if (key === "title") return "Public Session";
-          if (key === "description") return "Public test session";
-          return "";
-        });
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
+        if (key === "access") return "public";
+        if (key === "title") return "Public Session";
+        if (key === "description") return "Public test session";
+        return "";
+      });
 
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
       const validation = await validateRoCrateWithCategories(roCrateData);
 
       const graph = roCrateData["@graph"];
-      const license = graph.find(
-        (item: any) => item["@id"] === "#license-testarchive-public"
-      );
+      const license = graph.find((item: any) => item["@id"] === "#license-testarchive-public");
 
       expect(license).toBeDefined();
       expect(license.description).toContain("TestArchive-specific term");
@@ -409,22 +392,18 @@ describe("RoCrateExporter Validation Tests", () => {
     });
 
     it("should handle restricted access properly", async () => {
-      mockSession.metadataFile!.getTextProperty = vi
-        .fn()
-        .mockImplementation((key: string) => {
-          if (key === "access") return "restricted";
-          if (key === "title") return "Restricted Session";
-          if (key === "description") return "Restricted test session";
-          return "";
-        });
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
+        if (key === "access") return "restricted";
+        if (key === "title") return "Restricted Session";
+        if (key === "description") return "Restricted test session";
+        return "";
+      });
 
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
       const validation = await validateRoCrateWithCategories(roCrateData);
 
       const graph = roCrateData["@graph"];
-      const license = graph.find(
-        (item: any) => item["@id"] === "#license-testarchive-restricted"
-      );
+      const license = graph.find((item: any) => item["@id"] === "#license-testarchive-restricted");
 
       expect(license).toBeDefined();
       expect(license.description).toContain("TestArchive-specific term");
@@ -437,15 +416,13 @@ describe("RoCrateExporter Validation Tests", () => {
 
   describe("Custom Genre Handling", () => {
     it("should handle custom genres not in LDAC vocabulary", async () => {
-      mockSession.metadataFile!.getTextProperty = vi
-        .fn()
-        .mockImplementation((key: string) => {
-          if (key === "title") return "Custom Genre Session";
-          if (key === "description") return "Session with custom genre";
-          if (key === "access") return "public";
-          if (key === "genre") return "custom_special_genre";
-          return "";
-        });
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
+        if (key === "title") return "Custom Genre Session";
+        if (key === "description") return "Session with custom genre";
+        if (key === "access") return "public";
+        if (key === "genre") return "custom_special_genre";
+        return "";
+      });
 
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
       const validation = await validateRoCrateWithCategories(roCrateData);
@@ -458,8 +435,7 @@ describe("RoCrateExporter Validation Tests", () => {
       // Should create a custom term definition with new tag format
       const customGenreDefinition = graph.find(
         (item: any) =>
-          item["@type"] === "DefinedTerm" &&
-          item["@id"].includes("custom_special_genre")
+          item["@type"] === "DefinedTerm" && item["@id"].includes("custom_special_genre"),
       );
       expect(customGenreDefinition).toBeDefined();
 
@@ -470,15 +446,11 @@ describe("RoCrateExporter Validation Tests", () => {
 
   describe("Required Metadata Fields", () => {
     it("should require title and description", async () => {
-      mockSession.metadataFile!.getTextProperty = vi
-        .fn()
-        .mockImplementation((key: string) => {
-          if (key === "access") return "public";
-          return ""; // No title or description
-        });
-      mockSession.metadataFile!.properties.getHasValue = vi
-        .fn()
-        .mockReturnValue(false);
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
+        if (key === "access") return "public";
+        return ""; // No title or description
+      });
+      mockSession.metadataFile!.properties.getHasValue = vi.fn().mockReturnValue(false);
 
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
       const validation = await validateRoCrateWithCategories(roCrateData);
@@ -488,9 +460,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
       // Should have fallback values
       expect(rootDataset.name).toBe("No title provided for this session.");
-      expect(rootDataset.description).toBe(
-        "No description provided for this session."
-      );
+      expect(rootDataset.description).toBe("No description provided for this session.");
 
       // Validation should run
       expect(validation).toBeDefined();
@@ -510,9 +480,7 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(rootDataset.publisher["@id"]).toBe(expectedPublisherId);
 
       // Check that the publisher entity is actually defined in the graph
-      const publisherEntity = graph.find(
-        (item: any) => item["@id"] === expectedPublisherId
-      );
+      const publisherEntity = graph.find((item: any) => item["@id"] === expectedPublisherId);
       expect(publisherEntity).toBeDefined();
       expect(publisherEntity["@type"]).toBe("Organization");
       expect(publisherEntity.name).toBe("TestArchive");
@@ -524,15 +492,13 @@ describe("RoCrateExporter Validation Tests", () => {
 
   describe("Multiple Genre Scenarios", () => {
     it("should handle multiple genres correctly", async () => {
-      mockSession.metadataFile!.getTextProperty = vi
-        .fn()
-        .mockImplementation((key: string) => {
-          if (key === "title") return "Multi-Genre Session";
-          if (key === "description") return "Session with multiple genres";
-          if (key === "access") return "public";
-          if (key === "genre") return "dialog,narrative"; // Multiple genres
-          return "";
-        });
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
+        if (key === "title") return "Multi-Genre Session";
+        if (key === "description") return "Session with multiple genres";
+        if (key === "access") return "public";
+        if (key === "genre") return "dialog,narrative"; // Multiple genres
+        return "";
+      });
 
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
       const validation = await validateRoCrateWithCategories(roCrateData);
@@ -552,9 +518,7 @@ describe("RoCrateExporter Validation Tests", () => {
   describe("Edge Cases", () => {
     it("should handle empty metadata gracefully", async () => {
       mockSession.metadataFile!.getTextProperty = vi.fn().mockReturnValue("");
-      mockSession.metadataFile!.properties.getHasValue = vi
-        .fn()
-        .mockReturnValue(false);
+      mockSession.metadataFile!.properties.getHasValue = vi.fn().mockReturnValue(false);
 
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
       const validation = await validateRoCrateWithCategories(roCrateData);
@@ -572,15 +536,12 @@ describe("RoCrateExporter Validation Tests", () => {
     });
 
     it("should handle special characters in metadata", async () => {
-      mockSession.metadataFile!.getTextProperty = vi
-        .fn()
-        .mockImplementation((key: string) => {
-          if (key === "title") return "Special chars: àáâãäåæçèéêë & <>";
-          if (key === "description")
-            return "Description with \"quotes\" and 'apostrophes'";
-          if (key === "access") return "public";
-          return "";
-        });
+      mockSession.metadataFile!.getTextProperty = vi.fn().mockImplementation((key: string) => {
+        if (key === "title") return "Special chars: àáâãäåæçèéêë & <>";
+        if (key === "description") return "Description with \"quotes\" and 'apostrophes'";
+        if (key === "access") return "public";
+        return "";
+      });
 
       const roCrateData = (await getRoCrate(mockProject, mockSession)) as any;
       const validation = await validateRoCrateWithCategories(roCrateData);
@@ -612,16 +573,16 @@ describe("RoCrateExporter Validation Tests", () => {
           }),
           properties: {
             getHasValue: vi.fn().mockReturnValue(false),
-            forEach: vi.fn()
-          }
+            forEach: vi.fn(),
+          },
         },
         files: [],
-        getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+        getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
       } as any;
 
       // Add sessions property to mockProject
       (mockProject as any).sessions = {
-        items: [mockSessionInProject]
+        items: [mockSessionInProject],
       };
 
       const roCrateData = await getRoCrate(mockProject, mockProject);
@@ -636,20 +597,20 @@ describe("RoCrateExporter Validation Tests", () => {
       if (validation.errors.length > 0) {
         console.log(
           "Project validation errors:",
-          validation.errors.map((e) => e.message)
+          validation.errors.map((e) => e.message),
         );
       }
       if (validation.warnings.length > 0) {
         console.log(
           "Project validation warnings:",
-          validation.warnings.map((w) => w.message)
+          validation.warnings.map((w) => w.message),
         );
       }
 
       // Should have metadata descriptor
       const graph = (roCrateData as any)["@graph"];
       const metadataDescriptor = graph.find(
-        (item: any) => item["@id"] === "ro-crate-metadata.json"
+        (item: any) => item["@id"] === "ro-crate-metadata.json",
       );
       expect(metadataDescriptor).toBeDefined();
       expect(metadataDescriptor["@type"]).toBe("CreativeWork");
@@ -667,7 +628,7 @@ describe("RoCrateExporter Validation Tests", () => {
     it("should generate a valid RO-Crate structure for a project without sessions", async () => {
       // Set up project without sessions
       (mockProject as any).sessions = {
-        items: []
+        items: [],
       };
 
       const roCrateData = await getRoCrate(mockProject, mockProject);
@@ -681,7 +642,7 @@ describe("RoCrateExporter Validation Tests", () => {
       // Should have metadata descriptor
       const graph = (roCrateData as any)["@graph"];
       const metadataDescriptor = graph.find(
-        (item: any) => item["@id"] === "ro-crate-metadata.json"
+        (item: any) => item["@id"] === "ro-crate-metadata.json",
       );
       expect(metadataDescriptor).toBeDefined();
 
@@ -693,7 +654,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
     it("should generate a root dataset with all required properties", async () => {
       (mockProject as any).sessions = {
-        items: []
+        items: [],
       };
 
       const roCrateData = await getRoCrate(mockProject, mockProject);
@@ -718,7 +679,7 @@ describe("RoCrateExporter Validation Tests", () => {
 
       // The validation should not have errors about missing required properties
       const missingLicenseError = validation.errors.find((error) =>
-        error.message.includes("Missing required property: license")
+        error.message.includes("Missing required property: license"),
       );
       expect(missingLicenseError).toBeUndefined();
     });
@@ -738,16 +699,16 @@ describe("RoCrateExporter Validation Tests", () => {
           }),
           properties: {
             getHasValue: vi.fn().mockReturnValue(false),
-            forEach: vi.fn()
-          }
+            forEach: vi.fn(),
+          },
         },
         files: [],
-        getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+        getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
       } as any;
 
       // Add the session with invalid chars to mockProject
       (mockProject as any).sessions = {
-        items: [mockSessionWithInvalidChars]
+        items: [mockSessionWithInvalidChars],
       };
 
       const roCrateData = (await getRoCrate(mockProject, mockProject)) as any;
@@ -759,7 +720,7 @@ describe("RoCrateExporter Validation Tests", () => {
           item["@type"] &&
           Array.isArray(item["@type"]) &&
           item["@type"].includes("RepositoryObject") &&
-          item["@id"].startsWith("#session-")
+          item["@id"].startsWith("#session-"),
       );
 
       expect(sessionEntry).toBeDefined();
@@ -770,9 +731,7 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(sessionEntry["@id"]).toMatch(/^#session-[a-zA-Z0-9_.%-]+$/);
 
       // Should sanitize to URL encoded fragment format
-      expect(sessionEntry["@id"]).toBe(
-        createSessionId(mockSessionWithInvalidChars)
-      );
+      expect(sessionEntry["@id"]).toBe(createSessionId(mockSessionWithInvalidChars));
     });
 
     it("should handle multiple types of invalid characters in session IDs", async () => {
@@ -780,27 +739,27 @@ describe("RoCrateExporter Validation Tests", () => {
         {
           input: "dde-houmba-ori (v2)",
           expected: createSessionId({
-            filePrefix: "dde-houmba-ori (v2)"
-          } as any)
+            filePrefix: "dde-houmba-ori (v2)",
+          } as any),
         },
         {
           input: "dde-kabousoulou1-ori (v2)",
           expected: createSessionId({
-            filePrefix: "dde-kabousoulou1-ori (v2)"
-          } as any)
+            filePrefix: "dde-kabousoulou1-ori (v2)",
+          } as any),
         },
         {
           input: "dde-mahoungou-ori (NO IC!)",
           expected: createSessionId({
-            filePrefix: "dde-mahoungou-ori (NO IC!)"
-          } as any)
+            filePrefix: "dde-mahoungou-ori (NO IC!)",
+          } as any),
         },
         {
           input: "session with spaces",
           expected: createSessionId({
-            filePrefix: "session with spaces"
-          } as any)
-        }
+            filePrefix: "session with spaces",
+          } as any),
+        },
       ];
 
       for (const testCase of testCases) {
@@ -815,16 +774,16 @@ describe("RoCrateExporter Validation Tests", () => {
             }),
             properties: {
               getHasValue: vi.fn().mockReturnValue(false),
-              forEach: vi.fn()
-            }
+              forEach: vi.fn(),
+            },
           },
           files: [],
-          getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+          getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
         } as any;
 
         // Add the session to mockProject
         (mockProject as any).sessions = {
-          items: [mockSessionWithChars]
+          items: [mockSessionWithChars],
         };
 
         const roCrateData = (await getRoCrate(mockProject, mockProject)) as any;
@@ -835,7 +794,7 @@ describe("RoCrateExporter Validation Tests", () => {
             item["@type"] &&
             Array.isArray(item["@type"]) &&
             item["@type"].includes("RepositoryObject") &&
-            item["@id"].startsWith("#session-")
+            item["@id"].startsWith("#session-"),
         );
 
         expect(sessionEntry).toBeDefined();
@@ -846,10 +805,9 @@ describe("RoCrateExporter Validation Tests", () => {
     it("should sanitize invalid characters in file names within session @id identifiers", async () => {
       // Mock file with spaces and special characters in name
       const mockFileWithInvalidName = {
-        getActualFilePath: () =>
-          "C:/temp/BAHOUNGOU Hilaire_Consent (final)!.wav",
+        getActualFilePath: () => "C:/temp/BAHOUNGOU Hilaire_Consent (final)!.wav",
         getModifiedDate: () => new Date("2023-01-01"),
-        getCreatedDate: () => new Date("2023-01-01")
+        getCreatedDate: () => new Date("2023-01-01"),
       };
 
       const mockSessionWithFileInvalidChars = {
@@ -863,15 +821,15 @@ describe("RoCrateExporter Validation Tests", () => {
           }),
           properties: {
             getHasValue: vi.fn().mockReturnValue(false),
-            forEach: vi.fn()
-          }
+            forEach: vi.fn(),
+          },
         },
         files: [mockFileWithInvalidName],
-        getAllContributionsToAllFiles: vi.fn().mockReturnValue([])
+        getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
       } as any;
 
       (mockProject as any).sessions = {
-        items: [mockSessionWithFileInvalidChars]
+        items: [mockSessionWithFileInvalidChars],
       };
 
       // Set the proper prototype for the session so instanceof checks work
@@ -881,35 +839,28 @@ describe("RoCrateExporter Validation Tests", () => {
       const graph = roCrateData["@graph"];
 
       // Find the session entry in the graph
-      const expectedSessionId = createSessionId(
-        mockSessionWithFileInvalidChars as any
-      );
+      const expectedSessionId = createSessionId(mockSessionWithFileInvalidChars as any);
 
       const sessionEntry = graph.find(
         (item: any) =>
           item["@id"] === expectedSessionId &&
           item["@type"] &&
           Array.isArray(item["@type"]) &&
-          item["@type"].includes("RepositoryObject")
+          item["@type"].includes("RepositoryObject"),
       );
 
       expect(sessionEntry).toBeDefined();
 
       // Find the file entry in the graph
       const fileEntry = graph.find((item: any) => {
-        const types = Array.isArray(item["@type"])
-          ? item["@type"]
-          : [item["@type"]];
-        return (
-          item["@id"]?.includes("BAHOUNGOU") && types.includes("AudioObject")
-        );
+        const types = Array.isArray(item["@type"]) ? item["@type"] : [item["@type"]];
+        return item["@id"]?.includes("BAHOUNGOU") && types.includes("AudioObject");
       });
 
       expect(fileEntry).toBeDefined();
 
       // The key test: the @id should be sanitized (percent-encoding for spaces) and include full path
-      const expectedFileId =
-        "Sessions/test-session/BAHOUNGOU%20Hilaire_Consent%20%28final%29!.wav";
+      const expectedFileId = "Sessions/test-session/BAHOUNGOU%20Hilaire_Consent%20%28final%29!.wav";
       expect(fileEntry["@id"]).toBe(expectedFileId);
       expect(fileEntry["@id"]).not.toMatch(/[\s()]/); // No spaces or parentheses in IRI
       expect(fileEntry.name).toBe("BAHOUNGOU Hilaire_Consent (final)!.wav"); // Original name preserved in 'name' property
@@ -918,14 +869,10 @@ describe("RoCrateExporter Validation Tests", () => {
       expect(sessionEntry.hasPart).toBeUndefined();
 
       // Find the session directory Dataset and verify it has hasPart with the file
-      const sessionDir = graph.find(
-        (item: any) => item["@id"] === "Sessions/test-session/"
-      );
+      const sessionDir = graph.find((item: any) => item["@id"] === "Sessions/test-session/");
       expect(sessionDir).toBeDefined();
       expect(sessionDir.hasPart).toBeDefined();
-      const hasPartReference = sessionDir.hasPart.find(
-        (ref: any) => ref["@id"] === expectedFileId
-      );
+      const hasPartReference = sessionDir.hasPart.find((ref: any) => ref["@id"] === expectedFileId);
       expect(hasPartReference).toBeDefined();
       expect(hasPartReference["@id"]).toBe(expectedFileId);
     });
@@ -935,14 +882,13 @@ describe("RoCrateExporter Validation Tests", () => {
       const mockPersonPhoto = {
         getActualFilePath: () => "C:/temp/BAHOUNGOU Hilaire_Photo (v2)!.JPG",
         getModifiedDate: () => new Date("2023-01-01"),
-        getCreatedDate: () => new Date("2023-01-01")
+        getCreatedDate: () => new Date("2023-01-01"),
       };
 
       const mockPersonConsent = {
-        getActualFilePath: () =>
-          "C:/temp/BAHOUNGOU Hilaire_Consent (final).wav",
+        getActualFilePath: () => "C:/temp/BAHOUNGOU Hilaire_Consent (final).wav",
         getModifiedDate: () => new Date("2023-01-01"),
-        getCreatedDate: () => new Date("2023-01-01")
+        getCreatedDate: () => new Date("2023-01-01"),
       };
 
       const mockPersonWithFiles = {
@@ -952,8 +898,8 @@ describe("RoCrateExporter Validation Tests", () => {
             key: "name",
             englishLabel: "Full Name",
             personallyIdentifiableInformation: false,
-            isCustom: false
-          }
+            isCustom: false,
+          },
         ],
         metadataFile: {
           getTextProperty: vi.fn().mockImplementation((key: string) => {
@@ -962,10 +908,10 @@ describe("RoCrateExporter Validation Tests", () => {
           }),
           properties: {
             getHasValue: vi.fn().mockReturnValue(true),
-            forEach: vi.fn()
-          }
+            forEach: vi.fn(),
+          },
         },
-        files: [mockPersonPhoto, mockPersonConsent]
+        files: [mockPersonPhoto, mockPersonConsent],
       } as any;
 
       // Mock project with this person
@@ -980,24 +926,19 @@ describe("RoCrateExporter Validation Tests", () => {
           }),
           properties: {
             getHasValue: vi.fn().mockReturnValue(false),
-            forEach: vi.fn()
-          }
+            forEach: vi.fn(),
+          },
         },
         files: [],
         knownFields: [],
-        authorityLists: { accessChoicesOfCurrentProtocol: [] }
+        authorityLists: { accessChoicesOfCurrentProtocol: [] },
       } as any;
 
       Object.setPrototypeOf(mockProjectWithPerson, Project.prototype);
       Object.setPrototypeOf(mockPersonWithFiles, Person.prototype);
 
-      const roCrateData = (await getRoCrate(
-        mockProjectWithPerson,
-        mockPersonWithFiles
-      )) as any;
-      const graph = Array.isArray(roCrateData)
-        ? roCrateData
-        : roCrateData["@graph"];
+      const roCrateData = (await getRoCrate(mockProjectWithPerson, mockPersonWithFiles)) as any;
+      const graph = Array.isArray(roCrateData) ? roCrateData : roCrateData["@graph"];
 
       // Find the person entry
       const personEntry = graph.find((item: any) => item["@type"] === "Person");
@@ -1006,18 +947,12 @@ describe("RoCrateExporter Validation Tests", () => {
 
       // Find the file entries
       const photoEntry = graph.find((item: any) => {
-        const types = Array.isArray(item["@type"])
-          ? item["@type"]
-          : [item["@type"]];
+        const types = Array.isArray(item["@type"]) ? item["@type"] : [item["@type"]];
         return types.includes("ImageObject") && item["@id"]?.includes("Photo");
       });
       const consentEntry = graph.find((item: any) => {
-        const types = Array.isArray(item["@type"])
-          ? item["@type"]
-          : [item["@type"]];
-        return (
-          types.includes("AudioObject") && item["@id"]?.includes("Consent")
-        );
+        const types = Array.isArray(item["@type"]) ? item["@type"] : [item["@type"]];
+        return types.includes("AudioObject") && item["@id"]?.includes("Consent");
       });
 
       expect(photoEntry).toBeDefined();
@@ -1049,12 +984,8 @@ describe("RoCrateExporter Validation Tests", () => {
       // Verify no invalid characters in any @id (spaces and parentheses encoded)
       expect(photoEntry["@id"]).not.toMatch(/[\s()]/);
       expect(consentEntry["@id"]).not.toMatch(/[\s()]/);
-      imageReferences.forEach((ref: any) =>
-        expect(ref["@id"]).not.toMatch(/[\s()]/)
-      );
-      subjectReferences.forEach((ref: any) =>
-        expect(ref["@id"]).not.toMatch(/[\s()]/)
-      );
+      imageReferences.forEach((ref: any) => expect(ref["@id"]).not.toMatch(/[\s()]/));
+      subjectReferences.forEach((ref: any) => expect(ref["@id"]).not.toMatch(/[\s()]/));
     });
   });
 });

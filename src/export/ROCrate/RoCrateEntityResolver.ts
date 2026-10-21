@@ -1,6 +1,5 @@
 import { Project } from "../../model/Project/Project";
 import * as fs from "fs-extra";
-import * as Path from "path";
 import JSON5 from "json5";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 
@@ -28,7 +27,7 @@ export interface ArchiveConfigurationMetadata {
  * @returns The archive metadata, or undefined if not found
  */
 export function getArchiveConfigurationMetadata(
-  archiveName: string
+  archiveName: string,
 ): ArchiveConfigurationMetadata | undefined {
   if (!archiveName || archiveName === "default" || archiveName === "unknown") {
     return undefined;
@@ -36,7 +35,7 @@ export function getArchiveConfigurationMetadata(
 
   try {
     const archiveConfigPath = locateDependencyForFilesystemCall(
-      `archive-configurations/${archiveName}/settings.json5`
+      `archive-configurations/${archiveName}/settings.json5`,
     );
 
     if (!fs.existsSync(archiveConfigPath)) {
@@ -45,7 +44,7 @@ export function getArchiveConfigurationMetadata(
 
     const settingsText = fs.readFileSync(archiveConfigPath, "utf8");
     return JSON5.parse(settingsText) as ArchiveConfigurationMetadata;
-  } catch (error) {
+  } catch {
     // If we can't read the settings file, return undefined
     return undefined;
   }
@@ -97,11 +96,9 @@ interface EntityResolverConfig {
  */
 export function resolveEntityReference(
   project: Project,
-  config: EntityResolverConfig
+  config: EntityResolverConfig,
 ): EntityResolution | undefined {
-  const rawValue = project.metadataFile
-    ?.getTextProperty(config.fieldKey, "")
-    .trim();
+  const rawValue = project.metadataFile?.getTextProperty(config.fieldKey, "").trim();
 
   if (!rawValue) {
     return undefined;
@@ -123,8 +120,8 @@ export function resolveEntityReference(
     entity: {
       "@id": entityId,
       "@type": config.entityType,
-      name: rawValue
-    }
+      name: rawValue,
+    },
   };
 }
 
@@ -156,12 +153,8 @@ function generateSlug(value: string): string {
  * @param project - The project to resolve the publisher from
  * @returns The resolved publisher entity, or undefined if not available
  */
-export function resolvePublisher(
-  project: Project
-): EntityResolution | undefined {
-  const archiveName = project.metadataFile
-    ?.getTextProperty("archiveConfigurationName", "")
-    .trim();
+export function resolvePublisher(project: Project): EntityResolution | undefined {
+  const archiveName = project.metadataFile?.getTextProperty("archiveConfigurationName", "").trim();
 
   if (!archiveName) {
     return undefined;
@@ -184,7 +177,7 @@ export function resolvePublisher(
   const entity: RoCrateEntity = {
     "@id": entityId,
     "@type": "Organization",
-    name: archiveName
+    name: archiveName,
   };
 
   // Add description and url if available from the archive configuration
@@ -197,7 +190,7 @@ export function resolvePublisher(
 
   return {
     reference: { "@id": entityId },
-    entity
+    entity,
   };
 }
 
@@ -210,14 +203,12 @@ export function resolvePublisher(
  * @param project - The project to resolve the depositor from
  * @returns The resolved depositor entity, or undefined if not available
  */
-export function resolveDepositor(
-  project: Project
-): EntityResolution | undefined {
+export function resolveDepositor(project: Project): EntityResolution | undefined {
   return resolveEntityReference(project, {
     fieldKey: "depositor",
     idPrefix: "#depositor-",
     entityType: "Person",
-    emptyValues: []
+    emptyValues: [],
   });
 }
 
@@ -235,14 +226,11 @@ export function getContactPersonReference(project: Project): {
   reference: string | { "@id": string };
   isUnknown: boolean;
 } {
-  const rawValue =
-    project.metadataFile?.getTextProperty("contactPerson", "") ?? "";
+  const rawValue = project.metadataFile?.getTextProperty("contactPerson", "") ?? "";
   const trimmedValue = rawValue.trim();
   const contactPersonText = trimmedValue || "Unknown";
   const isUnknownContact = contactPersonText === "Unknown";
-  const reference = isUnknownContact
-    ? { "@id": "#unknown-contributor" }
-    : contactPersonText;
+  const reference = isUnknownContact ? { "@id": "#unknown-contributor" } : contactPersonText;
 
   return { reference, isUnknown: isUnknownContact };
 }
@@ -258,7 +246,7 @@ export function getContactPersonReference(project: Project): {
  */
 export function setContactPersonProperties(
   entry: Record<string, unknown>,
-  contactPersonReference: string | { "@id": string }
+  contactPersonReference: string | { "@id": string },
 ): void {
   entry.author = contactPersonReference;
   entry.accountablePerson = contactPersonReference;
@@ -273,6 +261,6 @@ export function createUnknownContributorEntity(): RoCrateEntity {
   return {
     "@id": "#unknown-contributor",
     "@type": "Person",
-    name: "Unknown"
+    name: "Unknown",
   };
 }

@@ -24,7 +24,6 @@ mobx.configure({
 });
 import { i18nUnitTestPrep } from "../../other/localization";
 import { IPersonLanguage } from "../../model/PersonLanguage";
-import { vi } from "vite-plus/test";
 i18nUnitTestPrep();
 
 let project: Project;
@@ -186,7 +185,7 @@ describe("addSessionToProject", () => {
   });
 
   it("Second import can overwrite existing person, with code", async () => {
-    const person1 = await makeMatrixAndImportThenGetPerson({
+    await makeMatrixAndImportThenGetPerson({
       code: "JS",
       name: "Joe Strummer",
       primaryOccupation: "Musician",
@@ -203,7 +202,7 @@ describe("addSessionToProject", () => {
   });
 
   it("Second import can overwrite existing person, no code", async () => {
-    const person1 = await makeMatrixAndImportThenGetPerson({
+    await makeMatrixAndImportThenGetPerson({
       name: "Joe Strummer",
       primaryOccupation: "Musician",
     });
@@ -550,11 +549,4 @@ function expectOneLanguage(
   expect(langs && langs.length).toBeTruthy();
   expect(langs).toHaveLength(1);
   expectations(langs[0]);
-}
-
-function expectHasLanguage(person: Person, code: string) {
-  const langs = person.languages.filter((l) => l.code === code);
-  expect(langs && langs.length).toBeTruthy();
-  expect(langs).toHaveLength(1);
-  return langs[0];
 }

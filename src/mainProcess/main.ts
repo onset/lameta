@@ -181,12 +181,6 @@ async function createWindow() {
   // Initialize launch-test handling (no-op if not requested)
   initLaunchTest(win);
 
-  function fillLastMonitor() {
-    const displays = screen.getAllDisplays();
-    win?.setBounds(displays[displays.length - 1].bounds);
-    win?.maximize();
-  }
-
   // Make all external links open with the browser, not inside the application.
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (isExternalUrl(url)) {

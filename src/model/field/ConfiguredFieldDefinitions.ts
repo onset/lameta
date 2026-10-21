@@ -4,7 +4,7 @@ import { FieldDefinition } from "./FieldDefinition";
 import JSON5 from "json5";
 import jsonOfDefaultFieldConfig from "../../../archive-configurations/lameta/fields.json5?raw";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
-import { NotifyError, NotifyNoBigDeal } from "../../components/Notify";
+import { NotifyNoBigDeal } from "../../components/Notify";
 
 type FieldDefinitionCatalog = {
   common: FieldDefinition[];
@@ -13,9 +13,8 @@ type FieldDefinitionCatalog = {
   person: FieldDefinition[];
   projectDocuments: FieldDefinition[];
 };
-const catalogOfAllAvailableKnownFields: FieldDefinitionCatalog = JSON5.parse(
-  jsonOfDefaultFieldConfig
-);
+const catalogOfAllAvailableKnownFields: FieldDefinitionCatalog =
+  JSON5.parse(jsonOfDefaultFieldConfig);
 // for each field definition, if does not explicity set multilingual, set it to false
 for (const area of ["common", "project", "session", "person", "projectDocuments"]) {
   for (const field of catalogOfAllAvailableKnownFields[area]) {
@@ -26,35 +25,30 @@ for (const area of ["common", "project", "session", "person", "projectDocuments"
 }
 export function getFieldDefinition(
   folderType: IFolderType,
-  key: string
+  key: string,
 ): FieldDefinition | undefined {
   return fieldDefinitionsOfCurrentConfig[folderType].find(
-    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
+    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key,
   );
 }
-export function getCommonFieldDefinition(
-  key: string
-): FieldDefinition | undefined {
+export function getCommonFieldDefinition(key: string): FieldDefinition | undefined {
   return fieldDefinitionsOfCurrentConfig.common.find(
-    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
+    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key,
   );
 }
-export function getProjectDocumentFieldDefinition(
-  key: string
-): FieldDefinition | undefined {
+export function getProjectDocumentFieldDefinition(key: string): FieldDefinition | undefined {
   return fieldDefinitionsOfCurrentConfig.projectDocuments.find(
-    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
+    (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key,
   );
 }
 export function isKnownFieldKey(key: string): boolean {
   return Object.keys(fieldDefinitionsOfCurrentConfig).some(
     (
-      area // e.g. project, session, person
+      area, // e.g. project, session, person
     ) =>
       fieldDefinitionsOfCurrentConfig[area].find(
-        (d: any) =>
-          d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key
-      )
+        (d: any) => d.key.toLowerCase() === key.toLowerCase() || d.xmlTag === key,
+      ),
   );
 }
 
@@ -305,14 +299,14 @@ const countries = [
   "Western Sahara",
   "Yemen",
   "Zambia",
-  "Zimbabwe"
+  "Zimbabwe",
 ];
 
 catalogOfAllAvailableKnownFields.project.find(
-  (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
+  (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml",
 )!.choices = countries;
 catalogOfAllAvailableKnownFields.session.find(
-  (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml"
+  (d) => d.imdiRange === "http://www.mpi.nl/IMDI/Schema/Countries.xml",
 )!.choices = countries;
 
 // we can't use the full definition becuase we want every field to be optional
@@ -335,9 +329,7 @@ export type FieldDefinitionCustomizationRecord = {
   newDefinition: FieldDefinition;
 };
 // exported for unit test use
-export function computeMergedCatalog(
-  catalogOfConfiguration: FieldDefinitionCustomizationCatalog
-): {
+export function computeMergedCatalog(catalogOfConfiguration: FieldDefinitionCustomizationCatalog): {
   mergedCatalog: FieldDefinitionCatalog;
   customizations: Array<FieldDefinitionCustomizationRecord>;
 } {
@@ -348,19 +340,18 @@ export function computeMergedCatalog(
     project: [],
     session: [],
     person: [],
-    projectDocuments: []
+    projectDocuments: [],
   };
   for (const area of ["common", "project", "session", "person", "projectDocuments"]) {
     // check for any keys that aren't in the official catalog, and throw an error
     if (catalogOfConfiguration[area]) {
       for (const customization of catalogOfConfiguration[area]) {
         if (
-          catalogOfAllAvailableKnownFields[area].find(
-            (f) => f.key === customization.key
-          ) === undefined
+          catalogOfAllAvailableKnownFields[area].find((f) => f.key === customization.key) ===
+          undefined
         ) {
           throw new Error(
-            `The custom catalog has an entry with key:"${customization.key}", but that is not found in the official catalog. We don't currently support adding unknown fields.`
+            `The custom catalog has an entry with key:"${customization.key}", but that is not found in the official catalog. We don't currently support adding unknown fields.`,
           );
         }
       }
@@ -370,7 +361,7 @@ export function computeMergedCatalog(
       (factoryDefinition: FieldDefinition) => {
         if (catalogOfConfiguration[area]) {
           const configurationEntry = catalogOfConfiguration[area].find(
-            (d) => d.key == factoryDefinition.key
+            (d) => d.key == factoryDefinition.key,
           );
           if (configurationEntry) {
             // this archive configuration has an entry for this definition
@@ -378,34 +369,32 @@ export function computeMergedCatalog(
 
             const newDefinition = {
               ...factoryDefinition,
-              ...configurationEntry
+              ...configurationEntry,
             };
             customizations.push({
               area,
               factoryDefinition,
               customization: configurationEntry,
-              newDefinition
+              newDefinition,
             });
             return newDefinition;
           }
         }
         // just return the default definition
         return factoryDefinition;
-      }
+      },
     );
   }
   return { mergedCatalog, customizations: customizations };
 }
 export function loadAndMergeFieldChoices(configurationName: string) {
-  const path = locateDependencyForFilesystemCall(
-    `archive-configurations/${configurationName}`
-  );
+  const path = locateDependencyForFilesystemCall(`archive-configurations/${configurationName}`);
   if (configurationName === "default") {
     return computeMergedCatalog({});
   }
   if (!fs.existsSync(path)) {
     NotifyNoBigDeal(
-      `This version of lameta does not have a field configuration for ${configurationName}.`
+      `This version of lameta does not have a field configuration for ${configurationName}.`,
     );
     // throw new Error(`The file ${path} does not exist.`);
     return computeMergedCatalog({});
@@ -426,7 +415,7 @@ const fieldDefinitionsOfCurrentConfig: FieldDefinitionCatalog = {
   project: [],
   session: [],
   person: [],
-  projectDocuments: []
+  projectDocuments: [],
 };
 export function prepareGlobalFieldDefinitionCatalog(configurationName: string) {
   const x = makeFieldDefinitionCatalog(configurationName);
@@ -435,9 +424,7 @@ export function prepareGlobalFieldDefinitionCatalog(configurationName: string) {
   // the original object is exported.
   Object.assign(fieldDefinitionsOfCurrentConfig, x);
 }
-export function makeFieldDefinitionCatalog(
-  configurationName: string
-): FieldDefinitionCatalog {
+export function makeFieldDefinitionCatalog(configurationName: string): FieldDefinitionCatalog {
   return loadAndMergeFieldChoices(configurationName).mergedCatalog;
 }
 // todo: move to Project?

@@ -19,7 +19,6 @@ import {
 import { error_color } from "../../containers/theme";
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
-import { Project } from "../../model/Project/Project";
 const sanitizeFilename = require("sanitize-filename");
 
 let staticShowRenameDialog: (file: File, folder: Folder) => void = () => {};
@@ -40,7 +39,7 @@ enum Mode {
 }
 export const RenameFileDialog: React.FunctionComponent<{}> = () => {
   const [file, setFile] = useState<File>();
-  const [filename, setFilename] = useState<string>("");
+  const [, setFilename] = useState<string>("");
   const [folder, setFolder] = useState<Folder>();
   const [fileNameParts, setFileNameParts] = useState<FileNameParts>();
   const [mode, setMode] = useState<Mode>(Mode.closed);

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
-import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Folder } from "../model/Folder/Folder";
 import "./session/SessionForm.css";
 import "./Form.css";
@@ -36,7 +35,7 @@ const AdditionalFieldsTable: React.FC<IProps> = observer(({ folder }) => {
       Cell: (cellInfo: any) => {
         const field = cellInfo.original as Field;
         return field.labelInUILanguage;
-      }
+      },
     },
     {
       id: "value",
@@ -63,8 +62,8 @@ const AdditionalFieldsTable: React.FC<IProps> = observer(({ folder }) => {
             />
           );
         }
-      }
-    }
+      },
+    },
   ];
 
   return (

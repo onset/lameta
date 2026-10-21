@@ -6,7 +6,6 @@ import {
   NotifyFileAccessProblem,
   NotifyNoBigDeal,
   NotifyRenameProblem,
-  NotifyWarning,
 } from "../components/Notify";
 import { t } from "@lingui/macro";
 
@@ -85,7 +84,7 @@ export class PatientFS {
             t`Restart lameta and do the rename before playing the video again.`,
         );
       } else {
-        NotifyRenameProblem(err, from);
+        NotifyRenameProblem(err);
       }
       throw err;
     }

@@ -3,15 +3,9 @@ import { Trans } from "@lingui/macro";
 /* removed emotion jsx declaration */
 
 import * as React from "react";
-import ReactModal from "react-modal";
 import "./MessageDialog.css";
-import CloseOnEscape from "react-close-on-escape";
 
-import {
-  DialogBottomButtons,
-  DialogButton,
-  LametaDialog
-} from "../LametaDialog";
+import { DialogBottomButtons, DialogButton, LametaDialog } from "../LametaDialog";
 
 interface IConfig {
   title?: string;
@@ -26,24 +20,20 @@ interface IConfig {
 let staticShowMessageDialog: (config: IConfig) => void = () => {};
 export { staticShowMessageDialog as ShowMessageDialog };
 
-export const MessageDialog: React.FunctionComponent<{}> = (props) => {
+export const MessageDialog: React.FunctionComponent<{}> = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [config, setConfig] = React.useState<IConfig>({
     title: "",
     text: "",
     buttonText: "",
-    width: ""
+    width: "",
   });
   staticShowMessageDialog = (c) => {
     setConfig(c);
     setIsOpen(true);
   };
   return (
-    <LametaDialog
-      open={isOpen}
-      requestClose={() => setIsOpen(false)}
-      data-testid={config.testId}
-    >
+    <LametaDialog open={isOpen} requestClose={() => setIsOpen(false)} data-testid={config.testId}>
       <div className={"dialogTitle "}>
         <div
           css={css`

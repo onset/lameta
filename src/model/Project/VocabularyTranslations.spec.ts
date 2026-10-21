@@ -7,7 +7,6 @@ import * as os from "os";
 describe("VocabularyTranslations", () => {
   let tempDir: string;
   let vocabTranslations: VocabularyTranslations;
-  const testLanguageCodes = ["es", "fr"];
 
   beforeEach(() => {
     // Create a temp directory for each test

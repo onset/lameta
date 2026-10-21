@@ -212,7 +212,6 @@ function getContributions(project: Project, session: Session): string[] {
   /* Spreadsheet says: "Add up to six contributions" */
   session.getAllContributionsToAllFiles().map((contribution) => {
     const trimmedName = contribution.personReference.trim();
-    const person = project.findPerson(trimmedName);
     // output the person even if they are not in the list of people because... well we have all the info
     // that the paradisec format wants already (name & role)
     //if (person) {

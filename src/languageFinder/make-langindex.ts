@@ -33,30 +33,19 @@ fetch(url).then((response) => {
 function process(allEntries) {
   console.log(`Starting with ${allEntries.length} elements from langtags.json`);
   // strip out the handful of bogus entries in there metadata for the file. These all have a `tag` that starts with `_`.
-  const entries: ILangTag[] = allEntries.filter(
-    (element) => element.tag.indexOf("_") < 0
-  );
+  const entries: ILangTag[] = allEntries.filter((element) => element.tag.indexOf("_") < 0);
 
+  console.log(`After stripping out metadata, have  ${entries.length} elements from langtags.json`);
+
+  const firstEntryOfEachLanguage = _.uniqBy<ILangTag>(entries, (x) => x.iso639_3);
   console.log(
-    `After stripping out metadata, have  ${entries.length} elements from langtags.json`
+    `Working with the first langtag for each language, which leaves us with ${firstEntryOfEachLanguage.length} languages.`,
   );
-
-  const firstEntryOfEachLanguage = _.uniqBy<ILangTag>(
-    entries,
-    (x) => x.iso639_3
-  );
-  console.log(
-    `Working with the first langtag for each language, which leaves us with ${firstEntryOfEachLanguage.length} languages.`
-  );
-
-  let multipleTagsCount = 0;
 
   const indexEntries = firstEntryOfEachLanguage.map((entry) => {
     const names: string[] = [];
 
-    const allTagsWithThisIso3Code = entries.filter(
-      (t) => t.iso639_3 === entry.iso639_3
-    );
+    const allTagsWithThisIso3Code = entries.filter((t) => t.iso639_3 === entry.iso639_3);
 
     // We are consciously throwing away a lot of info here, e.g. that some names go with some variants, scripts, etc.
     // We're really just trying to get a lookup from name ---> {iso639 code, English Name}.
@@ -69,10 +58,6 @@ function process(allEntries) {
         names.push(...t.localnames);
       }
     });
-    if (allTagsWithThisIso3Code && allTagsWithThisIso3Code.length > 1) {
-      multipleTagsCount++;
-      //   console.log(`${tag.iso639_3} has ${allTagsWithThisIso3Code.length} tags`);
-    }
 
     // At one time, it looks like langtags did explicitly list the iso639_1, but now I don't see it.
     // Instead, the 2 lettter code shows up in the "tag"
@@ -84,7 +69,7 @@ function process(allEntries) {
       iso639_1: entry.iso639_1, // major languages will also have a two letter code
       iso639_3: entry.iso639_3,
       englishName: entry.name,
-      altNames: _.uniq(names)
+      altNames: _.uniq(names),
     };
     return item;
   });
@@ -95,7 +80,7 @@ function process(allEntries) {
     indexEntries.push({
       iso639_1: undefined,
       iso639_3: "qaa",
-      englishName: "Unlisted Language"
+      englishName: "Unlisted Language",
     });
   }
 
@@ -103,12 +88,12 @@ function process(allEntries) {
   //console.log(`${multipleTagsCount} languages had more than one tag.`);
 
   console.log(
-    "Now check with `pnpm exec vitest run src/languageFinder/langindex.spec.ts` and then all other tests with `pnpm run test -- --run` and `pnpm run e2e`."
+    "Now check with `pnpm exec vitest run src/languageFinder/langindex.spec.ts` and then all other tests with `pnpm run test -- --run` and `pnpm run e2e`.",
   );
 
   fs.writeFileSync(
     "./src/languageFinder/langindex.json",
     JSON.stringify(indexEntries, null, 4),
-    {}
+    {},
   );
 }

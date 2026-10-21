@@ -218,7 +218,7 @@ export class LametaE2ERunner {
   public async clickMenu(menuLabel: string, itemLabel: string, subMenuChoiceLabel?: string) {
     //console.log(`clickMenu(${menuLabel}, ${itemLabel})`);
     await this.electronApp.evaluate(
-      async ({ Menu, dialog }, params) => {
+      async ({ Menu }, params) => {
         const menubar = Menu.getApplicationMenu();
         // review: Somehow, the "id" is always undefined, but the "label" is correct.
         // However if you debug in the browser, the id is there.

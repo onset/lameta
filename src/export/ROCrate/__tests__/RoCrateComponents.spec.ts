@@ -3,7 +3,6 @@ import {
   setupCommonMocks,
   createMockProject,
   createMockSession,
-  createMockPerson
 } from "./test-utils/rocrate-test-setup";
 
 // Setup common mocks before imports
@@ -31,7 +30,7 @@ describe("RO-Crate Components", () => {
           "@id": "#language_eng",
           "@type": "Language",
           code: "eng",
-          name: "English"
+          name: "English",
         });
       });
 
@@ -64,7 +63,7 @@ describe("RO-Crate Components", () => {
           "@id": "#language_xyz",
           "@type": "Language",
           code: "xyz",
-          name: "xyz"
+          name: "xyz",
         });
       });
 
@@ -81,7 +80,7 @@ describe("RO-Crate Components", () => {
           code: "und",
           name: "Undetermined",
           description:
-            "Language marked as undetermined because no working language was specified in lameta"
+            "Language marked as undetermined because no working language was specified in lameta",
         });
       });
 
@@ -99,7 +98,7 @@ describe("RO-Crate Components", () => {
         const reference = rocrateLanguages.getLanguageReference("eng");
 
         expect(reference).toEqual({
-          "@id": "#language_eng"
+          "@id": "#language_eng",
         });
       });
 
@@ -272,16 +271,16 @@ describe("RO-Crate Components", () => {
 
       mockSession = createMockSession({
         metadata: {
-          license: "CC BY 4.0"
-        }
+          license: "CC BY 4.0",
+        },
       });
 
       mockFile = {
         metadataFilePath: "/path/to/file",
         getActualFilePath: vi.fn().mockReturnValue("/path/to/actual/file"),
         properties: {
-          getTextStringOrEmpty: vi.fn().mockReturnValue("")
-        }
+          getTextStringOrEmpty: vi.fn().mockReturnValue(""),
+        },
       };
     });
 
@@ -315,26 +314,15 @@ describe("RO-Crate Components", () => {
   describe("RoCratePeople", () => {
     let mockProject: any;
     let mockSession: any;
-    let mockPerson: any;
 
     beforeEach(() => {
       mockProject = createMockProject();
       mockSession = createMockSession();
-      mockPerson = createMockPerson({
-        metadata: {
-          fullName: "John Doe",
-          nickname: "John"
-        }
-      });
     });
 
     it("should create person entries from participant", async () => {
       const rocrateLicense = new RoCrateLicense();
-      const entries = await makeEntriesFromParticipant(
-        mockProject,
-        mockSession,
-        rocrateLicense
-      );
+      const entries = await makeEntriesFromParticipant(mockProject, mockSession, rocrateLicense);
 
       expect(entries).toBeDefined();
       expect(Array.isArray(entries)).toBe(true);
@@ -345,28 +333,22 @@ describe("RO-Crate Components", () => {
       // Add some mock contributions to the session
       mockSession.getAllContributionsToAllFiles = vi.fn().mockReturnValue([]);
 
-      const entries = await makeEntriesFromParticipant(
-        mockProject,
-        mockSession,
-        rocrateLicense
-      );
+      const entries = await makeEntriesFromParticipant(mockProject, mockSession, rocrateLicense);
 
       expect(entries).toBeDefined();
     });
   });
 
   describe("RoCrateSessions", () => {
-    let mockProject: any;
     let mockSession: any;
 
     beforeEach(() => {
-      mockProject = createMockProject();
       mockSession = createMockSession({
         metadata: {
           id: "session-001",
           title: "Test Session",
-          date: "2024-01-01"
-        }
+          date: "2024-01-01",
+        },
       });
     });
 
@@ -376,9 +358,7 @@ describe("RO-Crate Components", () => {
 
     it("should handle basic session properties", () => {
       expect(mockSession.filePrefix).toBe("test-session");
-      expect(mockSession.metadataFile.getTextProperty("title")).toBe(
-        "Test Session"
-      );
+      expect(mockSession.metadataFile.getTextProperty("title")).toBe("Test Session");
     });
   });
 });

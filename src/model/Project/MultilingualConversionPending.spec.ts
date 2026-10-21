@@ -3,10 +3,7 @@ import * as temp from "temp";
 import fs from "fs-extra";
 import Path from "path";
 import { Project } from "./Project";
-import {
-  prepareGlobalFieldDefinitionCatalog,
-  fieldDefinitionsOfCurrentConfig,
-} from "../field/ConfiguredFieldDefinitions";
+import { prepareGlobalFieldDefinitionCatalog } from "../field/ConfiguredFieldDefinitions";
 import { setupLanguageFinderForTests } from "../../languageFinder/LanguageFinder";
 
 // Set up language finder so BCP47 normalization works

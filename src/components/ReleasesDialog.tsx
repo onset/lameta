@@ -33,7 +33,7 @@ let checkForUpdates: () => void = () => {};
 let showDialogManually: () => void;
 export { showDialogManually as ShowReleasesDialog };
 
-export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
+export const ReleasesDialog: React.FunctionComponent<{}> = () => {
   const [mode, setMode] = React.useState<Mode>("querying");
   const [allReleases, setAllReleases] = React.useState<IGithubRelease[]>([]);
   const [showNewReleasesOnly, setShowNewReleasesOnly] = React.useState(true);

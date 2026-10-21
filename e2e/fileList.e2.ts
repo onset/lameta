@@ -18,7 +18,7 @@ test.describe("FileList", () => {
   test.afterAll(async ({}) => {
     await lameta.quit();
   });
-  test("after adding a file, it shows in the list", async ({}, testInfo) => {
+  test("after adding a file, it shows in the list", async ({}) => {
     await project.goToSessions();
     await project.addSession();
 
@@ -40,7 +40,7 @@ test.describe("FileList", () => {
     //await expect(match()).toBeUndefined();
   });
 
-  test("after adding a file, it becomes the selected file", async ({}, testInfo) => {
+  test("after adding a file, it becomes the selected file", async ({}) => {
     await project.goToSessions();
     await project.addSession();
 

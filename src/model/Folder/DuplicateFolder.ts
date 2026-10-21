@@ -3,9 +3,7 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import { assert } from "console";
-import uuid from "uuid";
 import { PatientFS } from "../../other/patientFile";
-import { NotifyRenameProblem } from "../../components/Notify";
 
 // Figure out a new name for the duplicate, copy the folder to it, rename the metadata file,
 // and change the id inside the metadata file.
@@ -28,42 +26,31 @@ export function duplicateFolder(folder: Folder): {
     // rename the metadata file in that folder
 
     // get the name of the metadatafile, e.g. ETR009.session or Joe.person
-    const metaDataFileName = Path.basename(
-      folder.metadataFile!.metadataFilePath
-    );
+    const metaDataFileName = Path.basename(folder.metadataFile!.metadataFilePath);
 
     // get the full path to that file
-    const duplicateMetadataFilePath = Path.join(
-      pathOfDuplicate,
-      metaDataFileName
-    );
+    const duplicateMetadataFilePath = Path.join(pathOfDuplicate, metaDataFileName);
 
     assert(
       fs.existsSync(duplicateMetadataFilePath),
-      `Expected to find that we had created ${duplicateMetadataFilePath}`
+      `Expected to find that we had created ${duplicateMetadataFilePath}`,
     );
 
     const ext = folder.metadataFile!.fileExtensionForMetadata;
 
     // get the full path to change it to (ony the name is changing)
-    const fixedDuplicateMetadataFilePath = Path.join(
-      pathOfDuplicate,
-      nameOfDuplicate + ext
-    );
+    const fixedDuplicateMetadataFilePath = Path.join(pathOfDuplicate, nameOfDuplicate + ext);
     // rename that file
 
     PatientFS.renameSyncWithNotifyAndRethrow(
       duplicateMetadataFilePath,
-      fixedDuplicateMetadataFilePath
+      fixedDuplicateMetadataFilePath,
     );
 
-    assert(
-      fs.existsSync(fixedDuplicateMetadataFilePath),
-      "Failed rename the new file."
-    );
+    assert(fs.existsSync(fixedDuplicateMetadataFilePath), "Failed rename the new file.");
     assert(
       !fs.existsSync(duplicateMetadataFilePath),
-      "Failed rename the new file; the old file still exists."
+      "Failed rename the new file; the old file still exists.",
     );
     /* No: setting the id will be done when the session is loaded by the project.
         // Change the id inside the file
@@ -82,12 +69,12 @@ export function duplicateFolder(folder: Folder): {
     return {
       directory: pathOfDuplicate,
       metadataFilePath: fixedDuplicateMetadataFilePath,
-      success: true
+      success: true,
     };
   } catch (err) {
     ShowMessageDialog({
       title: `Error`,
-      text: `There was an error while duplicating ${folder.directory}: ${err}`
+      text: `There was an error while duplicating ${folder.directory}: ${err}`,
     });
     return { success: false, directory: "", metadataFilePath: "" };
   }

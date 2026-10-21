@@ -26,7 +26,7 @@ export type CloudDisplayStatus =
 export function getCloudDisplayStatus(
   cloudStatus: CloudFileStatus,
   isOnline: boolean,
-  isUnderSyncRoot: boolean,
+  _isUnderSyncRoot: boolean,
 ): CloudDisplayStatus | undefined {
   switch (cloudStatus) {
     case "cloudOnly":

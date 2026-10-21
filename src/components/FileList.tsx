@@ -1,5 +1,5 @@
 import * as React from "react";
-import { default as ReactTable, RowInfo } from "react-table-6";
+import { default as ReactTable } from "react-table-6";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import { ElectronDropZone } from "./ElectronDropZone";
@@ -46,8 +46,8 @@ export const _FileList: React.FunctionComponent<{
     }
   }, [props.folder, props.folder?.files?.length]);
   useLingui();
-  const [selectedFile, setSelectedFile] = React.useState(undefined);
-  const [haveMediaFolder] = React.useState(getMediaFolderOrEmptyForThisProjectAndMachine());
+  const [, setSelectedFile] = React.useState(undefined);
+  getMediaFolderOrEmptyForThisProjectAndMachine();
   // What this mobxDummy is about:
   // What happens inside the component tables cells are invisible to mobx; it doesn't
   // have a way of knowing that these are reliant on the filename of the file.
@@ -55,11 +55,11 @@ export const _FileList: React.FunctionComponent<{
   // However the <Observer> wrapper suggested by that link messes up the display of the table.
   // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
   // when the user does something that causes a rename.
-  const mobxDummy = props.folder.files.map((f) => {
+  props.folder.files.forEach((f) => {
     f.getTextProperty("filename");
     f.getTextProperty("access");
-    const unused = f.copyInProgress;
-    const progressUnused = f.copyProgress;
+    void f.copyInProgress;
+    void f.copyProgress;
   });
 
   const { searchTerm } = React.useContext(SearchContext);
@@ -335,9 +335,9 @@ export const _FileList: React.FunctionComponent<{
           data={props.folder.files}
           columns={columns}
           onFetchData={() => scrollSelectedIntoView("fileList")}
-          getTrProps={(state: any, rowInfo: any, column: any) => {
+          getTrProps={(state: any, rowInfo: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
-            const { missing, status, info } = getStatusOfFile(rowInfo.original);
+            const { status, info } = getStatusOfFile(rowInfo.original);
             const metadataMatch = fileHasMetadataMatch(rowInfo.original, searchTerm);
 
             return {
@@ -364,7 +364,7 @@ export const _FileList: React.FunctionComponent<{
                   0,
                 );
               },
-              onClick: (e: any, x: any) => {
+              onClick: () => {
                 const file = rowInfo.original as File;
                 // if we're in a an e2e test and this click would be ignored because of the copyInProgress flag,
                 // just fail fast. The test probably needs some way of waiting

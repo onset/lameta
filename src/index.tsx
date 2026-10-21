@@ -44,7 +44,7 @@ render(<App />, container, () => {
   }
 });
 
-window.onbeforeunload = (e: BeforeUnloadEvent) => {
+window.onbeforeunload = () => {
   if (CopyManager.filesAreStillCopying()) {
     ipcRenderer
       .invoke(

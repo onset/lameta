@@ -20,7 +20,7 @@ export const SessionsTab = observer(
           id="newSession"
           data-testid="new-session-button"
           key="newSession"
-          onClick={(e) => {
+          onClick={() => {
             this.props.project.addSession();
             // UX decision (aligned with e2e tests): adding a new session should clear any active filter
             // so the newly added item is visible & selected and the search box empties.
@@ -33,7 +33,7 @@ export const SessionsTab = observer(
           }}
         >
           <Trans>New Session</Trans>
-        </button>
+        </button>,
       );
       // console.log(
       //   `SessionTab render length:${this.props.project.sessions.items.length} selected:${this.props.project.sessions.selected.index}`
@@ -59,5 +59,5 @@ export const SessionsTab = observer(
         </ComponentTab>
       );
     }
-  }
+  },
 );

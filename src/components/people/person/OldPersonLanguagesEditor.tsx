@@ -1,19 +1,11 @@
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
-import React, { useEffect, useState } from "react";
-import { observer } from "mobx-react";
+import React, { useState } from "react";
 import { Field } from "../../../model/field/Field";
 
-import {
-  LanguageFinder,
-  Language
-} from "../../../languageFinder/LanguageFinder";
+import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { SingleLanguageChooser } from "../../SingleLanguageChooser";
-const femaleSelected: string = "assets/Female_Selected.png";
-const femaleNotSelected: string = "assets/Female_NotSelected.png";
-const maleSelected: string = "assets/Male_Selected.png";
-const maleNotSelected: string = "assets/Male_NotSelected.png";
 
 export interface IProps {
   language: Field;
@@ -23,9 +15,7 @@ export interface IProps {
   languageFinder: LanguageFinder;
 }
 
-export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (
-  props
-) => {
+export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (props) => {
   const [tooltip, setTooltip] = useState("");
   const [validationClass, setValidationClass] = useState("");
   const updateValidationClass = (lang) => {

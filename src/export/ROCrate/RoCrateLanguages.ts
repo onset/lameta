@@ -36,13 +36,10 @@ export class RoCrateLanguages {
     const uriForUndetermined = "https://lexvo.org/id/iso639-3/und";
 
     const entity: LanguageEntity = {
-      "@id":
-        normalizedCode === "und"
-          ? uriForUndetermined
-          : `#language_${normalizedCode}`,
+      "@id": normalizedCode === "und" ? uriForUndetermined : `#language_${normalizedCode}`,
       "@type": "Language",
       code: normalizedCode,
-      name: name
+      name: name,
     };
 
     // Lexvo's undetermined identifier is globally resolvable; local placeholders such as
@@ -89,11 +86,8 @@ export class RoCrateLanguages {
    */
   getUsedLanguageEntities(): LanguageEntity[] {
     const used = Array.from(this.languageMap.entries())
-      .filter(
-        ([code, _]) =>
-          this.usageMap.has(code) && this.usageMap.get(code)!.size > 0
-      )
-      .map(([_, entity]) => entity);
+      .filter(([code]) => this.usageMap.has(code) && this.usageMap.get(code)!.size > 0)
+      .map(([, entity]) => entity);
 
     return used;
   }
@@ -103,11 +97,8 @@ export class RoCrateLanguages {
    */
   getUnusedLanguageEntities(): LanguageEntity[] {
     return Array.from(this.languageMap.entries())
-      .filter(
-        ([code, _]) =>
-          !this.usageMap.has(code) || this.usageMap.get(code)!.size === 0
-      )
-      .map(([_, entity]) => entity);
+      .filter(([code]) => !this.usageMap.has(code) || this.usageMap.get(code)!.size === 0)
+      .map(([, entity]) => entity);
   }
 
   /**

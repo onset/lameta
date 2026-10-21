@@ -4,7 +4,6 @@ import * as fs from "fs-extra";
 import { PatientFS } from "./patientFile";
 import { t } from "@lingui/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
-import { globSync } from "glob";
 
 // The platform-appropriate label for the "reveal this file in the OS file
 // manager" action. Shared by the file-list context menu and the cloud status
@@ -56,7 +55,7 @@ export async function asyncTrashWithContext<T>(
           path: path,
           context: callerContext,
         });
-    } catch (e) {
+    } catch {
       return Promise.resolve({
         succeeded: false,
         path: path,
@@ -102,20 +101,6 @@ export function copyDirSync(src, dest) {
       fs.chmodSync(destPath, 0o777); // Change the permissions here
     }
   }
-}
-
-// this is "safe" because it escapes all characters that glob might interpret and works on windows
-// this is "limited" because it does not allow for things like [ and ] in the path
-function globSyncSaferAndLimited(pattern: string): string[] {
-  let p;
-  if (process.platform === "win32") {
-    p = pattern.replace(/\\/g, "/"); // deal with windows paths
-  } else {
-    p = pattern;
-  }
-  // escape() does not work, at least on windows and glob 9.3 const safeDirectory = escape(pattern);
-  p = p.replace(/\[/g, "\\[").replace(/\]/g, "\\]"); // deal with brackets in the path
-  return globSync(p);
 }
 
 // Detects macOS filesystem junk files that must never be treated as project

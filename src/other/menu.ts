@@ -6,7 +6,6 @@ import {
   quitApp,
   runWebContentsCommand,
   setApplicationMenu,
-  setWindowTitle,
   toggleDevTools,
 } from "./windowIpc";
 import { IHomePageMenuConnections } from "../containers/HomePage";
@@ -408,17 +407,6 @@ export default class LametaMenu {
               title: `The title`,
               text: "the text",
             });
-          },
-        },
-      ],
-    };
-    const testMenu = {
-      label: "Test",
-      submenu: [
-        {
-          label: "Menu Test",
-          click() {
-            setWindowTitle("Menu Test Invoked");
           },
         },
       ],

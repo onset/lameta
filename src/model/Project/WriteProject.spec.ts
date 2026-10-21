@@ -4,12 +4,7 @@ import fs from "fs";
 import Path from "path";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 import { describe, expect, it, beforeEach, afterEach } from "vite-plus/test";
-import {
-  setResultXml,
-  xexpect,
-  count,
-  value
-} from "../../other/xmlUnitTestUtils";
+import { setResultXml, xexpect, count } from "../../other/xmlUnitTestUtils";
 let projectDirectory;
 let projectName;
 
@@ -23,41 +18,18 @@ describe("Project Write", () => {
   });
 
   it("should round-trip SubjectLanguages", () => {
-    AttemptRoundTripOfOneField(
-      "SubjectLanguages",
-      "SubjectLanguages",
-      "foo: Foo"
-    );
-    AttemptRoundTripOfOneField(
-      "SubjectLanguages",
-      "SubjectLanguages",
-      "foo: Foo;bar: Bar"
-    );
+    AttemptRoundTripOfOneField("SubjectLanguages", "SubjectLanguages", "foo: Foo");
+    AttemptRoundTripOfOneField("SubjectLanguages", "SubjectLanguages", "foo: Foo;bar: Bar");
   });
   it("should round-trip WorkingLanguages", () => {
-    AttemptRoundTripOfOneField(
-      "WorkingLanguages",
-      "WorkingLanguages",
-      "foo: Foo"
-    );
-    AttemptRoundTripOfOneField(
-      "WorkingLanguages",
-      "WorkingLanguages",
-      "foo: Foo;bar: Bar"
-    );
+    AttemptRoundTripOfOneField("WorkingLanguages", "WorkingLanguages", "foo: Foo");
+    AttemptRoundTripOfOneField("WorkingLanguages", "WorkingLanguages", "foo: Foo;bar: Bar");
   });
   it("should round-trip ArchiveConfigurationName", () => {
-    AttemptRoundTripOfOneField(
-      "archiveConfigurationName",
-      "ArchiveConfigurationName",
-      "FooBar"
-    );
+    AttemptRoundTripOfOneField("archiveConfigurationName", "ArchiveConfigurationName", "FooBar");
   });
   it("should write deprecated VernacularISO3CodeAndName with first language in SubjectLanguages", () => {
-    const f = GetProjectFileWithOneField(
-      "SubjectLanguages",
-      "foo: Foo; bar: Bar"
-    );
+    const f = GetProjectFileWithOneField("SubjectLanguages", "foo: Foo; bar: Bar");
     setResultXml(f.getXml(true));
     // saving old field here for versions before lameta 3
     xexpect("Project/VernacularISO3CodeAndName").toMatch("foo: Foo");
@@ -73,9 +45,7 @@ describe("Project Write", () => {
     xexpect("Project/SubjectLanguages").toHaveCount(1);
     xexpect("Project/SubjectLanguages[text()='ab;cd;ef']").toHaveCount(1);
     xexpect("Project/WorkingLanguages").toHaveCount(1);
-    xexpect("Project/WorkingLanguages[text()='gh;ij']").toHaveCount(
-      1
-    );
+    xexpect("Project/WorkingLanguages[text()='gh;ij']").toHaveCount(1);
     xexpect("Project/CollectionSubjectLanguages").toHaveCount(1);
     xexpect("Project/CollectionWorkingLanguages").toHaveCount(1);
     // and these we output for backwards compatibility
@@ -95,19 +65,13 @@ describe("Project Write", () => {
   });
 });
 
-function AttemptRoundTripOfOneField(
-  key: string,
-  xmlTag: string,
-  content: string
-) {
+function AttemptRoundTripOfOneField(key: string, xmlTag: string, content: string) {
   const f = GetProjectFileWithOneField(xmlTag, content);
   f.save(true);
   let output = fs.readFileSync(f.metadataFilePath);
   let expected = `<${xmlTag}>${content}</${xmlTag}>`;
   if (output.indexOf(expected) < 0) {
-    throw new Error(
-      `Expected output to contain \r\n${expected}\r\n but got \r\n${output}`
-    );
+    throw new Error(`Expected output to contain \r\n${expected}\r\n but got \r\n${output}`);
   }
 
   // now, can we change it and see it saved?
@@ -119,23 +83,15 @@ function AttemptRoundTripOfOneField(
   output = fs.readFileSync(f.metadataFilePath);
   expected = `<${xmlTag}>${newValue}</${xmlTag}>`;
   if (output.indexOf(expected) < 0) {
-    throw new Error(
-      `Expected output to contain \r\n${expected}\r\n but got \r\n${output}`
-    );
+    throw new Error(`Expected output to contain \r\n${expected}\r\n but got \r\n${output}`);
   }
 }
 
-export function GetProjectFileWithOneField(
-  tag: string,
-  content: string
-): ProjectMetadataFile {
+export function GetProjectFileWithOneField(tag: string, content: string): ProjectMetadataFile {
   fs.writeFileSync(
     Path.join(projectDirectory, projectName + ".sprj"),
     `<?xml version="1.0" encoding="utf-8"?>
-  <Project><${tag}>${content}</${tag}></Project>`
+  <Project><${tag}>${content}</${tag}></Project>`,
   );
-  return new ProjectMetadataFile(
-    projectDirectory,
-    new EncounteredVocabularyRegistry()
-  );
+  return new ProjectMetadataFile(projectDirectory, new EncounteredVocabularyRegistry());
 }

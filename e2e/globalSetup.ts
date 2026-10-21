@@ -1,9 +1,8 @@
 import fs from "fs";
 import * as Path from "path";
 import * as os from "os";
-import { FullConfig } from "@playwright/test";
 
-export default async function globalSetup(config: FullConfig) {
+export default async function globalSetup() {
   const allTimeRoot = Path.join(os.tmpdir(), "lametae2e");
   //fs.rmdirSync(allTimeRoot, { recursive: true });
   const rootDir = Path.join(allTimeRoot, new Date().toISOString().replace(/:/g, "_"));

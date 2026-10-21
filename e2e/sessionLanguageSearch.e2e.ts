@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { FolderSearchUtilities } from "./folderSearch-e2e-helpers";
@@ -25,9 +25,7 @@ test.describe("Session Language Search (LAM-14)", () => {
     await project.addSession();
 
     // Select the newly added session row so the details form appears
-    const firstSessionCell = page
-      .getByRole("gridcell", { name: /^New_Session/ })
-      .first();
+    const firstSessionCell = page.getByRole("gridcell", { name: /^New_Session/ }).first();
     await firstSessionCell.waitFor({ state: "visible", timeout: 10000 });
     await firstSessionCell.click();
 
@@ -35,9 +33,7 @@ test.describe("Session Language Search (LAM-14)", () => {
     const subjectContainer = page
       .locator('div.field:has(label:has-text("Subject Languages"))')
       .first();
-    const subjectInput = subjectContainer
-      .locator('.select input[role="combobox"]')
-      .first();
+    const subjectInput = subjectContainer.locator('.select input[role="combobox"]').first();
     await subjectInput.click();
     await subjectInput.fill("French");
     await page.waitForTimeout(300); // let async options load
@@ -47,9 +43,7 @@ test.describe("Session Language Search (LAM-14)", () => {
     const workingContainer = page
       .locator('div.field:has(label:has-text("Working Languages"))')
       .first();
-    const workingInput = workingContainer
-      .locator('.select input[role="combobox"]')
-      .first();
+    const workingInput = workingContainer.locator('.select input[role="combobox"]').first();
     await workingInput.click();
     await workingInput.fill("deu");
     await page.waitForTimeout(300);

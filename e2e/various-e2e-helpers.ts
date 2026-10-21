@@ -2,7 +2,6 @@ import * as Path from "path";
 import { Page } from "playwright-core";
 import { expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-const { _electron: electron } = require("playwright");
 export async function createNewProject(lameta: LametaE2ERunner, name: string): Promise<E2eProject> {
   const p = new E2eProject(lameta);
   await p.createNewProject(name);
@@ -197,8 +196,6 @@ export class E2eProject {
   }
   */
 }
-
-import { LaunchOptions } from "./lametaE2ERunner";
 
 /**
  * Launch lameta with fast project creation, bypassing registration and start screen UI.

@@ -52,7 +52,7 @@ describe("corrupt/truncated metadata files", () => {
       let threw = false;
       try {
         new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
-      } catch (e) {
+      } catch {
         threw = true;
       }
 
@@ -82,7 +82,7 @@ describe("corrupt/truncated metadata files", () => {
       let threw = false;
       try {
         new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
-      } catch (e) {
+      } catch {
         threw = true;
       }
 
@@ -108,7 +108,7 @@ describe("corrupt/truncated metadata files", () => {
       let session: Session | undefined;
       try {
         session = Session.fromDirectory(sessionFolder, new EncounteredVocabularyRegistry());
-      } catch (e) {
+      } catch {
         threw = true;
       }
 
@@ -156,7 +156,7 @@ describe("corrupt/truncated metadata files", () => {
     let threw = false;
     try {
       f.finishLoading();
-    } catch (e) {
+    } catch {
       threw = true;
     }
 

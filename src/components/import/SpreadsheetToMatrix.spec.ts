@@ -4,13 +4,12 @@ import { makeMappedMatrix, makeMappedMatrixFromSpreadsheet } from "./Spreadsheet
 import { availableSpreadsheetMappings } from "./MatrixImporter";
 import { MappedMatrix, CellImportStatus, RowImportStatus } from "./MappedMatrix";
 import * as Path from "path";
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
+import { describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 
 let project: Project;
 const projectDir = temp.mkdirSync("lameta spreadsheet importer test");
 const lingMetaX_ImportMap = availableSpreadsheetMappings.LingMetaXMap; //require("./LingMetaXMap.json5");
 const lingMetaX_Xlsx_SessionsPath = "sample data/LingMetaX_Sessions.xlsx";
-const lingMetaX_Xlsx_PeoplePath = "sample data/LingMetaX_People.xlsx";
 const lingMetaX_Csv_SessionsPath = "sample data/LingMetaX_Sessions.csv";
 
 // *********** IMPORTANT **************

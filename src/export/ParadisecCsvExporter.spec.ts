@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
+import { describe, it, beforeAll, expect } from "vite-plus/test";
 import { Project } from "../model/Project/Project";
 import * as temp from "temp";
 import {
@@ -18,7 +18,6 @@ let projectMatrix: any;
 let sessionMatrix: any;
 let projectCsv: string;
 let sessionCsv: string;
-const kEol: string = require("os").EOL;
 
 describe("Paradisec project csv export", () => {
   beforeAll(() => {
@@ -48,7 +47,7 @@ describe("Paradisec project csv export", () => {
 describe("Paradisec session csv export", () => {
   beforeAll(() => {
     project = Project.fromDirectory("sample data/Edolo sample");
-    sessionCsv = makeParadisecSessionCsv(project, (f) => true);
+    sessionCsv = makeParadisecSessionCsv(project, () => true);
     //console.log(sessionCsv);
     sessionMatrix = parseSync(sessionCsv, { relax_column_count: true });
   });
@@ -73,7 +72,7 @@ describe("Paradisec session csv export", () => {
 
     sessionWithLineBreaks.properties.setText("description", description);
 
-    const csv = makeParadisecSessionCsv(projectWithLineBreaks, (f) => true);
+    const csv = makeParadisecSessionCsv(projectWithLineBreaks, () => true);
     const parsed = parseSync(csv, { relax_column_count: true });
     const descriptionColumn = parsed[0].indexOf("Item Description");
     const itemDescription = parsed[1][descriptionColumn];
@@ -92,7 +91,7 @@ describe("Paradisec session csv export", () => {
 
     sessionWithDescription.properties.setText("description", "Sticker on cover: 3-2/59");
 
-    const csv = makeParadisecSessionCsv(projectWithDescription, (f) => true);
+    const csv = makeParadisecSessionCsv(projectWithDescription, () => true);
     const parsed = parseSync(csv, { relax_column_count: true });
     const descriptionColumn = parsed[0].indexOf("Item Description");
     const itemDescription = parsed[1][descriptionColumn];

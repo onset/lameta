@@ -14,16 +14,12 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from "vite-plus/test";
 import {
-  createSessionLicense,
   createLdacAccessTypeDefinitions,
   createDistinctLicenses,
-  clearLdacAccessTypeDefinitionsCache
+  clearLdacAccessTypeDefinitionsCache,
 } from "../RoCrateLicenseManager";
 import { expandLdacId } from "../RoCrateUtils";
-import {
-  createMockProject,
-  createMockSession
-} from "./test-utils/rocrate-test-setup";
+import { createMockProject, createMockSession } from "./test-utils/rocrate-test-setup";
 
 describe("LAM-92: Only include used LDAC access type definitions", () => {
   beforeEach(() => {
@@ -41,13 +37,13 @@ describe("LAM-92: Only include used LDAC access type definitions", () => {
 
       // Should include AccessTypes container and OpenAccess
       const accessTypesEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:AccessTypes")
+        (d: any) => d["@id"] === expandLdacId("ldac:AccessTypes"),
       );
       const openAccessEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:OpenAccess")
+        (d: any) => d["@id"] === expandLdacId("ldac:OpenAccess"),
       );
       const authorizedAccessEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess")
+        (d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess"),
       );
 
       expect(accessTypesEntity).toBeDefined();
@@ -61,13 +57,13 @@ describe("LAM-92: Only include used LDAC access type definitions", () => {
       const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       const accessTypesEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:AccessTypes")
+        (d: any) => d["@id"] === expandLdacId("ldac:AccessTypes"),
       );
       const openAccessEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:OpenAccess")
+        (d: any) => d["@id"] === expandLdacId("ldac:OpenAccess"),
       );
       const authorizedAccessEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess")
+        (d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess"),
       );
 
       expect(accessTypesEntity).toBeDefined();
@@ -79,18 +75,18 @@ describe("LAM-92: Only include used LDAC access type definitions", () => {
     it("should include both access types when both are used", () => {
       const usedAccessTypes = new Set([
         expandLdacId("ldac:OpenAccess"),
-        expandLdacId("ldac:AuthorizedAccess")
+        expandLdacId("ldac:AuthorizedAccess"),
       ]);
       const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       const accessTypesEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:AccessTypes")
+        (d: any) => d["@id"] === expandLdacId("ldac:AccessTypes"),
       );
       const openAccessEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:OpenAccess")
+        (d: any) => d["@id"] === expandLdacId("ldac:OpenAccess"),
       );
       const authorizedAccessEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess")
+        (d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess"),
       );
 
       expect(accessTypesEntity).toBeDefined();
@@ -104,12 +100,12 @@ describe("LAM-92: Only include used LDAC access type definitions", () => {
       // Since it's an external vocabulary term used as a type, we don't need to define it in-crate.
       const usedAccessTypes = new Set([
         expandLdacId("ldac:OpenAccess"),
-        expandLdacId("ldac:AuthorizedAccess")
+        expandLdacId("ldac:AuthorizedAccess"),
       ]);
       const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       const dataReuseLicenseEntity = definitions.find(
-        (d: any) => d["@id"] === expandLdacId("ldac:DataReuseLicense")
+        (d: any) => d["@id"] === expandLdacId("ldac:DataReuseLicense"),
       );
 
       // LAM-92: This entity should NOT be in the output - it causes orphaned entity warnings
@@ -129,7 +125,7 @@ describe("LAM-92: Only include used LDAC access type definitions", () => {
     it("should only generate OpenAccess definition when all sessions have open access", () => {
       const mockProject = createMockProject({
         metadata: {
-          archiveConfigurationName: "TestArchive"
+          archiveConfigurationName: "TestArchive",
         },
         authorityLists: {
           accessChoicesOfCurrentProtocol: [
@@ -137,52 +133,39 @@ describe("LAM-92: Only include used LDAC access type definitions", () => {
               id: "public",
               label: "public",
               description: "Open access",
-              ldacAccessCategory: "ldac:OpenAccess"
-            }
-          ]
-        }
+              ldacAccessCategory: "ldac:OpenAccess",
+            },
+          ],
+        },
       });
 
       const session1 = createMockSession({ metadata: { access: "public" } });
       const session2 = createMockSession({ metadata: { access: "public" } });
 
-      const licenses = createDistinctLicenses(
-        [session1, session2],
-        mockProject
-      );
+      const licenses = createDistinctLicenses([session1, session2], mockProject);
 
       // All licenses should reference OpenAccess
       licenses.forEach((license) => {
-        expect(license["ldac:access"]["@id"]).toBe(
-          expandLdacId("ldac:OpenAccess")
-        );
+        expect(license["ldac:access"]["@id"]).toBe(expandLdacId("ldac:OpenAccess"));
       });
 
       // Collect used access types from licenses
-      const usedAccessTypes = new Set(
-        licenses.map((l) => l["ldac:access"]["@id"])
-      );
+      const usedAccessTypes = new Set(licenses.map((l) => l["ldac:access"]["@id"]));
 
       // Generate definitions with only used types
       const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       // Should have OpenAccess but NOT AuthorizedAccess
-      expect(
-        definitions.some(
-          (d: any) => d["@id"] === expandLdacId("ldac:OpenAccess")
-        )
-      ).toBe(true);
-      expect(
-        definitions.some(
-          (d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess")
-        )
-      ).toBe(false);
+      expect(definitions.some((d: any) => d["@id"] === expandLdacId("ldac:OpenAccess"))).toBe(true);
+      expect(definitions.some((d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess"))).toBe(
+        false,
+      );
     });
 
     it("should generate both access type definitions when sessions have mixed access", () => {
       const mockProject = createMockProject({
         metadata: {
-          archiveConfigurationName: "TestArchive"
+          archiveConfigurationName: "TestArchive",
         },
         authorityLists: {
           accessChoicesOfCurrentProtocol: [
@@ -190,55 +173,42 @@ describe("LAM-92: Only include used LDAC access type definitions", () => {
               id: "public",
               label: "public",
               description: "Open access",
-              ldacAccessCategory: "ldac:OpenAccess"
+              ldacAccessCategory: "ldac:OpenAccess",
             },
             {
               id: "restricted",
               label: "restricted",
               description: "Restricted access",
-              ldacAccessCategory: "ldac:AuthorizedAccess"
-            }
-          ]
-        }
+              ldacAccessCategory: "ldac:AuthorizedAccess",
+            },
+          ],
+        },
       });
 
       const publicSession = createMockSession({
-        metadata: { access: "public" }
+        metadata: { access: "public" },
       });
       const restrictedSession = createMockSession({
-        metadata: { access: "restricted" }
+        metadata: { access: "restricted" },
       });
 
-      const licenses = createDistinctLicenses(
-        [publicSession, restrictedSession],
-        mockProject
-      );
+      const licenses = createDistinctLicenses([publicSession, restrictedSession], mockProject);
 
       // Collect used access types from licenses
-      const usedAccessTypes = new Set(
-        licenses.map((l) => l["ldac:access"]["@id"])
-      );
+      const usedAccessTypes = new Set(licenses.map((l) => l["ldac:access"]["@id"]));
 
       // Should have both access types
       expect(usedAccessTypes.has(expandLdacId("ldac:OpenAccess"))).toBe(true);
-      expect(usedAccessTypes.has(expandLdacId("ldac:AuthorizedAccess"))).toBe(
-        true
-      );
+      expect(usedAccessTypes.has(expandLdacId("ldac:AuthorizedAccess"))).toBe(true);
 
       // Generate definitions with used types
       const definitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
       // Should have both
-      expect(
-        definitions.some(
-          (d: any) => d["@id"] === expandLdacId("ldac:OpenAccess")
-        )
-      ).toBe(true);
-      expect(
-        definitions.some(
-          (d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess")
-        )
-      ).toBe(true);
+      expect(definitions.some((d: any) => d["@id"] === expandLdacId("ldac:OpenAccess"))).toBe(true);
+      expect(definitions.some((d: any) => d["@id"] === expandLdacId("ldac:AuthorizedAccess"))).toBe(
+        true,
+      );
     });
   });
 });

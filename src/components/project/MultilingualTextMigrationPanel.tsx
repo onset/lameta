@@ -8,7 +8,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
 } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { Trans, t } from "@lingui/macro";
@@ -44,23 +44,22 @@ interface IProps {
  *
  * Shows instructions, a Convert button, and progress during conversion.
  */
-export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
-  observer(({ project }) => {
+export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> = observer(
+  ({ project }) => {
     const [progress, setProgress] = useState<MigrationProgress>({
       phase: "idle",
       current: 0,
       total: 0,
       currentItem: "",
-      convertedCount: 0
+      convertedCount: 0,
     });
-    const [previewResult, setPreviewResult] =
-      useState<PreviewResult | null>(null);
+    const [previewResult, setPreviewResult] = useState<PreviewResult | null>(null);
 
     // Helper to preview all multilingual fields in a folder
     const previewFolder = (
       folder: { properties: { values: () => any[] } },
       metadataSlotTags: string[],
-      captureExample: boolean = false
+      captureExample: boolean = false,
     ): {
       fieldsWithUnknowns: number;
       totalFieldsToConvert: number;
@@ -78,19 +77,17 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
           const isCommaSeparated = field.isCommaSeparated ?? false;
           const preview = field.textHolder?.previewSlashSyntaxConversion?.(
             metadataSlotTags,
-            isCommaSeparated
+            isCommaSeparated,
           );
           if (preview?.unknownCount > 0) {
             fieldsWithUnknowns++;
             // Capture the first example we find
             // Use " / " (space-slash-space) as the delimiter, matching the actual parsing
             if (captureExample && !example && field.textHolder?._text) {
-              const segments = field.textHolder._text
-                .split(" / ")
-                .map((s: string) => s.trim());
+              const segments = field.textHolder._text.split(" / ").map((s: string) => s.trim());
               example = {
                 segments,
-                unknownStartIndex: metadataSlotTags.length
+                unknownStartIndex: metadataSlotTags.length,
               };
             }
           }
@@ -101,16 +98,14 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
 
     // Phase 1: Preview - count fields that would have unknowns
     const handlePreview = useCallback(async () => {
-      const metadataSlotTags = Project.getMetadataLanguageSlots().map(
-        (s) => s.tag
-      );
+      const metadataSlotTags = Project.getMetadataLanguageSlots().map((s) => s.tag);
 
       setProgress({
         phase: "previewing",
         current: 0,
         total: 0,
         currentItem: t`Scanning...`,
-        convertedCount: 0
+        convertedCount: 0,
       });
 
       let totalFieldsWithUnknowns = 0;
@@ -130,11 +125,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
 
       // Preview sessions
       for (const session of project.sessions.items) {
-        const sessionPreview = previewFolder(
-          session,
-          metadataSlotTags,
-          !capturedExample
-        );
+        const sessionPreview = previewFolder(session, metadataSlotTags, !capturedExample);
         totalFieldsWithUnknowns += sessionPreview.fieldsWithUnknowns;
         totalFieldsToConvert += sessionPreview.totalFieldsToConvert;
         if (!capturedExample && sessionPreview.example) {
@@ -144,11 +135,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
 
       // Preview people
       for (const person of project.persons.items) {
-        const personPreview = previewFolder(
-          person,
-          metadataSlotTags,
-          !capturedExample
-        );
+        const personPreview = previewFolder(person, metadataSlotTags, !capturedExample);
         totalFieldsWithUnknowns += personPreview.fieldsWithUnknowns;
         totalFieldsToConvert += personPreview.totalFieldsToConvert;
         if (!capturedExample && personPreview.example) {
@@ -161,7 +148,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
         setPreviewResult({
           fieldsWithUnknowns: totalFieldsWithUnknowns,
           totalFieldsToConvert,
-          example: capturedExample
+          example: capturedExample,
         });
         setProgress((prev) => ({ ...prev, phase: "confirming" }));
       } else {
@@ -172,9 +159,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
 
     // Phase 2: Actual conversion
     const doConversion = useCallback(async () => {
-      const metadataSlotTags = Project.getMetadataLanguageSlots().map(
-        (s) => s.tag
-      );
+      const metadataSlotTags = Project.getMetadataLanguageSlots().map((s) => s.tag);
 
       // Count total items to process
       const totalSessions = project.sessions.items.length;
@@ -186,22 +171,16 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
         current: 0,
         total: totalItems,
         currentItem: t`Project`,
-        convertedCount: 0
+        convertedCount: 0,
       });
 
       let convertedCount = 0;
 
       // Helper to convert all multilingual fields in a folder
-      const convertFolder = (
-        folder: { properties: { values: () => any[] } },
-        itemName: string
-      ) => {
+      const convertFolder = (folder: { properties: { values: () => any[] } }) => {
         const fields = folder.properties.values();
         for (const field of fields) {
-          if (
-            field.definition?.multilingual &&
-            field.looksLikeSlashSyntax?.()
-          ) {
+          if (field.definition?.multilingual && field.looksLikeSlashSyntax?.()) {
             field.commitSlashSyntaxConversion(metadataSlotTags);
             convertedCount++;
           }
@@ -209,12 +188,12 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
       };
 
       // Convert project-level fields
-      convertFolder(project, t`Project`);
+      convertFolder(project);
 
       setProgress((prev) => ({
         ...prev,
         current: 1,
-        convertedCount
+        convertedCount,
       }));
 
       // Yield to UI
@@ -229,10 +208,10 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
           ...prev,
           current: 1 + i,
           currentItem: sessionName,
-          convertedCount
+          convertedCount,
         }));
 
-        convertFolder(session, sessionName);
+        convertFolder(session);
         session.saveFolderMetaData();
 
         // Yield to UI every few items
@@ -250,10 +229,10 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
           ...prev,
           current: 1 + totalSessions + i,
           currentItem: personName,
-          convertedCount
+          convertedCount,
         }));
 
-        convertFolder(person, personName);
+        convertFolder(person);
         person.saveFolderMetaData();
 
         // Yield to UI every few items
@@ -271,7 +250,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
         current: totalItems,
         total: totalItems,
         currentItem: "",
-        convertedCount
+        convertedCount,
       });
     }, [project]);
 
@@ -287,7 +266,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
         current: 0,
         total: 0,
         currentItem: "",
-        convertedCount: 0
+        convertedCount: 0,
       });
     }, []);
 
@@ -299,9 +278,7 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
     }
 
     const percentage =
-      progress.total > 0
-        ? Math.round((progress.current / progress.total) * 100)
-        : 0;
+      progress.total > 0 ? Math.round((progress.current / progress.total) * 100) : 0;
 
     return (
       <div
@@ -334,14 +311,12 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
               `}
             >
               <Trans>
-                This project appears to use "/" to store multiple languages
-                within a single field. In this version of lameta, we have a
-                better approach in which lameta knows which languages are used
-                in a field. After you have selected the appropriate metadata
-                languages above and arranged them in the correct order, all
-                multilingual fields in Project, Sessions, and People should
-                display with the correct language tags. Once you have confirmed
-                that everything appears as expected, click the button below to
+                This project appears to use "/" to store multiple languages within a single field.
+                In this version of lameta, we have a better approach in which lameta knows which
+                languages are used in a field. After you have selected the appropriate metadata
+                languages above and arranged them in the correct order, all multilingual fields in
+                Project, Sessions, and People should display with the correct language tags. Once
+                you have confirmed that everything appears as expected, click the button below to
                 apply these changes permanently.
               </Trans>
             </p>
@@ -360,8 +335,8 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
                 `}
               >
                 <Trans>
-                  Please add the metadata languages you've been using with these
-                  "/" fields (at least two) before migrating.
+                  Please add the metadata languages you've been using with these "/" fields (at
+                  least two) before migrating.
                 </Trans>
               </Alert>
             )}
@@ -480,9 +455,9 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
             `}
           >
             <Trans>
-              Migration complete! {progress.convertedCount} fields were
-              migrated. You can hide language tags from View → "Show language
-              tags on multilingual fields" if you don't need them anymore.
+              Migration complete! {progress.convertedCount} fields were migrated. You can hide
+              language tags from View → "Show language tags on multilingual fields" if you don't
+              need them anymore.
             </Trans>
           </Alert>
         )}
@@ -509,10 +484,10 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
           <DialogContent>
             <p>
               <Trans>
-                Some fields have more language segments than there are Metadata
-                Languages defined ({previewResult?.fieldsWithUnknowns} of{" "}
-                {previewResult?.totalFieldsToConvert} fields). If you proceed,
-                these extra segments will be labeled as "unknown" languages.
+                Some fields have more language segments than there are Metadata Languages defined (
+                {previewResult?.fieldsWithUnknowns} of {previewResult?.totalFieldsToConvert}{" "}
+                fields). If you proceed, these extra segments will be labeled as "unknown"
+                languages.
               </Trans>
             </p>
             {previewResult?.example && (
@@ -531,13 +506,12 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
                     {i > 0 && " / "}
                     <span
                       css={css`
-                        color: ${i >= previewResult.example!.unknownStartIndex
-                          ? "#d32f2f"
-                          : "inherit"};
-                        font-weight: ${i >=
-                        previewResult.example!.unknownStartIndex
-                          ? "bold"
-                          : "normal"};
+                        color: ${
+                          i >= previewResult.example!.unknownStartIndex ? "#d32f2f" : "inherit"
+                        };
+                        font-weight: ${
+                          i >= previewResult.example!.unknownStartIndex ? "bold" : "normal"
+                        };
                       `}
                     >
                       {seg}
@@ -552,9 +526,8 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
               `}
             >
               <Trans>
-                You can either add more Metadata Languages above to match all
-                segments, or proceed with the migration and manually fix the
-                unknown language fields later.
+                You can either add more Metadata Languages above to match all segments, or proceed
+                with the migration and manually fix the unknown language fields later.
               </Trans>
             </p>
           </DialogContent>
@@ -585,4 +558,5 @@ export const MultilingualTextMigrationPanel: React.FunctionComponent<IProps> =
         </Dialog>
       </div>
     );
-  });
+  },
+);

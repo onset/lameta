@@ -11,7 +11,6 @@ import * as fs from "fs";
 import { runInAction } from "mobx";
 // No direct import of FolderSearchTermsIndex; test exercises lazy creation via FolderGroup.filter()
 import { SessionMetadataFile } from "../Project/Session/Session";
-import * as Path from "path";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setupLanguageFinderForTests } from "../../languageFinder/LanguageFinder";
 
@@ -19,9 +18,7 @@ class FakeFolder extends Folder {
   private _props = new FieldSet();
   constructor(fields: Record<string, string>) {
     super("", null as any, [], new EncounteredVocabularyRegistry());
-    Object.entries(fields).forEach(([k, v]) =>
-      this._props.addTextProperty(k, v)
-    );
+    Object.entries(fields).forEach(([k, v]) => this._props.addTextProperty(k, v));
   }
   public get properties(): FieldSet {
     return this._props;
@@ -54,7 +51,7 @@ describe("FolderSearchTermsIndex", () => {
     const f2 = new FakeFolder({
       id: "B1",
       title: "Bravo",
-      notes: "blue whale"
+      notes: "blue whale",
     });
     g.items.push(f1, f2);
     g.filter("fox");
@@ -82,7 +79,7 @@ describe("FolderSearchTermsIndex", () => {
       // Create a fake Person-like folder with actual PersonMetadataFile instance
       const personWithLanguage = new FakeFolder({
         id: "P1",
-        name: "Test Person"
+        name: "Test Person",
       });
 
       // Create an actual PersonMetadataFile instance with real temp directory
@@ -102,35 +99,35 @@ describe("FolderSearchTermsIndex", () => {
       // Override folderType to be "person" so our fix applies
       Object.defineProperty(personWithLanguage, "folderType", {
         value: "person",
-        writable: false
+        writable: false,
       });
 
       // Override displayName so it shows up in debug output
       Object.defineProperty(personWithLanguage, "displayName", {
         value: "Test Person",
-        writable: false
+        writable: false,
       });
 
       const personWithoutLanguage = new FakeFolder({
         id: "P2",
-        name: "Other Person"
+        name: "Other Person",
       });
       Object.defineProperty(personWithoutLanguage, "folderType", {
         value: "person",
-        writable: false
+        writable: false,
       });
 
       // Override displayName so it shows up in debug output
       Object.defineProperty(personWithoutLanguage, "displayName", {
         value: "Other Person",
-        writable: false
+        writable: false,
       });
 
       g.items.push(personWithLanguage as any, personWithoutLanguage as any);
 
-  // Test the specific LAM-18 bug: code worked but partial of the language NAME didn't
-  // The issue was that language name was not included in search at all (just the code)
-  g.filter("dad");
+      // Test the specific LAM-18 bug: code worked but partial of the language NAME didn't
+      // The issue was that language name was not included in search at all (just the code)
+      g.filter("dad");
       expect(g.filteredItems!.length).toBe(1); // partial match - worked before
       expect(g.filteredItems![0]).toBe(personWithLanguage);
 

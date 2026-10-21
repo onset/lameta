@@ -5,20 +5,19 @@ vi.mock("../../languageFinder/LanguageFinder", () => ({
   staticLanguageFinder: {
     findOneLanguageNameFromCode_Or_ReturnCode: vi
       .fn()
-      .mockImplementation((code: string) => `Language ${code}`)
-  }
+      .mockImplementation((code: string) => `Language ${code}`),
+  },
 }));
 
 import { getRoCrate } from "../RoCrateExporter";
-import { Project } from "../../../model/Project/Project";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 
 // Mock fs-extra module
 vi.mock("fs-extra", () => ({
   statSync: vi.fn().mockReturnValue({
     size: 1024,
-    birthtime: new Date("2023-01-01")
-  })
+    birthtime: new Date("2023-01-01"),
+  }),
 }));
 
 /**
@@ -31,15 +30,9 @@ vi.mock("fs-extra", () => ({
 describe("RoCrateExporter OtherDocuments folder fix", () => {
   beforeEach(() => {
     // Mock field definitions
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue(
-      []
-    );
-    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-      []
-    );
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "project", "get").mockReturnValue([]);
+    vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue([]);
   });
 
   it("should use 'OtherDocuments' folder prefix, not 'OtherDocs' for files like Letter_from_Jan.txt", async () => {
@@ -48,7 +41,7 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
       getActualFilePath: () =>
         "C:\\Users\\hatto\\OneDrive\\Documents\\lameta\\edolo-rocrate\\OtherDocuments\\Letter_from_Jan.txt",
       getModifiedDate: () => new Date("2023-01-03"),
-      filePrefix: "Letter_from_Jan"
+      filePrefix: "Letter_from_Jan",
     };
 
     // Create a mock project with the otherDocsFolder containing the file
@@ -62,52 +55,50 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
           return "";
         }),
         properties: {
-          forEach: vi.fn()
-        }
+          forEach: vi.fn(),
+        },
       } as any,
       sessions: { items: [] },
       descriptionFolder: { files: [] },
       otherDocsFolder: {
         files: [letterFromJanFile],
-        filePrefix: "OtherDocuments"
+        filePrefix: "OtherDocuments",
       },
       authorityLists: {
-        accessChoicesOfCurrentProtocol: []
+        accessChoicesOfCurrentProtocol: [],
       },
       knownFields: [],
-      files: []
+      files: [],
     } as any;
 
     // Generate the RO-Crate
     const result = (await getRoCrate(mockProject, mockProject)) as any;
 
     // Find the root dataset entry
-    const rootEntry = result["@graph"].find(
-      (item: any) => item["@id"] === "./"
-    );
+    const rootEntry = result["@graph"].find((item: any) => item["@id"] === "./");
     expect(rootEntry).toBeDefined();
 
     // LAM-101: Root now references the OtherDocuments/ Dataset via pcdm:hasMember, not hasPart
     const otherDocsDatasetRef = rootEntry["pcdm:hasMember"]?.find(
-      (part: any) => part["@id"] === "OtherDocuments/"
+      (part: any) => part["@id"] === "OtherDocuments/",
     );
     expect(otherDocsDatasetRef).toBeDefined();
     expect(otherDocsDatasetRef["@id"]).toBe("OtherDocuments/");
 
     // Verify the OtherDocuments/ Dataset exists and references the file
     const otherDocsDataset = result["@graph"].find(
-      (item: any) => item["@id"] === "OtherDocuments/"
+      (item: any) => item["@id"] === "OtherDocuments/",
     );
     expect(otherDocsDataset).toBeDefined();
     expect(otherDocsDataset["@type"]).toBe("Dataset");
     const fileRefInDataset = otherDocsDataset.hasPart.find(
-      (part: any) => part["@id"] === "OtherDocuments/Letter_from_Jan.txt"
+      (part: any) => part["@id"] === "OtherDocuments/Letter_from_Jan.txt",
     );
     expect(fileRefInDataset).toBeDefined();
 
     // Verify that the file entry itself has the correct @id
     const letterFileEntry = result["@graph"].find(
-      (item: any) => item["@id"] === "OtherDocuments/Letter_from_Jan.txt"
+      (item: any) => item["@id"] === "OtherDocuments/Letter_from_Jan.txt",
     );
     expect(letterFileEntry).toBeDefined();
     expect(letterFileEntry["@id"]).toBe("OtherDocuments/Letter_from_Jan.txt");
@@ -120,20 +111,18 @@ describe("RoCrateExporter OtherDocuments folder fix", () => {
 
     // Verify that no files have the incorrect "OtherDocs" prefix
     const incorrectFileRefs = result["@graph"].filter(
-      (item: any) => item["@id"] && item["@id"].startsWith("OtherDocs/")
+      (item: any) => item["@id"] && item["@id"].startsWith("OtherDocs/"),
     );
     expect(incorrectFileRefs).toHaveLength(0);
 
     // Also verify in the pcdm:hasMember array
     const incorrectHasMemberRefs =
       rootEntry["pcdm:hasMember"]?.filter(
-        (part: any) => part["@id"] && part["@id"].startsWith("OtherDocs/")
+        (part: any) => part["@id"] && part["@id"].startsWith("OtherDocs/"),
       ) || [];
     expect(incorrectHasMemberRefs).toHaveLength(0);
 
-    console.log(
-      "✅ Fix verified: Letter_from_Jan.txt correctly uses 'OtherDocuments/' prefix"
-    );
+    console.log("✅ Fix verified: Letter_from_Jan.txt correctly uses 'OtherDocuments/' prefix");
     console.log(`📁 File @id: ${letterFileEntry["@id"]}`);
   });
 });

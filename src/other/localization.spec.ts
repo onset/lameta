@@ -30,7 +30,7 @@ describe("setUILanguage", () => {
     const loadSpy = vi.spyOn(i18n, "load").mockImplementation(() => undefined);
     const activateSpy = vi.spyOn(i18n, "activate").mockImplementation(() => undefined);
 
-    setUILanguage("zh-CN", false);
+    setUILanguage("zh-CN");
 
     expect(loadSpy).toHaveBeenCalledTimes(3);
     expect(loadSpy.mock.calls.map((call) => call[0])).toEqual(["zh-CN", "zh-CN", "zh-CN"]);
@@ -41,7 +41,7 @@ describe("setUILanguage", () => {
   it("keeps pt-BR catalogs registered under pt-BR", () => {
     const loadSpy = vi.spyOn(i18n, "load").mockImplementation(() => undefined);
 
-    setUILanguage("pt-BR", false);
+    setUILanguage("pt-BR");
 
     expect(loadSpy).toHaveBeenCalledTimes(3);
     expect(loadSpy.mock.calls.map((call) => call[0])).toEqual(["pt-BR", "pt-BR", "pt-BR"]);

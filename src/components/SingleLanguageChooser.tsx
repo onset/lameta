@@ -1,5 +1,5 @@
 import AsyncSelect from "react-select/async";
-import { default as React, useState, useEffect } from "react";
+import { default as React } from "react";
 import { Language, LanguageFinder } from "../languageFinder/LanguageFinder";
 import _ from "lodash";
 import { LanguageOption, languagePillHoverStyle, LanguagePillForSingle } from "./LanguagePill";
@@ -20,7 +20,7 @@ export const SingleLanguageChooser: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
   const customStyles = {
-    input: (provided, state) => ({
+    input: (provided) => ({
       ...provided,
       height: "1.3em",
     }),

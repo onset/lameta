@@ -21,7 +21,7 @@ export function ShowSavingNotifier(filename: string, beforeRename: boolean) {
   }
 }
 // This is in the upper right corner of the screen.
-export const SaveNotifier: React.FunctionComponent<{}> = (props) => {
+export const SaveNotifier: React.FunctionComponent<{}> = () => {
   const [beforeRename, setBeforeRename] = useState(false);
   const [showSaving, setShowSaving] = useState(false);
   const [filename, setFilename] = useState("");
@@ -50,11 +50,12 @@ export const SaveNotifier: React.FunctionComponent<{}> = (props) => {
         z-index: -1;
         opacity: 0;
         // after fading out, also hide it so it doesn't cover up buttons
-        ${!showSaving &&
-        "z-index:-1; opacity: 0; transition: z-index 0.5s step-end, opacity 0.5s ease-in;"}
+        ${
+          !showSaving &&
+          "z-index:-1; opacity: 0; transition: z-index 0.5s step-end, opacity 0.5s ease-in;"
+        }
         //  https://css-tricks.com/ease-out-in-ease-in-out/ "ease-out" refers to the acceleration curve
-        ${showSaving &&
-        "z-index: 100; opacity: 1; transition: opacity 0.5s ease-out;"}
+        ${showSaving && "z-index: 100; opacity: 1; transition: opacity 0.5s ease-out;"}
       `}
     >
       {beforeRename && (

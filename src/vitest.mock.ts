@@ -1,5 +1,4 @@
-import { app } from "electron";
-import { beforeAll, vi } from "vite-plus/test";
+import { vi } from "vite-plus/test";
 
 // Mock electron bindings and global window object for tests first
 Object.defineProperty(global, "window", {
@@ -7,7 +6,7 @@ Object.defineProperty(global, "window", {
     __electronCall: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    setTimeout: vi.fn((fn: () => void, delay?: number) => {
+    setTimeout: vi.fn((fn: () => void) => {
       // Execute immediately in tests
       fn();
       return 1; // return a mock timer id

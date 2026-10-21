@@ -31,7 +31,6 @@ import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyR
 describe("Undefined Field Values", () => {
   describe("Field.escapeSpecialChars", () => {
     it("should handle undefined input gracefully", () => {
-      const field = new Field("test", FieldType.Text, "");
       // Access the protected static method via the class
       // @ts-expect-error accessing protected static method for testing
       const result = Field.escapeSpecialChars(undefined);
@@ -138,10 +137,7 @@ describe("Empty XML Element Handling", () => {
 
     // This should not throw an error
     expect(() => {
-      const person = new PersonMetadataFile(
-        directory,
-        new EncounteredVocabularyRegistry()
-      );
+      const person = new PersonMetadataFile(directory, new EncounteredVocabularyRegistry());
       // Try to get XML output (this would trigger escapeSpecialChars)
       person.getXml();
     }).not.toThrow();
@@ -160,10 +156,7 @@ describe("Empty XML Element Handling", () => {
     fs.writeFileSync(Path.join(directory, folderName + ".session"), sessionXml);
 
     expect(() => {
-      const session = new SessionMetadataFile(
-        directory,
-        new EncounteredVocabularyRegistry()
-      );
+      const session = new SessionMetadataFile(directory, new EncounteredVocabularyRegistry());
       session.getXml();
     }).not.toThrow();
   });
@@ -177,10 +170,7 @@ describe("Empty XML Element Handling", () => {
 
     fs.writeFileSync(Path.join(directory, folderName + ".person"), personXml);
 
-    const person = new PersonMetadataFile(
-      directory,
-      new EncounteredVocabularyRegistry()
-    );
+    const person = new PersonMetadataFile(directory, new EncounteredVocabularyRegistry());
 
     // The code field should be readable as empty string, not undefined
     expect(person.getTextProperty("code", "")).toBe("");
@@ -204,10 +194,7 @@ describe("Empty XML Element Handling", () => {
     fs.writeFileSync(Path.join(directory, folderName + ".person"), personXml);
 
     expect(() => {
-      const person = new PersonMetadataFile(
-        directory,
-        new EncounteredVocabularyRegistry()
-      );
+      const person = new PersonMetadataFile(directory, new EncounteredVocabularyRegistry());
       // Try to get all the potentially empty fields
       person.getTextProperty("code", "");
       person.getTextProperty("education", "");

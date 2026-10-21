@@ -95,7 +95,7 @@ export class UserSettings {
             } else {
               fs.rmSync(brokenPath); // we have two files, bad and good names. Remove incorrectly named one (note, it could be the more recent, ah well)
             }
-          } catch (e) {
+          } catch {
             // ah well
           }
         }

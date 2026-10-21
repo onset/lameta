@@ -1,13 +1,11 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
-import { E2eFileList } from "./FileList-e2e-helpers";
 import { ContributorsHelper } from "./contributors-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
 let project: E2eProject;
-let fileList: E2eFileList;
 let contributors: ContributorsHelper;
 
 const arrowDownKey = process.platform === "darwin" ? "Meta+ArrowDown" : "Control+ArrowDown";
@@ -17,7 +15,6 @@ test.describe("Contributors", () => {
     lameta = new LametaE2ERunner();
     project = await launchWithProject(lameta, "Contributors");
     page = lameta.page;
-    fileList = new E2eFileList(lameta, page, project.projectDirectory);
     contributors = new ContributorsHelper(page, project);
   });
   test.afterAll(async () => {

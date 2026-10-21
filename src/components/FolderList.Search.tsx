@@ -22,7 +22,6 @@ interface ISearchBarProps {
 export const SearchBar: React.FC<ISearchBarProps> = observer(
   ({ folders, lastSearch, searchCount, currentSearchResetCounter, onCommitted }) => {
     // Use folders.searchTerm only for persisted normalized match logic; UI adornments should reflect what user has typed (rawValue)
-    const value = folders.searchTerm || ""; // legacy persisted value (may lag while typing in empty list state)
     // Track raw user input; initialize from lastSearch prop (state persisted in parent) so tab switches retain visual input
     const [rawValue, setRawValue] = React.useState<string>(lastSearch);
     // Sync when external lastSearch prop changes (e.g., programmatic clear)

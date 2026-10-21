@@ -23,8 +23,6 @@ import {
   NotifyError,
   NotifyException,
   NotifyFileAccessProblem,
-  NotifyRenameProblem,
-  NotifySuccess,
   NotifyWarning,
 } from "../../components/Notify";
 import _ from "lodash";
@@ -540,7 +538,7 @@ export /*babel doesn't like this: abstract*/ class File {
   public getSizeInBytes(): number {
     try {
       return fs.statSync(this.getActualFilePath()).size;
-    } catch (e) {
+    } catch {
       return 0;
     }
   }
@@ -550,7 +548,7 @@ export /*babel doesn't like this: abstract*/ class File {
   public getMtimeMs(): number {
     try {
       return fs.statSync(this.getActualFilePath()).mtimeMs;
-    } catch (e) {
+    } catch {
       return 0;
     }
   }
@@ -566,7 +564,7 @@ export /*babel doesn't like this: abstract*/ class File {
     let parsed: IMediaStatsCachePayload | undefined;
     try {
       parsed = JSON.parse(raw);
-    } catch (e) {
+    } catch {
       return undefined;
     }
     if (!parsed || !parsed.stats) {
@@ -641,7 +639,7 @@ export /*babel doesn't like this: abstract*/ class File {
       Path.extname(this.getActualFilePath());
     this.addTextProperty("type", typeName, false);
   }
-  protected specialLoadingOfField(tag: string, propertiesFromXml: any): boolean {
+  protected specialLoadingOfField(_tag: string, _propertiesFromXml: any): boolean {
     //console.log("Field.specialHandlingOfField");
     return false;
   }
@@ -1075,7 +1073,7 @@ export /*babel doesn't like this: abstract*/ class File {
     }
   }
   //overridden by person (eventually session)
-  public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {}
+  public writeXmlForComplexFields(_root: xmlbuilder.XMLElementOrXMLNode) {}
 
   public save(beforeRename: boolean = false, forceSave: boolean = false) {
     //console.log(`Might save ${this.metadataFilePath}`);
@@ -1209,7 +1207,7 @@ export /*babel doesn't like this: abstract*/ class File {
       const stat = fs.statSync(this.metadataFilePath);
       this.lastKnownDiskIdentity = { mtimeMs: stat.mtimeMs, size: stat.size };
       this.lastKnownDiskContent = content;
-    } catch (e) {
+    } catch {
       this.lastKnownDiskIdentity = undefined;
       this.lastKnownDiskContent = undefined;
     }
@@ -1235,7 +1233,7 @@ export /*babel doesn't like this: abstract*/ class File {
     let stat: fs.Stats;
     try {
       stat = fs.statSync(this.metadataFilePath);
-    } catch (e) {
+    } catch {
       // The file isn't there right now (the missing-folder/ENOENT handling in
       // save() and its catch cover that). Nothing to set aside.
       return true;
@@ -1253,7 +1251,7 @@ export /*babel doesn't like this: abstract*/ class File {
     let onDisk: string;
     try {
       onDisk = PatientFS.readFileSyncNoNotify(this.metadataFilePath);
-    } catch (e) {
+    } catch {
       // Couldn't read it (locked, etc.). We can neither confirm a change nor
       // safely move it; don't risk clobbering -- skip this write and try again
       // on the next save trigger.
@@ -1272,7 +1270,7 @@ export /*babel doesn't like this: abstract*/ class File {
     const setAsidePath = this.makeSetAsidePath();
     try {
       PatientFS.renameSyncWithNotifyAndRethrow(this.metadataFilePath, setAsidePath);
-    } catch (e) {
+    } catch {
       // renameSyncWithNotifyAndRethrow already told the user it couldn't move
       // the file. Do NOT overwrite it -- preserving it is the whole point.
       return false;
@@ -1621,7 +1619,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     try {
       PatientFS.renameSyncWithNotifyAndRethrow(this.metadataFilePath, newMetadataFilePath);
-    } catch (err) {
+    } catch {
       return false;
     }
     sentryBreadCrumb(
@@ -1634,23 +1632,23 @@ export /*babel doesn't like this: abstract*/ class File {
         newDescribedFilePath,
         this.type,
       );
-    } catch (err) {
+    } catch {
       // oh my. We failed to rename the described file. Undo the rename of the metadata file.
       try {
         PatientFS.renameSyncWithNotifyAndRethrow(newMetadataFilePath, this.metadataFilePath);
-      } catch (err) {
+      } catch {
         // oh boy. in danger of losing this data, especially since something might want to come along and clean up because it looks like a zombie file now
         // that its name does not match a core file.
         // try and just copy it over
         try {
           PatientFS.copyFileSync(newMetadataFilePath, this.metadataFilePath);
-        } catch (err) {
+        } catch {
           try {
             PatientFS.copyFileSync(
               newMetadataFilePath,
               this.metadataFilePath + ".maybeLostInfoHere",
             );
-          } catch (e) {
+          } catch {
             // ok this is getting stupid. just fall through.
           }
           ShowMessageDialog({

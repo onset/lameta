@@ -120,7 +120,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
   );
 
   const customStyles = {
-    control: (styles, state) => ({
+    control: (styles) => ({
       ...styles,
       height: "100%",
       border: "none",
@@ -141,7 +141,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
     //   ...styles,
     // }),
     //    clearIndicator:styles => ({ ...styles }),
-    multiValue: (styles, { data }) => {
+    multiValue: (styles, { data: _data }) => {
       return {
         ...styles,
         backgroundColor: "white",
@@ -162,7 +162,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
         },
       };
     },
-    multiValueRemove: (styles, { data }) => ({
+    multiValueRemove: (styles, { data: _data }) => ({
       ...styles,
       color: "inherit", //""transparent",
       // counteract the paddingLeft:0 above
@@ -265,7 +265,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
   // Custom ValueContainer that wraps multi-values in a sortable container
   const SortableValueContainer = useCallback(
     (containerProps: any) => {
-      const { children, selectProps, ...restProps } = containerProps;
+      const { children, selectProps } = containerProps;
       // Separate multi-value items from input
       const childArray = React.Children.toArray(children);
       // The last two children are typically the Input and sometimes a Placeholder

@@ -24,7 +24,6 @@ import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigur
 import {
   findBuiltInRulesFile,
   getRulesFileUnsupported,
-  ProblemSeverity,
   RulesFileUnsupported,
 } from "../../problems/rulesFile";
 import { IFieldProblem } from "../../problems/fieldRules";

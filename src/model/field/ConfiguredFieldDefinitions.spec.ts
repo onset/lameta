@@ -1,11 +1,5 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
-import {
-  computeMergedCatalog,
-  makeFieldDefinitionCatalog,
-  prepareGlobalFieldDefinitionCatalog,
-} from "./ConfiguredFieldDefinitions";
-import exp from "constants";
-import { ensurePluginOrder } from "react-table";
+import { describe, it, expect } from "vite-plus/test";
+import { computeMergedCatalog, makeFieldDefinitionCatalog } from "./ConfiguredFieldDefinitions";
 
 describe("computeMergedCatalog", () => {
   it("should merge the properties of the choice into the field definition, overriding the defaults", () => {

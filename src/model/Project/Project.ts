@@ -40,14 +40,8 @@ import {
 } from "../field/ConfiguredFieldDefinitions";
 import { duplicateFolder } from "../Folder/DuplicateFolder";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
-import {
-  NotifyError,
-  NotifyException,
-  NotifyNoBigDeal,
-  NotifyWarning,
-} from "../../components/Notify";
+import { NotifyError, NotifyException, NotifyWarning } from "../../components/Notify";
 import { setCurrentProjectId } from "./MediaFolderAccess";
-import { capitalCase } from "../../other/case";
 import { IChoice } from "../field/Field";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 import {
@@ -319,7 +313,7 @@ export class Project extends Folder {
     const seenTags = new Set<string>();
     const slots: LanguageSlot[] = [];
 
-    entries.forEach((entry, index) => {
+    entries.forEach((entry) => {
       const parts = entry.split(":");
       const rawCode = parts[0].trim().toLowerCase();
       // Normalize to BCP47 preferred format (2-letter when available)
@@ -391,7 +385,7 @@ export class Project extends Folder {
     return sCurrentProject?.vocabularyTranslations;
   }
 
-  public importIdMatchesThisFolder(id: string): boolean {
+  public importIdMatchesThisFolder(_id: string): boolean {
     throw new Error("Did not expect matchesId on Project");
   }
   public get propertyForCheckingId(): string {
@@ -851,7 +845,6 @@ export class Project extends Folder {
     return dir;
   }
   public makeFolderForImport(folderType: IFolderType): Folder {
-    let dir: string;
     switch (folderType) {
       case "session": {
         const dir = this.getUniqueFolder(
@@ -903,7 +896,7 @@ export class Project extends Folder {
   }
   public duplicateCurrentSession() {
     const session = this.sessions.items[this.sessions.selectedIndex];
-    const { success, metadataFilePath, directory } = duplicateFolder(session);
+    const { success, directory } = duplicateFolder(session);
     if (success) {
       const newSession = Session.fromDirectory(directory, this.customVocabularies);
       newSession.properties.setText("id", Path.basename(directory));
@@ -914,7 +907,7 @@ export class Project extends Folder {
   }
   public duplicateCurrentPerson() {
     const person = this.persons.items[this.persons.selectedIndex];
-    const { success, metadataFilePath, directory } = duplicateFolder(person);
+    const { success, directory } = duplicateFolder(person);
     if (success) {
       const newPerson = this.setupPerson(directory);
       newPerson.properties.setText("name", Path.basename(directory));

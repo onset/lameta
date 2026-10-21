@@ -15,7 +15,7 @@ describe("RoCrateHtmlGenerator", () => {
         "@id": "./",
         "@type": ["Dataset", "RepositoryCollection"],
         name: "Test Project",
-        hasPart: [{ "@id": "#session-ETR009" }]
+        hasPart: [{ "@id": "#session-ETR009" }],
       },
       {
         "@id": awiPersonId,
@@ -24,25 +24,25 @@ describe("RoCrateHtmlGenerator", () => {
         age: "38",
         image: [
           { "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG" },
-          { "@id": "People/Awi_Heole/Awi_Heole_Consent.JPG" }
+          { "@id": "People/Awi_Heole/Awi_Heole_Consent.JPG" },
         ],
-        subjectOf: { "@id": "People/Awi_Heole/Awi_Heole.person" }
+        subjectOf: { "@id": "People/Awi_Heole/Awi_Heole.person" },
       },
       {
         "@id": "People/Awi_Heole/Awi_Heole.person",
         "@type": "File",
         name: "Awi_Heole.person",
-        encodingFormat: "application/lameta-person"
+        encodingFormat: "application/lameta-person",
       },
       {
         "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG",
         "@type": "ImageObject",
-        name: "Awi_Heole_Photo.JPG"
+        name: "Awi_Heole_Photo.JPG",
       },
       {
         "@id": "People/Awi_Heole/Awi_Heole_Consent.JPG",
         "@type": "ImageObject",
-        name: "Awi_Heole_Consent.JPG"
+        name: "Awi_Heole_Consent.JPG",
       },
       {
         // LAM-67 https://linear.app/lameta/issue/LAM-67/ro-crate-11-part-1
@@ -53,86 +53,86 @@ describe("RoCrateHtmlGenerator", () => {
         name: "Test Session",
         hasPart: [
           { "@id": "Sessions/ETR009/ETR009.session" },
-          { "@id": "Sessions/ETR009/test.mp4" }
-        ]
+          { "@id": "Sessions/ETR009/test.mp4" },
+        ],
       },
       {
         "@id": "Sessions/ETR009/ETR009.session",
         "@type": "File",
         name: "ETR009.session",
-        encodingFormat: "application/lameta-session"
+        encodingFormat: "application/lameta-session",
       },
       {
         "@id": "Sessions/ETR009/test.mp4",
         "@type": "VideoObject",
-        name: "test.mp4"
+        name: "test.mp4",
       },
       {
         "@id": "ro-crate-metadata.json",
         "@type": "CreativeWork",
         conformsTo: { "@id": "https://w3id.org/ro/crate/1.1" },
-        about: { "@id": "./" }
+        about: { "@id": "./" },
       },
       {
         "@id": ldac("ldac:DataReuseLicense"),
         "@type": "Class",
         name: "Data Reuse License",
-        description: "A license for reusing data"
+        description: "A license for reusing data",
       },
       {
         "@id": ldac("ldac:OpenAccess"),
         "@type": "DefinedTerm",
         name: "Open Access",
-        description: "Data may be accessed without authorization"
+        description: "Data may be accessed without authorization",
       },
       {
         "@id": ldac("ldac:AuthorizedAccess"),
         "@type": "DefinedTerm",
         name: "Authorized Access",
-        description: "Data requires authorization for access"
+        description: "Data requires authorization for access",
       },
       {
         "@id": "#license-testarchive-f",
         "@type": ldac("ldac:DataReuseLicense"),
         name: "Open Access License",
-        "ldac:access": { "@id": ldac("ldac:OpenAccess") }
+        "ldac:access": { "@id": ldac("ldac:OpenAccess") },
       },
       {
         "@id": "#language_etr",
         "@type": "Language",
         code: "etr",
-        name: "Edolo"
+        name: "Edolo",
       },
       {
         "@id": "#language_tpi",
         "@type": "Language",
         code: "tpi",
-        name: "Tok Pisin"
+        name: "Tok Pisin",
       },
       {
         "@id": "#CustomGenreTerms",
         "@type": "DefinedTermSet",
-        name: "Custom Genre Terms"
+        name: "Custom Genre Terms",
       },
       {
         "@id": "test.session",
         "@type": "File",
         name: "Test Session File",
-        encodingFormat: "application/lameta-session"
+        encodingFormat: "application/lameta-session",
       },
       {
         "@id": "person.person",
         "@type": "File",
         name: "Person File",
-        encodingFormat: "application/lameta-person"
+        encodingFormat: "application/lameta-person",
       },
       {
         "@id": "project.sprj",
         "@type": "File",
         name: "Project File",
-        encodingFormat: "application/lameta-project"
-      }
-    ]
+        encodingFormat: "application/lameta-project",
+      },
+    ],
   });
 
   it("should detect session children correctly", () => {
@@ -140,19 +140,12 @@ describe("RoCrateHtmlGenerator", () => {
 
     const sessionEntity = graph.find((e) => e["@id"] === "#session-ETR009");
     if (!sessionEntity) throw new Error("Session entity not found");
-    const referencedChildIds = (sessionEntity.hasPart || []).map(
-      (part: any) => part["@id"]
-    );
-    const children = graph.filter((child) =>
-      referencedChildIds.includes(child["@id"])
-    );
+    const referencedChildIds = (sessionEntity.hasPart || []).map((part: any) => part["@id"]);
+    const children = graph.filter((child) => referencedChildIds.includes(child["@id"]));
 
     expect(children.length).toBe(2);
     expect(children.map((c) => c["@id"])).toEqual(
-      expect.arrayContaining([
-        "Sessions/ETR009/ETR009.session",
-        "Sessions/ETR009/test.mp4"
-      ])
+      expect.arrayContaining(["Sessions/ETR009/ETR009.session", "Sessions/ETR009/test.mp4"]),
     );
   });
 
@@ -160,15 +153,13 @@ describe("RoCrateHtmlGenerator", () => {
     const html = generateRoCrateHtml(mockRoCrateData);
 
     // Debug: Check what entities are being generated
-    const entityMatches = html.match(
-      /<div class="entity[^>]*id="[^"]*"[^>]*>/g
-    );
+    const entityMatches = html.match(/<div class="entity[^>]*id="[^"]*"[^>]*>/g);
     console.log(
       "Generated entities:",
       entityMatches?.map((match) => {
         const idMatch = match.match(/id="([^"]*)"/);
         return idMatch ? idMatch[1] : "unknown";
-      })
+      }),
     );
 
     // The person entity should exist
@@ -189,7 +180,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Find all photo entity instances
     const photoEntityMatches = html.match(
-      /<div[^>]*id="entity_People_Awi_Heole_Awi_Heole_Photo_JPG"[^>]*>/g
+      /<div[^>]*id="entity_People_Awi_Heole_Awi_Heole_Photo_JPG"[^>]*>/g,
     );
     expect(photoEntityMatches).toBeTruthy();
     expect(photoEntityMatches!.length).toBe(1); // Should only appear once
@@ -200,12 +191,10 @@ describe("RoCrateHtmlGenerator", () => {
     expect(photoEntityHtml).toContain("child");
 
     // Check that the photo entity is within an entity-children-container
-    const photoEntityIndex = html.indexOf(
-      'id="entity_People_Awi_Heole_Awi_Heole_Photo_JPG"'
-    );
+    const photoEntityIndex = html.indexOf('id="entity_People_Awi_Heole_Awi_Heole_Photo_JPG"');
     const beforePhotoEntity = html.substring(0, photoEntityIndex);
     const childrenContainerIndex = beforePhotoEntity.lastIndexOf(
-      '<div class="entity-children-container">'
+      '<div class="entity-children-container">',
     );
     expect(childrenContainerIndex).toBeGreaterThan(-1);
   });
@@ -218,7 +207,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Find the session entity block
     const sessionEntityMatch = html.match(
-      /<div class="entity"[^>]*id="entity__session_ETR009"[^>]*>.*?(?=<div class="entity"[^>]*id="entity_[^"]*"[^>]*>|<\/div><\/body>)/s
+      /<div class="entity"[^>]*id="entity__session_ETR009"[^>]*>.*?(?=<div class="entity"[^>]*id="entity_[^"]*"[^>]*>|<\/div><\/body>)/s,
     );
 
     if (sessionEntityMatch) {
@@ -258,7 +247,7 @@ describe("RoCrateHtmlGenerator", () => {
     // Find the Person entity section and verify it has an entity header
     // Person entities display decoded for readability
     const personEntityMatch = html.match(
-      /<div class="entity"[^>]*id="entity__Awi_Heole"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">Person: #Awi_Heole<\/div>/s
+      /<div class="entity"[^>]*id="entity__Awi_Heole"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">Person: #Awi_Heole<\/div>/s,
     );
     expect(personEntityMatch).toBeTruthy();
 
@@ -267,7 +256,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Find the Session entity section and verify it has an entity header
     const sessionEntityMatch = html.match(
-      /<div class="entity"[^>]*id="entity__session_ETR009"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">#session-ETR009<\/div>/s
+      /<div class="entity"[^>]*id="entity__session_ETR009"[^>]*>.*?<div class="entity-header">.*?<div class="entity-id">#session-ETR009<\/div>/s,
     );
     expect(sessionEntityMatch).toBeTruthy();
   });
@@ -279,9 +268,7 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).not.toContain('id="entity_ro-crate-metadata_json"');
 
     // Should not contain the ro-crate-metadata.json as an entity header
-    expect(html).not.toContain(
-      '<div class="entity-id">ro-crate-metadata.json</div>'
-    );
+    expect(html).not.toContain('<div class="entity-id">ro-crate-metadata.json</div>');
   });
 
   it("should filter out official LDAC DataReuseLicense class definition and access types but keep custom licenses", () => {
@@ -289,23 +276,17 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Check that the LDAC DataReuseLicense class definition is not rendered as a separate entity
     expect(html).not.toContain('id="entity_ldac_DataReuseLicense"');
-    expect(html).not.toContain(
-      '<div class="entity-id">ldac:DataReuseLicense</div>'
-    );
+    expect(html).not.toContain('<div class="entity-id">ldac:DataReuseLicense</div>');
 
     // Check that LDAC access types are not rendered as separate entities
     expect(html).not.toContain('id="entity_ldac_OpenAccess"');
     expect(html).not.toContain('id="entity_ldac_AuthorizedAccess"');
     expect(html).not.toContain('<div class="entity-id">ldac:OpenAccess</div>');
-    expect(html).not.toContain(
-      '<div class="entity-id">ldac:AuthorizedAccess</div>'
-    );
+    expect(html).not.toContain('<div class="entity-id">ldac:AuthorizedAccess</div>');
 
     // But custom license entities should be rendered
     expect(html).toContain('id="entity__license_testarchive_f"');
-    expect(html).toContain(
-      '<div class="entity-id">#license-testarchive-f</div>'
-    );
+    expect(html).toContain('<div class="entity-id">#license-testarchive-f</div>');
   });
 
   it("should filter out Language entities and link to Glottolog", () => {
@@ -331,7 +312,7 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with References",
           license: { "@id": "#license-testarchive-f" },
-          hasPart: [{ "@id": "#session-RefSession" }]
+          hasPart: [{ "@id": "#session-RefSession" }],
         },
         {
           "@id": "#session-RefSession",
@@ -339,40 +320,40 @@ describe("RoCrateHtmlGenerator", () => {
           collectionEventType: "https://w3id.org/ldac/terms#Session",
           name: "Ref Session",
           genre: { "@id": "ldac:Narrative" },
-          "ldac:subjectLanguage": [{ "@id": "#language_etr" }]
+          "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
         },
         {
           "@id": "ldac:Narrative",
           "@type": "DefinedTerm",
           name: "Narrative",
-          inDefinedTermSet: { "@id": "ldac:Genres" }
+          inDefinedTermSet: { "@id": "ldac:Genres" },
         },
         {
           "@id": "ldac:DataReuseLicense",
           "@type": "Class",
           name: "Data Reuse License",
-          description: "A license for reusing data"
+          description: "A license for reusing data",
         },
         {
           "@id": "#license-testarchive-f",
           "@type": "ldac:DataReuseLicense",
           name: "Open Access License",
           "ldac:access": { "@id": "ldac:OpenAccess" },
-          conformsTo: { "@id": "ldac:DataReuseLicense" }
+          conformsTo: { "@id": "ldac:DataReuseLicense" },
         },
         {
           "@id": "ldac:OpenAccess",
           "@type": "DefinedTerm",
           name: "Open Access",
-          description: "Data may be accessed without authorization"
+          description: "Data may be accessed without authorization",
         },
         {
           "@id": "#language_etr",
           "@type": "Language",
           code: "etr",
-          name: "Edolo"
-        }
-      ]
+          name: "Edolo",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -418,8 +399,8 @@ describe("RoCrateHtmlGenerator", () => {
       expect.arrayContaining([
         "People/Awi_Heole/Awi_Heole.person",
         "People/Awi_Heole/Awi_Heole_Photo.JPG",
-        "People/Awi_Heole/Awi_Heole_Consent.JPG"
-      ])
+        "People/Awi_Heole/Awi_Heole_Consent.JPG",
+      ]),
     );
   });
 
@@ -439,11 +420,11 @@ describe("RoCrateHtmlGenerator", () => {
     expect(peopleEntity.image).toEqual(
       expect.arrayContaining([
         { "@id": "People/Awi_Heole/Awi_Heole_Photo.JPG" },
-        { "@id": "People/Awi_Heole/Awi_Heole_Consent.JPG" }
-      ])
+        { "@id": "People/Awi_Heole/Awi_Heole_Consent.JPG" },
+      ]),
     );
     expect(peopleEntity.subjectOf).toEqual({
-      "@id": "People/Awi_Heole/Awi_Heole.person"
+      "@id": "People/Awi_Heole/Awi_Heole.person",
     });
   });
 
@@ -467,7 +448,7 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
-          hasPart: [{ "@id": "test.person" }]
+          hasPart: [{ "@id": "test.person" }],
         },
         {
           "@id": "test.person",
@@ -479,9 +460,9 @@ describe("RoCrateHtmlGenerator", () => {
           dateCreated: "2023-01-01",
           dateModified: "2023-01-02",
           creator: "Test User",
-          license: "MIT"
-        }
-      ]
+          license: "MIT",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -511,11 +492,7 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
-          hasPart: [
-            { "@id": "test.jpg" },
-            { "@id": "test.mp4" },
-            { "@id": "test.mp3" }
-          ]
+          hasPart: [{ "@id": "test.jpg" }, { "@id": "test.mp4" }, { "@id": "test.mp3" }],
         },
         {
           "@id": "test.jpg",
@@ -527,7 +504,7 @@ describe("RoCrateHtmlGenerator", () => {
           dateCreated: "2023-01-01",
           dateModified: "2023-01-02",
           creator: "Test User",
-          license: "MIT"
+          license: "MIT",
         },
         {
           "@id": "test.mp4",
@@ -539,7 +516,7 @@ describe("RoCrateHtmlGenerator", () => {
           dateCreated: "2023-01-01",
           dateModified: "2023-01-02",
           creator: "Test User",
-          license: "MIT"
+          license: "MIT",
         },
         {
           "@id": "test.mp3",
@@ -551,9 +528,9 @@ describe("RoCrateHtmlGenerator", () => {
           dateCreated: "2023-01-01",
           dateModified: "2023-01-02",
           creator: "Test User",
-          license: "MIT"
-        }
-      ]
+          license: "MIT",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -596,23 +573,21 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id":
               "file:///C:/dev/lameta%20projects/SayMore%20Data%20from%20Brian%20Parker/Doondo/People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG",
             "@type": "ImageObject",
-            name: "NZOUMBA-Georgine_Photo.JPG"
-          }
-        ]
+            name: "NZOUMBA-Georgine_Photo.JPG",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
 
       // Should convert file:// URL to relative path
-      expect(html).toContain(
-        'src="People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG"'
-      );
+      expect(html).toContain('src="People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG"');
       // Should not contain the original file:// URL
       expect(html).not.toContain('src="file:///');
       // Should not contain percent-encoded characters in the path
@@ -628,15 +603,15 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id":
               "file:///C:/dev/lameta%20projects/Project%20With%20Spaces/People/Person%20Name/Person%20Name_Photo.JPG",
             "@type": "ImageObject",
-            name: "Person Name_Photo.JPG"
-          }
-        ]
+            name: "Person Name_Photo.JPG",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
@@ -654,20 +629,20 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id":
               "file:///Users/researcher/Documents/Research/LanguageProject/Sessions/session1/recording.mp3",
             "@type": "AudioObject",
-            name: "recording.mp3"
+            name: "recording.mp3",
           },
           {
             "@id": "file:///D:/Research/Data/OtherDocs/readme.txt",
             "@type": "File",
-            name: "readme.txt"
-          }
-        ]
+            name: "readme.txt",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
@@ -685,14 +660,14 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "People/Person/Person_Photo.JPG",
             "@type": "ImageObject",
-            name: "Person_Photo.JPG"
-          }
-        ]
+            name: "Person_Photo.JPG",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
@@ -708,14 +683,14 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "file:///some/unknown/path/structure/image.jpg",
             "@type": "ImageObject",
-            name: "image.jpg"
-          }
-        ]
+            name: "image.jpg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
@@ -731,14 +706,14 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "file://[invalid-url-format",
             "@type": "ImageObject",
-            name: "image.jpg"
-          }
-        ]
+            name: "image.jpg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
@@ -755,30 +730,26 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "People/BAKEMBA%20Martine/BAKEMBA%20Martine_Photo.JPG",
             "@type": "ImageObject",
-            name: "BAKEMBA Martine_Photo.JPG"
+            name: "BAKEMBA Martine_Photo.JPG",
           },
           {
             "@id": "People/BAKEMBA%20Martine/BAKEMBA%20Martine_Consent.jpg",
             "@type": "ImageObject",
-            name: "BAKEMBA Martine_Consent.jpg"
-          }
-        ]
+            name: "BAKEMBA Martine_Consent.jpg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
 
       // Should correctly decode %20 back to spaces in the relative paths
-      expect(html).toContain(
-        'src="People/BAKEMBA Martine/BAKEMBA Martine_Photo.JPG"'
-      );
-      expect(html).toContain(
-        'src="People/BAKEMBA Martine/BAKEMBA Martine_Consent.jpg"'
-      );
+      expect(html).toContain('src="People/BAKEMBA Martine/BAKEMBA Martine_Photo.JPG"');
+      expect(html).toContain('src="People/BAKEMBA Martine/BAKEMBA Martine_Consent.jpg"');
 
       // Should not contain the original percent-encoded URLs
       expect(html).not.toContain('src="People/BAKEMBA%20Martine');
@@ -795,7 +766,7 @@ describe("RoCrateHtmlGenerator", () => {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project",
-            hasPart: [{ "@id": "People/NZOUMBA Georgine/" }]
+            hasPart: [{ "@id": "People/NZOUMBA Georgine/" }],
           },
           {
             "@id": "People/NZOUMBA Georgine/",
@@ -804,63 +775,52 @@ describe("RoCrateHtmlGenerator", () => {
             hasPart: [
               { "@id": "People/NZOUMBA-Georgine/NZOUMBA-Georgine.person" },
               { "@id": "People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG" },
-              { "@id": "People/NZOUMBA-Georgine/NZOUMBA-Georgine_Consent.jpg" }
-            ]
+              { "@id": "People/NZOUMBA-Georgine/NZOUMBA-Georgine_Consent.jpg" },
+            ],
           },
           {
             "@id": "People/NZOUMBA-Georgine/NZOUMBA-Georgine.person",
             "@type": "File",
             name: "NZOUMBA-Georgine.person",
-            encodingFormat: "application/lameta-person"
+            encodingFormat: "application/lameta-person",
           },
           {
             "@id": "People/NZOUMBA-Georgine/NZOUMBA-Georgine_Photo.JPG",
             "@type": "ImageObject",
-            name: "NZOUMBA-Georgine_Photo.JPG"
+            name: "NZOUMBA-Georgine_Photo.JPG",
           },
           {
             "@id": "People/NZOUMBA-Georgine/NZOUMBA-Georgine_Consent.jpg",
             "@type": "ImageObject",
-            name: "NZOUMBA-Georgine_Consent.jpg"
-          }
-        ]
+            name: "NZOUMBA-Georgine_Consent.jpg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testDataWithPersonFiles);
 
       // Debug output
       console.log("Generated HTML for person files test contains:");
-      const entityMatches = html.match(
-        /<div class="entity[^>]*id="[^"]*"[^>]*>/g
-      );
+      const entityMatches = html.match(/<div class="entity[^>]*id="[^"]*"[^>]*>/g);
       console.log(
         "Entity divs:",
         entityMatches?.map((match) => {
           const idMatch = match.match(/id="([^"]*)"/);
           return idMatch ? idMatch[1] : "unknown";
-        })
+        }),
       );
 
       // The person entity should exist
       expect(html).toContain('id="entity_People_NZOUMBA_Georgine_"');
 
       // Find the person entity section in the HTML
-      const personEntityStart = html.indexOf(
-        'id="entity_People_NZOUMBA_Georgine_"'
-      );
+      const personEntityStart = html.indexOf('id="entity_People_NZOUMBA_Georgine_"');
       expect(personEntityStart).toBeGreaterThan(-1);
 
       // Look for the next top-level entity to find the end of the person entity section
-      const nextEntityStart = html.indexOf(
-        '<div class="entity"',
-        personEntityStart + 1
-      );
-      const personEntityEnd =
-        nextEntityStart > -1 ? nextEntityStart : html.length;
-      const personEntityHtml = html.substring(
-        personEntityStart,
-        personEntityEnd
-      );
+      const nextEntityStart = html.indexOf('<div class="entity"', personEntityStart + 1);
+      const personEntityEnd = nextEntityStart > -1 ? nextEntityStart : html.length;
+      const personEntityHtml = html.substring(personEntityStart, personEntityEnd);
 
       // The person entity should contain an entity-children-container
       expect(personEntityHtml).toContain("entity-children-container");
@@ -882,7 +842,7 @@ describe("RoCrateHtmlGenerator", () => {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
             name: "Test Project",
-            hasPart: [{ "@id": "People/BAKALA Michel (@Mfouati)/" }]
+            hasPart: [{ "@id": "People/BAKALA Michel (@Mfouati)/" }],
           },
           {
             "@id": "People/BAKALA Michel (@Mfouati)/",
@@ -890,39 +850,33 @@ describe("RoCrateHtmlGenerator", () => {
             name: "BAKALA Michel (@Mfouati)",
             hasPart: [
               {
-                "@id":
-                  "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person"
+                "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person",
               },
               {
-                "@id":
-                  "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Photo.JPG"
+                "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Photo.JPG",
               },
               {
-                "@id":
-                  "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Consent.jpg"
-              }
-            ]
+                "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Consent.jpg",
+              },
+            ],
           },
           {
-            "@id":
-              "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person",
+            "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-.person",
             "@type": "File",
             name: "BAKALA Michel (@Mfouati).person",
-            encodingFormat: "application/lameta-person"
+            encodingFormat: "application/lameta-person",
           },
           {
-            "@id":
-              "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Photo.JPG",
+            "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Photo.JPG",
             "@type": "ImageObject",
-            name: "BAKALA Michel (@Mfouati)_Photo.JPG"
+            name: "BAKALA Michel (@Mfouati)_Photo.JPG",
           },
           {
-            "@id":
-              "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Consent.jpg",
+            "@id": "People/BAKALA-Michel-@Mfouati/BAKALA-Michel-@Mfouati-_Consent.jpg",
             "@type": "ImageObject",
-            name: "BAKALA Michel (@Mfouati)_Consent.jpg"
-          }
-        ]
+            name: "BAKALA Michel (@Mfouati)_Consent.jpg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testDataWithPersonFiles);
@@ -933,7 +887,7 @@ describe("RoCrateHtmlGenerator", () => {
       // Photo and consent files should NOT appear as separate root-level entities
       // They should only appear within the person entity's children container
       const photoEntityMatches = html.match(
-        /<div class="entity"[^>]*id="[^"]*BAKALA[^"]*Photo[^"]*"[^>]*>/g
+        /<div class="entity"[^>]*id="[^"]*BAKALA[^"]*Photo[^"]*"[^>]*>/g,
       );
 
       if (photoEntityMatches) {
@@ -953,35 +907,33 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "People/PARKER Brian/",
           "@type": "Person",
-          name: "PARKER Brian"
+          name: "PARKER Brian",
         },
         {
           "@id": "People/PARKER-Brian/PARKER-Brian.person",
           "@type": "File",
           name: "PARKER Brian.person",
-          encodingFormat: "application/lameta-person"
+          encodingFormat: "application/lameta-person",
         },
         {
           "@id": "People/PARKER-Brian/PARKER-Brian_Photo.jpg",
           "@type": "ImageObject",
-          name: "PARKER Brian_Photo.jpg"
+          name: "PARKER Brian_Photo.jpg",
         },
         {
           "@id": "People/PARKER-Brian/PARKER-Brian_Consent.wav",
           "@type": "AudioObject",
-          name: "PARKER Brian_Consent.wav"
-        }
+          name: "PARKER Brian_Consent.wav",
+        },
       ];
 
       // Test the child detection logic that's used in computeHierarchy
-      const personEntity = testGraph.find(
-        (e) => e["@id"] === "People/PARKER Brian/"
-      );
+      const personEntity = testGraph.find((e) => e["@id"] === "People/PARKER Brian/");
       const personEntityId = personEntity!["@id"];
 
       const potentialChildren = testGraph.filter((child) => {
@@ -1013,23 +965,21 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "People/PARKER-Brian/",
           "@type": "Person",
-          name: "PARKER Brian"
+          name: "PARKER Brian",
         },
         {
           "@id": "People/PARKER-Brian/PARKER-Brian.person",
           "@type": "File",
-          name: "PARKER Brian.person"
+          name: "PARKER Brian.person",
         },
         {
           "@id": "People/PARKER-Brian/PARKER-Brian_Photo.jpg",
           "@type": "ImageObject",
-          name: "PARKER Brian_Photo.jpg"
-        }
+          name: "PARKER Brian_Photo.jpg",
+        },
       ];
 
-      const consistentPersonEntity = consistentGraph.find(
-        (e) => e["@type"] === "Person"
-      );
+      const consistentPersonEntity = consistentGraph.find((e) => e["@type"] === "Person");
       const consistentPersonId = consistentPersonEntity!["@id"];
 
       const consistentChildren = consistentGraph.filter((child) => {
@@ -1048,12 +998,8 @@ describe("RoCrateHtmlGenerator", () => {
 
       // Should find children when paths are consistent
       expect(consistentChildren.length).toBe(2);
-      expect(consistentChildren.map((c) => c.name)).toContain(
-        "PARKER Brian.person"
-      );
-      expect(consistentChildren.map((c) => c.name)).toContain(
-        "PARKER Brian_Photo.jpg"
-      );
+      expect(consistentChildren.map((c) => c.name)).toContain("PARKER Brian.person");
+      expect(consistentChildren.map((c) => c.name)).toContain("PARKER Brian_Photo.jpg");
     });
   });
 
@@ -1064,39 +1010,38 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "test-document.pdf",
           "@type": "File",
           name: "Test PDF Document",
-          encodingFormat: "application/pdf"
+          encodingFormat: "application/pdf",
         },
         {
           "@id": "word-document.docx",
           "@type": "File",
           name: "Word Document",
-          encodingFormat:
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          encodingFormat: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         },
         {
           "@id": "Description/README.txt",
           "@type": "File",
           name: "README.txt",
-          encodingFormat: "text/plain"
+          encodingFormat: "text/plain",
         },
         {
           "@id": "data.json",
           "@type": "File",
           name: "Data File",
-          encodingFormat: "application/json"
+          encodingFormat: "application/json",
         },
         {
           "@id": "#collection-license",
           "@type": "CreativeWork",
-          name: "Collection License"
-        }
-      ]
+          name: "Collection License",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testDataWithFiles);
@@ -1128,7 +1073,7 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-ETR009",
@@ -1136,19 +1081,19 @@ describe("RoCrateHtmlGenerator", () => {
           collectionEventType: "https://w3id.org/ldac/terms#Session",
           name: "Test Session",
           description: "A test session",
-          "ldac:participant": [{ "@id": awiPersonId }, { "@id": ilawiPersonId }]
+          "ldac:participant": [{ "@id": awiPersonId }, { "@id": ilawiPersonId }],
         },
         {
           "@id": awiPersonId,
           "@type": "Person",
-          name: "Awi Heole"
+          name: "Awi Heole",
         },
         {
           "@id": ilawiPersonId,
           "@type": "Person",
-          name: "Ilawi Amosa"
-        }
-      ]
+          name: "Ilawi Amosa",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1167,7 +1112,7 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-TEST",
@@ -1175,14 +1120,14 @@ describe("RoCrateHtmlGenerator", () => {
           collectionEventType: "https://w3id.org/ldac/terms#Session",
           name: "Test Session",
           description: "A test session",
-          "ldac:participant": [{ "@id": "tag:lameta/unknown" }]
+          "ldac:participant": [{ "@id": "tag:lameta/unknown" }],
         },
         {
           "@id": "tag:lameta/unknown",
           "@type": "Person",
-          name: "Unknown"
-        }
-      ]
+          name: "Unknown",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1201,7 +1146,6 @@ describe("RoCrateHtmlGenerator", () => {
 
   it("should render participants in ETR009 session from actual Edolo sample", () => {
     const fs = require("fs");
-    const path = require("path");
 
     // Load the actual Edolo sample RO-Crate data
     const edoloDataPath =
@@ -1212,16 +1156,14 @@ describe("RoCrateHtmlGenerator", () => {
       const rawData = fs.readFileSync(edoloDataPath, "utf8");
       edoloData = JSON.parse(rawData);
     } catch (error) {
-      console.log(
-        `Could not load Edolo sample data from ${edoloDataPath}: ${error.message}`
-      );
+      console.log(`Could not load Edolo sample data from ${edoloDataPath}: ${error.message}`);
       // Skip this test if we can't load the actual data
       return;
     }
 
     // Find the ETR009 session in the graph
     const etr009Session = edoloData["@graph"].find(
-      (entity: any) => entity["@id"] === "#session-ETR009"
+      (entity: any) => entity["@id"] === "#session-ETR009",
     );
 
     const html = generateRoCrateHtml(edoloData);
@@ -1243,45 +1185,39 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Language Comparison",
           "ldac:subjectLanguage": [{ "@id": "#language_etr" }],
-          WorkingLanguages: "spa;ita"
+          WorkingLanguages: "spa;ita",
         },
         {
           "@id": "#language_etr",
           "@type": "Language",
           code: "etr",
-          name: "Edolo"
+          name: "Edolo",
         },
         {
           "@id": "#language_spa",
           "@type": "Language",
           code: "spa",
-          name: "Spanish"
+          name: "Spanish",
         },
         {
           "@id": "#language_ita",
           "@type": "Language",
           code: "ita",
-          name: "Italian"
-        }
-      ]
+          name: "Italian",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
 
     // Subject Language should be linked to Glottolog
-    expect(html).toContain(
-      'href="https://glottolog.org/resource/languoid/iso/etr"'
-    );
+    expect(html).toContain('href="https://glottolog.org/resource/languoid/iso/etr"');
     expect(html).toContain(">Edolo</a>");
 
     // Working Languages should also be linked to Glottolog, not just show raw codes
-    expect(html).toContain(
-      'href="https://glottolog.org/resource/languoid/iso/spa"'
-    );
+    expect(html).toContain('href="https://glottolog.org/resource/languoid/iso/spa"');
     expect(html).toContain(">Spanish</a>");
-    expect(html).toContain(
-      'href="https://glottolog.org/resource/languoid/iso/ita"'
-    );
+    expect(html).toContain('href="https://glottolog.org/resource/languoid/iso/ita"');
     expect(html).toContain(">Italian</a>");
 
     // Should NOT contain raw language codes
@@ -1296,17 +1232,15 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Missing Languages",
-          WorkingLanguages: "fra;deu"
-        }
-      ]
+          WorkingLanguages: "fra;deu",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
 
     // Should show the raw language codes when no Language entities are found
-    expect(html).toContain(
-      'Working Languages:</span><span class="property-value">fra, deu</span>'
-    );
+    expect(html).toContain('Working Languages:</span><span class="property-value">fra, deu</span>');
   });
 
   it("should handle mixed scenarios with some language entities present and some missing", () => {
@@ -1317,33 +1251,29 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project with Mixed Languages",
-          WorkingLanguages: "spa;xyz;ita"
+          WorkingLanguages: "spa;xyz;ita",
         },
         {
           "@id": "#language_spa",
           "@type": "Language",
           code: "spa",
-          name: "Spanish"
+          name: "Spanish",
         },
         {
           "@id": "#language_ita",
           "@type": "Language",
           code: "ita",
-          name: "Italian"
-        }
-      ]
+          name: "Italian",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
 
     // Should link the found languages and show raw codes for missing ones
-    expect(html).toContain(
-      'href="https://glottolog.org/resource/languoid/iso/spa"'
-    );
+    expect(html).toContain('href="https://glottolog.org/resource/languoid/iso/spa"');
     expect(html).toContain(">Spanish</a>");
-    expect(html).toContain(
-      'href="https://glottolog.org/resource/languoid/iso/ita"'
-    );
+    expect(html).toContain('href="https://glottolog.org/resource/languoid/iso/ita"');
     expect(html).toContain(">Italian</a>");
     expect(html).toContain("xyz"); // Raw code for missing language entity
   });
@@ -1355,21 +1285,21 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "test-file.mp4",
           "@type": ["File", "VideoObject"],
           name: "Test Video",
-          contentSize: 77594624 // 74 MB
+          contentSize: 77594624, // 74 MB
         },
         {
           "@id": "small-file.txt",
           "@type": ["File"],
           name: "Small Text File",
-          contentSize: 1024 // 1 KB
-        }
-      ]
+          contentSize: 1024, // 1 KB
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1389,15 +1319,15 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
-          contentLocation: [{ "@id": "#place-country-Papua_New_Guinea" }]
+          contentLocation: [{ "@id": "#place-country-Papua_New_Guinea" }],
         },
         {
           "@id": "#place-country-Papua_New_Guinea",
           "@type": "Place",
           name: "Papua New Guinea",
-          description: "Located in Oceania"
-        }
-      ]
+          description: "Located in Oceania",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1407,9 +1337,7 @@ describe("RoCrateHtmlGenerator", () => {
     expect(html).toContain("Papua New Guinea");
 
     // Should NOT render as "Unknown"
-    const countrySection = html.match(
-      /Country:<\/span><span class="property-value">([^<]+)/
-    );
+    const countrySection = html.match(/Country:<\/span><span class="property-value">([^<]+)/);
     expect(countrySection).toBeTruthy();
     expect(countrySection![1]).not.toContain("Unknown");
   });
@@ -1422,46 +1350,46 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
-          "pcdm:hasMember": [{ "@id": "People/" }, { "@id": "Sessions/" }]
+          "pcdm:hasMember": [{ "@id": "People/" }, { "@id": "Sessions/" }],
         },
         {
           "@id": "People/",
           "@type": "Dataset",
           name: "People",
           description: "Directory of people",
-          hasPart: [{ "@id": "People/Awi_Heole/" }]
+          hasPart: [{ "@id": "People/Awi_Heole/" }],
         },
         {
           "@id": "People/Awi_Heole/",
           "@type": "Dataset",
           name: "Awi_Heole files",
           about: { "@id": "#Awi_Heole" },
-          hasPart: []
+          hasPart: [],
         },
         {
           "@id": "#Awi_Heole",
           "@type": "Person",
           name: "Awi Heole",
-          subjectOf: { "@id": "#Awi_Heole-files" }
+          subjectOf: { "@id": "#Awi_Heole-files" },
         },
         {
           "@id": "Sessions/",
           "@type": "Dataset",
           name: "Sessions",
-          hasPart: [{ "@id": "Sessions/ETR009/" }]
+          hasPart: [{ "@id": "Sessions/ETR009/" }],
         },
         {
           "@id": "Sessions/ETR009/",
           "@type": "Dataset",
           name: "Session ETR009",
-          hasPart: [{ "@id": "#session-ETR009" }]
+          hasPart: [{ "@id": "#session-ETR009" }],
         },
         {
           "@id": "#session-ETR009",
           "@type": ["RepositoryObject", "CollectionEvent"],
-          name: "Test Session"
-        }
-      ]
+          name: "Test Session",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1491,13 +1419,13 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "Sessions/",
           "@type": "Dataset",
           name: "Sessions",
-          hasPart: [{ "@id": "Sessions/ETR009/" }]
+          hasPart: [{ "@id": "Sessions/ETR009/" }],
         },
         {
           // Session directory Dataset - linked to CollectionEvent via "about"
@@ -1505,10 +1433,7 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": "Dataset",
           name: "ETR009 Directory",
           about: { "@id": "#session-ETR009" },
-          hasPart: [
-            { "@id": "Sessions/ETR009/audio.mp3" },
-            { "@id": "Sessions/ETR009/video.mp4" }
-          ]
+          hasPart: [{ "@id": "Sessions/ETR009/audio.mp3" }, { "@id": "Sessions/ETR009/video.mp4" }],
         },
         {
           // Session CollectionEvent - has metadata but files are in the directory
@@ -1517,24 +1442,24 @@ describe("RoCrateHtmlGenerator", () => {
           name: "Test Session from CollectionEvent",
           description: "A test session description",
           subjectOf: { "@id": "Sessions/ETR009/" },
-          "ldac:participant": [{ "@id": "#person-1" }]
+          "ldac:participant": [{ "@id": "#person-1" }],
         },
         {
           "@id": "Sessions/ETR009/audio.mp3",
           "@type": "AudioObject",
-          name: "audio.mp3"
+          name: "audio.mp3",
         },
         {
           "@id": "Sessions/ETR009/video.mp4",
           "@type": "VideoObject",
-          name: "video.mp4"
+          name: "video.mp4",
         },
         {
           "@id": "#person-1",
           "@type": "Person",
-          name: "Test Person"
-        }
-      ]
+          name: "Test Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1573,40 +1498,37 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
           hasPart: [{ "@id": "#session-ETR008" }, { "@id": "#session-ETR009" }],
-          "pcdm:hasMember": [
-            { "@id": "#session-ETR008" },
-            { "@id": "#session-ETR009" }
-          ]
+          "pcdm:hasMember": [{ "@id": "#session-ETR008" }, { "@id": "#session-ETR009" }],
         },
         {
           "@id": "#session-ETR008",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR008",
           hasPart: [{ "@id": "Sessions/ETR008/audio.mp3" }],
-          "ldac:participant": [{ "@id": "#Awi_Heole" }]
+          "ldac:participant": [{ "@id": "#Awi_Heole" }],
         },
         {
           "@id": "#session-ETR009",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR009",
-          hasPart: [{ "@id": "Sessions/ETR009/video.mp4" }]
+          hasPart: [{ "@id": "Sessions/ETR009/video.mp4" }],
         },
         {
           "@id": "Sessions/ETR008/audio.mp3",
           "@type": "AudioObject",
-          name: "audio.mp3"
+          name: "audio.mp3",
         },
         {
           "@id": "Sessions/ETR009/video.mp4",
           "@type": "VideoObject",
-          name: "video.mp4"
+          name: "video.mp4",
         },
         {
           "@id": "#Awi_Heole",
           "@type": "Person",
-          name: "Awi Heole"
-        }
-      ]
+          name: "Awi Heole",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1628,7 +1550,7 @@ describe("RoCrateHtmlGenerator", () => {
           const m = match.match(/id="(entity_[^"]+)"/);
           return m ? m[1] : null;
         })
-        .filter(Boolean) as string[]
+        .filter(Boolean) as string[],
     );
 
     // Verify all linked IDs exist as defined entity IDs
@@ -1659,17 +1581,14 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           // Top-level Sessions directory (filtered out)
           "@id": "Sessions/",
           "@type": "Dataset",
           name: "Sessions",
-          hasPart: [
-            { "@id": "Sessions/ETR008/" },
-            { "@id": "Sessions/ETR009/" }
-          ]
+          hasPart: [{ "@id": "Sessions/ETR008/" }, { "@id": "Sessions/ETR009/" }],
         },
         {
           // Session directory Dataset - linked to CollectionEvent via "about"
@@ -1677,14 +1596,14 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": "Dataset",
           name: "ETR008 Directory",
           about: { "@id": "#session-ETR008" },
-          hasPart: [{ "@id": "Sessions/ETR008/audio.mp3" }]
+          hasPart: [{ "@id": "Sessions/ETR008/audio.mp3" }],
         },
         {
           // Session CollectionEvent - has metadata
           "@id": "#session-ETR008",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR008",
-          description: "First test session"
+          description: "First test session",
         },
         {
           // Session directory Dataset
@@ -1692,26 +1611,26 @@ describe("RoCrateHtmlGenerator", () => {
           "@type": "Dataset",
           name: "ETR009 Directory",
           about: { "@id": "#session-ETR009" },
-          hasPart: [{ "@id": "Sessions/ETR009/video.mp4" }]
+          hasPart: [{ "@id": "Sessions/ETR009/video.mp4" }],
         },
         {
           // Session CollectionEvent
           "@id": "#session-ETR009",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR009",
-          description: "Second test session"
+          description: "Second test session",
         },
         {
           "@id": "Sessions/ETR008/audio.mp3",
           "@type": "AudioObject",
-          name: "audio.mp3"
+          name: "audio.mp3",
         },
         {
           "@id": "Sessions/ETR009/video.mp4",
           "@type": "VideoObject",
-          name: "video.mp4"
-        }
-      ]
+          name: "video.mp4",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1725,17 +1644,13 @@ describe("RoCrateHtmlGenerator", () => {
     expect(sessionsLabelIndex).toBeGreaterThan(-1);
 
     // Extract session links from the Sessions list (they're in a ul.sessions-list)
-    const sessionsListStart = html.indexOf(
-      '<ul class="sessions-list">',
-      sessionsLabelIndex
-    );
+    const sessionsListStart = html.indexOf('<ul class="sessions-list">', sessionsLabelIndex);
     expect(sessionsListStart).toBeGreaterThan(-1);
     const sessionsListEnd = html.indexOf("</ul>", sessionsListStart);
     const sessionsListHtml = html.substring(sessionsListStart, sessionsListEnd);
 
     // Extract all href values from the Sessions list
-    const sessionLinkMatches =
-      sessionsListHtml.match(/href="#(entity_[^"]+)"/g) || [];
+    const sessionLinkMatches = sessionsListHtml.match(/href="#(entity_[^"]+)"/g) || [];
     const sessionLinkIds = sessionLinkMatches
       .map((match) => {
         const m = match.match(/href="#(entity_[^"]+)"/);
@@ -1754,20 +1669,15 @@ describe("RoCrateHtmlGenerator", () => {
           const m = match.match(/id="(entity_[^"]+)"/);
           return m ? m[1] : null;
         })
-        .filter(Boolean) as string[]
+        .filter(Boolean) as string[],
     );
 
     // Verify all session links have corresponding anchors
-    const brokenSessionLinks = sessionLinkIds.filter(
-      (id) => !definedIds.has(id)
-    );
+    const brokenSessionLinks = sessionLinkIds.filter((id) => !definedIds.has(id));
 
     // Log for debugging if there are broken links
     if (brokenSessionLinks.length > 0) {
-      console.log(
-        "Broken session links in root Sessions list:",
-        brokenSessionLinks
-      );
+      console.log("Broken session links in root Sessions list:", brokenSessionLinks);
       console.log("All defined entity IDs:", Array.from(definedIds));
       console.log("Sessions list HTML:", sessionsListHtml);
     }
@@ -1788,39 +1698,39 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-ETR008",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR008",
           "ldac:speaker": [{ "@id": "#Test_Person" }],
-          "ldac:recorder": [{ "@id": "#Test_Person" }]
+          "ldac:recorder": [{ "@id": "#Test_Person" }],
         },
         {
           "@id": "#session-ETR009",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR009",
-          "ldac:speaker": [{ "@id": "#Test_Person" }]
+          "ldac:speaker": [{ "@id": "#Test_Person" }],
         },
         {
           "@id": "#session-ETR010",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR010",
-          "ldac:recorder": [{ "@id": "#Test_Person" }]
+          "ldac:recorder": [{ "@id": "#Test_Person" }],
         },
         {
           "@id": "#session-ETR011",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR011",
-          "ldac:recorder": [{ "@id": "#Test_Person" }]
+          "ldac:recorder": [{ "@id": "#Test_Person" }],
         },
         {
           "@id": "#Test_Person",
           "@type": "Person",
-          name: "Test Person"
-        }
-      ]
+          name: "Test Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1846,20 +1756,20 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-ETR001",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR001",
-          "ldac:speaker": [{ "@id": "#Single_Role_Person" }]
+          "ldac:speaker": [{ "@id": "#Single_Role_Person" }],
         },
         {
           "@id": "#Single_Role_Person",
           "@type": "Person",
-          name: "Single Role Person"
-        }
-      ]
+          name: "Single Role Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1877,7 +1787,7 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-ETR001",
@@ -1885,14 +1795,14 @@ describe("RoCrateHtmlGenerator", () => {
           name: "Session ETR001",
           "ldac:speaker": [{ "@id": "#Multi_Role_Person" }],
           "ldac:recorder": [{ "@id": "#Multi_Role_Person" }],
-          "ldac:researcher": [{ "@id": "#Multi_Role_Person" }]
+          "ldac:researcher": [{ "@id": "#Multi_Role_Person" }],
         },
         {
           "@id": "#Multi_Role_Person",
           "@type": "Person",
-          name: "Multi Role Person"
-        }
-      ]
+          name: "Multi Role Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1910,32 +1820,32 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-ETR001",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR001",
-          "ldac:speaker": [{ "@id": "#Varied_Role_Person" }]
+          "ldac:speaker": [{ "@id": "#Varied_Role_Person" }],
         },
         {
           "@id": "#session-ETR002",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR002",
-          "ldac:recorder": [{ "@id": "#Varied_Role_Person" }]
+          "ldac:recorder": [{ "@id": "#Varied_Role_Person" }],
         },
         {
           "@id": "#session-ETR003",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR003",
-          "ldac:researcher": [{ "@id": "#Varied_Role_Person" }]
+          "ldac:researcher": [{ "@id": "#Varied_Role_Person" }],
         },
         {
           "@id": "#Varied_Role_Person",
           "@type": "Person",
-          name: "Varied Role Person"
-        }
-      ]
+          name: "Varied Role Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1955,25 +1865,25 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-ETR001",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR001",
-          "ldac:speaker": [{ "@id": "#Other_Person" }]
+          "ldac:speaker": [{ "@id": "#Other_Person" }],
         },
         {
           "@id": "#No_Contribution_Person",
           "@type": "Person",
-          name: "No Contribution Person"
+          name: "No Contribution Person",
         },
         {
           "@id": "#Other_Person",
           "@type": "Person",
-          name: "Other Person"
-        }
-      ]
+          name: "Other Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -1999,35 +1909,35 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-ETR001",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR001",
           "ldac:speaker": [{ "@id": "#Same_Roles_Person" }],
-          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }]
+          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }],
         },
         {
           "@id": "#session-ETR002",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR002",
           "ldac:speaker": [{ "@id": "#Same_Roles_Person" }],
-          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }]
+          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }],
         },
         {
           "@id": "#session-ETR003",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR003",
           "ldac:speaker": [{ "@id": "#Same_Roles_Person" }],
-          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }]
+          "ldac:recorder": [{ "@id": "#Same_Roles_Person" }],
         },
         {
           "@id": "#Same_Roles_Person",
           "@type": "Person",
-          name: "Same Roles Person"
-        }
-      ]
+          name: "Same Roles Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -2035,7 +1945,7 @@ describe("RoCrateHtmlGenerator", () => {
     // All three sessions have the same role combination, so they should be grouped
     // Format: "ETR001, ETR002, ETR003: Recorder, Speaker"
     expect(html).toMatch(
-      /ETR001<\/a>,\s*<a[^>]*>ETR002<\/a>,\s*<a[^>]*>ETR003<\/a>:\s*Recorder,\s*Speaker/
+      /ETR001<\/a>,\s*<a[^>]*>ETR002<\/a>,\s*<a[^>]*>ETR003<\/a>:\s*Recorder,\s*Speaker/,
     );
   });
 
@@ -2046,39 +1956,39 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "#session-ETR001",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR001",
-          "ldac:speaker": [{ "@id": "#Mixed_Person" }]
+          "ldac:speaker": [{ "@id": "#Mixed_Person" }],
         },
         {
           "@id": "#session-ETR002",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR002",
-          "ldac:speaker": [{ "@id": "#Mixed_Person" }]
+          "ldac:speaker": [{ "@id": "#Mixed_Person" }],
         },
         {
           "@id": "#session-ETR003",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR003",
-          "ldac:recorder": [{ "@id": "#Mixed_Person" }]
+          "ldac:recorder": [{ "@id": "#Mixed_Person" }],
         },
         {
           "@id": "#session-ETR004",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Session ETR004",
           "ldac:speaker": [{ "@id": "#Mixed_Person" }],
-          "ldac:recorder": [{ "@id": "#Mixed_Person" }]
+          "ldac:recorder": [{ "@id": "#Mixed_Person" }],
         },
         {
           "@id": "#Mixed_Person",
           "@type": "Person",
-          name: "Mixed Person"
-        }
-      ]
+          name: "Mixed Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -2102,32 +2012,32 @@ describe("RoCrateHtmlGenerator", () => {
         {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
-          name: "Test Project"
+          name: "Test Project",
         },
         {
           "@id": "Sessions/",
           "@type": "Dataset",
           name: "Sessions",
-          hasPart: [{ "@id": "Sessions/ETR010/" }]
+          hasPart: [{ "@id": "Sessions/ETR010/" }],
         },
         {
           "@id": "Sessions/ETR010/",
           "@type": "Dataset",
           name: "ETR010 Directory",
-          about: { "@id": "#session-ETR010" }
+          about: { "@id": "#session-ETR010" },
         },
         {
           "@id": "#session-ETR010",
           "@type": ["RepositoryObject", "CollectionEvent"],
           name: "Test Session ETR010",
-          "ldac:speaker": [{ "@id": "#Contributor_Person" }]
+          "ldac:speaker": [{ "@id": "#Contributor_Person" }],
         },
         {
           "@id": "#Contributor_Person",
           "@type": "Person",
-          name: "Contributor Person"
-        }
-      ]
+          name: "Contributor Person",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -2148,9 +2058,7 @@ describe("RoCrateHtmlGenerator", () => {
 
     // Should link to the session using the directory path anchor (merged entity)
     // The session should be accessible via the Sessions/ETR010/ path
-    expect(personHtml).toMatch(
-      /href="#entity_Sessions_ETR010_"[^>]*>ETR010<\/a>/
-    );
+    expect(personHtml).toMatch(/href="#entity_Sessions_ETR010_"[^>]*>ETR010<\/a>/);
   });
 
   it("should render Organization description and url as clickable link", () => {
@@ -2161,17 +2069,16 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
-          publisher: { "@id": "#publisher-paradisec" }
+          publisher: { "@id": "#publisher-paradisec" },
         },
         {
           "@id": "#publisher-paradisec",
           "@type": "Organization",
           name: "PARADISEC",
-          description:
-            "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
-          url: "https://www.paradisec.org.au/"
-        }
-      ]
+          description: "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
+          url: "https://www.paradisec.org.au/",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -2183,14 +2090,12 @@ describe("RoCrateHtmlGenerator", () => {
     const orgStart = html.indexOf('id="entity__publisher_paradisec"');
     const orgEnd = html.indexOf('<div class="entity"', orgStart + 1);
     const orgHtml =
-      orgEnd > -1
-        ? html.substring(orgStart, orgEnd)
-        : html.substring(orgStart, orgStart + 2000);
+      orgEnd > -1 ? html.substring(orgStart, orgEnd) : html.substring(orgStart, orgStart + 2000);
 
     // Should render the description
     expect(orgHtml).toContain("Description:");
     expect(orgHtml).toContain(
-      "Pacific and Regional Archive for Digital Sources in Endangered Cultures"
+      "Pacific and Regional Archive for Digital Sources in Endangered Cultures",
     );
 
     // Should render the URL as a clickable link
@@ -2208,14 +2113,14 @@ describe("RoCrateHtmlGenerator", () => {
           "@id": "./",
           "@type": ["Dataset", "RepositoryCollection"],
           name: "Test Project",
-          publisher: { "@id": "#publisher-unknown" }
+          publisher: { "@id": "#publisher-unknown" },
         },
         {
           "@id": "#publisher-unknown",
           "@type": "Organization",
-          name: "Unknown Archive"
-        }
-      ]
+          name: "Unknown Archive",
+        },
+      ],
     };
 
     const html = generateRoCrateHtml(testData);
@@ -2227,9 +2132,7 @@ describe("RoCrateHtmlGenerator", () => {
     const orgStart = html.indexOf('id="entity__publisher_unknown"');
     const orgEnd = html.indexOf('<div class="entity"', orgStart + 1);
     const orgHtml =
-      orgEnd > -1
-        ? html.substring(orgStart, orgEnd)
-        : html.substring(orgStart, orgStart + 2000);
+      orgEnd > -1 ? html.substring(orgStart, orgEnd) : html.substring(orgStart, orgStart + 2000);
 
     // Should show "Unknown" for missing description and url
     expect(orgHtml).toContain("Description:");
@@ -2249,7 +2152,7 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "#HANGUILA%20Fidel",
@@ -2257,38 +2160,32 @@ describe("RoCrateHtmlGenerator", () => {
             name: "HANGUILA Fidel",
             image: [
               { "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Photo.JPG" },
-              { "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Consent.jpg" }
-            ]
+              { "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Consent.jpg" },
+            ],
           },
           {
             "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Photo.JPG",
             "@type": ["File", "ImageObject"],
             name: "HANGUILA Fidel_Photo.JPG",
-            encodingFormat: "image/jpeg"
+            encodingFormat: "image/jpeg",
           },
           {
             "@id": "People/HANGUILA%20Fidel/HANGUILA%20Fidel_Consent.jpg",
             "@type": ["File", "ImageObject"],
             name: "HANGUILA Fidel_Consent.jpg",
-            encodingFormat: "image/jpeg"
-          }
-        ]
+            encodingFormat: "image/jpeg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
 
       // The src attribute should have decoded spaces to match actual file paths
-      expect(html).toContain(
-        'src="People/HANGUILA Fidel/HANGUILA Fidel_Photo.JPG"'
-      );
-      expect(html).toContain(
-        'src="People/HANGUILA Fidel/HANGUILA Fidel_Consent.jpg"'
-      );
+      expect(html).toContain('src="People/HANGUILA Fidel/HANGUILA Fidel_Photo.JPG"');
+      expect(html).toContain('src="People/HANGUILA Fidel/HANGUILA Fidel_Consent.jpg"');
 
       // Should NOT contain the percent-encoded version
-      expect(html).not.toContain(
-        'src="People/HANGUILA%20Fidel/HANGUILA%20Fidel_Photo.JPG"'
-      );
+      expect(html).not.toContain('src="People/HANGUILA%20Fidel/HANGUILA%20Fidel_Photo.JPG"');
     });
 
     it("should decode percent-encoded spaces in Sessions folder paths", () => {
@@ -2298,7 +2195,7 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "#session-Test%20Session%20001",
@@ -2306,27 +2203,23 @@ describe("RoCrateHtmlGenerator", () => {
             name: "Test Session 001",
             hasPart: [
               {
-                "@id":
-                  "Sessions/Test%20Session%20001/Test%20Session%20001_Audio.mp3"
-              }
-            ]
+                "@id": "Sessions/Test%20Session%20001/Test%20Session%20001_Audio.mp3",
+              },
+            ],
           },
           {
-            "@id":
-              "Sessions/Test%20Session%20001/Test%20Session%20001_Audio.mp3",
+            "@id": "Sessions/Test%20Session%20001/Test%20Session%20001_Audio.mp3",
             "@type": ["File", "AudioObject"],
             name: "Test Session 001_Audio.mp3",
-            encodingFormat: "audio/mpeg"
-          }
-        ]
+            encodingFormat: "audio/mpeg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
 
       // The src attribute should have decoded spaces
-      expect(html).toContain(
-        'src="Sessions/Test Session 001/Test Session 001_Audio.mp3"'
-      );
+      expect(html).toContain('src="Sessions/Test Session 001/Test Session 001_Audio.mp3"');
 
       // Should NOT contain the percent-encoded version in src attributes
       expect(html).not.toContain('src="Sessions/Test%20Session%20001');
@@ -2340,7 +2233,7 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "#BAKALA%20Michel%20%28@Mfouati%29",
@@ -2349,25 +2242,25 @@ describe("RoCrateHtmlGenerator", () => {
             image: [
               {
                 "@id":
-                  "People/BAKALA%20Michel%20%28@Mfouati%29/BAKALA%20Michel%20%28@Mfouati%29_Photo.JPG"
-              }
-            ]
+                  "People/BAKALA%20Michel%20%28@Mfouati%29/BAKALA%20Michel%20%28@Mfouati%29_Photo.JPG",
+              },
+            ],
           },
           {
             "@id":
               "People/BAKALA%20Michel%20%28@Mfouati%29/BAKALA%20Michel%20%28@Mfouati%29_Photo.JPG",
             "@type": ["File", "ImageObject"],
             name: "BAKALA Michel (@Mfouati)_Photo.JPG",
-            encodingFormat: "image/jpeg"
-          }
-        ]
+            encodingFormat: "image/jpeg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
 
       // Should decode all percent-encoded characters in src attributes
       expect(html).toContain(
-        'src="People/BAKALA Michel (@Mfouati)/BAKALA Michel (@Mfouati)_Photo.JPG"'
+        'src="People/BAKALA Michel (@Mfouati)/BAKALA Michel (@Mfouati)_Photo.JPG"',
       );
 
       // Should NOT contain percent-encoded characters in src/href attributes
@@ -2382,23 +2275,22 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
-            "@id":
-              "Sessions/Interview%20With%20Speaker/Interview%20With%20Speaker_Video.mp4",
+            "@id": "Sessions/Interview%20With%20Speaker/Interview%20With%20Speaker_Video.mp4",
             "@type": ["File", "VideoObject"],
             name: "Interview With Speaker_Video.mp4",
-            encodingFormat: "video/mp4"
-          }
-        ]
+            encodingFormat: "video/mp4",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
 
       // Video elements should have decoded paths
       expect(html).toContain(
-        'src="Sessions/Interview With Speaker/Interview With Speaker_Video.mp4"'
+        'src="Sessions/Interview With Speaker/Interview With Speaker_Video.mp4"',
       );
     });
 
@@ -2409,7 +2301,7 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "#BINDOUMOUNOU%20Jean-Pierre",
@@ -2417,26 +2309,24 @@ describe("RoCrateHtmlGenerator", () => {
             name: "BINDOUMOUNOU Jean-Pierre",
             image: [
               {
-                "@id":
-                  "People/BINDOUMOUNOU%20Jean-Pierre/BINDOUMOUNOU%20Jean-Pierre_Consent.wav"
-              }
-            ]
+                "@id": "People/BINDOUMOUNOU%20Jean-Pierre/BINDOUMOUNOU%20Jean-Pierre_Consent.wav",
+              },
+            ],
           },
           {
-            "@id":
-              "People/BINDOUMOUNOU%20Jean-Pierre/BINDOUMOUNOU%20Jean-Pierre_Consent.wav",
+            "@id": "People/BINDOUMOUNOU%20Jean-Pierre/BINDOUMOUNOU%20Jean-Pierre_Consent.wav",
             "@type": ["File", "AudioObject"],
             name: "BINDOUMOUNOU Jean-Pierre_Consent.wav",
-            encodingFormat: "audio/wav"
-          }
-        ]
+            encodingFormat: "audio/wav",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
 
       // Audio consent file should have decoded spaces
       expect(html).toContain(
-        'src="People/BINDOUMOUNOU Jean-Pierre/BINDOUMOUNOU Jean-Pierre_Consent.wav"'
+        'src="People/BINDOUMOUNOU Jean-Pierre/BINDOUMOUNOU Jean-Pierre_Consent.wav"',
       );
     });
 
@@ -2448,15 +2338,15 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "People/Smith/Smith_Photo.JPG",
             "@type": ["File", "ImageObject"],
             name: "Smith_Photo.JPG",
-            encodingFormat: "image/jpeg"
-          }
-        ]
+            encodingFormat: "image/jpeg",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
@@ -2473,24 +2363,21 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
-            "@id":
-              "Sessions/Field%20Recording%20Day%201/Field%20Recording%20Notes.pdf",
+            "@id": "Sessions/Field%20Recording%20Day%201/Field%20Recording%20Notes.pdf",
             "@type": "File",
             name: "Field Recording Notes.pdf",
-            encodingFormat: "application/pdf"
-          }
-        ]
+            encodingFormat: "application/pdf",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
 
       // Clickable file link should have decoded spaces
-      expect(html).toContain(
-        'href="Sessions/Field Recording Day 1/Field Recording Notes.pdf"'
-      );
+      expect(html).toContain('href="Sessions/Field Recording Day 1/Field Recording Notes.pdf"');
     });
 
     it("should decode percent-encoded session IDs in entity headers", () => {
@@ -2501,16 +2388,16 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "Sessions/dde-houmba-ori%20%28v1%29/",
             "@type": "Dataset",
             name: "Session with special characters",
             // Add description to prevent filtering as "pure wrapper"
-            description: "A test session with special characters in the name"
-          }
-        ]
+            description: "A test session with special characters in the name",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);
@@ -2529,14 +2416,14 @@ describe("RoCrateHtmlGenerator", () => {
           {
             "@id": "./",
             "@type": ["Dataset", "RepositoryCollection"],
-            name: "Test Project"
+            name: "Test Project",
           },
           {
             "@id": "#Jos%C3%A9%20Garc%C3%ADa",
             "@type": "Person",
-            name: "José García"
-          }
-        ]
+            name: "José García",
+          },
+        ],
       };
 
       const html = generateRoCrateHtml(testData);

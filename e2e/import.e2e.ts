@@ -3,7 +3,6 @@ import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import fs from "fs";
 import * as Path from "path";
-import { E2eFileList } from "./FileList-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -18,7 +17,7 @@ test.describe("Import Session", () => {
   test.afterAll(async ({}) => {
     await lameta.quit();
   });
-  test("Smoke test", async ({}, testInfo) => {
+  test("Smoke test", async ({}) => {
     await project.goToSessions();
     //const fileList = new E2eFileList(lameta, page, project.projectDirectory);
 

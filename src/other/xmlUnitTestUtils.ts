@@ -1,4 +1,4 @@
-import { ExpectStatic, expect } from "vite-plus/test";
+import { expect } from "vite-plus/test";
 
 import XPATH from "xpath";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";

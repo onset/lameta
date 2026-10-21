@@ -4,7 +4,6 @@ import { css } from "@emotion/react";
 import * as React from "react";
 import userSettings from "../other/UserSettings";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import NotificationBar from "./NotificationsBar/NotificationBar";
 import { observer } from "mobx-react";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
@@ -81,10 +80,10 @@ class Home extends React.Component<IProps> {
     // person or session, we need to update the corresponding menu
     // because this may be the first person/session, or there may
     // now be no persons/sessions.
-    mobx.observe(this.props.project.sessions, (change) => {
+    mobx.observe(this.props.project.sessions, () => {
       this.UpdateMenus(1); // assume we are in the session tab at the moment
     });
-    mobx.observe(this.props.project.persons, (change) => {
+    mobx.observe(this.props.project.persons, () => {
       this.UpdateMenus(2); // assume we are in the people tab at the moment
     });
 

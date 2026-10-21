@@ -1,10 +1,9 @@
 import { describe, it, beforeEach, expect, afterEach } from "vite-plus/test";
 import fs from "fs";
 import Path from "path";
-import { SessionMetadataFile, Session } from "../Project/Session/Session";
+import { Session } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { duplicateFolder } from "./DuplicateFolder";
-import { Project } from "../Project/Project";
 import temp from "temp";
 
 temp.track();
@@ -27,7 +26,7 @@ describe("Duplicate Folder", () => {
     original.saveFolderMetaData();
     expect(original.metadataFile!.metadataFilePath).toBeTruthy();
     expect(fs.existsSync(original.metadataFile!.metadataFilePath)).toBeTruthy();
-    const { success, metadataFilePath, directory } = duplicateFolder(original);
+    const { success, metadataFilePath } = duplicateFolder(original);
     expect(success).toBeTruthy();
     expect(Path.basename(metadataFilePath)).toBe("foox - Copy 1.session");
     expect(Path.extname(metadataFilePath)).toBe(".session");

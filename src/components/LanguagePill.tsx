@@ -5,8 +5,6 @@ import { SearchContext } from "./SearchContext";
 import HighlightSearchTerm from "./HighlightSearchTerm";
 import { lameta_dark_blue, textSecondary } from "../containers/theme";
 
-const saymore_orange = "#e69664";
-
 interface LanguageData {
   label: string;
   value: string;
@@ -29,12 +27,8 @@ const pillStyle = css`
   }
 `;
 
-export const LanguagePill = ({
-  children,
-  data,
-  innerProps,
-}: MultiValueGenericProps<LanguageData>) => {
-  const { searchTerm } = useContext(SearchContext);
+export const LanguagePill = ({ data, innerProps }: MultiValueGenericProps<LanguageData>) => {
+  useContext(SearchContext);
   return (
     <div {...innerProps} css={pillStyle}>
       <div>
@@ -47,7 +41,7 @@ export const LanguagePill = ({
 // with the upgrade of react-select from 4 to 5, it became necessary to make
 // a different language pill for single values
 export const LanguagePillForSingle = ({
-  children,
+  children: _children,
   data,
   ...props
 }: SingleValueProps<LanguageData, false, GroupBase<LanguageData>>) => (
@@ -55,7 +49,7 @@ export const LanguagePillForSingle = ({
 );
 
 const LanguagePillSingleWrapper = (props: any) => {
-  const { searchTerm } = useContext(SearchContext);
+  useContext(SearchContext);
   return (
     <components.SingleValue data={props.data} css={pillStyle} {...props}>
       <HighlightSearchTerm text={props.data.label} />
@@ -66,7 +60,7 @@ const LanguagePillSingleWrapper = (props: any) => {
 
 // how to render the choice in the drop down
 export const LanguageOption = (props) => {
-  const { searchTerm } = useContext(SearchContext);
+  useContext(SearchContext);
   return (
     <div
       {...props.innerProps}

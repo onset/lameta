@@ -482,7 +482,7 @@ function getDisplayPath(id: string): string {
 
       // Fallback: return just the filename
       return pathSegments[pathSegments.length - 1] || path;
-    } catch (e) {
+    } catch {
       return id;
     }
   }
@@ -490,7 +490,7 @@ function getDisplayPath(id: string): string {
   // For relative paths, simply decode the percent-encoded characters
   try {
     return decodeURIComponent(id);
-  } catch (e) {
+  } catch {
     // If decoding fails, return the original id
     return id;
   }
@@ -573,7 +573,7 @@ const PropertyValue: React.FC<{
         const formattedDate = date.toISOString().split("T")[0];
         return <>{formattedDate}</>;
       }
-    } catch (e) {
+    } catch {
       // If date parsing fails, fall through to normal rendering
     }
   }
@@ -587,7 +587,7 @@ const PropertyValue: React.FC<{
         const formattedSize = filesize(sizeInBytes, { round: 0 });
         return <>{formattedSize}</>;
       }
-    } catch (e) {
+    } catch {
       // If size parsing fails, fall through to normal rendering
     }
   }
@@ -811,7 +811,6 @@ function buildEntityProperties(
     const label = labelOverrideMap.get(key) ?? formatPropertyLabel(key);
     const value = (entity as any)[key];
 
-    const hasValue = value !== null && value !== undefined;
     const isUnknown = isUnknownValue(value);
 
     // Skip properties with no value or unknown values entirely if skipUnknown is true
@@ -1087,7 +1086,7 @@ const Entity: React.FC<{
 }> = ({ entity, graph, isRootDataset = false, isChild = false }) => {
   if (!entity) return null;
 
-  const { "@id": id, "@type": type, name } = entity;
+  const { "@id": id, name } = entity;
   const types = getEntityTypes(entity);
   const anchorId = createAnchorId(id);
   // For merged session entities, also create anchor for original CollectionEvent ID
@@ -1429,7 +1428,6 @@ function mergeSessionEntities(graph: RoCrateEntity[]): {
 
   graph.forEach((entity) => {
     const id = entity["@id"];
-    const types = getEntityTypes(entity);
 
     // Skip session directory Datasets - they'll be merged with CollectionEvents
     if (sessionDirectoryToCollectionEvent.has(id)) {
@@ -1481,7 +1479,7 @@ function mergeSessionEntities(graph: RoCrateEntity[]): {
  */
 function computeHierarchy(graph: RoCrateEntity[]) {
   // First, merge session directory Datasets with their CollectionEvents
-  const { mergedGraph, sessionDirectoryToCollectionEvent } = mergeSessionEntities(graph);
+  const { mergedGraph } = mergeSessionEntities(graph);
 
   const rootEntities: RoCrateEntity[] = [];
   const childrenMap = new Map<string, RoCrateEntity[]>();
