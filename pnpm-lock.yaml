@@ -571,7 +571,7 @@ importers:
         specifier: 9.0.13
         version: 9.0.13
       '@types/gettext-parser':
-        specifier: ^9.0.0
+        specifier: 9.0.0
         version: 9.0.0
       '@types/history':
         specifier: 4.7.11
@@ -595,7 +595,7 @@ importers:
         specifier: 16.11.22
         version: 16.11.22
       '@types/papaparse':
-        specifier: ^5.5.2
+        specifier: 5.5.2
         version: 5.5.2
       '@types/prop-types':
         specifier: 15.7.11
