@@ -38,6 +38,10 @@ import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportD
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 import { copyDirSync } from "../other/crossPlatformUtilities";
 import { getTestEnvironment } from "../getTestEnvironment";
+import {
+  shouldUseE2EFastProjectCreation,
+  createProjectForE2E
+} from "./E2EProjectCreation";
 
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -195,43 +199,53 @@ class HomePage extends React.Component<IProps, IState> {
 
   private previousFolderNames = "";
   public componentDidMount() {
+    // E2E fast path: if E2E_PROJECT_NAME is set, create project directly without UI
+    if (shouldUseE2EFastProjectCreation()) {
+      createProjectForE2E(this.projectHolder);
+      // Skip registration and other dialogs, but still set up window event handlers below
+    }
+
     // Handle async loading of large projects with progress dialog
     if (this.pendingProjectDirectory) {
       this.loadProjectWithProgress(this.pendingProjectDirectory);
       this.pendingProjectDirectory = null;
     }
 
-    if (!this.isRunningFromSource()) {
-      const version = pkg.version as string;
-      const match = version.match(/-(alpha|beta)(?:\.|$)/);
-      const tag = (match && match[1]) as "alpha" | "beta" | undefined;
-      switch (tag) {
-        case "alpha":
-          ShowMessageDialog({
-            title: `TESTING ONLY`,
-            text: "Thank you so much for testing this experimental version of lameta. Make sure you have a backup of your work.",
-            width: "300px",
-            buttonText: "I understand",
-            testId: "prerelease-warning-dialog"
-          });
-          break;
-        case "beta":
-          ShowMessageDialog({
-            title: `Warning`,
-            text: "This is a beta test version, so make sure you have a backup of your work.",
-            width: "300px",
-            buttonText: "I understand",
-            testId: "prerelease-warning-dialog"
-          });
-          break;
-        default:
-        // release build: no prerelease tag, show nothing
+    // Skip dialogs in E2E fast path mode
+    if (!shouldUseE2EFastProjectCreation()) {
+      if (!this.isRunningFromSource()) {
+        const version = pkg.version as string;
+        const match = version.match(/-(alpha|beta)(?:\.|$)/);
+        const tag = (match && match[1]) as "alpha" | "beta" | undefined;
+        switch (tag) {
+          case "alpha":
+            ShowMessageDialog({
+              title: `TESTING ONLY`,
+              text: "Thank you so much for testing this experimental version of lameta. Make sure you have a backup of your work.",
+              width: "300px",
+              buttonText: "I understand",
+              testId: "prerelease-warning-dialog"
+            });
+            break;
+          case "beta":
+            ShowMessageDialog({
+              title: `Warning`,
+              text: "This is a beta test version, so make sure you have a backup of your work.",
+              width: "300px",
+              buttonText: "I understand",
+              testId: "prerelease-warning-dialog"
+            });
+            break;
+          default:
+          // release build: no prerelease tag, show nothing
+        }
+      }
+
+      if (userSettings.HowUsing === "") {
+        RegistrationDialog.show();
       }
     }
 
-    if (userSettings.HowUsing === "") {
-      RegistrationDialog.show();
-    }
     // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", (e) => {
       if (
@@ -315,6 +329,31 @@ class HomePage extends React.Component<IProps, IState> {
     }
   }
 
+  private getWindowTitle(): string {
+    const project = this.projectHolder.project;
+    if (!project) {
+      return "lameta";
+    }
+
+    const directoryName = Path.basename(project.directory);
+    const projectName = project.properties.getTextStringOrEmpty("name");
+    const projectTitle = project.properties
+      .getTextField("title")
+      .getTextForSimpleDisplay();
+    const projectDisplayName = project.displayName || directoryName;
+    const shouldIncludeDirectoryName =
+      directoryName !== projectName && directoryName !== projectTitle;
+
+    if (
+      shouldIncludeDirectoryName &&
+      projectDisplayName !== directoryName
+    ) {
+      return `${directoryName} / ${projectDisplayName}`;
+    }
+
+    return projectDisplayName;
+  }
+
   public render() {
     // enhance: make this error com up in an Alert Dialog. I think doing that will be easier to reason about when
     // this has been converted to modern react with hooks.
@@ -330,11 +369,7 @@ class HomePage extends React.Component<IProps, IState> {
       );
     }
 
-    let title = this.projectHolder.project
-      ? `${Path.basename(this.projectHolder.project.directory)}/ ${
-          this.projectHolder.project.displayName
-        }  - lameta`
-      : "lameta";
+    let title = this.getWindowTitle();
 
     title += " " + pkg.version;
 

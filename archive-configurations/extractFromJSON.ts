@@ -94,9 +94,13 @@ function createPoFilesFromOneSetOfJsons(set: string) {
   console.log(
     `extractFromJSON: Gathered ${messages.length} strings from ${set}.`
   );
+  // PO string literals need backslashes, quotes and newlines escaped, or the
+  // file stops parsing (e.g. a description that quotes an example title)
+  const poString = (s: string) =>
+    s.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n");
   const content = messages
     .map((m) => {
-      return `msgctxt "${m.context}"\nmsgid "${m.message}"\nmsgstr ""\n`;
+      return `msgctxt "${poString(m.context)}"\nmsgid "${poString(m.message)}"\nmsgstr ""\n`;
     })
     .join("\n");
   //console.log(content);

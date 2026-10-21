@@ -1,10 +1,9 @@
 // Shared helpers for the one-time v2→v3 Crowdin sort-out scripts and the
-// ongoing backup/report tooling. Run any of these with `yarn tsx scripts/crowdin/<name>.ts`.
+// ongoing backup/report tooling. Run any of these with `pnpm exec tsx scripts/crowdin/<name>.ts`.
 // All scripts authenticate with the LAMETA_CROWDIN_TOKEN environment variable.
 import * as fs from "fs";
 import * as path from "path";
-// no bundled types; tsx runs it fine and scripts/ is outside tsconfig
-import gettextParser from "gettext-parser";
+import * as gettextParser from "gettext-parser";
 
 export const PROJECT_ID = 324607; // "laMeta" (identifier saymorex)
 export const V3_BRANCH_ID = 66;
@@ -88,8 +87,7 @@ export async function downloadToFile(url: string, dest: string): Promise<void> {
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   const res = await fetch(url);
   if (!res.ok) throw new Error(`download ${url} -> ${res.status}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  fs.writeFileSync(dest, buf);
+  fs.writeFileSync(dest, new Uint8Array(await res.arrayBuffer()));
 }
 
 // ---- PO helpers (gettext-parser) ----

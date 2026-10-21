@@ -3,7 +3,7 @@
 // be recovered from git. Read-only against Crowdin (exports/builds create
 // temporary artifacts server-side but modify no content).
 //
-//   yarn tsx scripts/crowdin/backup.ts
+//   pnpm exec tsx scripts/crowdin/backup.ts
 import * as fs from "fs";
 import * as path from "path";
 import { execFileSync } from "child_process";

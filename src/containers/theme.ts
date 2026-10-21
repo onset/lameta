@@ -1,5 +1,9 @@
 import { createTheme, Theme } from "@mui/material";
 
+// Text colors - use these instead of pure black for better readability
+export const textPrimary = "rgba(0, 0, 0, 0.87)";
+export const textSecondary = "rgba(0, 0, 0, 0.6)";
+
 export const lameta_orange = "#e69664";
 export const lameta_blue = "#becde4";
 export const lameta_dark_blue = "#3D5E90";
@@ -32,10 +36,10 @@ export function createLametaTheme(): Theme {
       MuiAlert: {
         styleOverrides: {
           standardWarning: {
-            color: "#0c0c0ce1", // black with some transparency
+            color: textPrimary,
             backgroundColor: "#f8ea2d",
             "& .MuiAlert-icon": {
-              color: "#0c0c0ce1" // Your folder orange, keeps theme
+              color: textPrimary
             },
             "& .MuiAlert-icon svg": {
               width: "1.5em",

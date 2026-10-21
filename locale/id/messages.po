@@ -21,9 +21,6 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr ""
 
-msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
-msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr "Sebuah file dengan nama yang sama sudah ada di lokasi tersebut."
 
@@ -130,9 +127,6 @@ msgstr "Hapus"
 msgid "Close"
 msgstr "Tutup"
 
-msgid "Collection"
-msgstr "Koleksi"
-
 msgid "Comments"
 msgstr "Komentar"
 
@@ -210,9 +204,6 @@ msgstr "Hapus File..."
 
 msgid "Delete Person..."
 msgstr "Hapus Orang..."
-
-msgid "Delete Session"
-msgstr "Hapus Sesi"
 
 msgid "Delete Session..."
 msgstr "Hapus Sesi..."
@@ -322,9 +313,6 @@ msgstr "Tidak ada file dengan nama yang mengandung 'Consent'"
 msgid "Full Name"
 msgstr "Nama Lengkap"
 
-msgid "Funding Project"
-msgstr ""
-
 msgid "Generating CSV export..."
 msgstr ""
 
@@ -335,6 +323,9 @@ msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Genres"
+msgstr ""
+
+msgid "Grant"
 msgstr ""
 
 msgid "Help"
@@ -354,12 +345,6 @@ msgstr "Bagaimana Anda menggunakan lameta?"
 
 msgid "ID"
 msgstr "ID"
-
-msgid "ID cannot be empty"
-msgstr ""
-
-msgid "ID cannot contain spaces"
-msgstr ""
 
 msgid "IMDI Only"
 msgstr "Hanya IMDI"
@@ -498,6 +483,9 @@ msgstr "Buka dengan program yang terkait dengan jenis file ini"
 
 msgid "Other Documents"
 msgstr "Dokumen Lainnya"
+
+msgid "Other Strings Used During Export"
+msgstr ""
 
 msgid "PARADISEC CSV export complete"
 msgstr ""
@@ -748,6 +736,9 @@ msgstr "Pengaturan ini unik untuk akun yang Anda gunakan di komputer ini. Seoran
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr "Berkas ini tidak akan diarsipkan dan hanya dipergunakan oleh peneliti."
 
+msgid "Translations"
+msgstr ""
+
 msgid "Type"
 msgstr "Tipe"
 
@@ -759,6 +750,9 @@ msgstr ""
 
 msgid "Update available"
 msgstr "Pembaruan/Update tersedia"
+
+msgid "Used during IMDI export"
+msgstr ""
 
 msgid "Validating RO-Crate export..."
 msgstr ""
@@ -775,13 +769,11 @@ msgstr "Lihat"
 msgid "View Release Notes"
 msgstr "Lihat Catatan Rilis"
 
-msgid "Vocabulary Translations"
-msgstr ""
-
 msgid "Vocabulary scan failed"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr "Kami tidak memiliki tips khusus untuk kesalahan ini. Jika Anda tidak bisa memperbaikinya dengan me-restart komputer, harap laporkan masalah ini ke https://github.com/onset/lameta/issues."
@@ -879,4 +871,3 @@ msgstr "{descriptionOfWhatWillBeDeleted} akan dipindahkan ke Tempat Sampah"
 
 msgid "{totalMissing} items need translation"
 msgstr ""
-

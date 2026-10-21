@@ -19,6 +19,9 @@ import { components } from "react-select";
 // @ts-ignore
 import dragIcon from "@assets/drag-affordance.svg";
 import { lameta_orange } from "../containers/theme";
+import { FieldInfoAffordances, FieldLabel } from "./FieldLabel";
+
+const rowStyleAffordanceWidth = "24px";
 
 // Drag handle for reordering language pills
 const DragHandle = SortableHandle(() => (
@@ -102,12 +105,18 @@ export interface IProps {
   languageFinder: LanguageFinder;
   canCreateNew?: boolean; // comes in via definition.controlProps
   ordered?: boolean; // when true, show drag handles and numbers for reordering
+  showAffordancesAfter?: boolean;
 }
 
 // the React.HTMLAttributes<HTMLDivElement> allows the use of "className=" on these fields
 export const LanguageChoicesEditor: React.FunctionComponent<
   IProps & React.HTMLAttributes<HTMLDivElement>
 > = observer((props) => {
+  const inputId = React.useRef(
+    "languagechoices-" +
+      (Math.random().toString(36) + "00000000000000000").slice(2, 7)
+  );
+
   const customStyles = {
     control: (styles, state) => ({
       ...styles,
@@ -322,6 +331,7 @@ export const LanguageChoicesEditor: React.FunctionComponent<
   );
 
   const selectProps = {
+    inputId: inputId.current,
     tabIndex: props.tabIndex ? props.tabIndex : undefined,
     name: props.field.labelInUILanguage,
     components: {
@@ -391,14 +401,43 @@ export const LanguageChoicesEditor: React.FunctionComponent<
 
   return (
     <div className={"field " + (props.className ? props.className : "")}>
-      <label>{props.field.labelInUILanguage}</label>
-      {props.canCreateNew ? (
-        <CreatableAsyncSelect
-          {...selectProps}
-          onCreateOption={handleCreateOption}
-        ></CreatableAsyncSelect>
-      ) : (
-        <AsyncSelect {...selectProps} />
+      <FieldLabel
+        htmlFor={inputId.current}
+        fieldDef={props.field.definition}
+        omitInfoAffordances={props.showAffordancesAfter}
+      />
+      <div
+        css={css`
+          flex-grow: 1;
+          overflow-y: hidden;
+          display: flex;
+          flex-direction: column;
+        `}
+      >
+        {props.canCreateNew ? (
+          <CreatableAsyncSelect
+            {...selectProps}
+            onCreateOption={handleCreateOption}
+          ></CreatableAsyncSelect>
+        ) : (
+          <AsyncSelect {...selectProps} />
+        )}
+      </div>
+      {props.showAffordancesAfter && (
+        <div
+          className="field-affordances-after"
+          css={css`
+            display: flex;
+            align-self: flex-start;
+            margin-top: 4px;
+            margin-left: 6px;
+            flex-shrink: 0;
+            width: ${rowStyleAffordanceWidth};
+            min-width: ${rowStyleAffordanceWidth};
+          `}
+        >
+          <FieldInfoAffordances fieldDef={props.field.definition} />
+        </div>
       )}
     </div>
   );

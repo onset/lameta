@@ -3,7 +3,7 @@ import Path from "path";
 import { Session } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import temp from "temp";
-import { describe, it, beforeEach, expect, afterEach } from "vitest";
+import { describe, it, beforeEach, expect, afterEach } from "vite-plus/test";
 
 temp.track();
 describe("Duplicate Folder", () => {

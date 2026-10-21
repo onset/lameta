@@ -21,9 +21,6 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr "\"{0}\"中有一个或多个字符不被允许。需要先修改该文件夹的名称以解决这个问题。"
 
-msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
-msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr "当前位置中已存在同名文件。"
 
@@ -130,9 +127,6 @@ msgstr "清除"
 msgid "Close"
 msgstr "关闭"
 
-msgid "Collection"
-msgstr "典藏"
-
 msgid "Comments"
 msgstr "备注"
 
@@ -210,9 +204,6 @@ msgstr "删除文件..."
 
 msgid "Delete Person..."
 msgstr "删除人员..."
-
-msgid "Delete Session"
-msgstr "删除场次"
 
 msgid "Delete Session..."
 msgstr "删除场次..."
@@ -322,9 +313,6 @@ msgstr "未找到名称包含“知情同意”的文件"
 msgid "Full Name"
 msgstr "全名"
 
-msgid "Funding Project"
-msgstr ""
-
 msgid "Generating CSV export..."
 msgstr ""
 
@@ -335,6 +323,9 @@ msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Genres"
+msgstr ""
+
+msgid "Grant"
 msgstr ""
 
 msgid "Help"
@@ -354,12 +345,6 @@ msgstr "您要如何使用lameta？"
 
 msgid "ID"
 msgstr "ID"
-
-msgid "ID cannot be empty"
-msgstr "ID 不能为空"
-
-msgid "ID cannot contain spaces"
-msgstr "ID 不能包含空格"
 
 msgid "IMDI Only"
 msgstr "仅用 IMDI"
@@ -498,6 +483,9 @@ msgstr "在与此文件类型关联的程序中打开"
 
 msgid "Other Documents"
 msgstr "其他文件"
+
+msgid "Other Strings Used During Export"
+msgstr ""
 
 msgid "PARADISEC CSV export complete"
 msgstr ""
@@ -748,6 +736,9 @@ msgstr "此设置对您在此计算机上使用的账户是唯一的。 另一�
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr "这些信息仅供研究人员使用，存档不会涉及。"
 
+msgid "Translations"
+msgstr ""
+
 msgid "Type"
 msgstr "类型"
 
@@ -759,6 +750,9 @@ msgstr ""
 
 msgid "Update available"
 msgstr "有可用更新"
+
+msgid "Used during IMDI export"
+msgstr ""
 
 msgid "Validating RO-Crate export..."
 msgstr ""
@@ -775,13 +769,11 @@ msgstr "查看"
 msgid "View Release Notes"
 msgstr "查看更新日志"
 
-msgid "Vocabulary Translations"
-msgstr ""
-
 msgid "Vocabulary scan failed"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr "我们没有针对此错误的具体提示。如果您无法通过重启计算机来解决该问题，请将问题报告至https://github.com/onset/lameta/issues。"
@@ -879,4 +871,3 @@ msgstr "{descriptionOfWhatWillBeDeleted}将被移至垃圾桶"
 
 msgid "{totalMissing} items need translation"
 msgstr ""
-

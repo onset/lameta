@@ -17,6 +17,7 @@ export class ImdiVocabularyTranslator {
   private project: Project | undefined;
   private cachedGenreTranslator: TranslatorFn | undefined;
   private cachedRoleTranslator: TranslatorFn | undefined;
+  private cachedExportStringTranslator: TranslatorFn | undefined;
 
   constructor(project?: Project) {
     this.project = project;
@@ -59,6 +60,31 @@ export class ImdiVocabularyTranslator {
       };
     }
     return this.cachedRoleTranslator;
+  }
+
+  /**
+   * Gets an export string translation function that uses project-level translations.
+   * Export strings have no built-in translations, so they are purely project-defined.
+   * The translator is cached for the lifetime of this instance.
+   */
+  getExportStringTranslator(): TranslatorFn {
+    if (!this.cachedExportStringTranslator) {
+      this.cachedExportStringTranslator = (
+        value: string,
+        lang: string
+      ): string | undefined => {
+        // For English, return the value itself (it's the English text)
+        if (lang === "en" || lang === "eng") {
+          return value;
+        }
+        // Otherwise, look up the project translation
+        return this.project?.vocabularyTranslations?.getExportStringTranslation(
+          value,
+          lang
+        );
+      };
+    }
+    return this.cachedExportStringTranslator;
   }
 
   /**

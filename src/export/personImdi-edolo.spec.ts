@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, beforeEach } from "vitest";
+import { describe, it, beforeAll, beforeEach } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
@@ -29,7 +29,7 @@ beforeAll(() => {
   person = Person.fromDirectory(
     "sample data/Edolo sample/People/Awi_Heole",
     new EncounteredVocabularyRegistry(),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line @typescript-eslint/no-unused-vars
     (oldName, newName) => true,
     languageFinder
   );
@@ -106,7 +106,7 @@ describe("actor imdi export", () => {
   });
 
   it("unlisted language handling", () => {
-    project.setCollectionSubjectLanguages("qaa:Foo Bar");
+    project.setSubjectLanguages("qaa:Foo Bar");
     const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
     person.languages.splice(0, 10);
     person.languages.push({ code: "qaa", mother: true, primary: true });
@@ -115,7 +115,7 @@ describe("actor imdi export", () => {
     expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:qaa");
     expect("Actor/Languages/Language[1]/Name").toHaveText("Foo Bar");
 
-    project.setCollectionSubjectLanguages("qoo:Blah blah");
+    project.setSubjectLanguages("qoo:Blah blah");
     person.languages.splice(0, 10);
     person.languages.push({ code: "qoo", mother: true, primary: true });
     const gen2 = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);

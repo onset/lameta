@@ -237,8 +237,8 @@ const ENTITY_FIELDS: Record<string, OrderEntry[]> = {
     "description",
     { property: "ldac:subjectLanguage", label: "Subject Language" },
     {
-      property: "collectionWorkingLanguages",
-      label: "Collection Working Languages"
+      property: "WorkingLanguages",
+      label: "Working Languages"
     },
     "region",
     { property: "contentLocation", label: "Country" }
@@ -674,9 +674,9 @@ const PropertyValue: React.FC<{
     return <>Unknown</>;
   }
 
-  // Special handling for collectionWorkingLanguages - semicolon-separated language codes
+  // Special handling for WorkingLanguages - semicolon-separated language codes
   if (
-    propertyName === "collectionWorkingLanguages" &&
+    propertyName === "WorkingLanguages" &&
     typeof value === "string"
   ) {
     const languageCodes = value

@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 import { validateImdiAsyncInternal } from "./validateImdi";
 import { XMLValidationResult } from "xmllint-wasm";
 const appPath = ""; // in test environment this is just the root, so the schemas are in schemas/IMDI_3.0.xsd

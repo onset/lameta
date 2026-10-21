@@ -21,9 +21,6 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr ""
 
-msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
-msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr "Un fichier portant le même nom existe déjà dans cette localisation."
 
@@ -130,9 +127,6 @@ msgstr "Effacer"
 msgid "Close"
 msgstr "Fermer"
 
-msgid "Collection"
-msgstr ""
-
 msgid "Comments"
 msgstr "Commentaires"
 
@@ -210,9 +204,6 @@ msgstr "Supprimer le fichier..."
 
 msgid "Delete Person..."
 msgstr "Supprimer une personne..."
-
-msgid "Delete Session"
-msgstr "Supprimer la session"
 
 msgid "Delete Session..."
 msgstr "Supprimer la session..."
@@ -322,9 +313,6 @@ msgstr "Aucun fichier trouvé contenant le nom 'consentement'"
 msgid "Full Name"
 msgstr "Nom complet"
 
-msgid "Funding Project"
-msgstr ""
-
 msgid "Generating CSV export..."
 msgstr ""
 
@@ -335,6 +323,9 @@ msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Genres"
+msgstr ""
+
+msgid "Grant"
 msgstr ""
 
 msgid "Help"
@@ -354,12 +345,6 @@ msgstr "Comment utilisez vous Lameta?"
 
 msgid "ID"
 msgstr "ID"
-
-msgid "ID cannot be empty"
-msgstr ""
-
-msgid "ID cannot contain spaces"
-msgstr ""
 
 msgid "IMDI Only"
 msgstr "Seulement IMDI"
@@ -498,6 +483,9 @@ msgstr "Ouvrir dans le logiciel associé à ce type de fichier"
 
 msgid "Other Documents"
 msgstr "Autres documents"
+
+msgid "Other Strings Used During Export"
+msgstr ""
 
 msgid "PARADISEC CSV export complete"
 msgstr ""
@@ -748,6 +736,9 @@ msgstr "Ce paramètre est unique au compte que vous utilisez sur l’ordinateur.
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr ""
 
+msgid "Translations"
+msgstr ""
+
 msgid "Type"
 msgstr "Type"
 
@@ -759,6 +750,9 @@ msgstr ""
 
 msgid "Update available"
 msgstr "Une mise à jour est disponible"
+
+msgid "Used during IMDI export"
+msgstr ""
 
 msgid "Validating RO-Crate export..."
 msgstr ""
@@ -775,16 +769,15 @@ msgstr "Affichage"
 msgid "View Release Notes"
 msgstr "Consulter les notes de versions"
 
-msgid "Vocabulary Translations"
-msgstr ""
-
 msgid "Vocabulary scan failed"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
-msgstr "Nous n'avons pas de conseils spécifiques pour cette erreur. Si vous ne pouvez pas la résoudre en\n"
+msgstr ""
+"Nous n'avons pas de conseils spécifiques pour cette erreur. Si vous ne pouvez pas la résoudre en\n"
 "redémarrant votre ordinateur, veuillez signaler le problème à\n"
 "https://github.com/onset/lameta/issues."
 
@@ -881,4 +874,3 @@ msgstr ""
 
 msgid "{totalMissing} items need translation"
 msgstr ""
-

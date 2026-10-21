@@ -1,6 +1,6 @@
 import { test, expect as expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import fs from "fs";
 import * as Path from "path";
 
@@ -11,9 +11,8 @@ let project: E2eProject;
 test.describe("Drag and Drop Files", () => {
   test.beforeAll(async ({}) => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "DragDropTest");
+    project = await launchWithProject(lameta, "DragDropTest");
+    page = lameta.page;
   });
 
   test.afterAll(async ({}) => {

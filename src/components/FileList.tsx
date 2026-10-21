@@ -8,10 +8,9 @@ import * as remote from "@electron/remote";
 import "./FileList.css";
 import { revealInFolder } from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
-import { i18n, translateFileType } from "../other/localization";
+import { translateFileType } from "../other/localization";
 import { t, Trans } from "@lingui/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
-import { isNullOrUndefined } from "util";
 import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { NotifyError, NotifyWarning } from "./Notify";
@@ -19,10 +18,7 @@ import * as fs from "fs-extra";
 import * as nodePath from "path";
 import { getExtension } from "../other/CopyManager";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
-import {
-  getLinkStatusIconPath,
-  getStatusOfFile
-} from "../model/file/FileStatus";
+import { getLinkStatusIconPath, getStatusOfFile } from "../model/file/FileStatus";
 import { useLingui } from "@lingui/react";
 import { SearchContext } from "./SearchContext";
 import { css } from "@emotion/react";
@@ -45,9 +41,7 @@ export const _FileList: React.FunctionComponent<{
   }, [props.folder, props.folder?.files?.length]);
   useLingui();
   const [selectedFile, setSelectedFile] = React.useState(undefined);
-  const [haveMediaFolder] = React.useState(
-    getMediaFolderOrEmptyForThisProjectAndMachine()
-  );
+  const [haveMediaFolder] = React.useState(getMediaFolderOrEmptyForThisProjectAndMachine());
   // What this mobxDummy is about:
   // What happens inside the component tables cells are invisible to mobx; it doesn't
   // have a way of knowing that these are reliant on the filename of the file.
@@ -85,8 +79,7 @@ export const _FileList: React.FunctionComponent<{
       if (!metadataMatch && Array.isArray(file.contributions)) {
         for (const c of file.contributions) {
           if (
-            (c.personReference &&
-              c.personReference.toLowerCase().includes(trimmed)) ||
+            (c.personReference && c.personReference.toLowerCase().includes(trimmed)) ||
             (c.role && c.role.toLowerCase().includes(trimmed)) ||
             (c.comments && c.comments.toLowerCase().includes(trimmed))
           ) {
@@ -108,7 +101,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return f.getIconPath();
       },
-      Cell: (p) => <img src={p.value} />
+      Cell: (p) => <img src={p.value} />,
     },
     {
       id: "name",
@@ -118,7 +111,7 @@ export const _FileList: React.FunctionComponent<{
         return f.getFilenameToShowInList();
       },
       className: "filename",
-      Cell: (cell: any) => highlight(cell.value)
+      Cell: (cell: any) => highlight(cell.value),
     },
     {
       id: "linkStatus",
@@ -129,7 +122,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return getLinkStatusIconPath(f);
       },
-      Cell: (p) => (p.value ? <img src={p.value} /> : null)
+      Cell: (p) => (p.value ? <img src={p.value} /> : null),
     },
     {
       id: "type",
@@ -138,7 +131,7 @@ export const _FileList: React.FunctionComponent<{
       accessor: (d: any) => {
         const f: File = d;
         return translateFileType(f.getTextProperty("type", ""));
-      }
+      },
     },
     {
       id: "modifiedDate",
@@ -162,7 +155,7 @@ export const _FileList: React.FunctionComponent<{
             dt.getMinutes();
 
         return f.copyInProgress ? f.copyProgress : dateDisplay;
-      }
+      },
     },
     {
       id: "size",
@@ -172,8 +165,8 @@ export const _FileList: React.FunctionComponent<{
       accessor: (d: any) => {
         const f: File = d;
         return f.getTextProperty("size", "");
-      }
-    }
+      },
+    },
   ];
 
   // Add Access column for project documents when showAccessColumn is enabled
@@ -186,7 +179,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return f.getTextProperty("access", "");
       },
-      Cell: (cell: any) => highlight(cell.value)
+      Cell: (cell: any) => highlight(cell.value),
     });
   }
 
@@ -233,20 +226,17 @@ export const _FileList: React.FunctionComponent<{
               </div>
             </div>
           ) : null;
-        }
+        },
       },
-      ...columns
+      ...columns,
     ];
   }
-  const isSpecialSayMoreFile =
-    props.folder.selectedFile === props.folder.metadataFile;
+  const isSpecialSayMoreFile = props.folder.selectedFile === props.folder.metadataFile;
   const filesPerPage = Math.min(300, props.folder.files.length);
 
   return (
     <ElectronDropZone
-      addFiles={(filePaths) =>
-        addFiles(props.folder, filePaths, setSelectedFile)
-      }
+      addFiles={(filePaths) => addFiles(props.folder, filePaths, setSelectedFile)}
       clickOpensChooser={false}
     >
       <div className="fileList">
@@ -254,17 +244,9 @@ export const _FileList: React.FunctionComponent<{
         <div className={"mask onlyIfInDropZone"}>Drop files here</div>
         <div className={"fileBar"}>
           <button
-            disabled={
-              isNullOrUndefined(props.folder.selectedFile) ||
-              isSpecialSayMoreFile
-            }
+            disabled={props.folder.selectedFile == null || isSpecialSayMoreFile}
             onClick={() => {
-              showFileMenu(
-                props.folder,
-                props.folder.selectedFile!,
-                false,
-                isSpecialSayMoreFile
-              );
+              showFileMenu(props.folder, props.folder.selectedFile!, false, isSpecialSayMoreFile);
             }}
           >
             <Trans>Open</Trans>
@@ -277,9 +259,7 @@ export const _FileList: React.FunctionComponent<{
           <button
             className={"cmd-rename"}
             disabled={isSpecialSayMoreFile}
-            onClick={() =>
-              ShowRenameDialog(props.folder.selectedFile!, props.folder)
-            }
+            onClick={() => ShowRenameDialog(props.folder.selectedFile!, props.folder)}
           >
             <Trans>Rename...</Trans>
           </button>
@@ -296,9 +276,7 @@ export const _FileList: React.FunctionComponent<{
             : null}
           <button
             className={"cmd-add-files"}
-            onClick={async () =>
-              await showAddFilesDialog(props.folder, setSelectedFile)
-            }
+            onClick={async () => await showAddFilesDialog(props.folder, setSelectedFile)}
           >
             <Trans> Add Files</Trans>
           </button>
@@ -316,10 +294,7 @@ export const _FileList: React.FunctionComponent<{
           getTrProps={(state: any, rowInfo: any, column: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             const { missing, status, info } = getStatusOfFile(rowInfo.original);
-            const metadataMatch = fileHasMetadataMatch(
-              rowInfo.original,
-              searchTerm
-            );
+            const metadataMatch = fileHasMetadataMatch(rowInfo.original, searchTerm);
 
             return {
               title: info,
@@ -334,15 +309,8 @@ export const _FileList: React.FunctionComponent<{
                 // then after it is selected, show the context menu
                 window.setTimeout(
                   () =>
-                    showFileMenu(
-                      props.folder,
-                      rowInfo.original,
-                      true,
-                      isSpecialSayMoreFile,
-                      x,
-                      y
-                    ),
-                  0
+                    showFileMenu(props.folder, rowInfo.original, true, isSpecialSayMoreFile, x, y),
+                  0,
                 );
               },
               onClick: (e: any, x: any) => {
@@ -350,9 +318,7 @@ export const _FileList: React.FunctionComponent<{
                 // if we're in a an e2e test and this click would be ignored because of the copyInProgress flag,
                 // just fail fast. The test probably needs some way of waiting
                 if (file.copyInProgress && getTestEnvironment().E2E) {
-                  throw new Error(
-                    "Click would have been ignored, becuase file copy in progress."
-                  );
+                  throw new Error("Click would have been ignored, becuase file copy in progress.");
                 }
                 if (!file.copyInProgress) {
                   if (props.folder.selectedFile != null) {
@@ -368,12 +334,10 @@ export const _FileList: React.FunctionComponent<{
                 ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
                 status +
                 " " +
-                (rowInfo && rowInfo.original === props.folder.selectedFile
-                  ? " selected "
-                  : "") +
+                (rowInfo && rowInfo.original === props.folder.selectedFile ? " selected " : "") +
                 (metadataMatch ? " metadataMatch " : ""),
               "data-testid": metadataMatch ? "file-metadata-match" : undefined,
-              style: undefined
+              style: undefined,
             };
           }}
         />
@@ -392,7 +356,7 @@ function showFileMenu(
   contextMenu: boolean,
   isSpecialSayMoreFile: boolean,
   x: number = 0,
-  y: number = 0
+  y: number = 0,
 ) {
   const mainWindow = remote.getCurrentWindow(); // as any;
   if (!file) {
@@ -403,14 +367,11 @@ function showFileMenu(
 
   let items = [
     {
-      label:
-        process.platform === "darwin"
-          ? t`Show in Finder`
-          : t`Show in File Explorer`,
+      label: process.platform === "darwin" ? t`Show in Finder` : t`Show in File Explorer`,
       click: () => {
         revealInFolder(file.getActualFilePath());
       },
-      enabled: !missing
+      enabled: !missing,
     },
     {
       label: t`Open in program associated with this file type`,
@@ -419,7 +380,7 @@ function showFileMenu(
         electron.shell.openPath("file://" + file.getActualFilePath());
       },
       enabled: !missing,
-      visible: !isSpecialSayMoreFile || showDevOnlyItems
+      visible: !isSpecialSayMoreFile || showDevOnlyItems,
     },
     {
       label: t`Rename...`,
@@ -427,7 +388,7 @@ function showFileMenu(
         ShowRenameDialog(file, folder);
       },
       enabled: !missing,
-      visible: contextMenu && !isSpecialSayMoreFile
+      visible: contextMenu && !isSpecialSayMoreFile,
     },
     { type: "separator", visible: !contextMenu },
     {
@@ -436,19 +397,19 @@ function showFileMenu(
       click: () => {
         folder.MoveFileToTrashWithUI(file);
       },
-      visible: contextMenu
+      visible: contextMenu,
     },
     {
       type: "separator",
-      visible: contextMenu && showDevOnlyItems
+      visible: contextMenu && showDevOnlyItems,
     },
     {
       label: "Inspect element",
       click() {
         (mainWindow as any).inspectElement(x, y);
       },
-      visible: contextMenu && showDevOnlyItems
-    }
+      visible: contextMenu && showDevOnlyItems,
+    },
   ];
 
   items = items.filter((item) => item.visible !== false);
@@ -458,10 +419,10 @@ function showFileMenu(
 
 async function showAddFilesDialog(
   folder: Folder,
-  setSelectedFile: React.Dispatch<React.SetStateAction<any>>
+  setSelectedFile: React.Dispatch<React.SetStateAction<any>>,
 ) {
   const options: OpenDialogOptions = {
-    properties: ["openFile", "multiSelections"]
+    properties: ["openFile", "multiSelections"],
   };
   const result = await ipcRenderer.invoke("showOpenDialog", options);
   if (result && result.filePaths && result.filePaths.length > 0) {
@@ -472,12 +433,10 @@ async function showAddFilesDialog(
 async function addFiles(
   folder: Folder,
   paths: string[],
-  setSelectedFile: React.Dispatch<React.SetStateAction<any>>
+  setSelectedFile: React.Dispatch<React.SetStateAction<any>>,
 ) {
   // Filter out anything without a usable string path
-  const rawPaths = (paths || []).filter(
-    (p): p is string => typeof p === "string" && p.length > 0
-  );
+  const rawPaths = (paths || []).filter((p): p is string => typeof p === "string" && p.length > 0);
   const validPaths = rawPaths.filter((p) => {
     try {
       return nodePath.isAbsolute(p);
@@ -487,16 +446,9 @@ async function addFiles(
   });
 
   // Block lameta internal file types by extension
-  if (
-    validPaths.some((path) =>
-      ["session", "person", "meta"].includes(getExtension(path))
-    )
-  ) {
+  if (validPaths.some((path) => ["session", "person", "meta"].includes(getExtension(path)))) {
     try {
-      console.warn(
-        "[FileList:addFiles] Blocked internal lameta file type.",
-        validPaths
-      );
+      console.warn("[FileList:addFiles] Blocked internal lameta file type.", validPaths);
     } catch {}
     NotifyWarning(t`You cannot add files of that type`);
     return;
@@ -506,10 +458,7 @@ async function addFiles(
   try {
     if (validPaths.some((path) => fs.lstatSync(path).isDirectory())) {
       try {
-        console.warn(
-          "[FileList:addFiles] Folders are not allowed.",
-          validPaths
-        );
+        console.warn("[FileList:addFiles] Folders are not allowed.", validPaths);
       } catch {}
       NotifyWarning(t`You cannot add folders.`);
       return;

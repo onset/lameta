@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeEach, expect, afterEach } from "vitest";
+import { vi, describe, it, beforeEach, expect, afterEach } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import { Project } from "../../../model/Project/Project";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
@@ -66,7 +66,7 @@ describe("LAM-101: OtherDocuments Dataset", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Test Project";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Test project description";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";

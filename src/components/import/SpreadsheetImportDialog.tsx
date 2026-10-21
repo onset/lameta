@@ -8,21 +8,15 @@ import {
   DialogMiddle,
   DialogTitle,
   LametaDialog,
-  useSetupLametaDialog
+  useSetupLametaDialog,
 } from "../LametaDialog";
 import { t, Trans } from "@lingui/macro";
 import { useUserSetting } from "../../other/UserSettings";
 import { MatrixGrid } from "./MatrixGrid";
-import {
-  IImportMapping,
-  makeMappedMatrixFromSpreadsheet
-} from "./SpreadsheetToMatrix";
+import { IImportMapping, makeMappedMatrixFromSpreadsheet } from "./SpreadsheetToMatrix";
 import { ProjectHolder } from "../../model/Project/Project";
 import { MappedMatrix } from "./MappedMatrix";
-import {
-  addImportMatrixToProject,
-  availableSpreadsheetMappings
-} from "./MatrixImporter";
+import { addImportMatrixToProject, availableSpreadsheetMappings } from "./MatrixImporter";
 import * as Path from "path";
 import fs from "fs";
 import { Button } from "@mui/material";
@@ -33,7 +27,11 @@ import { IFolderType } from "../../model/Folder/Folder";
 import { analyticsEvent } from "../../other/analytics";
 import { app } from "@electron/remote";
 
-export let showSpreadsheetImportDialog = (folderType: IFolderType) => {};
+let showSpreadsheetImportDialogImpl = (_folderType: IFolderType) => {};
+
+export const showSpreadsheetImportDialog = (folderType: IFolderType) => {
+  showSpreadsheetImportDialogImpl(folderType);
+};
 export const SpreadsheetImportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
 }> = (props) => {
@@ -41,10 +39,10 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   const [folderType, setFolderType] = useState<IFolderType>("person");
   const [mappingName, setMappingName] = useUserSetting(
     "spreadsheetImport.mappingName",
-    "LingMetaXMap"
+    "LingMetaXMap",
   );
 
-  showSpreadsheetImportDialog = (folderType: IFolderType) => {
+  showSpreadsheetImportDialogImpl = (folderType: IFolderType) => {
     setFolderType(folderType);
     setMode(Mode.normal);
     showDialog();
@@ -55,24 +53,17 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
   const path = paths[folderType];
 
   const [matrix, setMatrix] = useState<MappedMatrix | undefined>(undefined);
-  const chosenMapping = availableSpreadsheetMappings[
-    mappingName
-  ] as IImportMapping;
+  const chosenMapping = availableSpreadsheetMappings[mappingName] as IImportMapping;
   enum Mode {
     normal = 0,
     startImporting = 1,
-    importing = 2
+    importing = 2,
   }
   const [mode, setMode] = useState<Mode>(Mode.normal);
 
   useEffect(() => {
     setMatrix(undefined);
-    if (
-      currentlyOpen &&
-      path &&
-      props.projectHolder.project &&
-      fs.existsSync(path)
-    ) {
+    if (currentlyOpen && path && props.projectHolder.project && fs.existsSync(path)) {
       // todo: actually load the mapping they asked for (when we can handle different ones)
       try {
         // this timeout is to let everything render before we load do the reading of the file and filling the grid
@@ -81,7 +72,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             path,
             chosenMapping,
             props.projectHolder.project!,
-            folderType
+            folderType,
           );
           setMatrix(x);
         }, 0 /* no actual wait needed*/);
@@ -98,13 +89,9 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
         setMode(Mode.importing);
         window.setTimeout(() => {
           analyticsEvent("Import", `Import ${folderType} Spreadsheet`, {
-            path: path
+            path: path,
           });
-          addImportMatrixToProject(
-            props.projectHolder.project!,
-            matrix!,
-            folderType
-          );
+          addImportMatrixToProject(props.projectHolder.project!, matrix!, folderType);
 
           setMode(Mode.normal);
           closeDialog();
@@ -123,30 +110,24 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
     if (matrix) setChosenCount(matrix?.getCountOfChosenRows());
   }
 
-  useEffect(
-    () => countChosenRows(),
-    [props.projectHolder.project, path, matrix]
-  );
+  useEffect(() => countChosenRows(), [props.projectHolder.project, path, matrix]);
 
   const title =
-    folderType === "session"
-      ? t`Import Spreadsheet of Sessions`
-      : t`Import Spreadsheet of People`;
+    folderType === "session" ? t`Import Spreadsheet of Sessions` : t`Import Spreadsheet of People`;
   return (
     <LametaDialog
       open={currentlyOpen}
+      initialViewportMargin={15}
+      paperStyle={{
+        minWidth: "min(800px, calc(100vw - 30px))",
+        minHeight: "min(500px, calc(100vh - 30px))",
+      }}
       requestClose={() => {
         if (mode === Mode.importing) {
           return;
         }
         closeDialog();
       }}
-      css={css`
-        width: calc(100% - 100px);
-        // Note that the Grid needs an absolute size, which is kept in kpixelsThatAreNotAvailableToGridHeight
-        // So if you change this here, you may need to tweak that
-        height: calc(100% - 100px);
-      `}
     >
       <DialogTitle title={title}></DialogTitle>
       <DialogMiddle>
@@ -194,18 +175,14 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
                   filters: [
                     {
                       name: "Spreadsheet Files",
-                      extensions: ["csv", "xlsx", "xls", "ods"]
-                    }
+                      extensions: ["csv", "xlsx", "xls", "ods"],
+                    },
                   ],
-                  defaultPath: dir
+                  defaultPath: dir,
                 };
 
                 ipcRenderer.invoke("showOpenDialog", options).then((result) => {
-                  if (
-                    result &&
-                    result.filePaths &&
-                    result.filePaths.length > 0
-                  ) {
+                  if (result && result.filePaths && result.filePaths.length > 0) {
                     paths[folderType] = result.filePaths[0];
                     setPaths(JSON.stringify(paths));
                   }
@@ -270,12 +247,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             </div>
           </div>
         </div>
-        {matrix && (
-          <MatrixGrid
-            matrix={matrix}
-            chosenRowsCountChanged={countChosenRows}
-          />
-        )}
+        {matrix && <MatrixGrid matrix={matrix} chosenRowsCountChanged={countChosenRows} />}
       </DialogMiddle>
       <DialogBottomButtons>
         <Button
@@ -290,9 +262,7 @@ export const SpreadsheetImportDialog: React.FunctionComponent<{
             min-width: 50px;
           `}
         >
-          {(mode === Mode.importing || mode === Mode.startImporting) && (
-            <Trans>Importing...</Trans>
-          )}
+          {(mode === Mode.importing || mode === Mode.startImporting) && <Trans>Importing...</Trans>}
           {mode === Mode.normal && folderType === "session" && (
             <Trans>{`Import ${chosenCount} Sessions`}</Trans>
           )}

@@ -116,6 +116,23 @@
   }
 }
 
+/* this is a bit of a hack to move these fields up if the large "how to contact" field isn't being shown. Possibly with more grid-foo this could be done
+without code having to add ".howToContact-hidden" */
+.personForm .howToContact-hidden {
+  grid-column: 3 / 5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .education,
+  .ethnicGroup,
+  .primaryOccupation {
+    grid-column: auto;
+    grid-row: auto;
+    order: initial;
+  }
+}
+
 .language {
   margin-top: 0;
   margin-bottom: 0;

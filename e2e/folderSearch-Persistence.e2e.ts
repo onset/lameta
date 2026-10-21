@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -9,9 +9,8 @@ let project: E2eProject;
 test.describe("Folder search persistence across tab switches", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "SearchPersistProj");
+    project = await launchWithProject(lameta, "SearchPersistProj");
+    page = lameta.page;
   });
   test.afterAll(async () => {
     await lameta.quit();

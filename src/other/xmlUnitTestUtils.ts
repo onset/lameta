@@ -1,4 +1,4 @@
-import { ExpectStatic, expect } from "vitest";
+import { ExpectStatic, expect } from "vite-plus/test";
 
 import XPATH from "xpath";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
@@ -271,7 +271,7 @@ expect.extend({
 });
 
 // the following is "declaration merging" which automatically retains the originasl and adds the new
-declare module "vitest" {
+declare module "vite-plus/test" {
   interface Assertion {
     toMatch(expectedValue: string | RegExp): void;
     toHaveSomeMatch(expectedValue: string | RegExp): void;

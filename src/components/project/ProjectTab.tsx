@@ -9,7 +9,7 @@ import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { ArchiveConfigurationForm } from "./ArchiveConfigurationForm";
-import { ImdiView } from "../ImdiView";
+import { ProjectImdiView } from "./ProjectImdiView";
 import "./ProjectTab.css";
 import userSettings from "../../other/UserSettings";
 import { ThemeProvider } from "@mui/material";
@@ -42,19 +42,19 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   // Currently this is worthless... every config is going to have a Title, which will cause this to appear.
   // Leaving it for now to show how to turn tabs on an off in case we learn that there is a variation in
   // institutional preferences that will need it.
-  const showCollectionTab = props.project.properties.values().some((p) => {
+  const showProjectTab = props.project.properties.values().some((p) => {
     return (
       p.definition &&
-      p.definition.form === "collection" &&
+      p.definition.form === "project" &&
       p.definition.visibility === "always"
     );
   });
 
-  // Only show Vocabulary Translations tab if there are multilingual vocab fields
-  const showVocabularyTranslationsTab = hasMultilingualVocabularyFields();
+  // Only show  Translations tab if there are multilingual vocab fields
+  const showTranslationsTab = hasMultilingualVocabularyFields();
 
-  // Calculate the Languages tab index (depends on whether Collection tab is shown)
-  const languagesTabIndex = showCollectionTab ? 3 : 2;
+  // Calculate the Languages tab index (depends on whether Project tab is shown)
+  const languagesTabIndex = showProjectTab ? 3 : 2;
 
   // Determine initial tab: if multilingualConversionPending, go to Languages tab
   const getInitialTabIndex = () => {
@@ -112,19 +112,19 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <Trans>Archive</Trans>
           </Tab>
-          {showCollectionTab && (
+          {showProjectTab && (
             <Tab
               className={"tab-project-collection"}
               data-testid="project-collection-tab"
             >
-              <Trans>Collection</Trans>
+              <Trans>Project</Trans>
             </Tab>
           )}
           <Tab
             className={"tab-project-funding-project"}
             data-testid="project-funding-project-tab"
           >
-            <Trans>Funding Project</Trans>
+            <Trans>Grant</Trans>
           </Tab>
           <Tab
             className={"tab-project-collection-languages"}
@@ -132,12 +132,12 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <Trans>Languages</Trans>
           </Tab>{" "}
-          {showVocabularyTranslationsTab && (
+          {showTranslationsTab && (
             <Tab
               className={"tab-project-vocabulary-translations"}
               data-testid="project-vocabulary-translations-tab"
             >
-              <Trans>Vocabulary Translations</Trans>
+              <Trans>Translations</Trans>
             </Tab>
           )}
           <Tab
@@ -207,10 +207,10 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             }}
           />
         </TabPanel>
-        {showCollectionTab && (
+        {showProjectTab && (
           <TabPanel>
             <AutoForm
-              form="collection"
+              form="project"
               formClass="project"
               folder={props.project}
               authorityLists={props.authorityLists}
@@ -245,14 +245,14 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             }}
           />
         </TabPanel>
-        {showVocabularyTranslationsTab && (
+        {showTranslationsTab && (
           <TabPanel>
             <VocabularyTranslationsTab project={props.project} />
           </TabPanel>
         )}{" "}
         <TabPanel>
           <AutoForm
-            form="collectionLocation"
+            form="projectLocation"
             formClass="project"
             folder={props.project}
             authorityLists={props.authorityLists}
@@ -297,11 +297,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         </TabPanel>
         {GetOtherConfigurationSettings().archiveUsesImdi ? (
           <TabPanel>
-            <ImdiView
-              target={props.project}
-              project={props.project}
-              folder={props.project}
-            />
+            <ProjectImdiView project={props.project} />
           </TabPanel>
         ) : (
           <></>

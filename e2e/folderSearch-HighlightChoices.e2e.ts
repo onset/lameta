@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -9,12 +9,11 @@ let project: E2eProject;
 test.describe("Folder Search Choice Field Highlighting", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(
+    project = await launchWithProject(
       lameta,
       "FolderSearchChoiceHighlight/тест"
     );
+    page = lameta.page;
   });
   test.afterAll(async () => {
     await lameta.quit();
@@ -69,17 +68,17 @@ test.describe("Folder Search Choice Field Highlighting", () => {
 
     await ensureSession();
 
-    // open access chooser and select "S: open to subscribers"
+    // open access chooser and select the ELAR restricted access value
     const access = page.locator("#access-chooser");
     await access.click();
     const accessInput = access.locator("input");
-    await accessInput.fill("S: open to subscribers");
+    await accessInput.fill("S: available upon request only");
     await accessInput.press("Enter");
 
-    // Verify the selected value is displayed
-    await expect(
-      page.locator("#access-chooser").locator('[class*="singleValue"]')
-    ).toContainText(/subscribers/i);
+    // Verify the selected value is displayed in the chooser.
+    await expect(page.locator("#access-chooser")).toContainText(
+      /available upon request only/i
+    );
 
     // The session should be visible in the list
     await expect(

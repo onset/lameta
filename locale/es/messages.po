@@ -21,9 +21,6 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr ""
 
-msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
-msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr "Un archivo con el mismo nombre ya existe en la misma ubicación."
 
@@ -130,9 +127,6 @@ msgstr "Borrar"
 msgid "Close"
 msgstr "Cerrar"
 
-msgid "Collection"
-msgstr ""
-
 msgid "Comments"
 msgstr "Comentarios"
 
@@ -210,9 +204,6 @@ msgstr "Eliminar archivo..."
 
 msgid "Delete Person..."
 msgstr "Eliminar persona..."
-
-msgid "Delete Session"
-msgstr "Eliminar sesión"
 
 msgid "Delete Session..."
 msgstr "Eliminar sesión..."
@@ -322,9 +313,6 @@ msgstr "No se ha encontrado ningún archivo que contenga 'Consentimiento'"
 msgid "Full Name"
 msgstr "Nombre completo"
 
-msgid "Funding Project"
-msgstr ""
-
 msgid "Generating CSV export..."
 msgstr ""
 
@@ -335,6 +323,9 @@ msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Genres"
+msgstr ""
+
+msgid "Grant"
 msgstr ""
 
 msgid "Help"
@@ -354,12 +345,6 @@ msgstr "¿Cómo está usando Lameta?"
 
 msgid "ID"
 msgstr "ID"
-
-msgid "ID cannot be empty"
-msgstr ""
-
-msgid "ID cannot contain spaces"
-msgstr ""
 
 msgid "IMDI Only"
 msgstr "Solo IMDI"
@@ -467,7 +452,9 @@ msgid "Not important to the archive, but will be included"
 msgstr ""
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
-msgstr "Tenga en cuenta que este es un enlace a un archivo en su carpeta de medios. Aquí, usted está renombrando el enlace, no el archivo original que se indica. Si más adelante crea una exportación que incluya este archivo, la exportación usará este nombre.\n"
+msgstr ""
+"Tenga en cuenta que este es un enlace a un archivo en su carpeta de medios. Aquí, usted está renombrando el enlace, no el archivo original que se indica. Si más adelante crea una exportación que incluya este archivo, la exportación usará este nombre.\n"
+""
 
 msgid "Notes"
 msgstr "Notas"
@@ -498,6 +485,9 @@ msgstr "Abrir en un programa asociado a este tipo de archivo"
 
 msgid "Other Documents"
 msgstr "Otros documentos"
+
+msgid "Other Strings Used During Export"
+msgstr ""
 
 msgid "PARADISEC CSV export complete"
 msgstr ""
@@ -748,6 +738,9 @@ msgstr "Esta configuración es exclusiva para la cuenta que se utiliza en este e
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr ""
 
+msgid "Translations"
+msgstr ""
+
 msgid "Type"
 msgstr "Tipo"
 
@@ -759,6 +752,9 @@ msgstr ""
 
 msgid "Update available"
 msgstr "Actualización disponible"
+
+msgid "Used during IMDI export"
+msgstr ""
 
 msgid "Validating RO-Crate export..."
 msgstr ""
@@ -775,13 +771,11 @@ msgstr "Vista"
 msgid "View Release Notes"
 msgstr "Ver Notas de esta Versión"
 
-msgid "Vocabulary Translations"
-msgstr ""
-
 msgid "Vocabulary scan failed"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr "No tenemos recomendaciones específicas para este error. Si el problema no se resuelve al reiniciar su equipo, reporte este problema a https://github.com/onset/lameta/issues."
@@ -879,4 +873,3 @@ msgstr "{descriptionOfWhatWillBeDeleted} se enviará a la Papelera de reciclaje"
 
 msgid "{totalMissing} items need translation"
 msgstr ""
-

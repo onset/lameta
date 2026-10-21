@@ -14,7 +14,7 @@ import {
   getMimeType,
   getImdiResourceTypeForExtension
 } from "../../file/FileTypeInfo";
-import { describe, it, beforeEach, afterEach } from "vitest";
+import { describe, it, beforeEach, afterEach } from "vite-plus/test";
 let projectDirectory;
 let projectName;
 
@@ -106,5 +106,7 @@ describe("Session Write", () => {
     expect(getImdiResourceTypeForExtension("tif")).toBe("Image");
     expect(getImdiResourceTypeForExtension("tiff")).toBe("Image");
     expect(getImdiResourceTypeForExtension("flextext")).toBe("FLEx");
+    expect(getImdiResourceTypeForExtension("srt")).toBe("Subtitles");
+    expect(getImdiResourceTypeForExtension("SRT")).toBe("Subtitles");
   });
 });

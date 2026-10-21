@@ -15,7 +15,8 @@ import getSayMoreXml from "./GetSayMoreXml";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import {
   fieldDefinitionsOfCurrentConfig,
-  isKnownFieldKey
+  isKnownFieldKey,
+  getProjectDocumentFieldDefinition
 } from "../field/ConfiguredFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import {
@@ -1291,13 +1292,27 @@ export class OtherFile extends File {
 
     // Add access fields for document files (Description Documents / Other Documents)
     // These enable per-document access levels which will be exported to IMDI
-    this.addTextProperty("access", "", true);
-    this.properties.getValueOrThrow("access").definition.englishLabel =
-      "Access";
-    this.addTextProperty("accessDescription", "", true);
-    this.properties.getValueOrThrow(
-      "accessDescription"
-    ).definition.englishLabel = "Access Explanation";
+    // Use field definitions from the configuration to respect multilingual settings
+    const accessDef = getProjectDocumentFieldDefinition("access");
+    if (accessDef) {
+      const accessField = Field.fromFieldDefinition(accessDef);
+      this.properties.setValue("access", accessField);
+    } else {
+      this.addTextProperty("access", "", true);
+      this.properties.getValueOrThrow("access").definition.englishLabel =
+        "Access";
+    }
+
+    const accessDescDef = getProjectDocumentFieldDefinition("accessDescription");
+    if (accessDescDef) {
+      const accessDescField = Field.fromFieldDefinition(accessDescDef);
+      this.properties.setValue("accessDescription", accessDescField);
+    } else {
+      this.addTextProperty("accessDescription", "", true);
+      this.properties.getValueOrThrow(
+        "accessDescription"
+      ).definition.englishLabel = "Access Explanation";
+    }
 
     if (partialLoadWhileCopyingInThisFile) {
       this.copyInProgress = true;

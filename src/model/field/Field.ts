@@ -98,7 +98,7 @@ export class Field {
       definition.default,
       definition.form,
       FieldVisibility.Always, //todo
-      definition.persist,
+      definition.persist ?? true,
       choices,
       definition.cssClass
     );

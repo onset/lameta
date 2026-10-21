@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { Folder } from "./Folder";
 import { FolderGroup } from "./FolderGroup";
 import { FieldSet } from "../field/FieldSet";

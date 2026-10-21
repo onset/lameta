@@ -1,6 +1,10 @@
 import { Page, Locator, expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import {
+  createNewProject,
+  launchWithProject,
+  E2eProject
+} from "./various-e2e-helpers";
 
 /**
  * Helpers for multilingual text field e2e tests.
@@ -195,13 +199,13 @@ export interface MultilingualTestContext {
  * Setup context for multilingual tests.
  * Creates a new project and switches to ELAR configuration.
  * @param testName - Name for the test project
- * @param workingLanguages - Array of ISO 639-3 codes (e.g., ["eng", "spa"]) to set as working languages.
- *                           Pass 2+ languages to enable multilingual slots in the UI.
- *                           Pass empty array to skip working language setup.
+ * @param metadataLanguages - Array of ISO 639-3 codes (e.g., ["eng", "spa"]) to set as metadata languages.
+ *                            Pass 2+ languages to enable multilingual slots in the UI.
+ *                            Pass empty array to skip metadata language setup.
  */
 export async function setupMultilingualTestContext(
   testName: string,
-  workingLanguages: string[]
+  metadataLanguages: string[]
 ): Promise<MultilingualTestContext> {
   const lameta = new LametaE2ERunner();
   const page = await lameta.launch();
@@ -219,20 +223,21 @@ export async function setupMultilingualTestContext(
     timeout: 10000
   });
 
-  // Set up Working Languages if any were specified
-  if (workingLanguages.length > 0) {
+  // Set up Metadata Languages if any were specified
+  // Metadata Languages are what determine the multilingual slots in the UI
+  if (metadataLanguages.length > 0) {
     await project.goToProjectLanguages();
-    const workingContainer = page
-      .locator('.field:has(label:has-text("Working Languages"))')
+    const metadataContainer = page
+      .locator('.field:has(label:has-text("Metadata Languages"))')
       .first();
-    await workingContainer.waitFor({ state: "visible", timeout: 10000 });
-    const workingInput = workingContainer
+    await metadataContainer.waitFor({ state: "visible", timeout: 10000 });
+    const metadataInput = metadataContainer
       .locator('.select input[role="combobox"]')
       .first();
 
-    for (const langCode of workingLanguages) {
-      await workingInput.click();
-      await fillLanguageChooserAndSelect(page, workingInput, langCode);
+    for (const langCode of metadataLanguages) {
+      await metadataInput.click();
+      await fillLanguageChooserAndSelect(page, metadataInput, langCode);
     }
   }
 
@@ -242,12 +247,57 @@ export async function setupMultilingualTestContext(
 export async function teardownMultilingualTestContext(
   context: MultilingualTestContext
 ) {
-  await context.lameta.quit();
+  if (context?.lameta) {
+    await context.lameta.quit();
+  }
+}
+
+/**
+ * Setup context for multilingual tests using fast launch (bypasses registration UI).
+ * Creates a new project with ELAR configuration directly.
+ * @param testName - Name for the test project
+ * @param metadataLanguages - Array of ISO 639-3 codes (e.g., ["eng", "spa"]) to set as metadata languages.
+ *                            Pass 2+ languages to enable multilingual slots in the UI.
+ *                            Pass empty array to skip metadata language setup.
+ */
+export async function setupMultilingualTestContextFast(
+  testName: string,
+  metadataLanguages: string[]
+): Promise<MultilingualTestContext> {
+  const lameta = new LametaE2ERunner();
+  // Use fast launch with ELAR configuration
+  const project = await launchWithProject(
+    lameta,
+    `${testName}_${Date.now()}`,
+    "ELAR"
+  );
+  const page = lameta.page;
+
+  // Set up Metadata Languages if any were specified
+  // Metadata Languages are what determine the multilingual slots in the UI
+  if (metadataLanguages.length > 0) {
+    await project.goToProjectLanguages();
+    const metadataContainer = page
+      .locator('.field:has(label:has-text("Metadata Languages"))')
+      .first();
+    await metadataContainer.waitFor({ state: "visible", timeout: 10000 });
+    const metadataInput = metadataContainer
+      .locator('.select input[role="combobox"]')
+      .first();
+
+    for (const langCode of metadataLanguages) {
+      await metadataInput.click();
+      await fillLanguageChooserAndSelect(page, metadataInput, langCode);
+    }
+  }
+
+  return { lameta, page, project };
 }
 
 // Wait for the session form to load (specifically the Description field)
 export async function waitForSessionForm(page: Page, timeout = 10000) {
-  await page.waitForSelector('[data-testid="field-description-edit"]', {
+  // Wait for the Description field label to be visible
+  await page.waitForSelector('.field:has(label:text("Description"))', {
     timeout
   });
 }

@@ -16,7 +16,7 @@ Only fill in the yellow fields.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 export function makeParadisecCsv(
   path: string,
   project: Project,
-  sessionFilter: (f: Folder) => boolean
+  sessionFilter: (f: Folder) => boolean,
 ) {
   sentryBreadCrumb("makeParadisecCsv()");
   const csv =
@@ -33,14 +33,8 @@ export function makeParadisecCsv(
 
 export function makeParadisecProjectFields(project: Project): string[][] {
   const rows: string[][] = [];
-  rows.push([
-    "Collection ID",
-    project.properties.getTextStringOrEmpty("grantId")
-  ]);
-  rows.push([
-    "Collection Title",
-    project.properties.getTextStringOrEmpty("fundingProjectTitle")
-  ]);
+  rows.push(["Collection ID", project.properties.getTextStringOrEmpty("grantId")]);
+  rows.push(["Collection Title", project.properties.getTextStringOrEmpty("fundingProjectTitle")]);
 
   const projectDescriptionBlacklist = [
     "modifiedDate",
@@ -51,7 +45,7 @@ export function makeParadisecProjectFields(project: Project): string[][] {
     "id", // output in its own column
     "grantId", // output in its own column
     "depositor", // output in its own column
-    "fundingProjectTitle" // output in its own column
+    "fundingProjectTitle", // output in its own column
   ];
 
   const descriptionWithHomelessFields = getDescriptionWithAllHomelessFields(
@@ -60,13 +54,15 @@ export function makeParadisecProjectFields(project: Project): string[][] {
     projectDescriptionBlacklist,
     (key) =>
       key
+        .replace("SubjectLanguages", "subject-lang")
         .replace("collectionSubjectLanguages", "subject-lang")
-        .replace("workingLanguages", "working-lang")
+        .replace("WorkingLanguages", "working-lang")
+        .replace("workingLanguages", "working-lang"),
   );
 
   rows.push(["Collection Description", descriptionWithHomelessFields]);
   const { first, last } = parseNameIntoFirstAndLast(
-    project.properties.getTextStringOrEmpty("depositor")
+    project.properties.getTextStringOrEmpty("depositor"),
   );
   rows.push(["Collector First Name", first.trim()]);
   rows.push(["Collector Last Name", last.trim()]);
@@ -86,23 +82,14 @@ interface IColumn {
   func?: (session: Session) => string;
 }
 const columns: IColumn[] = [];
-function col(
-  header: string,
-  property: string,
-  func?: (session: Session) => string
-) {
+function col(header: string, property: string, func?: (session: Session) => string) {
   columns.push({ header, property, func });
 }
 
 col("Item Identifier", "id");
 col("Item Title", "title");
 col("Item Description", "unused because we're using a function", (session) =>
-  getDescriptionWithAllHomelessFields(
-    session,
-    "description",
-    sessionBlacklist,
-    (key) => key
-  )
+  getDescriptionWithAllHomelessFields(session, "description", sessionBlacklist, (key) => key),
 );
 
 /* If the recording is people speaking in English about Chinese, then
@@ -113,12 +100,8 @@ col("Item Description", "unused because we're using a function", (session) =>
   | Chinese  | subject | content   | subject   |
   +----------+---------+-----------+-----------+
   */
-col("Content Language", "", (session) =>
-  session.getWorkingLanguageCodes().join(",")
-);
-col("Subject Language", "", (session) =>
-  session.getSubjectLanguageCodes().join(",")
-);
+col("Content Language", "", (session) => session.getWorkingLanguageCodes().join(","));
+col("Subject Language", "", (session) => session.getSubjectLanguageCodes().join(","));
 
 col("Country/Countries", "locationCountry");
 col("Origination Date", "date");
@@ -145,7 +128,7 @@ contributorColumns.push({ header: "Last name", property: "" });
 
 export function makeParadisecSessionFields(
   project: Project,
-  sessionFilter: (f: Folder) => boolean
+  sessionFilter: (f: Folder) => boolean,
 ): string[][] {
   const lines: string[][] = [];
   const header = columns.map((c) => c.header);
@@ -156,7 +139,7 @@ export function makeParadisecSessionFields(
   project.sessions.items.filter(sessionFilter).forEach((session: Session) => {
     contributionGroups = Math.max(
       contributionGroups,
-      session.getAllContributionsToAllFiles().length
+      session.getAllContributionsToAllFiles().length,
     );
   });
   //console.log("contributionGroups:" + contributionGroups);
@@ -167,11 +150,7 @@ export function makeParadisecSessionFields(
 
   project.sessions.items.filter(sessionFilter).forEach((session: Session) => {
     const l = columns
-      .map((c) =>
-        c.func
-          ? c.func(session)
-          : session.properties.getTextStringOrEmpty(c.property)
-      )
+      .map((c) => (c.func ? c.func(session) : session.properties.getTextStringOrEmpty(c.property)))
       .concat(getContributions(project, session));
     lines.push(l);
   });
@@ -180,7 +159,7 @@ export function makeParadisecSessionFields(
 
 export function makeParadisecSessionCsv(
   project: Project,
-  sessionFilter: (f: Folder) => boolean
+  sessionFilter: (f: Folder) => boolean,
 ): string {
   return makeParadisecSessionFields(project, sessionFilter)
     .map((row) => row.map((column) => csvEncode(column)).join(","))
@@ -192,31 +171,39 @@ const sessionBlacklist = [
   "size",
   "type",
   "filename",
+  "description", // output as the leading Item Description content
   "id", // output in its own column
   "title", // output in its own column
   "languages", // output in its own column
   "date", // output in its own column
-  "genre" // output as "Discourse Type"
+  "genre", // output as "Discourse Type"
 ];
 
 function getDescriptionWithAllHomelessFields(
   folder: Folder,
   descriptionField: string,
   blacklist: string[],
-  relabel: (label: string) => string
+  relabel: (label: string) => string,
 ): string {
   const descriptionComponents = [
-    folder.properties.getTextStringOrEmpty(descriptionField)
+    flattenLineSeparators(folder.properties.getTextStringOrEmpty(descriptionField)),
   ];
   folder.properties.keys().forEach((key) => {
     if (blacklist.indexOf(key) < 0) {
-      const fieldContents = folder.properties.getTextStringOrEmpty(key);
+      const fieldContents = flattenLineSeparators(folder.properties.getTextStringOrEmpty(key));
       if (fieldContents && fieldContents.length > 0) {
         descriptionComponents.push(`${relabel(key)}: ${fieldContents}`);
       }
     }
   });
   return descriptionComponents.join(" | ");
+}
+
+function flattenLineSeparators(value: string): string {
+  // PARADISEC consumers expect a single physical CSV line per item description,
+  // so normalize any embedded line separators to spaces before encoding.
+  // This also avoids accidental row splitting in spreadsheet imports.
+  return value.replace(/[\r\n\u0085\u2028\u2029]+/g, " ");
 }
 
 // Get 3 fields for each contributor: [role,first,last,role,first,last,role,first,last, etc]

@@ -223,10 +223,10 @@ After generation, verify with unit tests:
 
 ```bash
 # Test all projects
-yarn test
+vp test run
 
 # Test specific project
-yarn test src/model/Project/LargeSample.spec.ts
+vp test run src/model/Project/LargeSample.spec.ts
 ```
 
 Tests verify:

@@ -6,12 +6,46 @@ import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityList
 import RoleChooser from "../RoleChooser";
 import PersonChooser from "./PersonChooser";
 import "./ContributorsTable.css";
-import { i18n } from "../../other/localization";
+import { i18n as appI18n } from "../../other/localization";
 import { t } from "@lingui/macro";
-import { SearchContext, useHasSearchMatch } from "../SearchContext";
+import { SearchContext, useHasSearchMatch, useSearchContext } from "../SearchContext";
 import { highlightMatches } from "../highlighting";
 import { css } from "@emotion/react";
 import { searchHighlight } from "../../containers/theme";
+
+// CommentCell extracted outside of ContributorsTable to prevent re-creation on every render
+// which was causing focus loss after typing each character
+const CommentCell: React.FC<{
+  value: string;
+  onChange: (v: string) => void;
+}> = ({ value, onChange }) => {
+  const shouldHighlight = useHasSearchMatch(value);
+  const { searchTerm } = useSearchContext();
+  return (
+    <div
+      data-testid="contributor-comment-cell"
+      data-has-highlight={shouldHighlight ? "true" : "false"}
+      css={
+        shouldHighlight
+          ? css`
+              background: ${searchHighlight};
+            `
+          : undefined
+      }
+    >
+      <textarea
+        data-testid="contributor-comment-textarea"
+        onChange={(e) => onChange(e.target.value)}
+        value={value}
+      />
+      {shouldHighlight && (
+        <div data-testid="contributor-comment-inline-preview">
+          {highlightMatches(value, searchTerm)}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export interface IProps {
   file: File;
@@ -78,48 +112,13 @@ class ContributorsTable extends React.Component<IProps> {
     const contribution = this.props.file.contributions[cellInfo.index];
     const fieldOfThisColumn: keyof Contribution = cellInfo.column.id;
     const cellValue = (contribution[fieldOfThisColumn] as any) || "";
-    const CommentCell: React.FC<{
-      value: string;
-      onChange: (v: string) => void;
-    }> = ({ value, onChange }) => {
-      const shouldHighlight = useHasSearchMatch(value);
-      const { searchTerm } = (ContributorsTable as any).contextType
-        ? (this.context as any)
-        : { searchTerm: "" };
-      return (
-        <div
-          data-testid="contributor-comment-cell"
-          // Always include the attribute for easier E2E assertions
-          data-has-highlight={shouldHighlight ? "true" : "false"}
-          css={
-            shouldHighlight
-              ? css`
-                  background: ${searchHighlight};
-                `
-              : undefined
-          }
-        >
-          <textarea
-            data-testid="contributor-comment-textarea"
-            onChange={(e) => onChange(e.target.value)}
-            value={value}
-          />
-          {/* lightweight inline highlight preview to give a stable element for tests */}
-          {shouldHighlight && (
-            <div data-testid="contributor-comment-inline-preview">
-              {highlightMatches(value, searchTerm)}
-            </div>
-          )}
-        </div>
-      );
-    };
 
     return (
       <CommentCell
         value={cellValue as string}
         onChange={(v: string) => {
           this.props.file.contributions[cellInfo.index][fieldOfThisColumn] = v;
-          this.setState({}); //review: having to do this, to get an update, usually means something isn't wired right with mobx
+          this.setState({});
         }}
       />
     );
@@ -167,7 +166,7 @@ class ContributorsTable extends React.Component<IProps> {
       },
       /* the most recent SayMore Classic doesn't include a date, and I agree with that
       {
-        Header: i18n._(t`Date`),
+        Header: appI18n._(t`Date`),
         accessor: "date",
         Cell: (cellInfo: any) => this.renderDate(cellInfo)
       },*/
@@ -177,7 +176,7 @@ class ContributorsTable extends React.Component<IProps> {
         Cell: (cellInfo: any) => this.renderEditableText(cellInfo)
       },
       {
-        //Header: i18n._(t`Comments`),
+        //Header: appI18n._(t`Comments`),
         maxWidth: 40,
         accessor: "delete",
         Cell: (cellInfo: any) => this.renderDeleteButton(cellInfo)

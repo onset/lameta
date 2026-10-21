@@ -13,6 +13,7 @@ import Tooltip from "react-tooltip-lite";
 import { buildTranslationTooltip } from "../TranslationTooltip";
 import WarningIcon from "@mui/icons-material/Warning";
 import { css } from "@emotion/react";
+import { FieldLabel } from "../FieldLabel";
 
 // For fields where there are choices but the user can enter new ones.
 const FieldOpenChoiceChooser: React.FunctionComponent<{
@@ -21,14 +22,12 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
   tabIndex?: number;
   translateChoice: (english: string) => string;
 }> = observer((props) => {
-  const label = props.field.labelInUILanguage;
-  
   // Access vocabulary translations here in the observer so MobX tracks changes
   const vocabularyTranslations = Project.getVocabularyTranslations();
   
   // Read revision to subscribe to changes - when translations are updated,
   // revision changes and MobX will re-render this component
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line @typescript-eslint/no-unused-vars
   const _revision = vocabularyTranslations?.revision ?? 0;
   
   // Helper function to translate genres including project-level translations
@@ -82,7 +81,7 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
   const { searchTerm } = React.useContext(SearchContext);
   return (
     <div className={"field " + props.className} data-testid="genre-chooser">
-      <label>{label}</label>
+      <FieldLabel fieldDef={props.field.definition} />
       <CreatableSelect
         className="field-value-border"
         tabIndex={props.tabIndex ? props.tabIndex : undefined}

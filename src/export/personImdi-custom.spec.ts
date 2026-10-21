@@ -5,7 +5,7 @@ import {
   beforeEach,
   afterEach,
   afterAll
-} from "vitest";
+} from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Person } from "../model/Project/Person/Person";
@@ -63,6 +63,13 @@ describe("actor imdi export", () => {
     person.properties.setText("birthYear", "");
     generate();
     expect("//Actor/Age").toMatch("Unspecified");
+  });
+
+  it("should export Gender=Other as Sex=Other (not Unspecified)", () => {
+    person.properties.setText("gender", "Other");
+    generate();
+    expect("//Actor/Sex").toMatch("Other");
+    expect("//Actor/Sex").toBeOpen();
   });
 });
 // function makeCustomField(key: string, value: string) {

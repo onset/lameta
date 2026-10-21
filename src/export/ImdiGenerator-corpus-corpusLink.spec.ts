@@ -6,7 +6,7 @@ import {
   count,
   value
 } from "../other/xmlUnitTestUtils";
-import { vi, describe, it, beforeAll, beforeEach } from "vitest";
+import { vi, describe, it, beforeAll, beforeEach } from "vite-plus/test";
 
 let project: Project;
 

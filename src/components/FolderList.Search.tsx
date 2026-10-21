@@ -6,8 +6,8 @@ import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { t } from "@lingui/macro";
-import { i18n } from "../other/localization";
-import { FolderGroup } from "src/model/Folder/FolderGroup";
+import { i18n as appI18n } from "../other/localization";
+import { FolderGroup } from "../model/Folder/FolderGroup";
 import { observer } from "mobx-react";
 import { lameta_orange } from "../containers/theme";
 
@@ -20,13 +20,7 @@ interface ISearchBarProps {
 }
 
 export const SearchBar: React.FC<ISearchBarProps> = observer(
-  ({
-    folders,
-    lastSearch,
-    searchCount,
-    currentSearchResetCounter,
-    onCommitted
-  }) => {
+  ({ folders, lastSearch, searchCount, currentSearchResetCounter, onCommitted }) => {
     // Use folders.searchTerm only for persisted normalized match logic; UI adornments should reflect what user has typed (rawValue)
     const value = folders.searchTerm || ""; // legacy persisted value (may lag while typing in empty list state)
     // Track raw user input; initialize from lastSearch prop (state persisted in parent) so tab switches retain visual input
@@ -45,7 +39,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
           folders.filter(v);
         }
       },
-      [folders, onCommitted]
+      [folders, onCommitted],
     );
 
     const handleChange = (v: string) => {
@@ -81,7 +75,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
       >
         <TextField
           size="small"
-          placeholder={i18n._(t`Find`)}
+          placeholder={appI18n._(t`Find`)}
           value={rawValue}
           variant="outlined"
           inputProps={{ "data-testid": "folder-search-input" }}
@@ -98,7 +92,7 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
                   size="small"
                   onClick={handleImmediateCommit}
                   data-testid="folder-search-button"
-                  aria-label={i18n._(t`Search`)}
+                  aria-label={appI18n._(t`Search`)}
                   css={css`
                     background: ${lameta_orange};
                     color: white; /* icon color */
@@ -127,13 +121,13 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
                 <IconButton
                   size="small"
                   onClick={clear}
-                  aria-label={i18n._(t`Clear`)}
+                  aria-label={appI18n._(t`Clear`)}
                   data-testid="folder-search-clear"
                 >
                   <CloseIcon fontSize="small" />
                 </IconButton>
               </InputAdornment>
-            ) : undefined
+            ) : undefined,
           }}
           css={css`
             flex: 1;
@@ -148,5 +142,5 @@ export const SearchBar: React.FC<ISearchBarProps> = observer(
         />
       </div>
     );
-  }
+  },
 );

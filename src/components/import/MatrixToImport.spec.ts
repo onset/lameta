@@ -16,7 +16,7 @@ import {
   IMappedCell
 } from "./MappedMatrix";
 import { Person } from "../../model/Project/Person/Person";
-import { describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { describe, it, beforeAll, beforeEach, expect } from "vite-plus/test";
 import * as mobx from "mobx";
 
 mobx.configure({
@@ -24,7 +24,7 @@ mobx.configure({
 });
 import { i18nUnitTestPrep } from "../../other/localization";
 import { IPersonLanguage } from "../../model/PersonLanguage";
-import { vi } from "vitest";
+import { vi } from "vite-plus/test";
 i18nUnitTestPrep();
 
 let project: Project;

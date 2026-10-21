@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vite-plus/test";
 
 // Track all spawnSync calls
 let spawnSyncCalls: Array<{ command: string; args: string[] }> = [];

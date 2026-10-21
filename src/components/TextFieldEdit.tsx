@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import * as mobx from "mobx-react";
 import { Field } from "../model/field/Field";
 import Tooltip from "react-tooltip-lite";
-import { FieldLabel } from "./FieldLabel";
+import { FieldInfoAffordances, FieldLabel } from "./FieldLabel";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { LanguageSlot } from "../model/field/TextHolder";
 import { SearchContext } from "./SearchContext";
@@ -19,6 +19,9 @@ import {
   LanguageTagWithKebab
 } from "./MultilingualTextFieldControls";
 import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
+
+const rowStyleAffordanceWidth = "24px";
+
 export interface IProps {
   field: Field;
   autoFocus?: boolean;
@@ -86,6 +89,8 @@ export const TextFieldEdit: React.FunctionComponent<
           flex-grow: 1;
           // we have one or more children that will scroll as needed
           overflow-y: hidden;
+          display: flex;
+          flex-direction: column;
         `}
       >
         {props.visibleInstructions && <div>{props.visibleInstructions}</div>}
@@ -105,7 +110,7 @@ export const TextFieldEdit: React.FunctionComponent<
             border: ${props.borderless ? "none !important" : ""};
             position: relative;
             ${props.field.definition.multipleLines
-              ? `min-height: 4em; display: flex; flex-direction: column; height: 100%;
+              ? `min-height: 4em; display: flex; flex-direction: column; flex-grow: 1;
                  ${showMultilingualUI ? "overflow-y: auto;" : ""}`
               : showMultilingualUI
               ? "overflow-y: auto;"
@@ -151,6 +156,22 @@ export const TextFieldEdit: React.FunctionComponent<
           )}
         </div>
       </div>
+      {props.showAffordancesAfter && (
+        <div
+          className="field-affordances-after"
+          css={css`
+            display: flex;
+            align-self: flex-start;
+            margin-top: 4px;
+            margin-left: 6px;
+            flex-shrink: 0;
+            width: ${rowStyleAffordanceWidth};
+            min-width: ${rowStyleAffordanceWidth};
+          `}
+        >
+          <FieldInfoAffordances fieldDef={props.field.definition} />
+        </div>
+      )}
     </div>
   );
 });
@@ -357,6 +378,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
         flex-direction: row;
         min-height: ${props.languageSlot ? "auto" : "1.2em"};
         flex-shrink: 0; /* prevent individual fields from shrinking */
+        flex-grow: ${props.field.definition.multipleLines && !props.languageSlot ? 1 : 0}; /* for multiline monolingual fields like notes, fill available space */
         padding-top: ${props.languageSlot ? "2px" : "2px"};
         padding-right: 2px; /* buttons are now inline flex items */
         padding-bottom: ${props.languageSlot ? "2px" : "0"};

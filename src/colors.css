@@ -1,4 +1,8 @@
 :root {
+  /* Text colors */
+  --color-text-primary: rgba(0, 0, 0, 0.87);
+  --color-text-secondary: rgba(0, 0, 0, 0.6);
+
   /* Core palette */
   --project-color: #e69664;
   --header-background-color: white;

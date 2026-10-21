@@ -5,7 +5,7 @@
 // and must never be touched — hence the hard branch assertion on every
 // candidate. Prints what it would do; add --force to actually delete.
 //
-//   yarn tsx scripts/crowdin/delete-v3-junk.ts [--force]
+//   pnpm exec tsx scripts/crowdin/delete-v3-junk.ts [--force]
 import * as path from "path";
 import { PROJECT_ID, V3_BRANCH_ID, api, apiAll } from "./lib";
 

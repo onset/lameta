@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeEach, expect } from "vite-plus/test";
 
 // Mock the staticLanguageFinder dependency BEFORE importing modules that use it
 vi.mock("../../languageFinder/LanguageFinder", () => ({
@@ -178,7 +178,7 @@ describe("RoCrateExporter LDAC Profile Full Integration", () => {
       metadataFile: {
         getTextProperty: vi.fn().mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           return "";
         }),

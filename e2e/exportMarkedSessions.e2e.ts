@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let project: E2eProject;
@@ -8,11 +8,9 @@ let project: E2eProject;
 test.describe("Export Marked Sessions", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    await lameta.launch();
-    await lameta.cancelRegistration();
     // Use timestamp to ensure unique project name
     const timestamp = Date.now();
-    project = await createNewProject(
+    project = await launchWithProject(
       lameta,
       `ExportMarkedSessionsTest_${timestamp}`
     );

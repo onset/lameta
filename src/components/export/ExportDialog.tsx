@@ -33,15 +33,14 @@ import {
   DialogMiddle,
   DialogBottomButtons,
   DialogCancelButton,
-  useSetupLametaDialog
+  useSetupLametaDialog,
 } from "../LametaDialog";
 import { Button, LinearProgress } from "@mui/material";
 import { IMDIMode } from "../../export/ImdiGenerator";
 import { writeROCrateFile } from "../../export/ROCrate/WriteROCrateFile";
 import { ExportProgress } from "../../export/ExportBundleTypes";
 import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
-import { clipboard } from "electron";
-import { Session } from "src/model/Project/Session/Session";
+import { Session } from "../../model/Project/Session/Session";
 import { lameta_green, lameta_dark_green } from "../../containers/theme";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
 
@@ -51,7 +50,7 @@ import { runHybridImdiExport } from "./imdiExport";
 import {
   getPathForCsvSaving,
   getPathForParadisecSaving,
-  getPathForIMDISaving
+  getPathForIMDISaving,
 } from "./exportPaths";
 
 let staticShowExportDialog: () => void = () => {};
@@ -68,18 +67,18 @@ const warningCategoryColors = [
   "#4527a0", // deep purple
   "#ef6c00", // orange
   "#283593", // indigo
-  "#00695c" // teal
+  "#00695c", // teal
 ];
 
 // Patterns to identify warning categories
 const warningCategoryPatterns: Array<{ pattern: RegExp; label: string }> = [
   {
     pattern: /does not comply with the file naming rules/i,
-    label: "file-naming"
+    label: "file-naming",
   },
   { pattern: /BirthYear .* is not valid for IMDI/i, label: "birthyear" },
   { pattern: /missing/i, label: "missing" },
-  { pattern: /could not/i, label: "could-not" }
+  { pattern: /could not/i, label: "could-not" },
 ];
 
 // Get the category for a warning message
@@ -100,7 +99,7 @@ const getColorForCategory = (category: string): string => {
   if (!categoryColorMap.has(category)) {
     categoryColorMap.set(
       category,
-      warningCategoryColors[nextColorIndex % warningCategoryColors.length]
+      warningCategoryColors[nextColorIndex % warningCategoryColors.length],
     );
     nextColorIndex++;
   }
@@ -119,7 +118,7 @@ enum Mode {
   copying = 2,
   finished = 3,
   error = 4,
-  cancelled = 5
+  cancelled = 5,
 }
 export const ExportDialog: React.FunctionComponent<{
   projectHolder: ProjectHolder;
@@ -138,7 +137,7 @@ export const ExportDialog: React.FunctionComponent<{
       totalSessions: 0,
       currentSessionName: "",
       percentage: 0,
-      message: ""
+      message: "",
     });
     setImdiValidated(false);
     SetRulesBasedValidationResult(undefined);
@@ -166,13 +165,12 @@ export const ExportDialog: React.FunctionComponent<{
 
   const [imdiValidated, setImdiValidated] = useState<boolean>(false);
 
-  const [rulesBasedValidationResult, SetRulesBasedValidationResult] =
-    React.useState<string | undefined>();
+  const [rulesBasedValidationResult, SetRulesBasedValidationResult] = React.useState<
+    string | undefined
+  >();
 
   const [outputPath, setOutputPath] = useState<string | undefined>(undefined);
-  const [exportFormat, setExportFormat] = useState(
-    userSettingsSingleton.ExportFormat
-  );
+  const [exportFormat, setExportFormat] = useState(userSettingsSingleton.ExportFormat);
   const [whichSessionsOption, setWhichSessionsOption] = useState("all");
 
   // Calculate marked sessions count directly in render - observer will handle reactivity
@@ -194,7 +192,7 @@ export const ExportDialog: React.FunctionComponent<{
     totalSessions: 0,
     currentSessionName: "",
     percentage: 0,
-    message: ""
+    message: "",
   });
   const [exportLog, setExportLog] = useState<string[]>([]);
   const cancelRequestedRef = useRef(false);
@@ -209,13 +207,13 @@ export const ExportDialog: React.FunctionComponent<{
         currentFile: string;
         currentFileIndex: number;
         totalFiles: number;
-      }
+      },
     ) => {
       setExportProgress((prev) => ({
         ...prev,
         currentFile: progress.currentFile,
         currentFileIndex: progress.currentFileIndex,
-        totalFilesInSession: progress.totalFiles
+        totalFilesInSession: progress.totalFiles,
       }));
     };
 
@@ -235,7 +233,7 @@ export const ExportDialog: React.FunctionComponent<{
     setExportProgress,
     setExportLog,
     addLogEntry,
-    cancelRequestedRef
+    cancelRequestedRef,
   };
 
   useInterval(() => {
@@ -257,7 +255,7 @@ export const ExportDialog: React.FunctionComponent<{
       ) {
         NotifyError(
           t`Cannot export to IMDI while multilingual text migration is pending.`,
-          t`Please complete the migration in the Project tab under Languages before exporting.`
+          t`Please complete the migration in the Project tab under Languages before exporting.`,
         );
         return;
       }
@@ -271,20 +269,17 @@ export const ExportDialog: React.FunctionComponent<{
           try {
             // For RO-Crate, we still need to check for rules violations
             const folderFilter =
-              whichSessionsOption === "all"
-                ? () => true
-                : (f: Folder) => f.marked;
-            const sessions: Session[] =
-              props.projectHolder.project!.sessions.items.filter(
-                folderFilter
-              ) as unknown as Session[];
+              whichSessionsOption === "all" ? () => true : (f: Folder) => f.marked;
+            const sessions: Session[] = props.projectHolder.project!.sessions.items.filter(
+              folderFilter,
+            ) as unknown as Session[];
             // for each session, call getRulesViolationsString() and if it is not empty, add to RulesBasedValidationResult
             let rulesBasedValidationResult = "";
             for (const session of sessions) {
               const result = session.getRulesViolationsString(
                 props.projectHolder.project!.persons.items.map((p) =>
-                  p.properties.getTextStringOrEmpty(p.propertyForCheckingId)
-                )
+                  p.properties.getTextStringOrEmpty(p.propertyForCheckingId),
+                ),
               );
               if (result) {
                 rulesBasedValidationResult += `**${session.id}**\n\n${result}\n\n`;
@@ -295,15 +290,12 @@ export const ExportDialog: React.FunctionComponent<{
             // RO-Crate export writes to a fixed location in the project directory
             const outputPath = Path.join(
               props.projectHolder.project!.directory,
-              "ro-crate-metadata.json"
+              "ro-crate-metadata.json",
             );
             setOutputPath(outputPath);
             saveFilesAsync("");
           } catch (err) {
-            NotifyException(
-              err,
-              `${t`There was a problem exporting:`} ${err.message}`
-            );
+            NotifyException(err, `${t`There was a problem exporting:`} ${err.message}`);
             closeDialog();
           }
         }, 100);
@@ -313,19 +305,15 @@ export const ExportDialog: React.FunctionComponent<{
       let defaultPath;
       switch (exportFormat) {
         case "csv":
-          defaultPath = getPathForCsvSaving(
-            props.projectHolder.project!.displayName
-          );
+          defaultPath = getPathForCsvSaving(props.projectHolder.project!.displayName);
           break;
         case "paradisec":
-          defaultPath = getPathForParadisecSaving(
-            props.projectHolder.project!.displayName
-          );
+          defaultPath = getPathForParadisecSaving(props.projectHolder.project!.displayName);
           break;
         default:
           defaultPath = getPathForIMDISaving(
             props.projectHolder.project!.displayName,
-            exportFormat
+            exportFormat,
           );
           break;
       }
@@ -338,10 +326,10 @@ export const ExportDialog: React.FunctionComponent<{
               ? [
                   {
                     extensions: ["zip"],
-                    name: t`ZIP Archive`
-                  }
+                    name: t`ZIP Archive`,
+                  },
                 ]
-              : []
+              : [],
         })
         .then((result) => {
           if (result.canceled) {
@@ -352,20 +340,17 @@ export const ExportDialog: React.FunctionComponent<{
             setTimeout(() => {
               try {
                 const folderFilter =
-                  whichSessionsOption === "all"
-                    ? () => true
-                    : (f: Folder) => f.marked;
-                const sessions: Session[] =
-                  props.projectHolder.project!.sessions.items.filter(
-                    folderFilter
-                  ) as unknown as Session[];
+                  whichSessionsOption === "all" ? () => true : (f: Folder) => f.marked;
+                const sessions: Session[] = props.projectHolder.project!.sessions.items.filter(
+                  folderFilter,
+                ) as unknown as Session[];
                 // for each session, call getRulesViolationsString() and if it is not empty, add to RulesBasedValidationResult
                 let rulesBasedValidationResult = "";
                 for (const session of sessions) {
                   const result = session.getRulesViolationsString(
                     props.projectHolder.project!.persons.items.map((p) =>
-                      p.properties.getTextStringOrEmpty(p.propertyForCheckingId)
-                    )
+                      p.properties.getTextStringOrEmpty(p.propertyForCheckingId),
+                    ),
                   );
                   if (result) {
                     rulesBasedValidationResult += `**${session.id}**\n\n${result}\n\n`;
@@ -377,10 +362,7 @@ export const ExportDialog: React.FunctionComponent<{
                 // we'll return from this while the saving happens. When it is done, our mode will change from `exporting` to `finished`.
                 saveFilesAsync(result.filePath!);
               } catch (err) {
-                NotifyException(
-                  err,
-                  `${t`There was a problem exporting:`} ${err.message}`
-                );
+                NotifyException(err, `${t`There was a problem exporting:`} ${err.message}`);
                 closeDialog();
               }
             }, 100);
@@ -407,9 +389,7 @@ export const ExportDialog: React.FunctionComponent<{
 
     try {
       const folderFilter =
-        whichSessionsOption === "all"
-          ? (f: Folder) => true
-          : (f: Folder) => f.marked;
+        whichSessionsOption === "all" ? (f: Folder) => true : (f: Folder) => f.marked;
 
       // RO-Crate doesn't need a path parameter, other exports do
       if (path || exportFormat === "ro-crate") {
@@ -419,19 +399,15 @@ export const ExportDialog: React.FunctionComponent<{
             setExportProgress((prev) => ({
               ...prev,
               message: t`Generating CSV export...`,
-              percentage: Math.max(prev.percentage || 0, 20)
+              percentage: Math.max(prev.percentage || 0, 20),
             }));
 
-            await asyncMakeGenericCsvZipFile(
-              path,
-              props.projectHolder.project!,
-              folderFilter
-            );
+            await asyncMakeGenericCsvZipFile(path, props.projectHolder.project!, folderFilter);
 
             setExportProgress((prev) => ({
               ...prev,
               message: t`CSV export complete`,
-              percentage: 100
+              percentage: 100,
             }));
             await finishExport();
             setMode(Mode.finished); // don't have to wait for any copying of big files
@@ -441,7 +417,7 @@ export const ExportDialog: React.FunctionComponent<{
             setExportProgress((prev) => ({
               ...prev,
               message: t`Generating PARADISEC CSV...`,
-              percentage: Math.max(prev.percentage || 0, 25)
+              percentage: Math.max(prev.percentage || 0, 25),
             }));
 
             makeParadisecCsv(path, props.projectHolder.project!, folderFilter);
@@ -449,7 +425,7 @@ export const ExportDialog: React.FunctionComponent<{
             setExportProgress((prev) => ({
               ...prev,
               message: t`PARADISEC CSV export complete`,
-              percentage: 100
+              percentage: 100,
             }));
             await finishExport();
             setMode(Mode.finished); // don't have to wait for any copying of big files
@@ -460,21 +436,19 @@ export const ExportDialog: React.FunctionComponent<{
             setExportProgress((prev) => ({
               ...prev,
               message: t`Generating RO-Crate metadata...`,
-              percentage: Math.max(prev.percentage || 0, 25)
+              percentage: Math.max(prev.percentage || 0, 25),
             }));
-            const roCrateData = await writeROCrateFile(
-              props.projectHolder.project!
-            );
+            const roCrateData = await writeROCrateFile(props.projectHolder.project!);
             setExportProgress((prev) => ({
               ...prev,
               message: t`Validating RO-Crate export...`,
-              percentage: Math.max(prev.percentage || 0, 90)
+              percentage: Math.max(prev.percentage || 0, 90),
             }));
             await runRoCrateValidation(roCrateData);
             setExportProgress((prev) => ({
               ...prev,
               message: t`RO-Crate export complete`,
-              percentage: 100
+              percentage: 100,
             }));
             await finishExport();
             setMode(Mode.finished);
@@ -488,7 +462,7 @@ export const ExportDialog: React.FunctionComponent<{
               IMDIMode.RAW_IMDI,
               false,
               folderFilter,
-              hybridExportCallbacks
+              hybridExportCallbacks,
             );
             if (imdiSuccess) {
               await finishExport();
@@ -502,9 +476,7 @@ export const ExportDialog: React.FunctionComponent<{
           case "opex-plus-files":
             analyticsEvent("Export", "Export OPEX Plus Files");
             if (CopyManager.filesAreStillCopying()) {
-              NotifyWarning(
-                t`lameta cannot export files while files are still being copied in.`
-              );
+              NotifyWarning(t`lameta cannot export files while files are still being copied in.`);
               setMode(Mode.choosing);
             } else {
               const success = await runHybridImdiExport(
@@ -513,7 +485,7 @@ export const ExportDialog: React.FunctionComponent<{
                 IMDIMode.OPEX,
                 true,
                 folderFilter,
-                hybridExportCallbacks
+                hybridExportCallbacks,
               );
               if (success) {
                 await finishExport();
@@ -595,9 +567,7 @@ export const ExportDialog: React.FunctionComponent<{
               // Strip project path from export log entries
               const cleanedExportLog = exportLog.map((entry) => {
                 if (projectDir && entry.includes(projectDir)) {
-                  return entry
-                    .replace(projectDir + Path.sep, "")
-                    .replace(projectDir, "");
+                  return entry.replace(projectDir + Path.sep, "").replace(projectDir, "");
                 }
                 return entry;
               });
@@ -614,15 +584,11 @@ export const ExportDialog: React.FunctionComponent<{
                   .replace(/&amp;/g, "&");
 
               const copyEntriesToClipboard = () => {
-                clipboard.writeText(
-                  allEntries.map(decodeForClipboard).join("\n")
-                );
+                navigator.clipboard.writeText(allEntries.map(decodeForClipboard).join("\n"));
               };
 
               // Find index of first error for scrolling
-              const firstErrorIndex = allEntries.findIndex((entry) =>
-                entry.startsWith("❌")
-              );
+              const firstErrorIndex = allEntries.findIndex((entry) => entry.startsWith("❌"));
 
               return (
                 <div
@@ -652,9 +618,7 @@ export const ExportDialog: React.FunctionComponent<{
                       ref={(el) => {
                         // Auto-scroll to first error
                         if (el && firstErrorIndex >= 0) {
-                          const errorElement = el.children[
-                            firstErrorIndex
-                          ] as HTMLElement;
+                          const errorElement = el.children[firstErrorIndex] as HTMLElement;
                           if (errorElement) {
                             errorElement.scrollIntoView({ block: "nearest" });
                           }
@@ -827,9 +791,7 @@ export const ExportDialog: React.FunctionComponent<{
               // Strip project path from export log warnings
               const cleanedExportLog = exportLog.map((entry) => {
                 if (projectDir && entry.includes(projectDir)) {
-                  return entry
-                    .replace(projectDir + Path.sep, "")
-                    .replace(projectDir, "");
+                  return entry.replace(projectDir + Path.sep, "").replace(projectDir, "");
                 }
                 return entry;
               });
@@ -847,9 +809,7 @@ export const ExportDialog: React.FunctionComponent<{
                   .replace(/&amp;/g, "&");
 
               const copyWarningsToClipboard = () => {
-                clipboard.writeText(
-                  allWarnings.map(decodeForClipboard).join("\n")
-                );
+                navigator.clipboard.writeText(allWarnings.map(decodeForClipboard).join("\n"));
               };
 
               return (
@@ -1005,11 +965,7 @@ export const ExportDialog: React.FunctionComponent<{
 
       <DialogBottomButtons>
         {(mode === Mode.error || mode === Mode.cancelled) && (
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => closeDialog()}
-          >
+          <Button variant="contained" color="secondary" onClick={() => closeDialog()}>
             <Trans>Close</Trans>
           </Button>
         )}
@@ -1023,7 +979,7 @@ export const ExportDialog: React.FunctionComponent<{
               mainProcessApi.cancelImdiExportCopyOperations();
               setExportProgress((prev) => ({
                 ...prev,
-                message: t`Cancelling...`
+                message: t`Cancelling...`,
               }));
             }}
           >

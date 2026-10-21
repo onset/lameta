@@ -4,8 +4,8 @@ We use Crowdin.com for crowdsourced translation, [lingui](https://lingui.js.org/
 
 - **Crowdin project:** 324607 ("laMeta", identifier `saymorex`). One project, two areas:
   - **Project ROOT = lameta v2.** The `V2` branch of this repo syncs there (old layout: `messages.po` + `fields/choices/tips.csv`). **Do not upload to, change, or delete anything at the Crowdin root from V3 tooling** — v2 is still shipping.
-  - **Crowdin branch `V3` = this repo.** `yarn strings:sync` uploads/downloads with `-b V3`. Exactly six files live there: `messages.po`, `fields.po`, `vocabularies.po`, `accessProtocols.csv`, `genres.csv`, `roles.csv`.
-- **Duplicate sharing:** the project setting "hide duplicates" means any V3 string whose English text also exists at the root is hidden in the editor and automatically inherits the root's translation. That is how v2's translation work flows into v3 for free. It also means per-file "translated %" on Crowdin only counts *visible* strings — use `yarn tsx scripts/crowdin/report.ts V3` for the real picture.
+  - **Crowdin branch `V3` = this repo.** `vp run strings:sync` uploads/downloads with `-b V3`. Exactly six files live there: `messages.po`, `fields.po`, `vocabularies.po`, `accessProtocols.csv`, `genres.csv`, `roles.csv`.
+- **Duplicate sharing:** the project setting "hide duplicates" means any V3 string whose English text also exists at the root is hidden in the editor and automatically inherits the root's translation. That is how v2's translation work flows into v3 for free. It also means per-file "translated %" on Crowdin only counts *visible* strings — use `pnpm exec tsx scripts/crowdin/report.ts V3` for the real picture.
 - **Language codes and folders match**: `locale/{es,fr,ru,id,fa,pt-BR,zh-CN}/`. `crowdin.yml` has a `languages_mapping` that forces the downloads for pt-BR and zh-CN into those exact folder names (Crowdin's default two-letter scheme would produce `pt/` and `zh/` — that caused years of confusion and a runtime folder remap that has been removed).
 - The English catalogs (`locale/en/*.po`) are the source of truth for what strings exist; translations live on Crowdin and are pulled into the per-language folders.
 
@@ -40,11 +40,7 @@ or
 
 ```ts
 {
-  this.i18n._(
-    "project.DescriptionDocuments",
-    {},
-    { defaults: "Description Documents" }
-  );
+  this.i18n._("project.DescriptionDocuments", {}, { defaults: "Description Documents" });
 }
 ```
 
@@ -64,21 +60,21 @@ Our `strings:extract-json` script extracts the translatable fields from all the 
 
 ## 1) Build the string catalog
 
-`yarn strings:extract` reads .linguirc to know what files to include. It creates `po` files. (Order matters internally: the lingui extract runs first because it overwrites fields.po, then the json extractor.)
+`vp run strings:extract` reads .linguirc to know what files to include. It creates `po` files. (Order matters internally: the lingui extract runs first because it overwrites fields.po, then the json extractor.)
 
 ## 2) Sync with Crowdin
 
-`yarn strings:sync` will send everything to the **V3 branch** and pull the translations back. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
+`vp run strings:sync` will send everything to the **V3 branch** and pull the translations back. You will need an environment variable LAMETA_CROWDIN_TOKEN set to your crowdin token that has permission to do uploads.
 
 ## 3) Let lingui create its js files (`messages.js`, `fields.js`, etc.)
 
-`yarn strings:compile`
+`vp run strings:compile`
 
 Running all three twice in a row should produce **zero git churn** — if it doesn't, something is misconfigured; check `crowdin.yml`'s `languages_mapping` first.
 
 # Tooling in scripts/crowdin/
 
-Run any of these with `yarn tsx scripts/crowdin/<name>.ts`. They authenticate with LAMETA_CROWDIN_TOKEN.
+Run any of these with `pnpm exec tsx scripts/crowdin/<name>.ts`. They authenticate with LAMETA_CROWDIN_TOKEN.
 
 | script | what it does |
 | --- | --- |
@@ -118,7 +114,7 @@ First, make sure you have the latest translations into your local files.
 
 Now you have to add the new column. By hand, add a column to top row of locale/\*.csv, using the same name and casing as Crowdin uses. Then in Crowdin:Files select each of these csv files and choose "Change Scheme" & select your local file to upload. This will open a UI in that lets you identify the new language of the column.
 
-DANGER: Crowdin "Change Scheme" can actually remove translations as well. So first run `yarn tsx scripts/crowdin/backup.ts` and commit, then pull in any new translations before adding new languages.
+DANGER: Crowdin "Change Scheme" can actually remove translations as well. So first run `pnpm exec tsx scripts/crowdin/backup.ts` and commit, then pull in any new translations before adding new languages.
 If you do lose translations, they will still be in Crowdin's Translation Memory. You can apply them one by one or use the "Pre-Translation" to use the lameta TM to fill them back in. This is scary becuase the Crowdin UI does not make it clear that it will NOT use the "global TM". I tested it on a test.csv file, to ensure that it only pre-translates from the lameta TM.
 
 For some reason, for genres.csv, the "Change scheme" tool doesn't recognize the csv nature of this file. You have to open it in Libre Office, then save as, and you can get it to add the commas at the end of the last field.

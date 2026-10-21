@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, expect, afterAll } from "vitest";
+import { describe, it, beforeAll, expect, afterAll } from "vite-plus/test";
 import * as temp from "temp";
 import { Project } from "../model/Project/Project";
 import ImdiBundler from "./ImdiBundler";
@@ -23,7 +23,7 @@ beforeAll(async () => {
       targetDir,
       IMDIMode.OPEX,
       true,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // oxlint-disable-next-line @typescript-eslint/no-unused-vars
       (f) => true
     );
   } catch (e) {

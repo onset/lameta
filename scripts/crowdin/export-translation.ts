@@ -1,7 +1,7 @@
 // Export one file's translations for one language from Crowdin (read-only)
 // and report the number of non-empty msgstr / filled CSV cells.
 //
-//   yarn tsx scripts/crowdin/export-translation.ts <branchName|--root> <fileName> <langId> [outPath]
+//   pnpm exec tsx scripts/crowdin/export-translation.ts <branchName|--root> <fileName> <langId> [outPath]
 import * as fs from "fs";
 import * as path from "path";
 import { PROJECT_ID, api, apiAll, downloadToFile, countNonEmptyMsgstr } from "./lib";

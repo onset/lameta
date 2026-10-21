@@ -2,8 +2,8 @@
 // counts (visible/hidden), and per-language translated counts. Used to verify
 // every mutating phase of the v2→v3 sort-out, and handy forever after.
 //
-//   yarn tsx scripts/crowdin/report.ts V3
-//   yarn tsx scripts/crowdin/report.ts --root
+//   pnpm exec tsx scripts/crowdin/report.ts V3
+//   pnpm exec tsx scripts/crowdin/report.ts --root
 import { PROJECT_ID, api, apiAll } from "./lib";
 
 async function main() {

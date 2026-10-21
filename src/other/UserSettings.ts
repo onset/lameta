@@ -6,7 +6,7 @@ import React from "react";
 import pkg from "package.json";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { app, process } from "@electron/remote";
-import Path from "path";
+import * as Path from "path";
 import fs from "fs-extra";
 
 class FakeStore {

@@ -10,8 +10,8 @@ export interface TranslationTooltipResult {
 }
 
 /**
- * Navigate to the Vocabulary Translations tab in the Project section.
- * This clicks the Project main tab, then the Vocabulary Translations sub-tab.
+ * Navigate to the  Translations tab in the Project section.
+ * This clicks the Project main tab, then the  Translations sub-tab.
  */
 const navigateToVocabularyTranslations = () => {
   // Click the main Project tab
@@ -20,7 +20,7 @@ const navigateToVocabularyTranslations = () => {
   ) as HTMLElement;
   if (projectTab) {
     projectTab.click();
-    // After a brief delay to allow tab switch, click the Vocabulary Translations sub-tab
+    // After a brief delay to allow tab switch, click the Translations sub-tab
     setTimeout(() => {
       const vocabTab = document.querySelector(
         '[data-testid="project-vocabulary-translations-tab"]'
@@ -89,7 +89,7 @@ export const buildTranslationTooltip = (
               cursor: "pointer"
             }}
           >
-            <Trans>Vocabulary Translations</Trans>
+            <Trans>Translations</Trans>
           </a>
         </div>
       )}

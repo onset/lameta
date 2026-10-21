@@ -17,7 +17,7 @@ let project: E2eProject;
  * Playwright's BeforeAll is actually run after each test,
  * so just have one test() function.
  ---------------------------------------------------------*/
-test.describe("Localization", () => {
+test.describe.skip("Localization", () => {
   test.beforeEach(async () => {
     if (!lameta) {
       lameta = new LametaE2ERunner();

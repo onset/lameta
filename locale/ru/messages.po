@@ -21,9 +21,6 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr ""
 
-msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
-msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
@@ -130,9 +127,6 @@ msgstr ""
 msgid "Close"
 msgstr "Закрыть"
 
-msgid "Collection"
-msgstr "Коллекция"
-
 msgid "Comments"
 msgstr "Комментарии"
 
@@ -209,9 +203,6 @@ msgid "Delete File..."
 msgstr ""
 
 msgid "Delete Person..."
-msgstr ""
-
-msgid "Delete Session"
 msgstr ""
 
 msgid "Delete Session..."
@@ -322,9 +313,6 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-msgid "Funding Project"
-msgstr ""
-
 msgid "Generating CSV export..."
 msgstr ""
 
@@ -335,6 +323,9 @@ msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Genres"
+msgstr ""
+
+msgid "Grant"
 msgstr ""
 
 msgid "Help"
@@ -353,12 +344,6 @@ msgid "How are you using lameta?"
 msgstr ""
 
 msgid "ID"
-msgstr ""
-
-msgid "ID cannot be empty"
-msgstr ""
-
-msgid "ID cannot contain spaces"
 msgstr ""
 
 msgid "IMDI Only"
@@ -498,6 +483,9 @@ msgstr ""
 
 msgid "Other Documents"
 msgstr "Другие документы"
+
+msgid "Other Strings Used During Export"
+msgstr ""
 
 msgid "PARADISEC CSV export complete"
 msgstr ""
@@ -748,6 +736,9 @@ msgstr ""
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr ""
 
+msgid "Translations"
+msgstr ""
+
 msgid "Type"
 msgstr "Тип"
 
@@ -758,6 +749,9 @@ msgid "Unknown error while scanning vocabulary"
 msgstr ""
 
 msgid "Update available"
+msgstr ""
+
+msgid "Used during IMDI export"
 msgstr ""
 
 msgid "Validating RO-Crate export..."
@@ -775,13 +769,11 @@ msgstr "Вид"
 msgid "View Release Notes"
 msgstr ""
 
-msgid "Vocabulary Translations"
-msgstr ""
-
 msgid "Vocabulary scan failed"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
@@ -879,4 +871,3 @@ msgstr ""
 
 msgid "{totalMissing} items need translation"
 msgstr ""
-

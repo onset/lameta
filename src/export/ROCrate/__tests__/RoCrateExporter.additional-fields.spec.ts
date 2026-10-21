@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";

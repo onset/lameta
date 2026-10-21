@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { E2eFileList } from "./FileList-e2e-helpers";
 import { FolderSearchUtilities } from "./folderSearch-e2e-helpers";
 
@@ -12,9 +12,11 @@ let searchUtils: FolderSearchUtilities;
 test.describe("Folder Search UI", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "FolderSearch[weird ✓ name]/测试");
+    project = await launchWithProject(
+      lameta,
+      "FolderSearch[weird ✓ name]/测试"
+    );
+    page = lameta.page;
     searchUtils = new FolderSearchUtilities(page);
   });
   test.afterAll(async () => {

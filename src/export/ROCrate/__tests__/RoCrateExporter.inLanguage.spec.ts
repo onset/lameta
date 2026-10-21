@@ -1,17 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import {
   setupCommonMocks,
-  setupExporterMocks,
   createMockProject,
   createMockSession,
-  createFsExtraMock
 } from "./test-utils/rocrate-test-setup";
 import { fieldDefinitionsOfCurrentConfig } from "../../../model/field/ConfiguredFieldDefinitions";
 
 // Setup all common mocks before imports
 setupCommonMocks();
-setupExporterMocks();
-createFsExtraMock();
 
 // Import main functionality after mocks
 import { getRoCrate } from "../RoCrateExporter";
@@ -23,31 +19,30 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
       filePrefix: "test-session",
       metadata: {
         title: "Test Session",
-        workingLanguages: "etr" // This should map to inLanguage in the RO-Crate export
-      }
+        workingLanguages: "etr", // This should map to inLanguage in the RO-Crate export
+      },
     });
 
     const mockProject = createMockProject({
       filePrefix: "test-project",
       metadata: {
         title: "Test Project",
-        collectionWorkingLanguages: "etr"
-      }
+        WorkingLanguages: "etr",
+      },
     });
 
     // Add sessions to the project (the mock returns sessions as array, but exporter expects sessions.items)
     (mockProject as any).sessions = {
-      items: [mockSession]
+      items: [mockSession],
     };
 
     // Generate RO-Crate
     const roCrateData = await getRoCrate(mockProject, mockProject);
-    const roCrateJson =
-      typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
+    const roCrateJson = typeof roCrateData === "string" ? JSON.parse(roCrateData) : roCrateData;
 
     // Find the session entity in the graph
     const sessionEntity = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === "#session-test-session"
+      (entity: any) => entity["@id"] === "#session-test-session",
     );
 
     expect(sessionEntity).toBeDefined();
@@ -64,9 +59,7 @@ describe("RoCrateExporter inLanguage LDAC compliance", () => {
     // LAM-41 regression: the root dataset must now surface inLanguage as well,
     // ensuring the LDAC "MUST" requirement is satisfied without using
     // #language_und placeholders. https://linear.app/lameta/issue/LAM-41/ro-crate-10-ensure-inlanguage-is-present-and-avoid-language-und
-    const rootDataset = roCrateJson["@graph"].find(
-      (entity: any) => entity["@id"] === "./"
-    );
+    const rootDataset = roCrateJson["@graph"].find((entity: any) => entity["@id"] === "./");
 
     expect(rootDataset).toBeDefined();
     expect(Array.isArray(rootDataset.inLanguage)).toBe(true);

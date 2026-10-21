@@ -16,7 +16,7 @@ import AutoForm from "./AutoForm";
 import { AuthorityLists } from "../model/Project/AuthorityLists/AuthorityLists";
 import ContributorsTable from "./session/ContributorsTable";
 import { Project } from "../model/Project/Project";
-import { ImdiView } from "./ImdiView";
+import { TargetImdiView } from "./ImdiView";
 import { Contribution } from "../model/file/File";
 const electron = require("electron");
 import "./FolderPane.css";
@@ -205,7 +205,7 @@ const FileTabs: React.FunctionComponent<
   const imdiPanel = userSettings.ShowIMDI ? (
     <TabPanel>
       <ErrorBoundary>
-        <ImdiView
+        <TargetImdiView
           target={
             file.type === "Session" || file.type === "Person"
               ? directoryObject

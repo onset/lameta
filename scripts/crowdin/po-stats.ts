@@ -1,8 +1,8 @@
 // Print msgid / non-empty-msgstr counts for every catalog under locale/,
 // or compare two locale folders to prove one is subsumed by the other.
 //
-//   yarn tsx scripts/crowdin/po-stats.ts
-//   yarn tsx scripts/crowdin/po-stats.ts --compare locale/pt locale/pt-BR
+//   pnpm exec tsx scripts/crowdin/po-stats.ts
+//   pnpm exec tsx scripts/crowdin/po-stats.ts --compare locale/pt locale/pt-BR
 import * as fs from "fs";
 import * as path from "path";
 import { loadPo, poEntries, entryKey } from "./lib";

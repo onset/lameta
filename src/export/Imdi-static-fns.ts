@@ -5,6 +5,7 @@ import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 // public for testing
 // imdiSupportsMultipleElements: when true, creates separate elements with LanguageId attributes for each language.
 // When false (e.g., for IMDI String_Type elements like Session.Title), uses only the first/default language value.
+// extraAttributes: optional attributes to add to each element (e.g., { Name: "short_description" })
 export function fieldElement(
   elementName: string,
   fieldOrString: string | Field | undefined,
@@ -12,7 +13,9 @@ export function fieldElement(
   mostRecentElement?: XmlBuilder.XMLElementOrXMLNode,
   xmlElementIsRequired?: boolean,
   defaultValue?: string,
-  imdiSupportsMultipleElements: boolean = true
+  imdiSupportsMultipleElements: boolean = true,
+  extraAttributes?: Record<string, string>,
+  metadataSlotTags?: string[],
 ): {
   tail: XmlBuilder.XMLElementOrXMLNode;
   mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
@@ -25,18 +28,22 @@ export function fieldElement(
 
   if (needToUseDefaultValue) {
     lastElementWeAdded = tail.element(elementName, defaultValue);
+    addExtraAttributes(lastElementWeAdded, extraAttributes);
   } else if (text) {
     lastElementWeAdded = addElementWithMonolingualStringContentIfNotEmpty(
       elementName,
       text,
-      tail
+      tail,
+      extraAttributes,
     );
   } else if (field && !field.isEmpty()) {
     lastElementWeAdded = addElementsFromFieldContent(
       elementName,
       field,
       tail,
-      imdiSupportsMultipleElements
+      imdiSupportsMultipleElements,
+      extraAttributes,
+      metadataSlotTags,
     );
   }
   //lastElementWeAdded = tail.element("hello", "world");
@@ -45,48 +52,84 @@ export function fieldElement(
   return { tail, mostRecentElement: tail }; // review is lastElementWeAdded what mostRecentElement should be?
 }
 
+function addExtraAttributes(
+  element: XmlBuilder.XMLElementOrXMLNode,
+  extraAttributes?: Record<string, string>,
+) {
+  if (extraAttributes) {
+    Object.entries(extraAttributes).forEach(([attrName, attrValue]) => {
+      element.attribute(attrName, attrValue);
+    });
+  }
+}
+
 function addElementWithMonolingualStringContentIfNotEmpty(
   elementName: string,
   text: string | undefined,
-  tail: XmlBuilder.XMLElementOrXMLNode
+  tail: XmlBuilder.XMLElementOrXMLNode,
+  extraAttributes?: Record<string, string>,
 ) {
-  if (text && text.length > 0) return tail.element(elementName, text);
-  else return tail;
+  if (text && text.length > 0) {
+    const element = tail.element(elementName, text);
+    addExtraAttributes(element, extraAttributes);
+    return element;
+  } else return tail;
 }
 
 function addElementsFromFieldContent(
   elementName: string,
   field: Field,
   tail: XmlBuilder.XMLElementOrXMLNode,
-  imdiSupportsMultipleElements: boolean
+  imdiSupportsMultipleElements: boolean,
+  extraAttributes?: Record<string, string>,
+  metadataSlotTags?: string[],
 ) {
   let element;
   if (field.definition?.imdiRange) {
     // wer're assuming at this point that we don't have mulilingual vocabularies
     element = tail.element(elementName, field.text);
     element.attribute("Link", field.definition.imdiRange);
-    const type = field.definition.imdiIsClosedVocabulary
-      ? "ClosedVocabulary"
-      : "OpenVocabulary";
+    const type = field.definition.imdiIsClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
     element.attribute("Type", type);
+    addExtraAttributes(element, extraAttributes);
   } else {
-    const axes = field.getAllNonEmptyTextAxes();
+    // Spreadsheet import can leave multilingual fields in slash syntax until a user
+    // edits them. Export needs to honor that virtual multilingual view as well as
+    // already-committed tagged text.
+    const shouldUseVirtualMultilingual =
+      field.definition?.multilingual === true &&
+      metadataSlotTags !== undefined &&
+      metadataSlotTags.length > 0;
+    const axes = shouldUseVirtualMultilingual
+      ? field
+          .getEffectiveSlotTags(metadataSlotTags)
+          .filter((language) => field.getTextAxisVirtual(language, metadataSlotTags).trim() !== "")
+      : field.getAllNonEmptyTextAxes();
+    const getTextForLanguage = (language: string) =>
+      shouldUseVirtualMultilingual
+        ? field.getTextAxisVirtual(language, metadataSlotTags)
+        : field.getTextAxis(language);
 
     // If IMDI doesn't support multiple elements with LanguageId (e.g., String_Type),
     // just use the first language's value
-    if (!imdiSupportsMultipleElements || axes.length === 1) {
+    if (axes.length === 0) {
+      element = tail.element(elementName, field.text);
+      addExtraAttributes(element, extraAttributes);
+    } else if (!imdiSupportsMultipleElements || axes.length === 1) {
       const firstLanguage = axes[0];
-      element = tail.element(elementName, field.getTextAxis(firstLanguage));
+      element = tail.element(elementName, getTextForLanguage(firstLanguage));
+      addExtraAttributes(element, extraAttributes);
     } else {
       // Multiple languages and IMDI supports LanguageId attributes
       axes.forEach((language) => {
-        element = tail.element(elementName, field.getTextAxis(language));
+        element = tail.element(elementName, getTextForLanguage(language));
         // Always use ISO639-3 (3-letter) codes for IMDI export
         // Archives require 3-letter codes, they can't handle 2-letter ISO639-1 codes
         const iso639_3 = staticLanguageFinder
           ? staticLanguageFinder.getIso639_3Code(language)
           : language;
         element.attribute("LanguageId", "ISO639-3:" + iso639_3);
+        addExtraAttributes(element, extraAttributes);
       });
     }
   }

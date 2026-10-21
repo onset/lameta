@@ -112,20 +112,36 @@ function writeSimplePropertyElements(
           "lameta 3 and following use <ArchiveConfigurationName> as that matches what we're actually doing with it now. We still emit <AccessProtocol> for compatibility with SayMore and older versions of lameta"
         );
       }
-      if (field.key === "collectionSubjectLanguages") {
+      if (field.key === "SubjectLanguages") {
+        writeField(
+          root,
+          field,
+          doOutputTypeInXmlTags,
+          false,
+          "CollectionSubjectLanguages",
+          "lameta now uses <SubjectLanguages> and still emits <CollectionSubjectLanguages> for compatibility with older lameta versions"
+        );
         writeLanguageFieldForBackwardsCompat(
           root,
           field,
           "VernacularISO3CodeAndName",
-          "lameta 3 and following use <CollectionSubjectLanguages> to store multiple languages. We still emit the first language as <VernacularISO3CodeAndName> for compatibility with SayMore and older versions of lameta"
+          "lameta now uses <SubjectLanguages> to store multiple languages. We still emit the first language as <VernacularISO3CodeAndName> for compatibility with SayMore and older versions of lameta"
         );
       }
-      if (field.key === "collectionWorkingLanguages") {
+      if (field.key === "WorkingLanguages") {
+        writeField(
+          root,
+          field,
+          doOutputTypeInXmlTags,
+          false,
+          "CollectionWorkingLanguages",
+          "lameta now uses <WorkingLanguages> and still emits <CollectionWorkingLanguages> for compatibility with older lameta versions"
+        );
         writeLanguageFieldForBackwardsCompat(
           root,
           field,
           "AnalysisISO3CodeAndName",
-          "lameta 3 and following use <CollectionWorkingLanguages> to store multiple languages. We still emit the first language as <AnalysisISO3CodeAndName> for compatibility with SayMore and older versions of lameta"
+          "lameta now uses <WorkingLanguages> to store multiple languages. We still emit the first language as <AnalysisISO3CodeAndName> for compatibility with SayMore and older versions of lameta"
         );
       }
     });

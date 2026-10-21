@@ -6,7 +6,7 @@ import { SessionMetadataFile } from "../Project/Session/Session";
 import { ProjectMetadataFile } from "../Project/Project";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
-import { describe, it } from "vitest";
+import { describe, it } from "vite-plus/test";
 
 function getPretendAudioFile(): string {
   const path = temp.path({ suffix: ".mp3" }) as string;

@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeEach, expect } from "vite-plus/test";
 import { getRoCrate } from "../RoCrateExporter";
 import { Session } from "../../../model/Project/Session/Session";
 import { Project } from "../../../model/Project/Project";
@@ -332,7 +332,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "Dr. John Smith";
@@ -356,7 +356,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "";
@@ -392,7 +392,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           // contactPerson returns empty string for missing field
@@ -427,7 +427,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "depositor") return "Nick Thieberger";
@@ -461,7 +461,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           return "";
@@ -495,7 +495,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "Dr. John Smith";
@@ -520,7 +520,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "";
@@ -549,7 +549,7 @@ describe("RoCrateExporter LDAC Profile Compliance", () => {
         .fn()
         .mockImplementation((key: string) => {
           if (key === "title") return "Edolo Language Documentation";
-          if (key === "collectionDescription")
+          if (key === "projectDescription")
             return "Documentation of the Edolo language";
           if (key === "archiveConfigurationName") return "TestArchive";
           if (key === "contactPerson") return "";

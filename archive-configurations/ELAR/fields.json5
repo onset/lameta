@@ -2,33 +2,47 @@
   common: [
     {
       key: "role",
-      multilingual: true
-    }
+      multilingual: true,
+    },
   ],
   project: [
     {
+      key: "name",
+      multilingual: false,
+      tipOnUsingThisField: "Key + Grant Id. E.g. 0793-SG0123",
+    },
+    {
+      // 22 mar 2026 "Grant: to avoid confusion the Funding project title field should either be filled out with the same information as in Project > Title or be deleted:"
+      key: "fundingProjectTitle",
+      visibility: "never",
+    },
+    {
       key: "collectionSteward",
       visibility: "always",
-      description: "This is usually the same person as the Depositor."
+      tipOnUsingThisField: "This is usually the same person as the Depositor.",
     },
     { key: "collectionDeputySteward", visibility: "always" },
     {
       key: "depositor",
       visibility: "always",
-      description: "This is usually the same person as the Collection Steward."
+      separatorWithCommaInstructions: "This is usually the same person as the Collection Steward. For multiple people, separate with commas.",
     },
     {
-      key: "collectionDescription",
-      multilingual: true
+      key: "projectDescription",
+      multilingual: true,
     },
     {
       key: "title",
-      multilingual: true
+      multilingual: true,
     },
     {
       key: "metadataLanguages",
-      visibility: "always"
-    }
+      visibility: "always",
+    },
+    {
+      key: "continent",
+      choices: ["unspecified", "Africa", "Asia", "Australia", "Europe", "Americas", "Oceania"],
+    },
   ],
   session: [
     /*- 
@@ -37,34 +51,109 @@
 - Actor roles (that one might be a more difficult to implement, I think)*/
 
     {
+      key: "id",
+      tipOnUsingThisField: "Must be a maximum of 20 characters in length and consist of letters a-z, numbers 0-9, dashes and underscores only.",
+    },
+    {
       key: "description",
-      multilingual: true
+      multilingual: true,
     },
     {
       key: "title",
-      multilingual: true
+      multilingual: true,
+      tipOnUsingThisField: "Title should be a short, meaningful sentence",
     },
     {
       key: "genre",
-      multilingual: true
+      multilingual: true,
+      tipOnUsingThisField: "Select from the drop-down menu.",
+    },
+    {
+      key: "subgenre",
+      tipOnUsingThisField: "Subgenre is optional",
     },
     {
       key: "topic",
-      multilingual: true
+      multilingual: true,
+      separatorWithCommaInstructions: "Add at least one Topic. Multiple values must be separated with commas. Individual topics cannot contain a comma.",
     },
     {
       key: "keyword",
-      multilingual: true
+      multilingual: true,
+      separatorWithCommaInstructions: "Add at least one Keyword. Multiple values must be separated with commas. Individual keywords cannot contain a comma.",
+    },
+    {
+      key: "access",
+      tipOnUsingThisField: "Select from the drop down menu. If you select the access level S you must complete the adjacent Access Explanation field.",
     },
     {
       key: "accessDescription",
-      multilingual: true
-    }
+      multilingual: true,
+      tipOnUsingThisField: "Complete for sessions marked S, optional otherwise. Should be a short explanation about why access is restricted, and for how long.",
+    },
+    {
+      key: "customFields",
+      tipOnUsingThisField: "Optional",
+    },
+    {
+      key: "locationContinent",
+      choices: ["unspecified", "Africa", "Americas", "Asia", "Australia", "Europe", "Oceania"],
+    },
   ],
-  people: [
+  person: [
+    {
+      key: "name",
+      tipOnUsingThisField: "Person will be listed by this name on the ELAR catalogue.",
+    },
+    {
+      key: "nickname",
+      tipOnUsingThisField: "Optional, can be left blank.",
+    },
+    {
+      key: "code",
+      tipOnUsingThisField: "Optional, can be left blank.",
+    },
+    {
+      key: "languages",
+      tipOnUsingThisField: "Star indicates primary language. Icons indicate whether mother and father speak the language - this is optional.",
+    },
+    {
+      key: "birthYear",
+      tipOnUsingThisField: 'Enter an approximation or "?" if unsure, and describe in the Description field below.',
+    },
+    {
+      key: "education",
+      tipOnUsingThisField: "Optional",
+    },
+    {
+      key: "howToContact",
+      tipOnUsingThisField: "Leave blank",
+      visibility: "never",
+    },
+    {
+      key: "ethnicGroup",
+      tipOnUsingThisField: "Optional",
+    },
+    {
+      key: "primaryOccupation",
+      tipOnUsingThisField: "Optional",
+    },
     {
       key: "description",
-      multilingual: true
-    }
-  ]
+      multilingual: true,
+      tipOnUsingThisField: "Should contain basic information about the person's background, role in the community and/or project, and a basic language profile.",
+    },
+  ],
+  projectDocuments: [
+    {
+      key: "access",
+      englishLabel: "Access",
+      type: "Text",
+    },
+    {
+      key: "accessDescription",
+      multilingual: true,
+    },
+    { key: "genre", multilingual: true },
+  ],
 }

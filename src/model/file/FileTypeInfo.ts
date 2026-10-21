@@ -134,10 +134,17 @@ export function getImdiResourceTypeForPath(path: string): string {
   return getImdiResourceTypeForExtension(ext);
 }
 export function getImdiResourceTypeForExtension(ext: string): string {
-  const y = GetFileFormatInfoForExtension(ext);
+  const normalizedExt = ext.toLowerCase().replace(/^\./, "");
+
+  // IMDI WrittenResource type for subtitle files
+  if (normalizedExt === "srt") {
+    return "Subtitles";
+  }
+
+  const y = GetFileFormatInfoForExtension(normalizedExt);
   let resourceType = y?.imdiType ?? "Unspecified";
   if (resourceType === "Unspecified") {
-    const m = getMimeType(ext); //?
+    const m = getMimeType(normalizedExt); //?
     if (m && ["application"].indexOf(m.split("/")[0]) > -1) {
       resourceType = "Document";
     }

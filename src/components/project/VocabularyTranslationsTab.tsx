@@ -11,6 +11,7 @@ import {
   getRoleEnglishLabel,
   ScanResult
 } from "../../model/Project/VocabularyScanner";
+import { getExportStringContext } from "../../export/ExportStringDefinitions";
 import { FieldVocabularyTranslations } from "../../model/Project/VocabularyTranslations";
 import {
   translateGenreToLanguage,
@@ -19,11 +20,14 @@ import {
 import {
   lameta_orange,
   lameta_dark_blue,
+  textPrimary,
   lameta_light_orange_background
 } from "../../containers/theme";
 import LinearProgress from "@mui/material/LinearProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import IcecreamIcon from "@mui/icons-material/Icecream";
+import BlenderIcon from "@mui/icons-material/Blender";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
 import {
   getFieldDefinition,
@@ -33,7 +37,7 @@ import { NotifyError } from "../Notify";
 
 /**
  * Helper function to check if any vocabulary fields are multilingual in current config.
- * This is used by ProjectTab to decide whether to show the Vocabulary Translations tab.
+ * This is used by ProjectTab to decide whether to show the  Translations tab.
  */
 export function hasMultilingualVocabularyFields(): boolean {
   const genreFieldDef = getFieldDefinition("session", "genre");
@@ -49,12 +53,19 @@ interface VocabularyTranslationsTabProps {
 
 interface TranslationRowProps {
   value: string;
-  source: "project" | "builtin";
+  source:
+    | "custom"
+    | "factory-value-used-in-sessions"
+    | "factory-value-used-by-export";
   translations: Record<string, string>;
   languageCodes: string[];
   englishLabel: string;
   onTranslationChange: (languageCode: string, translation: string) => void;
   getBuiltInTranslation: (value: string, lang: string) => string | undefined;
+  /** Optional context to help translators understand what this string is for */
+  context?: string;
+  /** If true, hide the blender icon for export items (useful when section already indicates export) */
+  hideExportIcon?: boolean;
 }
 
 // Local state for controlled inputs
@@ -120,10 +131,14 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
   languageCodes,
   englishLabel,
   onTranslationChange,
-  getBuiltInTranslation
+  getBuiltInTranslation,
+  context,
+  hideExportIcon
 }) => {
-  // Custom values (source === "project") get an ice cream icon
-  const isCustomValue = source === "project";
+  // Custom values (source === "custom") get an ice cream icon
+  const isCustomValue = source === "custom";
+  // Hardcoded export values (source === "factory-value-used-by-export") get a blender icon
+  const isHardcodedExport = source === "factory-value-used-by-export";
 
   // Filter out English from the language codes for the translation columns
   // since English is already shown in the first column
@@ -160,6 +175,28 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
               <IcecreamIcon
                 css={css`
                   color: ${lameta_orange};
+                  font-size: 16px;
+                  cursor: help;
+                `}
+              />
+            </Tooltip>
+          )}
+          {isHardcodedExport && !hideExportIcon && (
+            <Tooltip title={t`Used during IMDI export`} arrow>
+              <BlenderIcon
+                css={css`
+                  color: lightgray;
+                  font-size: 16px;
+                  cursor: help;
+                `}
+              />
+            </Tooltip>
+          )}
+          {context && (
+            <Tooltip title={context} arrow>
+              <InfoOutlinedIcon
+                css={css`
+                  color: lightgray;
                   font-size: 16px;
                   cursor: help;
                 `}
@@ -213,6 +250,10 @@ interface FieldSectionProps {
   ) => void;
   getBuiltInTranslation: (value: string, lang: string) => string | undefined;
   getEnglishLabel: (value: string) => string;
+  /** Optional function to get context/help text for a value */
+  getContext?: (value: string) => string | undefined;
+  /** If true, hide the blender icon for export items */
+  hideExportIcon?: boolean;
 }
 
 const FieldSection: React.FC<FieldSectionProps> = ({
@@ -222,7 +263,9 @@ const FieldSection: React.FC<FieldSectionProps> = ({
   languageNames,
   onTranslationChange,
   getBuiltInTranslation,
-  getEnglishLabel
+  getEnglishLabel,
+  getContext,
+  hideExportIcon
 }) => {
   const nonEnglishCodes = languageCodes.filter(
     (code) => code !== "en" && code !== "eng"
@@ -275,7 +318,7 @@ const FieldSection: React.FC<FieldSectionProps> = ({
         </h3>
         <p
           css={css`
-            color: #888;
+            color: ${textPrimary};
             font-style: italic;
           `}
         >
@@ -360,6 +403,8 @@ const FieldSection: React.FC<FieldSectionProps> = ({
                 onTranslationChange(value, lang, translation)
               }
               getBuiltInTranslation={getBuiltInTranslation}
+              context={getContext?.(value)}
+              hideExportIcon={hideExportIcon}
             />
           ))}
         </tbody>
@@ -463,6 +508,18 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
       [translations]
     );
 
+    const handleExportStringTranslationChange = useCallback(
+      (value: string, languageCode: string, translation: string) => {
+        translations.updateExportStringTranslation(
+          value,
+          languageCode,
+          translation
+        );
+        translations.save();
+      },
+      [translations]
+    );
+
     const genreMissingCount = isGenreMultilingual
       ? translations.getGenreMissingCount(languageCodes, (value, lang) =>
           translateGenreToLanguage(value, lang)
@@ -473,7 +530,10 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
           translateRoleToLanguage(value, lang)
         )
       : 0;
-    const totalMissing = genreMissingCount + roleMissingCount;
+    const exportStringMissingCount =
+      translations.getExportStringMissingCount(languageCodes);
+    const totalMissing =
+      genreMissingCount + roleMissingCount + exportStringMissingCount;
 
     if (languageCodes.length < 2) {
       return (
@@ -484,7 +544,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
           `}
         >
           <h2>
-            <Trans>Vocabulary Translations</Trans>
+            <Trans>Translations</Trans>
           </h2>
           <p
             css={css`
@@ -514,7 +574,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             margin: 0 0 16px 0;
           `}
         >
-          <Trans>Vocabulary Translations</Trans>
+          <Trans>Translations</Trans>
         </h2>
 
         <div
@@ -532,7 +592,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
             <>
               <span
                 css={css`
-                  color: #000;
+                  color: ${textPrimary};
                 `}
               >
                 <Trans>Scanning...</Trans>
@@ -621,6 +681,26 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
               translateRoleToLanguage(value, lang)
             }
             getEnglishLabel={getRoleEnglishLabel}
+          />
+        )}
+
+        {/* Export Strings section - always shown when there are export strings */}
+        {Object.keys(translations.exportStrings).length > 0 && (
+          <FieldSection
+            title={t`Other Strings Used During Export`}
+            fieldData={translations.exportStrings}
+            languageCodes={languageCodes}
+            languageNames={Object.fromEntries(
+              metadataLanguages.map((slot) => [
+                slot.tag,
+                slot.name || slot.tag.toUpperCase()
+              ])
+            )}
+            onTranslationChange={handleExportStringTranslationChange}
+            getBuiltInTranslation={() => undefined}
+            getEnglishLabel={(value) => value}
+            getContext={getExportStringContext}
+            hideExportIcon={true}
           />
         )}
       </div>

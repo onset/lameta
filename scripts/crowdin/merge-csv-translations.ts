@@ -7,7 +7,7 @@
 // than the repo columns); every case where BOTH sides had different non-empty
 // values is logged for human review.
 //
-//   yarn tsx scripts/crowdin/merge-csv-translations.ts
+//   pnpm exec tsx scripts/crowdin/merge-csv-translations.ts
 import * as fs from "fs";
 import * as path from "path";
 import Papa from "papaparse";

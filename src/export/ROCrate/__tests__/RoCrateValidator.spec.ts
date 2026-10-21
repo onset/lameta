@@ -8,7 +8,7 @@
  * For INTEGRATION TESTS that generate actual RO-Crate output via getRoCrate()
  * and then validate it, see RoCrateExporter.validation.spec.ts.
  */
-import { vi, describe, it, beforeEach, expect } from "vitest";
+import { vi, describe, it, beforeEach, expect } from "vite-plus/test";
 import { RoCrateValidator, ensureSubjectLanguage } from "../RoCrateValidator";
 import { RoCrateLanguages } from "../RoCrateLanguages";
 

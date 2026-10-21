@@ -10,11 +10,11 @@
 // entries) + an audit trail in crowdin-backup/2026-07-09/reports/.
 // Nothing is uploaded by this script; upload with crowdin-staging.yml.
 //
-//   yarn tsx scripts/crowdin/build-recovered-translations.ts <branchName> [langId,...]
+//   pnpm exec tsx scripts/crowdin/build-recovered-translations.ts <branchName> [langId,...]
 import * as fs from "fs";
 import * as path from "path";
 import Papa from "papaparse";
-import gettextParser from "gettext-parser";
+import * as gettextParser from "gettext-parser";
 import {
   PROJECT_ID,
   LANGS,
@@ -98,7 +98,7 @@ function writeStagingPo(langFolder: string, set: string, fills: Fill[]) {
   });
   const dest = path.join(STAGING, langFolder, `${set}.po`);
   fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.writeFileSync(dest, po);
+  fs.writeFileSync(dest, new Uint8Array(po));
 }
 
 async function main() {

@@ -21,9 +21,6 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr ""
 
-msgid "A [Research Object Crate (RO-Crate)](https://www.researchobject.org/ro-crate/) metadata file for the project. Targets the [LDAC](https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md) profile."
-msgstr ""
-
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
@@ -34,7 +31,8 @@ msgid "A folder with an IMDI file for the project and each session."
 msgstr "پوشه‌ شامل فایل IMDI برای پروژه و هر نشست."
 
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
-msgstr "\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
+msgstr ""
+"\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
 "بسیاری از فیلدهای لامتا حذف شده است."
 
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
@@ -131,9 +129,6 @@ msgstr ""
 msgid "Close"
 msgstr "بستن"
 
-msgid "Collection"
-msgstr ""
-
 msgid "Comments"
 msgstr "نظرها"
 
@@ -211,9 +206,6 @@ msgstr "حذف فایلها"
 
 msgid "Delete Person..."
 msgstr "حذف افراد"
-
-msgid "Delete Session"
-msgstr ""
 
 msgid "Delete Session..."
 msgstr "حذف نشست"
@@ -323,9 +315,6 @@ msgstr "فایل رضایت نامه پیدا نشد"
 msgid "Full Name"
 msgstr "نام کامل"
 
-msgid "Funding Project"
-msgstr ""
-
 msgid "Generating CSV export..."
 msgstr ""
 
@@ -336,6 +325,9 @@ msgid "Generating RO-Crate metadata..."
 msgstr ""
 
 msgid "Genres"
+msgstr ""
+
+msgid "Grant"
 msgstr ""
 
 msgid "Help"
@@ -355,12 +347,6 @@ msgstr "چگونه از لمتا استفاده میکنید؟"
 
 msgid "ID"
 msgstr "مشخصات هویتی/ID"
-
-msgid "ID cannot be empty"
-msgstr ""
-
-msgid "ID cannot contain spaces"
-msgstr ""
 
 msgid "IMDI Only"
 msgstr "فقط IMDI"
@@ -499,6 +485,9 @@ msgstr "برنامه مرتبط با این نوع پرونده را باز کن
 
 msgid "Other Documents"
 msgstr "اسناد دیگر"
+
+msgid "Other Strings Used During Export"
+msgstr ""
 
 msgid "PARADISEC CSV export complete"
 msgstr ""
@@ -749,6 +738,9 @@ msgstr ""
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
 msgstr ""
 
+msgid "Translations"
+msgstr ""
+
 msgid "Type"
 msgstr "تایپ کردن"
 
@@ -760,6 +752,9 @@ msgstr ""
 
 msgid "Update available"
 msgstr "بروزرسانی موجود است"
+
+msgid "Used during IMDI export"
+msgstr ""
 
 msgid "Validating RO-Crate export..."
 msgstr ""
@@ -776,13 +771,11 @@ msgstr "دیدن"
 msgid "View Release Notes"
 msgstr "یادداشتهای انتشار را مشاهده کنید"
 
-msgid "Vocabulary Translations"
-msgstr ""
-
 msgid "Vocabulary scan failed"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
@@ -880,4 +873,3 @@ msgstr ""
 
 msgid "{totalMissing} items need translation"
 msgstr ""
-

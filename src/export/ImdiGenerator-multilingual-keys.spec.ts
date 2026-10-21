@@ -1,13 +1,8 @@
-import { describe, it, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, beforeAll, afterAll, beforeEach } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
-import {
-  setResultXml,
-  xexpect as expect,
-  count,
-  printResultXml
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, xexpect as expect, count, printResultXml } from "../other/xmlUnitTestUtils";
 import temp from "temp";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { Field, FieldType } from "../model/field/Field";
@@ -50,12 +45,7 @@ describe("monolingual topic and keyword export", () => {
     const keywordField = getOrCreateField("keyword");
     keywordField.text = "Fat, Heron";
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     // Should have 2 keyword Keys split by comma
     expect(count(`//Keys/Key[@Name="Keyword"]`)).toBe(2);
@@ -68,17 +58,10 @@ describe("monolingual topic and keyword export", () => {
     const topicField = getOrCreateField("topic");
     topicField.text = "The moon and the sun adventures";
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
     expect(count(`//Keys/Key[@Name="Topic"]`)).toBe(1);
-    expect(`//Keys/Key[@Name="Topic"]`).toHaveText(
-      "The moon and the sun adventures"
-    );
+    expect(`//Keys/Key[@Name="Topic"]`).toHaveText("The moon and the sun adventures");
     // Should NOT have index or LanguageId attributes
     expect(`//Keys/Key[@Name="Topic"][@index]`).toNotExist();
     expect(`//Keys/Key[@Name="Topic"][@LanguageId]`).toNotExist();
@@ -86,6 +69,70 @@ describe("monolingual topic and keyword export", () => {
 });
 
 describe("multilingual topic and keyword export", () => {
+  it("exports slash-syntax multilingual keywords with index and LanguageId attributes", () => {
+    project.properties.setText("metadataLanguages", "en:English;es:Spanish");
+    const keywordField = getOrCreateField("keyword");
+
+    keywordField.definition = new FieldDefinition({
+      key: "keyword",
+      englishLabel: "Keywords",
+      persist: true,
+      multilingual: true,
+      separatorWithCommaInstructions:
+        "Separate with commas. Note that individual keywords cannot contain a comma.",
+    });
+
+    keywordField.text = "Fat / Grasa, Heron / Garza";
+
+    setResultXml(
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
+    );
+
+    expect(count(`//Keys/Key[@Name="Keyword"]`)).toBe(4);
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="1"]`).toHaveText("Fat");
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:spa"][@index="1"]`).toHaveText(
+      "Grasa",
+    );
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="2"]`).toHaveText(
+      "Heron",
+    );
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:spa"][@index="2"]`).toHaveText(
+      "Garza",
+    );
+  });
+
+  it("exports slash-syntax multilingual topics with index and LanguageId attributes", () => {
+    project.properties.setText("metadataLanguages", "en:English;es:Spanish;pt:Portuguese");
+    const topicField = getOrCreateField("topic");
+
+    topicField.definition = new FieldDefinition({
+      key: "topic",
+      englishLabel: "Topic",
+      persist: true,
+      multilingual: true,
+      separatorWithCommaInstructions:
+        "Separate with commas. Note that individual topics cannot contain a comma.",
+    });
+
+    topicField.text =
+      "The moon and the sun adventures / Las aventuras de la luna y el sol / As aventuras da lua e do sol";
+
+    setResultXml(
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
+    );
+
+    expect(count(`//Keys/Key[@Name="Topic"]`)).toBe(3);
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:eng"][@index="1"]`).toHaveText(
+      "The moon and the sun adventures",
+    );
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:spa"][@index="1"]`).toHaveText(
+      "Las aventuras de la luna y el sol",
+    );
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:por"][@index="1"]`).toHaveText(
+      "As aventuras da lua e do sol",
+    );
+  });
+
   it("exports multilingual keywords with index and LanguageId attributes", () => {
     // Set up multilingual keyword field
     const keywordField = getOrCreateField("keyword");
@@ -97,7 +144,7 @@ describe("multilingual topic and keyword export", () => {
       persist: true,
       multilingual: true,
       separatorWithCommaInstructions:
-        "Separate with commas. Note that individual keywords cannot contain a comma."
+        "Separate with commas. Note that individual keywords cannot contain a comma.",
     });
 
     // Set multilingual values: "Fat, Heron" in English, "Grasa, Garza" in Spanish
@@ -105,12 +152,7 @@ describe("multilingual topic and keyword export", () => {
     keywordField.setTextAxis("es", "Grasa, Garza");
 
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
 
     //printResultXml();
@@ -119,20 +161,18 @@ describe("multilingual topic and keyword export", () => {
     expect(count(`//Keys/Key[@Name="Keyword"]`)).toBe(4);
 
     // English keywords with index
-    expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:en"][@index="1"]`
-    ).toHaveText("Fat");
-    expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:en"][@index="2"]`
-    ).toHaveText("Heron");
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="1"]`).toHaveText("Fat");
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="2"]`).toHaveText(
+      "Heron",
+    );
 
-    // Spanish keywords with matching index (es is 2-letter so ISO639-1)
-    expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:es"][@index="1"]`
-    ).toHaveText("Grasa");
-    expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:es"][@index="2"]`
-    ).toHaveText("Garza");
+    // Spanish keywords with matching index (converted to ISO639-3)
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:spa"][@index="1"]`).toHaveText(
+      "Grasa",
+    );
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:spa"][@index="2"]`).toHaveText(
+      "Garza",
+    );
   });
 
   it("exports multilingual topic with index and LanguageId attributes", () => {
@@ -144,7 +184,7 @@ describe("multilingual topic and keyword export", () => {
       persist: true,
       multilingual: true,
       separatorWithCommaInstructions:
-        "Separate with commas. Note that individual topics cannot contain a comma."
+        "Separate with commas. Note that individual topics cannot contain a comma.",
     });
 
     // Single topic in three languages
@@ -153,12 +193,7 @@ describe("multilingual topic and keyword export", () => {
     topicField.setTextAxis("pt", "As aventuras da lua e do sol");
 
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
 
     //printResultXml();
@@ -167,15 +202,15 @@ describe("multilingual topic and keyword export", () => {
     expect(count(`//Keys/Key[@Name="Topic"]`)).toBe(3);
 
     // All should have index="1" since there's only one topic
-    expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:en"][@index="1"]`
-    ).toHaveText("The moon and the sun adventures");
-    expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:es"][@index="1"]`
-    ).toHaveText("Las aventuras de la luna y el sol");
-    expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:pt"][@index="1"]`
-    ).toHaveText("As aventuras da lua e do sol");
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:eng"][@index="1"]`).toHaveText(
+      "The moon and the sun adventures",
+    );
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:spa"][@index="1"]`).toHaveText(
+      "Las aventuras de la luna y el sol",
+    );
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:por"][@index="1"]`).toHaveText(
+      "As aventuras da lua e do sol",
+    );
   });
 
   it("exports multiple multilingual topics with correct indexes", () => {
@@ -187,7 +222,7 @@ describe("multilingual topic and keyword export", () => {
       persist: true,
       multilingual: true,
       separatorWithCommaInstructions:
-        "Separate with commas. Note that individual topics cannot contain a comma."
+        "Separate with commas. Note that individual topics cannot contain a comma.",
     });
 
     // Two topics in each language
@@ -195,12 +230,7 @@ describe("multilingual topic and keyword export", () => {
     topicField.setTextAxis("es", "Aventuras de luna, Historias del sol");
 
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
 
     //printResultXml();
@@ -209,20 +239,20 @@ describe("multilingual topic and keyword export", () => {
     expect(count(`//Keys/Key[@Name="Topic"]`)).toBe(4);
 
     // English topics with indexes
-    expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:en"][@index="1"]`
-    ).toHaveText("Moon adventures");
-    expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:en"][@index="2"]`
-    ).toHaveText("Sun stories");
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:eng"][@index="1"]`).toHaveText(
+      "Moon adventures",
+    );
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:eng"][@index="2"]`).toHaveText(
+      "Sun stories",
+    );
 
-    // Spanish topics with matching indexes (es is 2-letter so ISO639-1)
-    expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:es"][@index="1"]`
-    ).toHaveText("Aventuras de luna");
-    expect(
-      `//Keys/Key[@Name="Topic"][@LanguageId="ISO639-1:es"][@index="2"]`
-    ).toHaveText("Historias del sol");
+    // Spanish topics with matching indexes (converted to ISO639-3)
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:spa"][@index="1"]`).toHaveText(
+      "Aventuras de luna",
+    );
+    expect(`//Keys/Key[@Name="Topic"][@LanguageId="ISO639-3:spa"][@index="2"]`).toHaveText(
+      "Historias del sol",
+    );
   });
 
   it("handles edge case with extra spaces around commas", () => {
@@ -234,7 +264,7 @@ describe("multilingual topic and keyword export", () => {
       persist: true,
       multilingual: true,
       separatorWithCommaInstructions:
-        "Separate with commas. Note that individual keywords cannot contain a comma."
+        "Separate with commas. Note that individual keywords cannot contain a comma.",
     });
 
     // Extra spaces around commas
@@ -242,22 +272,15 @@ describe("multilingual topic and keyword export", () => {
     keywordField.setTextAxis("es", "Grasa  ,  Garza");
 
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
 
     // Should have 4 keyword Keys, values should be trimmed
     expect(count(`//Keys/Key[@Name="Keyword"]`)).toBe(4);
-    expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:en"][@index="1"]`
-    ).toHaveText("Fat");
-    expect(
-      `//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-1:en"][@index="2"]`
-    ).toHaveText("Heron");
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="1"]`).toHaveText("Fat");
+    expect(`//Keys/Key[@Name="Keyword"][@LanguageId="ISO639-3:eng"][@index="2"]`).toHaveText(
+      "Heron",
+    );
   });
 
   it("does not add index/LanguageId if field has only one language even if definition says multilingual", () => {
@@ -269,19 +292,14 @@ describe("multilingual topic and keyword export", () => {
       persist: true,
       multilingual: true,
       separatorWithCommaInstructions:
-        "Separate with commas. Note that individual keywords cannot contain a comma."
+        "Separate with commas. Note that individual keywords cannot contain a comma.",
     });
 
     // Only English, no other languages
     keywordField.setTextAxis("en", "Fat, Heron");
 
     setResultXml(
-      ImdiGenerator.generateSession(
-        IMDIMode.RAW_IMDI,
-        session,
-        project,
-        true /*omit namespace*/
-      )
+      ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
     );
 
     // Should have 2 keyword Keys

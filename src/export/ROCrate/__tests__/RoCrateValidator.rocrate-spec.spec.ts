@@ -7,7 +7,7 @@
  *
  * For LDAC profile-specific tests, see RoCrateValidator.ldac-profile.spec.ts
  */
-import { describe, it, beforeEach, expect } from "vitest";
+import { describe, it, beforeEach, expect } from "vite-plus/test";
 import { RoCrateValidator } from "../RoCrateValidator";
 
 describe("RoCrateValidator - RO-Crate 1.2 Specification", () => {

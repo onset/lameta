@@ -5,7 +5,7 @@ import * as React from "react";
 import { default as ReactTable, Resize } from "react-table-6";
 
 import { Folder } from "../model/Folder/Folder";
-import { FolderGroup } from "src/model/Folder/FolderGroup";
+import { FolderGroup } from "../model/Folder/FolderGroup";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
 import "./FolderList.css";
@@ -13,7 +13,6 @@ import "./FolderList.css";
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
-import { i18n } from "../other/localization";
 import { t } from "@lingui/macro";
 import { SearchContext } from "./SearchContext";
 import scrollSelectedIntoView from "./FixReactTableScroll";
@@ -37,13 +36,13 @@ class FolderList extends React.Component<IProps, any> {
     this.columnWidthManager = new ReactTableColumnWidthManager(
       this.props.nameForPersistingUsersTableConfiguration + ".columnWidths",
       this.props.columns,
-      this.props.columnWidths
+      this.props.columnWidths,
     );
     this.state = {
       // searchText removed from parent state; we now only track committed searches
       lastSearch: props.folders.searchTerm || "",
       searchCount: 0,
-      lastSearchResetCounter: 0
+      lastSearchResetCounter: 0,
     };
   }
 
@@ -52,15 +51,13 @@ class FolderList extends React.Component<IProps, any> {
   }
 
   static getDerivedStateFromProps(nextProps: IProps, prevState: any) {
-    if (
-      nextProps.folders.searchResetCounter !== prevState.lastSearchResetCounter
-    ) {
+    if (nextProps.folders.searchResetCounter !== prevState.lastSearchResetCounter) {
       // Only clear the search if the searchTerm is also empty, which indicates an intentional clear
       // If searchTerm has a value, we should preserve it (e.g., during tab switching)
       const shouldClearSearch = nextProps.folders.searchTerm === "";
       return {
         lastSearchResetCounter: nextProps.folders.searchResetCounter,
-        lastSearch: shouldClearSearch ? "" : nextProps.folders.searchTerm
+        lastSearch: shouldClearSearch ? "" : nextProps.folders.searchTerm,
       };
     }
     // When the persisted search term changes externally we treat that as lastSearch for data-* attributes
@@ -101,9 +98,7 @@ class FolderList extends React.Component<IProps, any> {
       // We explicitly do something with each file name, so that mobx will know it should re-run the render function
       // as needed.
       if (folder instanceof Person) {
-        folder.files.forEach(
-          (child) => child.pathInFolderToLinkFileOrLocalCopy
-        );
+        folder.files.forEach((child) => child.pathInFolderToLinkFileOrLocalCopy);
       }
       // The Session status also needs to be immediately updated in the table view.
       if (folder instanceof Session) {
@@ -112,11 +107,8 @@ class FolderList extends React.Component<IProps, any> {
     });
 
     // Access normalized search term from context (hooks not allowed in class component)
-    const searchTerm: string =
-      (this.context && (this.context as any).searchTerm) || "";
-    const highlightIfMatch = (text: string) => (
-      <HighlightSearchTerm text={text} />
-    );
+    const searchTerm: string = (this.context && (this.context as any).searchTerm) || "";
+    const highlightIfMatch = (text: string) => <HighlightSearchTerm text={text} />;
 
     const columns = this.props.columns.map((key, index) => {
       const header =
@@ -135,8 +127,7 @@ class FolderList extends React.Component<IProps, any> {
             }}
           /> // Don't give a header for the checkbox column
         ) : this.props.folders.items.length > 0 ? (
-          this.props.folders.items[0].properties.getValueOrThrow(key)
-            .labelInUILanguage
+          this.props.folders.items[0].properties.getValueOrThrow(key).labelInUILanguage
         ) : (
           // Enhance: This is a design flaw. If we don't have any items in the folder list, then the above
           // cannot ask one of them for the labelInUiLanguage.
@@ -179,12 +170,7 @@ class FolderList extends React.Component<IProps, any> {
           if (field.type === FieldType.Text) {
             switch (key) {
               case "status":
-                return (
-                  <img
-                    title={field.text}
-                    src={this.getStatusIcon(field.text)}
-                  />
-                );
+                return <img title={field.text} src={this.getStatusIcon(field.text)} />;
               case "title":
                 return highlightIfMatch(field.getTextForSimpleDisplay());
               default:
@@ -218,7 +204,7 @@ class FolderList extends React.Component<IProps, any> {
             return highlightIfMatch(field.text);
           }
           return "ERROR";
-        }
+        },
       };
       return c;
     });
@@ -234,7 +220,7 @@ class FolderList extends React.Component<IProps, any> {
           onCommitted={(s) =>
             this.setState((prev: any) => ({
               lastSearch: s,
-              searchCount: prev.searchCount + 1
+              searchCount: prev.searchCount + 1,
             }))
           }
         />
@@ -263,18 +249,14 @@ class FolderList extends React.Component<IProps, any> {
               onClick: (e: any, x: any) => {
                 // Save current selection before changing
                 if (selectedFolderIndex > -1) {
-                  this.props.folders.items[
-                    selectedFolderIndex
-                  ].saveAllFilesInFolder();
+                  this.props.folders.items[selectedFolderIndex].saveAllFilesInFolder();
                 }
                 // rowInfo.index refers to the index within the currently displayed (possibly filtered) data set.
                 // We need to store the index relative to the full, unfiltered items array, because other code
                 // (e.g. the FolderPane) dereferences selectedIndex against folders.items.
-                const clickedFolder: Folder | undefined =
-                  rowInfo && rowInfo.original;
+                const clickedFolder: Folder | undefined = rowInfo && rowInfo.original;
                 if (clickedFolder) {
-                  const absoluteIndex =
-                    this.props.folders.items.indexOf(clickedFolder);
+                  const absoluteIndex = this.props.folders.items.indexOf(clickedFolder);
                   if (absoluteIndex !== -1) {
                     this.props.folders.selectedIndex = absoluteIndex;
                   }
@@ -282,11 +264,9 @@ class FolderList extends React.Component<IProps, any> {
                 this.setState({}); // force re-render so updated selection styling applies
               },
               className:
-                rowInfo &&
-                this.props.folders.items[selectedFolderIndex] ===
-                  rowInfo.original
+                rowInfo && this.props.folders.items[selectedFolderIndex] === rowInfo.original
                   ? "selected"
-                  : ""
+                  : "",
             };
           }}
         />

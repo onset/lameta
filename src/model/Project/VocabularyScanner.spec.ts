@@ -1,9 +1,12 @@
-import { describe, expect, it, beforeEach, afterEach, vi, beforeAll } from "vitest";
+import { describe, expect, it, beforeEach, afterEach, vi, beforeAll } from "vite-plus/test";
 import {
   isBuiltInGenre,
   isBuiltInRole,
   scanProjectForVocabulary,
-  updateTranslationsFromScan
+  updateTranslationsFromScan,
+  HARDCODED_EXPORT_GENRES,
+  HARDCODED_EXPORT_ROLES,
+  HARDCODED_EXPORT_STRINGS
 } from "./VocabularyScanner";
 import { VocabularyTranslations } from "./VocabularyTranslations";
 import * as fs from "fs-extra";
@@ -17,6 +20,32 @@ beforeAll(() => {
 });
 
 describe("VocabularyScanner", () => {
+  describe("HARDCODED_EXPORT_GENRES", () => {
+    it("should include 'Consent' for consent bundle exports", () => {
+      expect(HARDCODED_EXPORT_GENRES).toContain("Consent");
+    });
+
+    it("should only contain genres that are built-in", () => {
+      // All hardcoded export genres should exist in genres.json
+      for (const genre of HARDCODED_EXPORT_GENRES) {
+        expect(isBuiltInGenre(genre)).toBe(true);
+      }
+    });
+  });
+
+  describe("HARDCODED_EXPORT_ROLES", () => {
+    it("should include 'Researcher' for project document bundle exports", () => {
+      expect(HARDCODED_EXPORT_ROLES).toContain("Researcher");
+    });
+
+    it("should only contain roles that are built-in", () => {
+      // All hardcoded export roles should exist in OLAC roles
+      for (const role of HARDCODED_EXPORT_ROLES) {
+        expect(isBuiltInRole(role)).toBe(true);
+      }
+    });
+  });
+
   describe("isBuiltInGenre", () => {
     it("should return true for built-in genre IDs", () => {
       expect(isBuiltInGenre("drama")).toBe(true);
@@ -80,6 +109,7 @@ describe("VocabularyScanner", () => {
         builtInGenresMissingTranslations: new Set<string>(),
         customRoles: new Set<string>(),
         builtInRolesMissingTranslations: new Set<string>(),
+        exportStrings: new Set<string>(),
         sessionsScanned: 5,
         peopleScanned: 3
       };
@@ -96,6 +126,7 @@ describe("VocabularyScanner", () => {
         builtInGenresMissingTranslations: new Set(["drama", "narrative"]),
         customRoles: new Set<string>(),
         builtInRolesMissingTranslations: new Set<string>(),
+        exportStrings: new Set<string>(),
         sessionsScanned: 5,
         peopleScanned: 3
       };
@@ -112,6 +143,7 @@ describe("VocabularyScanner", () => {
         builtInGenresMissingTranslations: new Set<string>(),
         customRoles: new Set(["community_helper"]),
         builtInRolesMissingTranslations: new Set<string>(),
+        exportStrings: new Set<string>(),
         sessionsScanned: 5,
         peopleScanned: 3
       };
@@ -130,6 +162,7 @@ describe("VocabularyScanner", () => {
         builtInGenresMissingTranslations: new Set<string>(),
         customRoles: new Set<string>(),
         builtInRolesMissingTranslations: new Set<string>(),
+        exportStrings: new Set<string>(),
         sessionsScanned: 5,
         peopleScanned: 3
       };
@@ -146,6 +179,7 @@ describe("VocabularyScanner", () => {
         builtInGenresMissingTranslations: new Set<string>(),
         customRoles: new Set(["helper's role"]),
         builtInRolesMissingTranslations: new Set<string>(),
+        exportStrings: new Set<string>(),
         sessionsScanned: 5,
         peopleScanned: 3
       };
@@ -155,6 +189,37 @@ describe("VocabularyScanner", () => {
       expect(vocabTranslations.hasGenre("folk tale / myth")).toBe(true);
       expect(vocabTranslations.hasGenre("genre with spaces")).toBe(true);
       expect(vocabTranslations.hasRole("helper's role")).toBe(true);
+    });
+
+    it("should add export string entries", () => {
+      const scanResult = {
+        customGenres: new Set<string>(),
+        builtInGenresMissingTranslations: new Set<string>(),
+        customRoles: new Set<string>(),
+        builtInRolesMissingTranslations: new Set<string>(),
+        exportStrings: new Set(["Description Documents", "This bundle contains descriptive documents."]),
+        sessionsScanned: 5,
+        peopleScanned: 3
+      };
+
+      updateTranslationsFromScan(vocabTranslations, scanResult, testLanguageCodes);
+
+      expect(vocabTranslations.hasExportString("Description Documents")).toBe(true);
+      expect(vocabTranslations.hasExportString("This bundle contains descriptive documents.")).toBe(true);
+    });
+  });
+
+  describe("HARDCODED_EXPORT_STRINGS", () => {
+    it("should include bundle titles", () => {
+      expect(HARDCODED_EXPORT_STRINGS).toContain("Description Documents");
+      expect(HARDCODED_EXPORT_STRINGS).toContain("Other Documents");
+      expect(HARDCODED_EXPORT_STRINGS).toContain("Documentation of consent for the contributors to this collection");
+    });
+
+    it("should include bundle descriptions", () => {
+      expect(HARDCODED_EXPORT_STRINGS).toContain("This bundle contains descriptive documents about the documentation project.");
+      expect(HARDCODED_EXPORT_STRINGS).toContain("This bundle contains other project documents.");
+      expect(HARDCODED_EXPORT_STRINGS).toContain("This bundle contains media demonstrating informed consent for sessions in this collection.");
     });
   });
 

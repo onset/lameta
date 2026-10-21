@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FolderGroup } from "src/model/Folder/FolderGroup";
+import { FolderGroup } from "../../model/Folder/FolderGroup";
 import { FolderPane } from "../FolderPane";
 import { observer } from "mobx-react";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
@@ -12,7 +12,7 @@ import { SearchContext, normalizeSearchTerm } from "../SearchContext";
 import { css } from "@emotion/react";
 import { highlightMatches } from "../highlighting";
 import { t } from "@lingui/macro";
-import { i18n } from "../../other/localization";
+import { i18n as appI18n } from "../../other/localization";
 
 interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -34,14 +34,14 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
   const sp = parseInt(splitterposition, 10);
   if (props.folders.selectedIndex >= props.folders.items.length)
     throw Error(
-      `folders.length = ${props.folders.items.length} but selected index is ${props.folders.selectedIndex}`
+      `folders.length = ${props.folders.items.length} but selected index is ${props.folders.selectedIndex}`,
     );
 
   return (
     <SearchContext.Provider
       value={{
         rawSearchTerm: props.folders.searchTerm || "",
-        searchTerm: normalizeSearchTerm(props.folders.searchTerm)
+        searchTerm: normalizeSearchTerm(props.folders.searchTerm),
       }}
     >
       <div className={"componentTab " + props.folderTypeStyleClass}>
@@ -82,9 +82,7 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
               </div>
             </div>
           </div>
-          {props.folders &&
-          props.folders.items.length > 0 &&
-          props.folders.selectedIndex > -1 ? (
+          {props.folders && props.folders.items.length > 0 && props.folders.selectedIndex > -1 ? (
             <FolderPane
               project={props.project}
               // Note, when props.folders.selectedIndex, mobx should cause us to re-render because selectedIndex is an observable,
@@ -99,7 +97,7 @@ const ComponentTab: React.FunctionComponent<IProps> = (props) => {
                 {highlightMatches(
                   props.folders.items[props.folders.selectedIndex].displayName,
                   props.folders.searchTerm,
-                  { background: "#ffe58f" }
+                  { background: "#ffe58f" },
                 )}
               </h3>
             </FolderPane>
@@ -125,26 +123,22 @@ function getCountLabel(folders: FolderGroup): string {
   if (first) {
     switch (first.folderType) {
       case "session":
-        return `${folders.items.length} ${i18n._(t`Sessions`)}`;
+        return `${folders.items.length} ${appI18n._(t`Sessions`)}`;
       case "person":
-        return `${folders.items.length} ${i18n._(t`People`)}`;
+        return `${folders.items.length} ${appI18n._(t`People`)}`;
     }
   }
-  return `${folders.items.length} ${i18n._(t`Items`)}`;
+  return `${folders.items.length} ${appI18n._(t`Items`)}`;
 }
 
 // highlight helper removed in favor of shared highlightReact
 
 // tslint:disable-next-line:no-empty-interface
 interface IJustChildrenProps {}
-export const FileListButtons: React.FunctionComponent<IJustChildrenProps> = (
-  props
-) => {
+export const FileListButtons: React.FunctionComponent<IJustChildrenProps> = (props) => {
   return <React.Fragment>{props.children}</React.Fragment>;
 };
-export const FolderListButtons: React.FunctionComponent<IJustChildrenProps> = (
-  props
-) => {
+export const FolderListButtons: React.FunctionComponent<IJustChildrenProps> = (props) => {
   return <React.Fragment>{props.children}</React.Fragment>;
 };
 // we need to re-render when the selected folder or selected file in the folder changes

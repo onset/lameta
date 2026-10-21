@@ -7,14 +7,14 @@
     },
     {
       id: "U",
-      label: "U: open to users",
-      description: "All users can access (requires registration)",
+      label: "U: available to registered users",
+      description: "Registered users can access (after registration)",
       ldacAccessCategory: "ldac:AuthorizedAccess"
     },
     {
       id: "S",
-      label: "S: open to subscribers",
-      description: "Only Subscribers are allowed access (must apply to Depositor for access)",
+      label: "S: available upon request only",
+      description: "Access must be obtained from Depositor via ELAR",
       ldacAccessCategory: "ldac:AuthorizedAccess"
     }
   ]

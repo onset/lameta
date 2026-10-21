@@ -157,6 +157,7 @@ class AutoForm extends React.Component<IProps> {
             field={field as Field}
             languageFinder={props.languageFinder}
             tabIndex={field.definition.tabIndex}
+            showAffordancesAfter={props.rowStyle}
             {...field.definition.controlProps}
           />
         );
