@@ -6,8 +6,6 @@ import { SeverityIcon } from "./SeverityIcon";
 import { ProblemWording } from "./ProblemWording";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { ipcRenderer, OpenDialogOptions } from "electron";
-import * as Path from "path";
 import { Project } from "../../model/Project/Project";
 import { Session } from "../../model/Project/Session/Session";
 import { Person } from "../../model/Project/Person/Person";
@@ -20,12 +18,6 @@ import { SessionIcon } from "../session/SessionIcon";
 import { PeopleIcon } from "../people/PeopleIcon";
 import { lameta_dark_blue, lameta_dark_green } from "../../containers/theme";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
-import {
-  findBuiltInRulesFile,
-  getRulesFileUnsupported,
-  RulesFileUnsupported,
-} from "../../problems/rulesFile";
 import { IFieldProblem } from "../../problems/fieldRules";
 import {
   combineProblems,
@@ -189,8 +181,6 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
   const groups = groupProblems(props.project, fieldProblems, rulesProblems, selected);
   // a re-check makes new problem objects, so remember these by what they say
   const [selectedProblem, setSelectedProblem] = React.useState<string>();
-  // for the hidden "Show XML" link
-  // const [xmlShown, setXmlShown] = React.useState<string>();
   const [result, setResult] = React.useState<NavigationResult>();
   // the user may click another entry before navigateTo() finishes with this one
   const latestClick = React.useRef(0);
@@ -437,18 +427,6 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
                           {content}
                         </div>
                       )}
-                      {/* The "Show XML" link is hidden for now.
-                      {problem.excerpt && (
-                        <XmlExcerpt
-                          excerpt={problem.excerpt}
-                          shown={xmlShown === problem.key}
-                          onToggle={() =>
-                            setXmlShown(
-                              xmlShown === problem.key ? undefined : problem.key
-                            )
-                          }
-                        />
-                      )} */}
                     </li>
                   );
                 })}
@@ -467,8 +445,6 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
           </div>
         )}
       </div>
-      {/* The "Rules file: … Use a different file…" line is hidden for now.
-        <RulesFileChooser project={props.project} /> */}
       {rulesFileProblems.running && (
         <div
           css={css`
@@ -484,69 +460,6 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
     </div>
   );
 });
-
-// "Show XML": the lines of IMDI around the problem's node, with the node's own lines marked
-const XmlExcerpt: React.FunctionComponent<{
-  excerpt: NonNullable<IRulesFileProblem["excerpt"]>;
-  shown: boolean;
-  onToggle: () => void;
-}> = (props) => (
-  <div
-    css={css`
-      margin: 0 12px 0 40px;
-      min-width: 0;
-    `}
-  >
-    <button
-      data-testid="problem-show-xml"
-      onClick={props.onToggle}
-      css={css`
-        background: none;
-        border: none;
-        padding: 0;
-        font: inherit;
-        font-size: 12px;
-        color: #3d5e90;
-        text-decoration: underline;
-        cursor: pointer;
-      `}
-    >
-      {props.shown ? <Trans>Hide XML</Trans> : <Trans>Show XML</Trans>}
-    </button>
-    {props.shown && (
-      <pre
-        data-testid="problem-xml"
-        css={css`
-          margin: 4px 0 0;
-          padding: 6px;
-          border: solid 1px #ead2c2;
-          border-radius: 4px;
-          background-color: white;
-          font-family: Consolas, monospace;
-          font-size: 11px;
-          line-height: 1.4;
-          overflow-x: auto;
-          white-space: pre;
-        `}
-      >
-        {props.excerpt.map((line, i) => (
-          <div
-            key={i}
-            css={
-              line.marked
-                ? css`
-                    background-color: #ffd7b8;
-                  `
-                : undefined
-            }
-          >
-            {line.text}
-          </div>
-        ))}
-      </pre>
-    )}
-  </div>
-);
 
 // Problems in the rules file itself, which the user has to know about rather than
 // wonder why nothing is reported
@@ -662,144 +575,6 @@ function groupProblems(
 function indexOrEnd(list: string[], item: string): number {
   const i = list.indexOf(item);
   return i < 0 ? list.length : i;
-}
-
-// Shows where the problems come from: the field rules of the project's archive
-// configuration (its fields.json5), and its rules file, which the user can replace
-// with a local one for that configuration.
-const RulesFileChooser: React.FunctionComponent<{ project: Project }> = observer((props) => {
-  const configurationName = props.project.properties.getTextStringOrEmpty(
-    "archiveConfigurationName",
-  );
-  // "default" shows as "Other" in the archive configuration chooser
-  const configurationLabel =
-    props.project.authorityLists.archiveConfigurationChoices.find((c) => c.id === configurationName)
-      ?.label || configurationName;
-  const localFile = userSettings.getProblemRulesFile(configurationName);
-  // looked up again whenever the project or its archive configuration changes
-  const builtInFile = React.useMemo(
-    () => findBuiltInRulesFile(configurationName),
-    [configurationName, props.project],
-  );
-  const unsupported = getRulesFileUnsupported(GetOtherConfigurationSettings().archiveUsesImdi);
-  const linkStyle = css`
-    background: none;
-    border: none;
-    padding: 0;
-    font: inherit;
-    color: #3d5e90;
-    text-decoration: underline;
-    cursor: pointer;
-  `;
-  return (
-    <div
-      css={css`
-        flex: 1;
-        min-width: 0;
-      `}
-    >
-      <div
-        data-testid="problem-rules-file"
-        css={css`
-          display: flex;
-          flex-wrap: wrap;
-          align-items: baseline;
-          gap: 4px 8px;
-        `}
-      >
-        <span>
-          <Trans>Rules file:</Trans>{" "}
-          {localFile ? (
-            <span
-              title={localFile}
-              css={css`
-                background-color: #fff3c4;
-                border: solid 1px #e69500;
-                border-radius: 3px;
-                padding: 0 4px;
-                word-break: break-all;
-              `}
-            >
-              {Path.basename(localFile)} (<Trans>local file</Trans>)
-            </span>
-          ) : builtInFile ? (
-            <span>
-              {Path.basename(builtInFile)} (<Trans>built in</Trans>)
-            </span>
-          ) : (
-            <span>
-              <Trans>none</Trans>
-            </span>
-          )}
-        </span>
-        <button
-          css={linkStyle}
-          onClick={async () => {
-            const options: OpenDialogOptions = {
-              properties: ["openFile"],
-              defaultPath: localFile ? Path.dirname(localFile) : undefined,
-            };
-            const result = await ipcRenderer.invoke("showOpenDialog", options);
-            if (result && result.filePaths && result.filePaths.length > 0) {
-              userSettings.setProblemRulesFile(configurationName, result.filePaths[0]);
-            }
-          }}
-        >
-          <Trans>Use a different file…</Trans>
-        </button>
-        {localFile && (
-          <button
-            css={linkStyle}
-            onClick={() => userSettings.setProblemRulesFile(configurationName, undefined)}
-          >
-            {builtInFile ? (
-              <Trans>Use the built-in file</Trans>
-            ) : (
-              <Trans>Stop using this file</Trans>
-            )}
-          </button>
-        )}
-      </div>
-      {unsupported && (
-        <div
-          data-testid="problem-rules-unsupported"
-          css={css`
-            color: #c62828;
-          `}
-        >
-          {describeUnsupported(unsupported, configurationLabel)}
-        </div>
-      )}
-    </div>
-  );
-});
-
-function describeUnsupported(
-  unsupported: RulesFileUnsupported,
-  configurationLabel: string,
-): React.ReactNode {
-  switch (unsupported.reason) {
-    case "archive-does-not-use-imdi":
-      return (
-        <Trans>
-          lameta can only check IMDI so far, and the {configurationLabel} archive configuration does
-          not use IMDI.
-        </Trans>
-      );
-    case "format":
-      return (
-        <Trans>
-          This rules file checks "{unsupported.format}", which lameta does not support yet.
-        </Trans>
-      );
-    case "interface-version":
-      return (
-        <Trans>
-          This rules file was written for a different version of lameta (interface version{" "}
-          {unsupported.interfaceVersion}).
-        </Trans>
-      );
-  }
 }
 
 function describeMissing(result: NavigationResult): React.ReactNode {

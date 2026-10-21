@@ -16,7 +16,6 @@ export interface IProps {
 }
 
 export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (props) => {
-  const [tooltip, setTooltip] = useState("");
   const [validationClass, setValidationClass] = useState("");
   const updateValidationClass = (lang) => {
     if (
@@ -24,9 +23,7 @@ export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (props)
       props.languageFinder.findOne639_3CodeFromName(lang, "und") !== "und"
     ) {
       setValidationClass("");
-      setTooltip("");
     } else {
-      setTooltip(`lameta does not recognize the Language name '${lang}'`);
       setValidationClass("languageNotRecognized");
     }
   };
@@ -48,13 +45,6 @@ export const OldPersonLanguagesEditor: React.FunctionComponent<IProps> = (props)
         onChange={(v) => props.language.setValueFromString(v)}
         className={"language-name " + validationClass}
       />
-      {/* <TextFieldEdit
-        className={"language-name " + validationClass}
-        hideLabel={true}
-        field={props.language}
-        tooltip={tooltip}
-        onBlurWithValue={updateValidationClass}
-      /> */}
       {/* <ParentButton
         childLanguage={props.language}
         parentLanguage={props.motherLanguage}

@@ -240,44 +240,12 @@ export abstract class Folder {
   // exporters (like ROCrate) to distinguish between standard fields and custom fields when processing metadata.
   public knownFields: FieldDefinition[];
 
-  // renaming failures can lead to ____.meta files that don't match anything, they just gum up the works
-
-  private static cleanupZombieMetaFiles(directory: string) {
-    /*** this is ready to go but I'm afraid to pull the trigger
-     
-    const metaFilePaths = glob.sync(Path.join(directory, "*.meta"));
-    metaFilePaths.forEach((metaFilePath) => {
-      const basename = Path.basename(metaFilePath, Path.extname(metaFilePath));
-      const filePathThatWouldMatchTheMetaFileName = Path.join(
-        Path.dirname(metaFilePath),
-        basename
-      );
-      if (!fs.existsSync(filePathThatWouldMatchTheMetaFileName)) {
-        console.log("Removing zombie meta file" + metaFilePath);
-        if (!trash(metaFilePath)) {
-          NotifyWarning(
-            `lameta was not able to put this file in the trash (${metaFilePath})`
-          );
-        } else {
-          NotifyNoBigDeal(
-            `Moved unused lameta meta file to trash because there is no matching file to annotate. ${Path.basename(
-              metaFilePath
-            )}`
-          );
-        }
-      }
-    });
-
-    ****/
-  }
-
   ///Load the files constituting a session, person, or project
   protected static loadChildFiles(
     directory: string,
     folderMetaDataFile: File,
     customVocabularies: EncounteredVocabularyRegistry,
   ): File[] {
-    Folder.cleanupZombieMetaFiles(directory);
     const files = new Array<File>();
 
     files.push(folderMetaDataFile);

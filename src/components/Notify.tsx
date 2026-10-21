@@ -84,86 +84,8 @@ export function NotifyRenameProblem(err: any) {
     NotifyException(err, msg);
   }
 }
-function getEBUSYProblemsTips(): JSX.Element {
-  return (
-    <ul>
-      <li>
-        Are your files managed by a synchronization software like OneDrive or Dropbox? These
-        programs can grab onto lameta files and interfere.
-      </li>
-      <li>Is the file open in another program? If not, try restarting your computer.</li>
-      <li>
-        Is your anti-virus interfering with lameta? Normally there is a way to tell it that lameta
-        is safe.
-      </li>
-    </ul>
-  );
-}
-
-// I haven't figured out the difference between eacces and eperm, or at least not enough to customize the tips yet.
-function getEACCESProblemsTips(): JSX.Element {
-  return (
-    <ul>
-      {/* I get this error with file meddler grabbing, thus this message */}
-      <li>
-        Are your files managed by a synchronization software like OneDrive or Dropbox? These
-        programs can grab onto lameta files and interfere.
-      </li>
-      <li>
-        Is your anti-virus interfering with lameta? Normally there is a way to tell it that lameta
-        is safe.
-      </li>
-      <li>Is the file marked as 'read-only' in Finder/File Explorer? You can change that.</li>
-      <li>
-        Are you on a computer network where an administrator may have limited lameta's write
-        permissions? Look at the permissions in Finder/File Explorer. Ask a network administrator
-        for help.
-      </li>
-    </ul>
-  );
-}
-// translateMessage(
-//     /*i18n*/ {
-//       id:
-//         "Troubleshooting tips: Is the file open in another program -- try restarting your computer. Does your anti-virus software trust lameta -- you can tell it to. Are your files managed by a synchronization software like Dropbox -- just try again. Is the file marked as 'read-only' in Finder/File Explorer? Are you on a computer network where an administrator may have limited lameta's write permissions -- ask a network administrator for help.",
-//     }
-
 export function NotifyFileAccessProblem(message: string, err: any) {
-  const x = [];
-  x["EACCESS"] = getEACCESProblemsTips();
-  x["EPERM"] = getEACCESProblemsTips();
-  x["EBUSY"] = getEBUSYProblemsTips();
-  const tips = (
-    <div>
-      <div>Troubleshooting tips:</div>
-      {x[err.code]
-        ? x[err.code]
-        : t`We don't have specific tips for this error. If you cannot solve it by
-          restarting your computer, please report the problem to
-          https://github.com/onset/lameta/issues.`}
-    </div>
-  );
-
   notify(message, err.toString(), errorToastProps);
-  //     toast.error(
-  //       <div>
-  //         <p>{message}</p>
-
-  //         {/* Enhance: can we get this html into the localization system somehow? For now I think the benefit of the structure outweigh the English-only nature. */}
-  //         {tips}
-  //         <div
-  //           css={css`
-  //             font-size: 8pt;
-  //             margin-top: 1em;
-  //           `}
-  //         >
-  //           {err && <div>{err.toString()}</div>}
-  //         </div>
-  //       </div>,
-  //       {
-  //         ...errorToastProps
-  //       }
-  //     );
 }
 
 export function NotifyException(err: Error, message?: string, details?: string) {
