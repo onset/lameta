@@ -1,0 +1,653 @@
+[
+ {
+  "id": 2234,
+  "identifier": null,
+  "text": "Elicitation",
+  "context": "Elicitation",
+  "isHidden": false
+ },
+ {
+  "id": 2236,
+  "identifier": null,
+  "text": "Translation",
+  "context": "Translation",
+  "isHidden": false
+ },
+ {
+  "id": 5422,
+  "identifier": null,
+  "text": "Drama",
+  "context": "Genre which is: A planned, creative, rendition of discourse involving two or more participants.",
+  "isHidden": false
+ },
+ {
+  "id": 5424,
+  "identifier": null,
+  "text": "A planned, creative, rendition of discourse involving two or more participants.",
+  "context": "Definition of genre 'Drama'",
+  "isHidden": false
+ },
+ {
+  "id": 5426,
+  "identifier": null,
+  "text": "Play",
+  "context": "Example of genre 'Drama'",
+  "isHidden": false
+ },
+ {
+  "id": 5428,
+  "identifier": null,
+  "text": "Skit",
+  "context": "Example of genre 'Drama'",
+  "isHidden": false
+ },
+ {
+  "id": 5430,
+  "identifier": null,
+  "text": "Enacted Scene",
+  "context": "Example of genre 'Drama'",
+  "isHidden": false
+ },
+ {
+  "id": 5432,
+  "identifier": null,
+  "text": "Formulaic Discourse",
+  "context": "Genre which is: A ritually or conventionally structured discourse.",
+  "isHidden": false
+ },
+ {
+  "id": 5434,
+  "identifier": null,
+  "text": "A ritually or conventionally structured discourse.",
+  "context": "Definition of genre 'Formulaic Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5436,
+  "identifier": null,
+  "text": "Prayer",
+  "context": "Example of genre 'Formulaic Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5438,
+  "identifier": null,
+  "text": "Curse",
+  "context": "Example of genre 'Formulaic Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5440,
+  "identifier": null,
+  "text": "Blessing",
+  "context": "Example of genre 'Formulaic Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5442,
+  "identifier": null,
+  "text": "Charm",
+  "context": "Example of genre 'Formulaic Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5444,
+  "identifier": null,
+  "text": "Curing Ritual",
+  "context": "Example of genre 'Formulaic Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5446,
+  "identifier": null,
+  "text": "Marriage Vows",
+  "context": "Example of genre 'Formulaic Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5448,
+  "identifier": null,
+  "text": "Oath",
+  "context": "Example of genre 'Formulaic Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5450,
+  "identifier": null,
+  "text": "Interactive Discourse",
+  "context": "Genre which is: Linguistic communication between two or more participants.",
+  "isHidden": false
+ },
+ {
+  "id": 5452,
+  "identifier": null,
+  "text": "Linguistic communication between two or more participants.",
+  "context": "Definition of genre 'Interactive Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5454,
+  "identifier": null,
+  "text": "Conversation",
+  "context": "Example of genre 'Interactive Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5456,
+  "identifier": null,
+  "text": "Interview",
+  "context": "Example of genre 'Interactive Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5458,
+  "identifier": null,
+  "text": "Correspondence",
+  "context": "Example of genre 'Interactive Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5460,
+  "identifier": null,
+  "text": "Consultation",
+  "context": "Example of genre 'Interactive Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5462,
+  "identifier": null,
+  "text": "Greeting",
+  "context": "Example of genre 'Interactive Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5464,
+  "identifier": null,
+  "text": "Leave-Takings",
+  "context": "Example of genre 'Interactive Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5466,
+  "identifier": null,
+  "text": "Language Play",
+  "context": "Genre which is: A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
+  "isHidden": false
+ },
+ {
+  "id": 5468,
+  "identifier": null,
+  "text": "A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
+  "context": "Definition of genre 'Language Play'",
+  "isHidden": false
+ },
+ {
+  "id": 5470,
+  "identifier": null,
+  "text": "Verbal Art",
+  "context": "Example of genre 'Language Play'",
+  "isHidden": false
+ },
+ {
+  "id": 5472,
+  "identifier": null,
+  "text": "Joke",
+  "context": "Example of genre 'Language Play'",
+  "isHidden": false
+ },
+ {
+  "id": 5474,
+  "identifier": null,
+  "text": "Secret Language",
+  "context": "Example of genre 'Language Play'",
+  "isHidden": false
+ },
+ {
+  "id": 5476,
+  "identifier": null,
+  "text": "Speech Disguise",
+  "context": "Example of genre 'Language Play'",
+  "isHidden": false
+ },
+ {
+  "id": 5478,
+  "identifier": null,
+  "text": "Oratory",
+  "context": "Genre which is: Public speaking, or speaking eloquently according to rules or conventions.",
+  "isHidden": false
+ },
+ {
+  "id": 5480,
+  "identifier": null,
+  "text": "Public speaking, or speaking eloquently according to rules or conventions.",
+  "context": "Definition of genre 'Oratory'",
+  "isHidden": false
+ },
+ {
+  "id": 5482,
+  "identifier": null,
+  "text": "Sermon",
+  "context": "Example of genre 'Oratory'",
+  "isHidden": false
+ },
+ {
+  "id": 5484,
+  "identifier": null,
+  "text": "Lecture",
+  "context": "Example of genre 'Oratory'",
+  "isHidden": false
+ },
+ {
+  "id": 5486,
+  "identifier": null,
+  "text": "Political Speech",
+  "context": "Example of genre 'Oratory'",
+  "isHidden": false
+ },
+ {
+  "id": 5488,
+  "identifier": null,
+  "text": "Invocation",
+  "context": "Example of genre 'Oratory'",
+  "isHidden": false
+ },
+ {
+  "id": 5490,
+  "identifier": null,
+  "text": "Narrative",
+  "context": "Genre which is: A monologic discourse which represents temporally organized events.",
+  "isHidden": false
+ },
+ {
+  "id": 5492,
+  "identifier": null,
+  "text": "A monologic discourse which represents temporally organized events.",
+  "context": "Definition of genre 'Narrative'",
+  "isHidden": false
+ },
+ {
+  "id": 5494,
+  "identifier": null,
+  "text": "Historical",
+  "context": "Example of genre 'Narrative'",
+  "isHidden": false
+ },
+ {
+  "id": 5496,
+  "identifier": null,
+  "text": "Traditional",
+  "context": "Example of genre 'Narrative'",
+  "isHidden": false
+ },
+ {
+  "id": 5498,
+  "identifier": null,
+  "text": "Personal",
+  "context": "Example of genre 'Narrative'",
+  "isHidden": false
+ },
+ {
+  "id": 5500,
+  "identifier": null,
+  "text": "Myth",
+  "context": "Example of genre 'Narrative'",
+  "isHidden": false
+ },
+ {
+  "id": 5502,
+  "identifier": null,
+  "text": "Folktale",
+  "context": "Example of genre 'Narrative'",
+  "isHidden": false
+ },
+ {
+  "id": 5504,
+  "identifier": null,
+  "text": "Fable",
+  "context": "Example of genre 'Narrative'",
+  "isHidden": false
+ },
+ {
+  "id": 5506,
+  "identifier": null,
+  "text": "Humorous Story",
+  "context": "Example of genre 'Narrative'",
+  "isHidden": false
+ },
+ {
+  "id": 5508,
+  "identifier": null,
+  "text": "Procedural Discourse",
+  "context": "Genre which is: An explanation or description of a method, process, or situation having ordered steps.",
+  "isHidden": false
+ },
+ {
+  "id": 5510,
+  "identifier": null,
+  "text": "An explanation or description of a method, process, or situation having ordered steps.",
+  "context": "Definition of genre 'Procedural Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5512,
+  "identifier": null,
+  "text": "Recipe",
+  "context": "Example of genre 'Procedural Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5514,
+  "identifier": null,
+  "text": "Instructions",
+  "context": "Example of genre 'Procedural Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5516,
+  "identifier": null,
+  "text": "Plan",
+  "context": "Example of genre 'Procedural Discourse'",
+  "isHidden": false
+ },
+ {
+  "id": 5518,
+  "identifier": null,
+  "text": "Report",
+  "context": "Genre which is: A factual account of some event or circumstance.",
+  "isHidden": false
+ },
+ {
+  "id": 5520,
+  "identifier": null,
+  "text": "A factual account of some event or circumstance.",
+  "context": "Definition of genre 'Report'",
+  "isHidden": false
+ },
+ {
+  "id": 5522,
+  "identifier": null,
+  "text": "News Report",
+  "context": "Example of genre 'Report'",
+  "isHidden": false
+ },
+ {
+  "id": 5524,
+  "identifier": null,
+  "text": "Essay",
+  "context": "Example of genre 'Report'",
+  "isHidden": false
+ },
+ {
+  "id": 5526,
+  "identifier": null,
+  "text": "Commentary",
+  "context": "Example of genre 'Report'",
+  "isHidden": false
+ },
+ {
+  "id": 5528,
+  "identifier": null,
+  "text": "Singing",
+  "context": "Genre which is: Words or sounds articulated in succession with musical inflections or modulations of the voice.",
+  "isHidden": false
+ },
+ {
+  "id": 5530,
+  "identifier": null,
+  "text": "Words or sounds articulated in succession with musical inflections or modulations of the voice.",
+  "context": "Definition of genre 'Singing'",
+  "isHidden": false
+ },
+ {
+  "id": 5532,
+  "identifier": null,
+  "text": "Chant",
+  "context": "Example of genre 'Singing'",
+  "isHidden": false
+ },
+ {
+  "id": 5534,
+  "identifier": null,
+  "text": "Song",
+  "context": "Example of genre 'Singing'",
+  "isHidden": false
+ },
+ {
+  "id": 5536,
+  "identifier": null,
+  "text": "Chorus",
+  "context": "Example of genre 'Singing'",
+  "isHidden": false
+ },
+ {
+  "id": 5538,
+  "identifier": null,
+  "text": "Instrumental Music",
+  "context": "Genre which is: Music intended to be performed by a musical instrument or group of instruments.",
+  "isHidden": false
+ },
+ {
+  "id": 5540,
+  "identifier": null,
+  "text": "Music intended to be performed by a musical instrument or group of instruments.",
+  "context": "Definition of genre 'Instrumental Music'",
+  "isHidden": false
+ },
+ {
+  "id": 5542,
+  "identifier": null,
+  "text": "Unintelligible Speech",
+  "context": "Genre which is: Utterances that are not intended to be interpretable as ordinary language.",
+  "isHidden": false
+ },
+ {
+  "id": 5544,
+  "identifier": null,
+  "text": "Utterances that are not intended to be interpretable as ordinary language.",
+  "context": "Definition of genre 'Unintelligible Speech'",
+  "isHidden": false
+ },
+ {
+  "id": 5546,
+  "identifier": null,
+  "text": "Sacred Language",
+  "context": "Example of genre 'Unintelligible Speech'",
+  "isHidden": false
+ },
+ {
+  "id": 5548,
+  "identifier": null,
+  "text": "Glossolalia",
+  "context": "Example of genre 'Unintelligible Speech'",
+  "isHidden": false
+ },
+ {
+  "id": 5550,
+  "identifier": null,
+  "text": "Singing Syllables (fa-la-la)",
+  "context": "Example of genre 'Unintelligible Speech'",
+  "isHidden": false
+ },
+ {
+  "id": 7486,
+  "identifier": null,
+  "text": "Academic Output",
+  "context": "Academic Output",
+  "isHidden": true
+ },
+ {
+  "id": 7488,
+  "identifier": null,
+  "text": "Community Materials",
+  "context": "Community Materials",
+  "isHidden": true
+ },
+ {
+  "id": 7490,
+  "identifier": null,
+  "text": "Consent",
+  "context": "Consent",
+  "isHidden": true
+ },
+ {
+  "id": 7492,
+  "identifier": null,
+  "text": "Conversation",
+  "context": "Conversation",
+  "isHidden": false
+ },
+ {
+  "id": 7494,
+  "identifier": null,
+  "text": "Description",
+  "context": "Description",
+  "isHidden": true
+ },
+ {
+  "id": 7496,
+  "identifier": null,
+  "text": "Dialog",
+  "context": "Dialog",
+  "isHidden": true
+ },
+ {
+  "id": 7498,
+  "identifier": null,
+  "text": "Dictionary",
+  "context": "Dictionary",
+  "isHidden": true
+ },
+ {
+  "id": 7500,
+  "identifier": null,
+  "text": "Folktale",
+  "context": "Folktale",
+  "isHidden": false
+ },
+ {
+  "id": 7502,
+  "identifier": null,
+  "text": "Grammar",
+  "context": "Grammar",
+  "isHidden": true
+ },
+ {
+  "id": 7504,
+  "identifier": null,
+  "text": "Interview",
+  "context": "Interview",
+  "isHidden": false
+ },
+ {
+  "id": 7506,
+  "identifier": null,
+  "text": "Ludic Discourse",
+  "context": "Ludic Discourse",
+  "isHidden": true
+ },
+ {
+  "id": 7508,
+  "identifier": null,
+  "text": "Map",
+  "context": "Map",
+  "isHidden": true
+ },
+ {
+  "id": 7510,
+  "identifier": null,
+  "text": "Mythology",
+  "context": "Mythology",
+  "isHidden": true
+ },
+ {
+  "id": 7512,
+  "identifier": null,
+  "text": "Notes",
+  "context": "Notes",
+  "isHidden": true
+ },
+ {
+  "id": 7514,
+  "identifier": null,
+  "text": "Oral History",
+  "context": "Oral History",
+  "isHidden": true
+ },
+ {
+  "id": 7516,
+  "identifier": null,
+  "text": "Personal Narrative",
+  "context": "Personal Narrative",
+  "isHidden": true
+ },
+ {
+  "id": 7518,
+  "identifier": null,
+  "text": "Photograph",
+  "context": "Photograph",
+  "isHidden": true
+ },
+ {
+  "id": 7520,
+  "identifier": null,
+  "text": "Procedural Text",
+  "context": "Procedural Text",
+  "isHidden": true
+ },
+ {
+  "id": 7522,
+  "identifier": null,
+  "text": "Proverb",
+  "context": "Proverb",
+  "isHidden": true
+ },
+ {
+  "id": 7524,
+  "identifier": null,
+  "text": "Questionnaire",
+  "context": "Questionnaire",
+  "isHidden": true
+ },
+ {
+  "id": 7526,
+  "identifier": null,
+  "text": "Report",
+  "context": "Report",
+  "isHidden": false
+ },
+ {
+  "id": 7528,
+  "identifier": null,
+  "text": "RitualSong",
+  "context": "RitualSong",
+  "isHidden": true
+ },
+ {
+  "id": 7530,
+  "identifier": null,
+  "text": "Stimuli",
+  "context": "Stimuli",
+  "isHidden": true
+ },
+ {
+  "id": 7532,
+  "identifier": null,
+  "text": "Verbal Art",
+  "context": "Verbal Art",
+  "isHidden": false
+ },
+ {
+  "id": 7534,
+  "identifier": null,
+  "text": "Collection description",
+  "context": "Collection description",
+  "isHidden": false
+ },
+ {
+  "id": 7546,
+  "identifier": null,
+  "text": "",
+  "context": null,
+  "isHidden": true
+ }
+]

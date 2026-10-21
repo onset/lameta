@@ -70,3 +70,4 @@ test-results/.last-run.json
 rocrate-export-review-*.md
 
 Large Sample/
+scripts/crowdin/staging/

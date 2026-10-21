@@ -8,7 +8,7 @@ msgstr ""
 "Language: id\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-01-06 23:05\n"
+"PO-Revision-Date: 2026-10-21 01:36\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -43,7 +43,7 @@ msgid "About lameta"
 msgstr "Tentang lameta"
 
 msgid "Access"
-msgstr ""
+msgstr "Akses"
 
 msgid "Add Files"
 msgstr "Tambah File-File"
@@ -488,7 +488,7 @@ msgid "Normally, when you add a file to a project, session, or person, that file
 msgstr "Biasanya, ketika Anda menambahkan file ke proyek, sesi, atau orang, file tersebut disalin ke dalam folder yang sama dengan proyek lameta Anda. Untuk beberapa file, mungkin Anda lebih suka tidak menyalin file tersebut dari lokasi asalnya dan hanya membuat 'tautan' ke file tersebut."
 
 msgid "Not important to the archive, but will be included"
-msgstr ""
+msgstr "Tidak perlu untuk diarsipkan, tetapi akan diikutsertakan"
 
 msgid "Note"
 msgstr ""
@@ -779,7 +779,7 @@ msgid "There was a problem exporting:"
 msgstr "Ada masalah saat mengekspor:"
 
 msgid "This Personally Identifiable Information may not be exported by some formats."
-msgstr ""
+msgstr "Informasi Penanda Pribadi mungkin tidak bisa diekspor ke dalam beberapa format."
 
 msgid "This XML conforms to the IMDI schema."
 msgstr "."
@@ -800,7 +800,7 @@ msgid "This setting is unique to the account you are using on this computer. A c
 msgstr "Pengaturan ini unik untuk akun yang Anda gunakan di komputer ini. Seorang rekan di komputer lain perlu mengatur nilai ini ke lokasi yang benar di komputer mereka."
 
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
-msgstr ""
+msgstr "Berkas ini tidak akan diarsipkan dan hanya dipergunakan oleh peneliti."
 
 msgid "Translations"
 msgstr ""

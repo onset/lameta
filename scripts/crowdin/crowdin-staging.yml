@@ -1,0 +1,24 @@
+# Used ONLY by the one-time v2→v3 translation recovery (Phase 4 of the
+# sort-out): uploads the staged per-language PO files produced by
+# build-recovered-translations.ts as plain unapproved suggestions.
+# The en/ sources inside staging/ are copies made by that script so that the
+# CLI can match translations to the existing branch files.
+#   npx crowdin upload translations -b <branch> -l <lang> --config scripts/crowdin/crowdin-staging.yml
+project_id: "324607"
+api_token_env: LAMETA_CROWDIN_TOKEN
+preserve_hierarchy: false
+base_path: "./staging"
+files: [
+    {
+      "source": /en/messages.po,
+      "translation": /%two_letters_code%/messages.po,
+      "languages_mapping":
+        { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
+    },
+    {
+      "source": /en/fields.po,
+      "translation": /%two_letters_code%/fields.po,
+      "languages_mapping":
+        { "two_letters_code": { "pt-BR": "pt-BR", "zh-CN": "zh-CN" } },
+    },
+  ]

@@ -1,0 +1,408 @@
+[
+ {
+  "id": 6872,
+  "identifier": "project.id",
+  "text": "Project ID",
+  "context": "project.id\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6874,
+  "identifier": "project.grantId",
+  "text": "Grant ID",
+  "context": "project.grantId\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6876,
+  "identifier": "project.projectDescription",
+  "text": "Description",
+  "context": "project.projectDescription\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6878,
+  "identifier": "project.vernacularIso3CodeAndName",
+  "text": "Content Language",
+  "context": "project.vernacularIso3CodeAndName\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6880,
+  "identifier": "project.analysisISO3CodeAndName",
+  "text": "Working Language",
+  "context": "project.analysisISO3CodeAndName\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6882,
+  "identifier": "project.location",
+  "text": "Location/Address",
+  "context": "project.location\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6884,
+  "identifier": "project.region",
+  "text": "Region",
+  "context": "project.region\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6886,
+  "identifier": "project.country",
+  "text": "Country",
+  "context": "project.country\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6888,
+  "identifier": "project.continent",
+  "text": "Continent",
+  "context": "project.continent\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6890,
+  "identifier": "project.Africa",
+  "text": "Africa",
+  "context": "project.Africa\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6892,
+  "identifier": "project.Asia",
+  "text": "Asia",
+  "context": "project.Asia\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6894,
+  "identifier": "project.Australia",
+  "text": "Australia",
+  "context": "project.Australia\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6896,
+  "identifier": "project.Europe",
+  "text": "Europe",
+  "context": "project.Europe\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6898,
+  "identifier": "project.North-America",
+  "text": "North-America",
+  "context": "project.North-America\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6900,
+  "identifier": "project.Middle-America",
+  "text": "Middle-America",
+  "context": "project.Middle-America\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6902,
+  "identifier": "project.Oceania",
+  "text": "Oceania",
+  "context": "project.Oceania\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6904,
+  "identifier": "project.South-America",
+  "text": "South-America",
+  "context": "project.South-America\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6906,
+  "identifier": "project.fundingProjectTitle",
+  "text": "Funding Project Title",
+  "context": "project.fundingProjectTitle\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6908,
+  "identifier": "project.accessProtocol",
+  "text": "Access Protocol used by this project",
+  "context": "project.accessProtocol\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6910,
+  "identifier": "project.customAccessChoices",
+  "text": "Custom Access Choices",
+  "context": "project.customAccessChoices\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6912,
+  "identifier": "project.depositor",
+  "text": "Depositor",
+  "context": "project.depositor\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6914,
+  "identifier": "project.rightsHolder",
+  "text": "Rights Holder",
+  "context": "project.rightsHolder\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6916,
+  "identifier": "project.contactPerson",
+  "text": "Contact Person",
+  "context": "project.contactPerson\nproject",
+  "isHidden": true
+ },
+ {
+  "id": 6918,
+  "identifier": "session.id",
+  "text": "ID",
+  "context": "session.id\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6920,
+  "identifier": "session.title",
+  "text": "Title",
+  "context": "session.title\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6922,
+  "identifier": "session.participants",
+  "text": "People",
+  "context": "session.participants\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6924,
+  "identifier": "session.genre",
+  "text": "Genre",
+  "context": "session.genre\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6926,
+  "identifier": "session.location",
+  "text": "Neighborhood/Town/Village",
+  "context": "session.location\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6928,
+  "identifier": "session.access",
+  "text": "Access",
+  "context": "session.access\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6930,
+  "identifier": "session.description",
+  "text": "Description",
+  "context": "session.description\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6932,
+  "identifier": "session.status",
+  "text": "Status",
+  "context": "session.status\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6934,
+  "identifier": "session.date",
+  "text": "Date",
+  "context": "session.date\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6936,
+  "identifier": "session.involvement",
+  "text": "Researcher Involvement",
+  "context": "session.involvement\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6938,
+  "identifier": "session.locationCountry",
+  "text": "Country",
+  "context": "session.locationCountry\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6940,
+  "identifier": "session.locationRegion",
+  "text": "Region",
+  "context": "session.locationRegion\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6942,
+  "identifier": "session.locationContinent",
+  "text": "Continent",
+  "context": "session.locationContinent\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6944,
+  "identifier": "session.locationAddress",
+  "text": "Address",
+  "context": "session.locationAddress\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6946,
+  "identifier": "session.planningType",
+  "text": "Planning Type",
+  "context": "session.planningType\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6948,
+  "identifier": "session.subgenre",
+  "text": "Subgenre",
+  "context": "session.subgenre\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6950,
+  "identifier": "session.socialContext",
+  "text": "Social Context",
+  "context": "session.socialContext\nsession",
+  "isHidden": true
+ },
+ {
+  "id": 6952,
+  "identifier": "session.Keyword",
+  "text": "Keyword",
+  "context": "session.Keyword\nKeyword",
+  "isHidden": true
+ },
+ {
+  "id": 6954,
+  "identifier": "session.Topic",
+  "text": "Topic",
+  "context": "session.Topic\nTopic",
+  "isHidden": true
+ },
+ {
+  "id": 6956,
+  "identifier": "session.languages",
+  "text": "Subject Languages",
+  "context": "session.languages\nSubject Languages",
+  "isHidden": true
+ },
+ {
+  "id": 6958,
+  "identifier": "session.accessExplanation",
+  "text": "Access Explanation",
+  "context": "session.accessExplanation\nAccess Explanation",
+  "isHidden": true
+ },
+ {
+  "id": 6960,
+  "identifier": "session.Working Languages",
+  "text": "Working Languages",
+  "context": "session.Working Languages\nWorking Languages",
+  "isHidden": true
+ },
+ {
+  "id": 6962,
+  "identifier": "session.Custom Fields",
+  "text": "Custom Fields",
+  "context": "session.Custom Fields\nCustom Fields",
+  "isHidden": true
+ },
+ {
+  "id": 6964,
+  "identifier": "person.name",
+  "text": "Full Name",
+  "context": "person.name\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6966,
+  "identifier": "person.nickname",
+  "text": "Nickname",
+  "context": "person.nickname\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6968,
+  "identifier": "person.code",
+  "text": "Code",
+  "context": "person.code\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6970,
+  "identifier": "person.education",
+  "text": "Education",
+  "context": "person.education\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6972,
+  "identifier": "person.birthYear",
+  "text": "Birth Year",
+  "context": "person.birthYear\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6974,
+  "identifier": "person.gender",
+  "text": "Gender",
+  "context": "person.gender\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6976,
+  "identifier": "person.howToContact",
+  "text": "How To Contact",
+  "context": "person.howToContact\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6978,
+  "identifier": "person.ethnicGroup",
+  "text": "Ethnic Group",
+  "context": "person.ethnicGroup\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6980,
+  "identifier": "person.primaryOccupation",
+  "text": "Primary Occupation",
+  "context": "person.primaryOccupation\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6982,
+  "identifier": "person.displayName",
+  "text": "Person",
+  "context": "person.displayName\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6984,
+  "identifier": "person.hasConsent",
+  "text": "Consent",
+  "context": "person.hasConsent\nperson",
+  "isHidden": true
+ },
+ {
+  "id": 6986,
+  "identifier": "person.languages",
+  "text": "Languages",
+  "context": "person.languages\nperson",
+  "isHidden": true
+ }
+]

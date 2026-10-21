@@ -1,0 +1,868 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2018-12-15 15:06-0700\n"
+"Mime-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: fa\n"
+"Project-Id-Version: saymorex\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-07-09 18:22\n"
+"Last-Translator: \n"
+"Language-Team: Persian\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: saymorex\n"
+"X-Crowdin-Project-ID: 324607\n"
+"X-Crowdin-Language: fa\n"
+"X-Crowdin-File: messages.po\n"
+"X-Crowdin-File-ID: 36\n"
+
+#~ msgid "\"Open in program associated with this file type"
+#~ msgstr ""
+
+msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
+msgstr ""
+
+msgid "A file with the same name already exists at that location."
+msgstr ""
+
+msgid "A folder containing all the project's archivable files, with IMDI wrapped for OPEX."
+msgstr ""
+
+#~ msgid "A folder containing both the IMDI files and all the project's archivable files."
+#~ msgstr ""
+
+msgid "A folder with an IMDI file for the project and each session."
+msgstr "پوشه‌ شامل فایل IMDI برای پروژه و هر نشست."
+
+#~ msgid "A single ISLE Meta Data Initiative XML file."
+#~ msgstr ""
+
+msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
+msgstr "\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
+"بسیاری از فیلدهای لامتا حذف شده است."
+
+#~ msgid "A single zip archive that contains one comma-separated file for each of Project, Session, and People."
+#~ msgstr ""
+
+msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
+msgstr "یک فایل zip که حاوی یک پرونده جدا شده با ویرگول برای پروژه ها، نشست‌ها و افراد است."
+
+#~ msgid "A zip file containing both the IMDI files and all the project's archivable files."
+#~ msgstr ""
+
+#~ msgid "A zip file with an IMDI file for the project and each session."
+#~ msgstr ""
+
+msgid "Abandon files that are still copying"
+msgstr "از فایل هایی که در حال کپی شدن هستند، صرف نظر کنید"
+
+msgid "About This Project"
+msgstr "درباره این پروژه"
+
+msgid "About lameta"
+msgstr "درباره لامتا"
+
+msgid "Access"
+msgstr "دسترسی"
+
+msgid "Access Protocol"
+msgstr "پروتکل دسترسی"
+
+msgid "Add Files"
+msgstr "افزودن فایلها"
+
+msgid "Add Language"
+msgstr "افزودن زبانها"
+
+msgid "Add documents here that describe the projects and corpus."
+msgstr "در اینجا مدارکی را بیافزایید که پروژه و پیکره را توصیف می کنند."
+
+msgid "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded."
+msgstr "فایلهایی را اینجا اضافه کنید که به نظر نمی رسد برای جای دیگری مناسب باشد. به عنوان مثال فایلهایی که توضیح می دهند چگونه بودجه پروژه تأمین می شود."
+
+msgid "All Sessions"
+msgstr "همه جلسات"
+
+msgid "As Personally Identifiable Information, this will not be exported to other formats."
+msgstr "به عنوان اطلاعات قابل شناسایی شخصی ، این موارد به فرمتهای دیگر تبدیل نمی شوند."
+
+msgid "As a curator"
+msgstr "به عنوان سرپرست"
+
+msgid "As a developer"
+msgstr "به عنوان توسعه دهنده"
+
+msgid "As a trainer"
+msgstr "به عنوان مربی"
+
+#. label on a button that shows when a Session or Person file name has characters that are not allowed
+msgid "Attempt Fix"
+msgstr ""
+
+msgid "Audio"
+msgstr "فایل صوتی"
+
+#~ msgid "Audio Bit Depth"
+#~ msgstr ""
+
+#~ msgid "Audio Bit Rate"
+#~ msgstr ""
+
+#~ msgid "Audio Channels"
+#~ msgstr ""
+
+#~ msgid "Audio Codec"
+#~ msgstr ""
+
+#~ msgid "Audio Sample Rate"
+#~ msgstr ""
+
+msgid "Cancel"
+msgstr "کنسل/لغو"
+
+msgid "Cannot add files of that type"
+msgstr "نمی توان این نوع فایلها را اضافه کرد"
+
+msgid "Change Name To:"
+msgstr "تغییر نام به:"
+
+msgid "Change..."
+msgstr ""
+
+#~ msgid "Check for new version"
+#~ msgstr ""
+
+msgid "Choose File"
+msgstr ""
+
+msgid "Choose Language"
+msgstr "انتخاب زبان"
+
+msgid "Choose Spreadsheet Mapping:"
+msgstr ""
+
+msgid "Choose an export format:"
+msgstr "انتخاب فرمت خروجی:"
+
+msgid "Choose which Sessions to export:"
+msgstr "انتخاب نشستی که باید از آن خروجی گرفت:"
+
+msgid "Clear"
+msgstr ""
+
+msgid "Close"
+msgstr "بستن"
+
+msgid "Comments"
+msgstr "نظرها"
+
+msgid "Confirm Delete"
+msgstr "تایید حذف"
+
+msgid "Contributions"
+msgstr "مشارکت"
+
+msgid "Contributors"
+msgstr "مشارکت کننده ها"
+
+msgid "Copy"
+msgstr "کپی / رونوشت"
+
+msgid "Copy Requested..."
+msgstr "رونوشت / کپی درخواست شده"
+
+msgid "Copying in Files..."
+msgstr "در حال رونوشت گرفتن / کپی کردن"
+
+msgid "Copying..."
+msgstr "در حال رونوشت گرفتن / کپی کردن فایلها"
+
+msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create New Project"
+msgstr "ایجاد پروژه جدید"
+
+msgid "Create New Project with Sample Data"
+msgstr "ایجاد پروژه جدید با داده های نمونه"
+
+msgid "Create New lameta Project"
+msgstr "ایجاد پروژه جدید لامتا"
+
+msgid "Create Project Using Sample Data"
+msgstr "ایجاد پروژه با استفاده از داده های نمونه"
+
+msgid "Create Project..."
+msgstr "ایجاد پروژه"
+
+msgid "Credits"
+msgstr "اعتبار"
+
+msgid "Custom Access Choices"
+msgstr "انتخاب دسترسی سفارشی"
+
+msgid "Custom Field"
+msgstr "فیلد سفارشی"
+
+#~ msgid "Custom Fields"
+#~ msgstr ""
+
+msgid "Cut"
+msgstr "برش"
+
+#~ msgid "Date"
+#~ msgstr ""
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Delete All Marked People..."
+msgstr ""
+
+msgid "Delete All Marked Sessions..."
+msgstr ""
+
+msgid "Delete File..."
+msgstr "حذف فایلها"
+
+msgid "Delete Person..."
+msgstr "حذف افراد"
+
+msgid "Delete Session"
+msgstr ""
+
+msgid "Delete Session..."
+msgstr "حذف نشست"
+
+msgid "Delete link to file..."
+msgstr ""
+
+msgid "Deleting..."
+msgstr ""
+
+msgid "Description Documents"
+msgstr "مدارک توصیف"
+
+msgid "Do not quit"
+msgstr "خارج نشوید"
+
+msgid "Done"
+msgstr "تکمیل شد"
+
+msgid "Download"
+msgstr "دانلود"
+
+msgid "Duplicate Person"
+msgstr "شخص تکراری"
+
+msgid "Duplicate Session"
+msgstr "نشست تکراری"
+
+#~ msgid "ELAN"
+#~ msgstr ""
+
+msgid "Edit"
+msgstr "ویرایش"
+
+msgid "Email Address"
+msgstr "آدرس ایمیل"
+
+msgid "Enter each choice, separated by commas"
+msgstr "هر انتخاب را وارد کنید و با ویرگول جدا بنویسید."
+
+#~ msgid "Error"
+#~ msgstr ""
+
+msgid "Export"
+msgstr "خروجی"
+
+msgid "Export Project"
+msgstr "خروجی گرفتن از پروژه"
+
+msgid "Export Project..."
+msgstr "خروجی گرفتن از پروژه"
+
+msgid "Exporting..."
+msgstr "در حال خروجی گرفتن"
+
+msgid "Field"
+msgstr "فیلد"
+
+msgid "File"
+msgstr "فایل"
+
+msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
+msgstr "قفل کردن فایل می تواند هنگامی اتفاق بیفتد که یک پخش کننده رسانه در حال پخش یک رسانه باشد. همچنین می تواند توسط ضد ویروس یا همگام سازی فایل ایجاد شود. در صورت ادامه مشکل ، لطفاً lameta را دوباره راه اندازی کنید و دوباره امتحان کنید."
+
+msgid "File to Import:"
+msgstr ""
+
+msgid "Font Size"
+msgstr "اندازه فونت"
+
+msgid "For a course or workshop"
+msgstr "برای یک درس یا کارگاه"
+
+msgid "For documenting another language"
+msgstr "برای مستندسازی یک زبان دیگر"
+
+msgid "For documenting my own language"
+msgstr "برای مستندسازی زبان خودم"
+
+#~ msgid "Format"
+#~ msgstr ""
+
+msgid "Found file with a name containing 'Consent'"
+msgstr "یافتن فایل رضایت  نامه "
+
+msgid "Found no file with a name containing 'Consent'"
+msgstr "فایل رضایت نامه پیدا نشد"
+
+#~ msgid "Frame rate"
+#~ msgstr ""
+
+msgid "Full Name"
+msgstr "نام کامل"
+
+msgid "Help"
+msgstr "راهنما"
+
+msgid "Help translate"
+msgstr "ترجمه راهنما"
+
+msgid "Hide Others"
+msgstr "پنهان کردن بخش مربوط به دیگران"
+
+msgid "Hide lameta"
+msgstr "پنهان کردن لمتا"
+
+msgid "How are you using lameta?"
+msgstr "چگونه از لمتا استفاده میکنید؟"
+
+msgid "ID"
+msgstr "مشخصات هویتی/ID"
+
+msgid "ID cannot be empty"
+msgstr ""
+
+msgid "ID cannot contain spaces"
+msgstr ""
+
+#~ msgid "IMDI"
+#~ msgstr ""
+
+#~ msgid "IMDI + Files"
+#~ msgstr ""
+
+#~ msgid "IMDI Mode"
+#~ msgstr ""
+
+msgid "IMDI Only"
+msgstr "فقط IMDI"
+
+msgid "Image"
+msgstr "تصویر"
+
+msgid "Import Spreadsheet of People"
+msgstr ""
+
+msgid "Import Spreadsheet of Sessions"
+msgstr ""
+
+msgid "Import {chosenCount} People"
+msgstr ""
+
+msgid "Import {chosenCount} Sessions"
+msgstr ""
+
+msgid "Importing..."
+msgstr ""
+
+msgid "Indicates that this is the father or mother's primary language."
+msgstr "نشان می دهد که این زبان اول پدر یا مادر است."
+
+msgid "Interface Language"
+msgstr "زبان ارتباط"
+
+msgid "Language Code"
+msgstr "کد زبانی"
+
+#~ msgid "Languages"
+#~ msgstr ""
+
+msgid "Larger"
+msgstr "بزرگتر"
+
+msgid "Learner"
+msgstr "یادگیرنده"
+
+#~ msgid "Length"
+#~ msgstr ""
+
+msgid "Linked to {p}"
+msgstr ""
+
+msgid "Mark as a primary language of the mother."
+msgstr "علامت گذاری به عنوان زبان اول مادر."
+
+msgid "Mark as a primary language."
+msgstr "علامت گذاری به عنوان زبان اول."
+
+msgid "Mark as primary language of the father."
+msgstr "علامت گذاری به عنوان زبان اول مادر."
+
+msgid "Mark for Deletion or Export"
+msgstr ""
+
+#~ msgid "Mark for Export"
+#~ msgstr ""
+
+msgid "Mark for Export or Deletion"
+msgstr ""
+
+msgid "Media Folder"
+msgstr ""
+
+#~ msgid "Media Folder Settings"
+#~ msgstr ""
+
+msgid "Media Folder Settings..."
+msgstr ""
+
+msgid "Modified"
+msgstr "اصلاح شده"
+
+msgid "More Fields"
+msgstr "فیلدهای بیشتر"
+
+msgid "Name"
+msgstr "نام"
+
+msgid "New Person"
+msgstr "فرد جدید"
+
+msgid "New Session"
+msgstr "نشست جدید"
+
+#~ msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just \"link\" to them."
+#~ msgstr ""
+
+msgid "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them."
+msgstr ""
+
+msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
+msgstr ""
+
+msgid "Notes"
+msgstr "یادداشتها"
+
+msgid "OK"
+msgstr "بسیار خوب/OK"
+
+msgid "OPEX + Files"
+msgstr ""
+
+msgid "One or more files are still being copied into your project."
+msgstr "یک یا چند پرونده در پروژه شما در حال کپی شدن هستند."
+
+msgid "Open"
+msgstr "بازکردن"
+
+msgid "Open Project"
+msgstr "باز کردن پروژه"
+
+msgid "Open Project..."
+msgstr "باز کردن پروژه"
+
+#~ msgid "Open SayMore Project"
+#~ msgstr ""
+
+msgid "Open in ELAN"
+msgstr "باز کردن در ایلان"
+
+msgid "Open in program associated with this file type"
+msgstr "برنامه مرتبط با این نوع پرونده را باز کنید"
+
+msgid "Other Documents"
+msgstr "اسناد دیگر"
+
+#~ msgid "Other Languages"
+#~ msgstr ""
+
+#~ msgid "PARADISEC Mode"
+#~ msgstr ""
+
+msgid "Paradisec CSV"
+msgstr "Paradisec CSV"
+
+msgid "Paste"
+msgstr "چسباندن"
+
+msgid "People"
+msgstr "مردم"
+
+msgid "Person"
+msgstr "فرد"
+
+msgid "Please Register"
+msgstr "لطفا ثبت نام کنید"
+
+msgid "Please remove characters that not allowed by the Archive Settings."
+msgstr ""
+
+msgid "Please wait until all files are finished copying into this folder"
+msgstr "لطفا منتظر بمانید تا همه پرونده ها در این پوشه کپی شوند"
+
+msgid "Project"
+msgstr "پروژه"
+
+#~ msgid "Project will be created in: {folderPath}"
+#~ msgstr ""
+
+#~ msgid "Project will be created in: {path}"
+#~ msgstr ""
+
+msgid "Project will be created in: {path}."
+msgstr "پروژه در {path} ایجاد خواهد شد."
+
+msgid "Properties"
+msgstr "ویژگیها"
+
+msgid "Quit"
+msgstr "خارج شدن"
+
+msgid "Redo"
+msgstr "دوباره انجام دادن"
+
+msgid "Registration"
+msgstr "ثبت نام"
+
+msgid "Registration..."
+msgstr "ثبت نام"
+
+msgid "Release Notes"
+msgstr "یادداشتهای انتشار"
+
+msgid "Rename"
+msgstr "تغییر نام"
+
+msgid "Rename File"
+msgstr "تغییر نام فایل"
+
+msgid "Rename for Consent"
+msgstr "تغییر نام فایل رضایت نامه"
+
+msgid "Rename..."
+msgstr "تغییر نام"
+
+msgid "Renaming failed because there is already a file with that name."
+msgstr "تغییر نام انجام نشد زیرا در حال حاضر فایلی با این نام وجود دارد."
+
+msgid "Report a problem"
+msgstr "گزارش یک مشکل"
+
+#~ msgid "Resolution"
+#~ msgstr ""
+
+msgid "Restart lameta and do the rename before playing the video again."
+msgstr "لمتا را دوباره راه اندازی کنید، نام فایل را قبل از نمایش ویدئو تغییر دهید."
+
+msgid "Role"
+msgstr "نقش"
+
+msgid "Save As"
+msgstr "ذخیره فایل به عنوان"
+
+msgid "Saving"
+msgstr "در حال ذخیره فایل"
+
+msgid "Saving before rename..."
+msgstr ""
+
+#~ msgid "SayMore/SayMore Project Files"
+#~ msgstr ""
+
+msgid "Select All"
+msgstr "انتخاب همه"
+
+msgid "Services"
+msgstr "خدمات"
+
+msgid "Session"
+msgstr "نشست"
+
+msgid "Sessions"
+msgstr "نشستها"
+
+msgid "Show All"
+msgstr "نمایش همه"
+
+msgid "Show IMDI previews"
+msgstr ""
+
+msgid "Show PARADISEC previews"
+msgstr ""
+
+msgid "Show Release Notes"
+msgstr "نمایش یادداشت های انتشار"
+
+msgid "Show export"
+msgstr "نمایش خروجی"
+
+msgid "Show in File Explorer"
+msgstr "نمایش در File Explorer"
+
+msgid "Show in Finder"
+msgstr "نمایش در Finder"
+
+msgid "Show me the folder with the problem"
+msgstr ""
+
+msgid "Show more releases"
+msgstr "نمایش های بیشتر"
+
+msgid "Size"
+msgstr "اندازه"
+
+msgid "Smaller"
+msgstr "کوچکتر"
+
+msgid "Some operating systems would not allow that name."
+msgstr ""
+
+msgid "Something is wrong here..."
+msgstr ""
+
+msgid "Sorry, no slashes are allowed"
+msgstr ""
+
+msgid "Start Screen"
+msgstr "صفحه آغازین"
+
+msgid "Status"
+msgstr "وضعیت"
+
+msgid "Text"
+msgstr "متن"
+
+msgid "That name would lead to an empty filename."
+msgstr "این نام منجر به یک پرونده خالی می شود."
+
+#~ msgid "That would lead to an empty filename"
+#~ msgstr ""
+
+msgid "The IMDI files were validated."
+msgstr ""
+
+msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
+msgstr ""
+
+msgid "The {fieldNameInUiLanguage} cannot be empty"
+msgstr "این فایل {fieldNameInUiLanguage} نمیتواند خالی باشد."
+
+msgid "There are more than one files of type \"{projectType}\" in this folder, and there can only be one."
+msgstr ""
+
+msgid "There is a problem with the files in the folder for {displayName}. Click for more information."
+msgstr ""
+
+#~ msgid "There is a problem with {displayName}. Click for more information."
+#~ msgstr ""
+
+#~ msgid "There is already a Person with that name or code"
+#~ msgstr ""
+
+msgid "There is already a Person with that name or code."
+msgstr "در حال حاضر شخصی با آن نام یا کد وجود دارد."
+
+msgid "There is already a file here with the name"
+msgstr "در اینجا فایلی با این نام وجود دارد"
+
+#~ msgid "There is already a project at: {path}"
+#~ msgstr ""
+
+msgid "There is already a project at: {path}."
+msgstr "در اینجا پروژه ای با این نام وجود دارد، {path}"
+
+msgid "There is already a {folderKind} \"{value}\"."
+msgstr "در اینجا {folderKind} {value} وجود دارد"
+
+#~ msgid "There is already a {folderKind} with that name or code \"{value}\"."
+#~ msgstr ""
+
+#~ msgid "There is already a {folderKind} with that name or code '{value}'"
+#~ msgstr ""
+
+#~ msgid "There is already a {folderKind} with that name or code '{value}.'"
+#~ msgstr ""
+
+#~ msgid "There is already a {folderKind} with the name '{value}'"
+#~ msgstr ""
+
+msgid "There was a problem exporting:"
+msgstr "مشکلی در خروجی فایل وجود داشت:"
+
+msgid "This XML conforms to the IMDI schema."
+msgstr ""
+
+msgid "This file does not comply with the file naming rules of the current archive."
+msgstr ""
+
+msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
+msgstr ""
+
+msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
+msgstr ""
+
+#~ msgid "Try restarting lameta and then delete the file before viewing it. If that doesn't do it, restart your computer."
+#~ msgstr ""
+
+#~ msgid "Try restarting lameta. If that doesn't do it, restart your computer."
+#~ msgstr ""
+
+msgid "Type"
+msgstr "تایپ کردن"
+
+msgid "Undo"
+msgstr "واگرد/ برگشت"
+
+msgid "Update available"
+msgstr "بروزرسانی موجود است"
+
+msgid "Value"
+msgstr "ارزش"
+
+msgid "Video"
+msgstr "ویدئو"
+
+#~ msgid "Video Codec"
+#~ msgstr ""
+
+msgid "View"
+msgstr "دیدن"
+
+msgid "View Release Notes"
+msgstr "یادداشتهای انتشار را مشاهده کنید"
+
+#~ msgid "Warning"
+#~ msgstr ""
+
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+"restarting your computer, please report the problem to\n"
+"https://github.com/onset/lameta/issues."
+msgstr ""
+
+msgid "What would you like to call this project?"
+msgstr "دوست دارید نام این پروژه چه باشد؟"
+
+#~ msgid "Width"
+#~ msgstr ""
+
+msgid "You are running lameta version:"
+msgstr ""
+
+#~ msgid "You are running lameta version: {v}"
+#~ msgstr ""
+
+#~ msgid "You are running lameta {0}"
+#~ msgstr ""
+
+#~ msgid "You are running lameta {version}"
+#~ msgstr ""
+
+msgid "You cannot add files of that type"
+msgstr "نمی توانید پرونده هایی از این نوع اضافه کنید"
+
+msgid "You cannot add folders."
+msgstr "نمی توانید فولدر اضافه کنید."
+
+msgid "ZIP Archive"
+msgstr "آرشیو فایل زیپ"
+
+msgid "Zip of CSVs"
+msgstr "زیپ کردن فایلهای CSV"
+
+msgid "choose..."
+msgstr "انتخاب کنید"
+
+#~ msgid "height"
+#~ msgstr ""
+
+msgid "lameta"
+msgstr "لمتا"
+
+msgid "lameta  was not able to rename that file."
+msgstr "لمتا قادر به تغییر نام این فایل نبود."
+
+#~ msgid "lameta allows you to specify one \"Media Folder\". When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
+#~ msgstr ""
+
+msgid "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings."
+msgstr ""
+
+msgid "lameta and SayMore Project Files"
+msgstr "فایلهای پروژه لمتا و سیمور"
+
+msgid "lameta cannot export files while files are still being copied in."
+msgstr "لمتا نمی تواند از فایلهای در حال کپی شدن خروجی بگیرد."
+
+msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
+msgstr ""
+
+msgid "lameta could not find a matching Person for the following contributors:"
+msgstr ""
+
+msgid "lameta could not rename the directory."
+msgstr "لمتا نمیتواند فایل مورد نظر را تغییر نام بدهد."
+
+msgid "lameta expected to find a .link file at {e}"
+msgstr ""
+
+msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."
+msgstr ""
+
+msgid "lameta was not able to delete the file."
+msgstr "لمتا نمیتواند فایل را حذف کند."
+
+msgid "lameta was not able to put this file in the trash"
+msgstr "لمتا قادر به حذف این فایل نیست."
+
+msgid "lameta was not able to rename one of the files in the folder."
+msgstr "لمتا قادر به تغییر نام فایل یا فولدر نیست."
+
+#~ msgid "lameta was not able to rename that file."
+#~ msgstr ""
+
+msgid "lameta was not able to rename the folder."
+msgstr "لمتا قادر به تغییر نام این فایل نبود."
+
+#. Shows in a tooltip on an info icon in the Notes tab
+msgid "lameta will not export Notes to MIDI"
+msgstr ""
+
+msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
+msgstr ""
+
+#~ msgid "undefined"
+#~ msgstr ""
+
+#~ msgid "{0}"
+#~ msgstr ""
+
+msgid "{0} Marked Sessions"
+msgstr "نشستهای مشخص شده"
+
+#~ msgid "{0} will be moved to the Trash"
+#~ msgstr ""
+
+#~ msgid "{countOfMarkedSessions} Marked Sessions"
+#~ msgstr ""
+
+msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
+msgstr ""
+
