@@ -8,7 +8,6 @@ import { initializeSentry as initializeErrorReporting } from "./other/errorHandl
 import { initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
 import { t } from "@lingui/macro";
-import { PatientFS } from "./other/patientFile";
 import ReactModal from "react-modal";
 import * as mobx from "mobx";
 
@@ -26,7 +25,6 @@ mobx.configure({
 });
 
 // The main process creates this window only after the app is ready, so no need to wait for that here.
-PatientFS.init();
 initializeErrorReporting(false);
 
 initializeLocalization();

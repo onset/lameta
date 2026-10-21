@@ -45,8 +45,15 @@ export default defineConfig({
     // and electron-builder.json5 leaves them out of the installer.
     sourcemap: "hidden",
     rollupOptions: {
-      external: ["ts-node"],
+      external: ["ts-node", "fswin"],
     },
+  },
+  optimizeDeps: {
+    // fswin ships prebuilt .node binaries per-arch; esbuild's dev-server
+    // dependency scanner has no loader for those and crashes trying to
+    // pre-bundle it. It's lazily require()'d (Windows-only, main-process-only)
+    // in cloudFileStatus.ts, so keep it out of the scan entirely.
+    exclude: ["fswin"],
   },
   plugins: [
     // Custom plugin to copy vocabulary files to dist/vocabularies
@@ -110,6 +117,11 @@ export default defineConfig({
       nodeIntegration: true,
       optimizeDeps: {
         include: ["xml2js", /*"glob",*/ "fs-extra", "graceful-fs"],
+        // fswin ships prebuilt .node binaries for every arch; esbuild's dev-server
+        // dependency scanner has no loader for those and crashes if it tries to
+        // pre-bundle it. It's lazily require()'d (Windows-only) in cloudFileStatus.ts,
+        // so it must stay external to the renderer bundle rather than be scanned.
+        exclude: ["fswin"],
       },
     }),
     dsv(), // for importing csv

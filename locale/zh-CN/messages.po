@@ -66,6 +66,12 @@ msgstr "所有场次"
 msgid "All translations complete"
 msgstr ""
 
+msgid "Always"
+msgstr ""
+
+msgid "Always available on this device."
+msgstr ""
+
 msgid "Archive"
 msgstr ""
 
@@ -84,6 +90,15 @@ msgstr "尝试修复"
 
 msgid "Audio"
 msgstr "音频"
+
+msgid "Automatically make cloud files available if smaller than"
+msgstr ""
+
+msgid "Available after this file is made available on this device"
+msgstr ""
+
+msgid "Available on this device. {providerName} may free up this space if the file goes unused."
+msgstr ""
 
 msgid "CSV export complete"
 msgstr ""
@@ -127,6 +142,9 @@ msgstr "清除"
 msgid "Close"
 msgstr "关闭"
 
+msgid "Cloud"
+msgstr ""
+
 msgid "Comments"
 msgstr "备注"
 
@@ -159,6 +177,9 @@ msgstr "正在复制..."
 
 msgid "Could not find this file. Restart lameta to bring it up to date with what is actually on your hard drive. {path}"
 msgstr "找不到此文件。重新启动lameta，使其与硬盘上的实际内容保持一致。 {path}"
+
+msgid "Could not read media information for this file."
+msgstr ""
 
 msgid "Create"
 msgstr "创建"
@@ -217,6 +238,9 @@ msgstr "正在删除…"
 msgid "Description Documents"
 msgstr "说明文档"
 
+msgid "Dismiss"
+msgstr ""
+
 msgid "Do not quit"
 msgstr "不退出"
 
@@ -228,6 +252,9 @@ msgstr ""
 
 msgid "Download"
 msgstr "下载"
+
+msgid "Download this file to my computer"
+msgstr ""
 
 msgid "Duplicate Person"
 msgstr "复制人员"
@@ -325,6 +352,9 @@ msgstr ""
 msgid "Genres"
 msgstr ""
 
+msgid "Getting project information from {0}..."
+msgstr ""
+
 msgid "Grant"
 msgstr ""
 
@@ -366,6 +396,12 @@ msgstr "导入{chosenCount}个场次"
 
 msgid "Importing..."
 msgstr "正在导入..."
+
+msgid "In cloud only, and this computer appears to be offline."
+msgstr ""
+
+msgid "In cloud only, lameta cannot read it yet."
+msgstr ""
 
 msgid "Indicates that this is the father or mother's primary language."
 msgstr "表明这是父亲或母亲的主要语言。"
@@ -436,6 +472,9 @@ msgstr "更多字段"
 msgid "Name"
 msgstr "名称"
 
+msgid "Never"
+msgstr ""
+
 msgid "New Person"
 msgstr "添加人员"
 
@@ -451,6 +490,9 @@ msgstr "通常，当您向项目、场次或人员添加文件时，该文件会
 msgid "Not important to the archive, but will be included"
 msgstr "对存档不重要，但仍将被包含"
 
+msgid "Note"
+msgstr ""
+
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
 msgstr "请注意，这是您媒体文件目录中一个文件的链接。 在这里，您重命名的是此链接，而不是它指向的原始文件。 如果您稍后导出时包含此文件，将使用此名称导出。"
 
@@ -465,6 +507,12 @@ msgstr "OPEX + 文件"
 
 msgid "One or more files are still being copied into your project."
 msgstr "一个或多个文件仍在复制到您的项目中。"
+
+msgid "Online-only ({providerName}), and this computer appears to be offline, so the file cannot be downloaded right now."
+msgstr ""
+
+msgid "Online-only ({providerName}). The content of this file is not on this computer."
+msgstr ""
 
 msgid "Open"
 msgstr "打开"
@@ -574,6 +622,12 @@ msgstr "报告问题"
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr "重启lameta，并在重命名后再次播放视频。"
 
+msgid "Retry"
+msgstr ""
+
+msgid "Retrying…"
+msgstr ""
+
 msgid "Role"
 msgstr "角色"
 
@@ -673,6 +727,12 @@ msgstr ""
 msgid "Status"
 msgstr "状态"
 
+msgid "Stop waiting"
+msgstr ""
+
+msgid "Tell {providerName} that I want this file on my computer"
+msgstr ""
+
 msgid "Text"
 msgstr "文本"
 
@@ -683,6 +743,9 @@ msgid "The IMDI files were validated."
 msgstr "IMDI文件已验证。"
 
 msgid "The columns here are based on your project's metadata languages."
+msgstr ""
+
+msgid "The file \"{originalName}\" was changed outside of lameta, perhaps by a file-synchronization service such as OneDrive or Dropbox, or on another computer. To avoid losing that change, lameta kept it next to the original with the name \"{keptName}\"."
 msgstr ""
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
@@ -723,6 +786,9 @@ msgstr "该XML符合IMDI模式。"
 
 msgid "This file does not comply with the file naming rules of the current archive."
 msgstr "该文件不符合当前存档的文件命名规则。"
+
+msgid "This file is online-only ({providerName}). Select it to see how to make it available on this device."
+msgstr ""
 
 msgid "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings."
 msgstr "这是一个链接，但lameta找不到此项目的媒体文件夹。请参阅文件：媒体文件夹设置。"
@@ -772,7 +838,11 @@ msgstr "查看更新日志"
 msgid "Vocabulary scan failed"
 msgstr ""
 
-msgid "We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "Waiting"
+msgstr ""
+
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr "我们没有针对此错误的具体提示。如果您无法通过重启计算机来解决该问题，请将问题报告至https://github.com/onset/lameta/issues。"
@@ -796,6 +866,9 @@ msgid "You cannot add folders."
 msgstr "无法添加文件夹。"
 
 msgid "You need at least two metadata languages defined to use vocabulary translations. Please add metadata languages in the Languages tab."
+msgstr ""
+
+msgid "You requested this file less than a minute ago. lameta will show it when it becomes available."
 msgstr ""
 
 msgid "ZIP Archive"
@@ -831,6 +904,12 @@ msgstr "lameta无法在人员中匹配以下贡献者："
 msgid "lameta could not rename the directory."
 msgstr "lameta无法重命名目录。"
 
+msgid "lameta couldn't download 1 file from {providerName}. It may be offline or busy right now."
+msgstr ""
+
+msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
+msgstr ""
+
 msgid "lameta expected to find a .link file at {e}"
 msgstr "在{e}应有一个.link文件"
 
@@ -839,6 +918,9 @@ msgstr "lameta试图将文件夹\"{oldFolderName}\"重命名为\"{newFolderName}
 
 msgid "lameta was not able to delete the file."
 msgstr "lameta无法删除该文件。"
+
+msgid "lameta was not able to make this file available on this device."
+msgstr ""
 
 msgid "lameta was not able to put this file in the trash"
 msgstr "lameta无法将此文件扔进垃圾桶"
@@ -859,6 +941,12 @@ msgstr "lameta将会打开您硬盘上的这个文件夹，然后退出。您应
 msgid "missing"
 msgstr ""
 
+msgid "recorded when the file was last on this device"
+msgstr ""
+
+msgid "the cloud"
+msgstr ""
+
 msgid "{0} Marked Sessions"
 msgstr "{0}个标记的场次"
 
@@ -868,6 +956,14 @@ msgstr ""
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
 msgstr "{descriptionOfWhatWillBeDeleted}将被移至垃圾桶"
 
-msgid "{totalMissing} items need translation"
+msgid "{minutesSinceRequest, plural, one {# minute since you requested this file. lameta will show it when it becomes available.} other {# minutes since you requested this file. lameta will show it when it becomes available.}}"
 msgstr ""
 
+msgid "{providerName} Status"
+msgstr ""
+
+msgid "{providerName} is downloading this file to this computer."
+msgstr ""
+
+msgid "{totalMissing} items need translation"
+msgstr ""

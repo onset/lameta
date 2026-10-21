@@ -74,3 +74,6 @@
 .noMediaFolderConnection {
   color: var(--project-color) !important;
 }
+.cloudOnly {
+  color: rgba(0, 0, 0, 0.5) !important;
+}

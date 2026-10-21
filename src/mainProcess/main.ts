@@ -25,6 +25,13 @@ if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
+// In dev, expose CDP so tooling (and AI agents) can inspect/drive the live app.
+// Not under E2E: Playwright connects through its own debugging port, and a fixed
+// port that an earlier or parallel instance still holds stops the launch.
+if ((is.dev || process.env.VITE_DEV_SERVER_URL) && !process.env.E2E) {
+  app.commandLine.appendSwitch("remote-debugging-port", "9222");
+}
+
 // In normal runs we enforce a single instance. For E2E we allow parallel instances
 // so tests can launch while a developer has `yarn dev` running. The E2E harness
 // sets process.env.E2E. We also optionally redirect userData to an isolated temp
@@ -101,9 +108,21 @@ async function createWindow() {
   const testEnv = getTestEnvironment();
   const e2eHeadless = testEnv.E2E && process.env.E2E_HEADED !== "1";
   if (e2eHeadless) {
-    // Move window far off-screen to the right and down (Windows-compatible)
-    x = 10000;
-    y = 10000;
+    // Keep test windows off the primary display, where the developer works. A
+    // window placed off every screen is still maximized onto the primary display
+    // by ready-to-show below, so use the smallest other display when there is one.
+    const primaryId = screen.getPrimaryDisplay().id;
+    const others = screen.getAllDisplays().filter((d) => d.id !== primaryId);
+    if (others.length > 0) {
+      const target = others.reduce((a, b) =>
+        b.bounds.width * b.bounds.height < a.bounds.width * a.bounds.height ? b : a,
+      );
+      x = target.bounds.x + 20;
+      y = target.bounds.y + 20;
+    } else {
+      x = 10000;
+      y = 10000;
+    }
   }
 
   win = new BrowserWindow({

@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 
 import pkg from "package.json";
 import Workspace from "../components/Workspace";
+import { CloudUnavailableBanner } from "../components/CloudUnavailableBanner";
 import * as React from "react";
 import { observable, makeObservable } from "mobx";
 import { observer } from "mobx-react";
@@ -37,7 +38,7 @@ import "react-toastify/dist/ReactToastify.css";
 import {
   LoadingProjectDialog,
   LoadingProgress,
-  shouldUseAsyncLoading,
+  getLoadPlan,
   loadProject,
 } from "../components/LoadingProjectDialog";
 
@@ -56,6 +57,9 @@ interface IState {
   useSampleProject: boolean;
   showLoadingDialog: boolean;
   loadingProgress: LoadingProgress;
+  // Set when the current load was triggered by cloud-evicted metadata; drives
+  // the "Getting project information from OneDrive..." dialog message.
+  loadingCloudProviderName?: string;
 }
 
 class HomePage extends React.Component<IProps, IState> {
@@ -82,6 +86,7 @@ class HomePage extends React.Component<IProps, IState> {
         overallCurrent: 0,
         overallTotal: 0,
       },
+      loadingCloudProviderName: undefined,
     };
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
@@ -109,17 +114,12 @@ class HomePage extends React.Component<IProps, IState> {
       expectedProjectDirectory = null;
     }
 
-    // Check if we should use async loading with progress dialog
-    // for projects with more than 10 sessions
+    // Always load the initial project via the async loader (in
+    // componentDidMount). loadProjectWithProgress -> loadProject internally
+    // decides sync vs async, so small local projects still load promptly, but
+    // large or cloud-evicted projects no longer freeze the renderer here.
     if (expectedProjectDirectory && fs.existsSync(expectedProjectDirectory)) {
-      if (shouldUseAsyncLoading(expectedProjectDirectory)) {
-        // Defer to async loading with progress - will be done in componentDidMount
-        this.pendingProjectDirectory = expectedProjectDirectory;
-      } else {
-        // Small project - load synchronously as before
-        const project = Project.fromDirectory(expectedProjectDirectory);
-        this.projectHolder.setProject(project);
-      }
+      this.pendingProjectDirectory = expectedProjectDirectory;
     } else {
       this.projectHolder.setProject(null);
     }
@@ -140,31 +140,50 @@ class HomePage extends React.Component<IProps, IState> {
     });
   }
 
-  // Load a project asynchronously with progress dialog
+  // Load a project via the shared loader. Used by every project-open path so
+  // cloud-evicted projects never block the renderer.
   private async loadProjectWithProgress(directory: string) {
-    this.setState({ showLoadingDialog: true });
+    // Compute the plan once (it stats every metadata file); reuse it for both
+    // the dialog decision and the load itself.
+    const plan = getLoadPlan(directory);
 
-    const project = await loadProject(directory, (progress) => {
+    // Only show the modal for the async path. A small local project loads in
+    // ~100ms, so flashing the dialog on it is just flicker.
+    if (plan.useAsync) {
       this.setState({
-        loadingProgress: {
-          phase: progress.phase,
-          overallCurrent: progress.overallCurrent,
-          overallTotal: progress.overallTotal,
-        },
+        showLoadingDialog: true,
+        loadingCloudProviderName: plan.cloudProviderName,
       });
-    });
+    }
 
-    this.setState({ showLoadingDialog: false });
+    const project = await loadProject(
+      directory,
+      (progress) => {
+        this.setState({
+          loadingProgress: {
+            phase: progress.phase,
+            overallCurrent: progress.overallCurrent,
+            overallTotal: progress.overallTotal,
+          },
+        });
+      },
+      plan,
+    );
+
+    if (plan.useAsync) {
+      this.setState({ showLoadingDialog: false });
+    }
     this.projectHolder.setProject(project);
   }
 
   // for e2e (but not entirely?)
-  public softReload() {
+  public async softReload() {
     const dir = this.projectHolder.project?.directory;
     this.projectHolder.setProject(null);
 
-    const project = Project.fromDirectory(dir!);
-    this.projectHolder.setProject(project);
+    // Route through the async loader + progress dialog (same machinery as every
+    // other open path) so a reload of a cloud-evicted project doesn't freeze.
+    await this.loadProjectWithProgress(dir!);
   }
 
   public goToStartScreenForTests() {
@@ -264,7 +283,7 @@ class HomePage extends React.Component<IProps, IState> {
     }, 1000);
   }
 
-  private handleCreateProjectDialogClose(directory: string, useSampleProject: boolean) {
+  private async handleCreateProjectDialogClose(directory: string, useSampleProject: boolean) {
     this.setState({ showCreateProjectDialog: false });
     if (directory) {
       fs.ensureDirSync(directory);
@@ -280,10 +299,10 @@ class HomePage extends React.Component<IProps, IState> {
             Path.join(directory, projectName + ".sprj"),
           );
 
-          this.projectHolder.setProject(Project.fromDirectory(directory));
+          await this.loadProjectWithProgress(directory);
           analyticsEvent("Create Project", "Create Sample Project");
         } else {
-          this.projectHolder.setProject(Project.fromDirectory(directory));
+          await this.loadProjectWithProgress(directory);
           analyticsEvent("Create Project", "Create Custom Project");
         }
         userSettings.PreviousProjectDirectory = directory;
@@ -338,20 +357,36 @@ class HomePage extends React.Component<IProps, IState> {
     return (
       <div style={{ height: "100%" }}>
         {(this.projectHolder.project && (
-          <Workspace
-            project={this.projectHolder.project}
-            authorityLists={this.projectHolder.project.authorityLists}
-            menu={this.menu}
-            reload={() => {
-              // currently, I'm trying to just use softReload because that is more e2e
-              // friendly and having the same behavior in e2e and non-e2e is good.
+          <div
+            css={css`
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+            `}
+          >
+            <CloudUnavailableBanner project={this.projectHolder.project} />
+            <div
+              css={css`
+                flex: 1;
+                min-height: 0;
+              `}
+            >
+              <Workspace
+                project={this.projectHolder.project}
+                authorityLists={this.projectHolder.project.authorityLists}
+                menu={this.menu}
+                reload={() => {
+                  // currently, I'm trying to just use softReload because that is more e2e
+                  // friendly and having the same behavior in e2e and non-e2e is good.
 
-              //remote.getCurrentWindow().reload();
-              this.softReload();
-              //if (getTestEnvironment().E2E) this.softReload();
-              //else remote.getCurrentWindow().reload();
-            }}
-          />
+                  //remote.getCurrentWindow().reload();
+                  this.softReload();
+                  //if (getTestEnvironment().E2E) this.softReload();
+                  //else remote.getCurrentWindow().reload();
+                }}
+              />
+            </div>
+          </div>
         )) || (
           <div className={"startScreen"}>
             <div className={"core"}>
@@ -408,6 +443,7 @@ class HomePage extends React.Component<IProps, IState> {
         <LoadingProjectDialog
           open={this.state.showLoadingDialog}
           progress={this.state.loadingProgress}
+          cloudProviderName={this.state.loadingCloudProviderName}
         />
         <ToastContainer
           position="top-right"
@@ -450,12 +486,9 @@ class HomePage extends React.Component<IProps, IState> {
         const directory = fs.realpathSync(Path.dirname(results.filePaths[0]));
         userSettings.PreviousProjectDirectory = directory;
 
-        // Use async loading with progress dialog for large projects
-        if (shouldUseAsyncLoading(directory)) {
-          this.loadProjectWithProgress(directory);
-        } else {
-          this.projectHolder.setProject(Project.fromDirectory(directory));
-        }
+        // Always route through the async loader; it internally decides sync vs
+        // async and shows the progress dialog for large/cloud-evicted projects.
+        this.loadProjectWithProgress(directory);
       }
     });
   }
