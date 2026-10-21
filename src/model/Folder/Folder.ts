@@ -26,6 +26,7 @@ import filesize from "filesize";
 import { t } from "@lingui/macro";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
 import { PatientFS } from "../../other/patientFile";
+import { isMissingCloudPlaceholder } from "../../other/cloudFileStatus";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 import { ShowDeleteDialog } from "../../components/ConfirmDeleteDialog/ConfirmDeleteDialog";
 import temp from "temp";
@@ -510,7 +511,12 @@ export abstract class Folder {
     expectedMetadataFilePath: string,
     metadataFileExtensionWithDot: string,
   ) {
-    if (!fs.existsSync(expectedMetadataFilePath)) {
+    // A metadata file that iCloud evicted (only ".<name>.icloud" is left) is
+    // not missing; renaming another file into its place would replace it.
+    if (
+      !fs.existsSync(expectedMetadataFilePath) &&
+      !isMissingCloudPlaceholder(expectedMetadataFilePath)
+    ) {
       const matchingPaths = this.findZombieMetadataFiles(directory, metadataFileExtensionWithDot);
       // If the file we intend to save to doesn't exist but a file with the
       // right extension and the wrong name does, rename it to what we expect;

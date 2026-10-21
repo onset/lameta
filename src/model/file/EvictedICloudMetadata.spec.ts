@@ -71,4 +71,23 @@ describe("a session whose metadata iCloud evicted the legacy way", () => {
     expect(file.getTextProperty("title")).toBe("REAL TITLE");
     expect(cloudReadGuard.hasFailures).toBe(false);
   });
+
+  it("does not rename a stray file with the same extension into the evicted file's place", () => {
+    const root = temp.mkdirSync("evicted-icloud-stray");
+    const folder = Path.join(root, "ETR009");
+    fs.mkdirSync(folder);
+    const sessionFilePath = Path.join(folder, "ETR009.session");
+    useFakeICloud(root, () => sessionFilePath);
+    setMaterializerForTests(() => Promise.resolve());
+    cloudReadGuard.reset();
+
+    const session = Session.fromDirectory(folder, new EncounteredVocabularyRegistry());
+    const strayPath = Path.join(folder, "Stray.session");
+    fs.writeFileSync(strayPath, "<Session><title>STRAY</title></Session>");
+
+    session.saveFolderMetaData();
+
+    expect(fs.existsSync(strayPath)).toBe(true);
+    expect(fs.existsSync(sessionFilePath)).toBe(false);
+  });
 });
