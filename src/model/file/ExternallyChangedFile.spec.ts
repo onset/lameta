@@ -77,7 +77,8 @@ describe("a metadata file changed on disk underneath lameta", () => {
     // ...and A's edit was preserved in exactly one set-aside sibling.
     const siblings = setAsideSiblings(folder);
     expect(siblings.length).toBe(1);
-    expect(siblings[0].endsWith(".session")).toBe(true);
+    expect(siblings[0].startsWith("ETR009.session (")).toBe(true);
+    expect(siblings[0].endsWith(").txt")).toBe(true);
     const setAside = fs.readFileSync(Path.join(folder, siblings[0]), "utf8");
     expect(setAside).toContain("REMOTE EDIT FROM USER A");
 
@@ -94,6 +95,32 @@ describe("a metadata file changed on disk underneath lameta", () => {
     expect(setAsideSiblings(folder).length).toBe(1);
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(fs.readFileSync(sessionFilePath, "utf8")).toContain("SECOND EDIT BY USER B");
+  });
+
+  it("keeps the set-aside copy from being mistaken for a second metadata file", () => {
+    const { folder, session, sessionFilePath } = makeSavedSession();
+    vi.spyOn(NotifyModule, "NotifyWarning").mockImplementation(() => {});
+    const multipleSpy = vi
+      .spyOn(NotifyModule, "NotifyMultipleProjectFiles")
+      .mockImplementation(() => {});
+
+    const remoteXml = fs
+      .readFileSync(sessionFilePath, "utf8")
+      .replace("</Session>", "  <location>REMOTE EDIT FROM USER A</location>\n</Session>");
+    externallyReplace(sessionFilePath, remoteXml);
+    session.properties.setText("title", "TITLE TYPED BY USER B");
+    session.metadataFile!.save();
+    expect(setAsideSiblings(folder).length).toBe(1);
+
+    session.runSanityCheck();
+    expect(multipleSpy).not.toHaveBeenCalled();
+
+    // If the real session file goes missing, reopening the folder must not
+    // rename the set-aside copy into its place.
+    fs.removeSync(sessionFilePath);
+    Session.fromDirectory(folder, new EncounteredVocabularyRegistry());
+    expect(setAsideSiblings(folder).length).toBe(1);
+    expect(fs.readFileSync(sessionFilePath, "utf8")).not.toContain("REMOTE EDIT FROM USER A");
   });
 
   it("does NOT set aside on mere mtime churn (sync engine rewrote byte-identical content)", () => {

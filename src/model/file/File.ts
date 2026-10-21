@@ -1271,24 +1271,31 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   // Build a unique sibling path to preserve an externally-changed metadata
-  // file, e.g. "ETR009.session" -> "ETR009 (changed on another computer
-  // 2026-07-12).session" and "foo.jpg.meta" -> "foo.jpg (changed on another
-  // computer 2026-07-12).meta". The date disambiguates day-to-day; a numeric
-  // counter guarantees uniqueness if several land on the same day. The final
-  // extension is preserved so the sibling loads as an ordinary attached file
-  // (never re-parsed as the folder's canonical metadata -- the zombie-repair
-  // in Folder only fires when the canonical file is MISSING, and save() always
-  // rewrites it here).
+  // file, e.g. "ETR009.session" -> "ETR009.session (changed on another
+  // computer 2026-07-12).txt" and "foo.jpg.meta" -> "foo.jpg (changed on
+  // another computer 2026-07-12).meta". The date disambiguates day-to-day; a
+  // numeric counter guarantees uniqueness if several land on the same day.
+  //
+  // A folder's own metadata file (.session/.person/.sprj) must not keep its
+  // extension here: Folder.runSanityCheck reports any second file with that
+  // extension as "multiple project files", and the misnamed-metadata repair in
+  // Folder and FolderMetadataFile would rename the copy into place whenever the
+  // real file is missing. Ending it in ".txt" lets it load as an ordinary
+  // attached file that opens in a text editor. A ".meta" copy keeps its
+  // extension, because the folder loader already skips every ".meta" file.
   private makeSetAsidePath(): string {
     const dir = Path.dirname(this.metadataFilePath);
     const base = Path.basename(this.metadataFilePath);
     const ext = Path.extname(base); // ".session"/".person"/".sprj"/".meta"
-    const stem = base.substring(0, base.length - ext.length);
     const label = `changed on another computer ${moment().format("YYYY-MM-DD")}`;
-    let candidate = Path.join(dir, `${stem} (${label})${ext}`);
+    const nameFor = (suffix: string) =>
+      ext === ".meta"
+        ? `${base.substring(0, base.length - ext.length)} (${suffix})${ext}`
+        : `${base} (${suffix}).txt`;
+    let candidate = Path.join(dir, nameFor(label));
     let counter = 2;
     while (fs.existsSync(candidate)) {
-      candidate = Path.join(dir, `${stem} (${label} ${counter})${ext}`);
+      candidate = Path.join(dir, nameFor(`${label} ${counter}`));
       counter++;
     }
     return candidate;
