@@ -26,7 +26,9 @@ if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
 // In dev, expose CDP so tooling (and AI agents) can inspect/drive the live app.
-if (is.dev || process.env.VITE_DEV_SERVER_URL) {
+// Not under E2E: Playwright connects through its own debugging port, and a fixed
+// port that an earlier or parallel instance still holds stops the launch.
+if ((is.dev || process.env.VITE_DEV_SERVER_URL) && !process.env.E2E) {
   app.commandLine.appendSwitch("remote-debugging-port", "9222");
 }
 
