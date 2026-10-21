@@ -7,6 +7,8 @@ allowBuilds:
   esbuild@0.21.5 || 0.28.2: true
   exifreader@3.16.0: true
   ffmpeg-ffprobe-static@6.1.2-rc.1: true
+  # electron-builder 26 pulls it in for Squirrel.Windows targets; we build NSIS only
+  electron-winstaller@5.4.0: false
   # chokidar 2 falls back to polling without it; its native build is for macOS only
   fsevents@1.2.13: false
 catalog:
