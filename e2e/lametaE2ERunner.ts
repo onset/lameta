@@ -369,6 +369,19 @@ export class LametaE2ERunner {
     const cancelButton = this.page.getByTestId("cancel");
     const registrationReminder = this.page.locator("#registrationReminder");
 
+    // The home page opens the registration dialog when it mounts, and under a loaded
+    // machine that can be several seconds after the window appears. Wait for the home
+    // page (or the dialog, or a workspace's reminder) first, so that the short checks
+    // below do not give up before the dialog exists and leave it blocking the next click.
+    try {
+      await this.page
+        .locator("#creatNewProjectLink")
+        .or(cancelButton)
+        .or(registrationReminder)
+        .first()
+        .waitFor({ state: "visible", timeout: 20000 });
+    } catch {}
+
     const ensureDialogVisible = async () => {
       try {
         await cancelButton.waitFor({ state: "visible", timeout: 1000 });
