@@ -16,8 +16,10 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   staged: {
     "*": "vp check --fix",
-    // vp check reports lint warnings but passes; the lint is kept at zero warnings
-    "*.{ts,tsx,js,mjs,cjs}": "vp lint --deny-warnings",
+    // vp check reports lint warnings but passes; the lint is kept at zero warnings. A
+    // function so that lint runs once on the whole project instead of being passed every
+    // staged file, which is too long a command line on Windows for a large commit.
+    "*.{ts,tsx,js,mjs,cjs}": () => "vp lint --deny-warnings",
   },
   fmt: {
     // Downloaded backups, sample projects and test data must stay byte-for-byte as they are.
