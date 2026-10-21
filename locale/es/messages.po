@@ -8,7 +8,7 @@ msgstr ""
 "Language: es\n"
 "Project-Id-Version: saymorex\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-10-21 16:28\n"
+"PO-Revision-Date: 2026-10-21 01:36\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -19,9 +19,6 @@ msgstr ""
 "X-Crowdin-File-ID: 68\n"
 
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
-msgstr ""
-
-msgid "(scanned {sessionsScanned} sessions and {peopleScanned} people)"
 msgstr ""
 
 msgid "A file with the same name already exists at that location."
@@ -400,6 +397,9 @@ msgstr "Ocultar Otros"
 msgid "Hide Problems"
 msgstr ""
 
+msgid "Hide XML"
+msgstr ""
+
 msgid "Hide lameta"
 msgstr "Ocultar Lameta"
 
@@ -487,10 +487,6 @@ msgstr "Marcar para exportar o eliminar"
 msgid "Media Folder"
 msgstr "Carpeta de medios"
 
-#. js-lingui-explicit-id
-msgid "Media Folder Settings"
-msgstr ""
-
 msgid "Media Folder Settings..."
 msgstr "Configuración de la carpeta de medios..."
 
@@ -537,7 +533,8 @@ msgid "Note"
 msgstr ""
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
-msgstr "Tenga en cuenta que este es un enlace a un archivo en su carpeta de medios. Aquí, usted está renombrando el enlace, no el archivo original que se indica. Si más adelante crea una exportación que incluya este archivo, la exportación usará este nombre.\n"
+msgstr ""
+"Tenga en cuenta que este es un enlace a un archivo en su carpeta de medios. Aquí, usted está renombrando el enlace, no el archivo original que se indica. Si más adelante crea una exportación que incluya este archivo, la exportación usará este nombre.\n"
 ""
 
 msgid "Notes"
@@ -696,6 +693,9 @@ msgstr "Rol"
 msgid "Roles"
 msgstr ""
 
+msgid "Rules file:"
+msgstr ""
+
 msgid "Save As"
 msgstr "Guardar como"
 
@@ -704,6 +704,12 @@ msgstr "Guardando"
 
 msgid "Saving before rename..."
 msgstr "Guardar antes de renombrar..."
+
+msgid "Scan complete"
+msgstr ""
+
+msgid "Scan failed"
+msgstr ""
 
 msgid "Scanning..."
 msgstr ""
@@ -750,6 +756,9 @@ msgstr ""
 msgid "Show Release Notes"
 msgstr "Mostrar Notas de la Versión"
 
+msgid "Show XML"
+msgstr ""
+
 msgid "Show export"
 msgstr "Mostrar exportar"
 
@@ -786,8 +795,14 @@ msgstr "Lo sentimos, no se permiten barras"
 msgid "Start Screen"
 msgstr "Pantalla de Inicio"
 
+msgid "Starting scan..."
+msgstr ""
+
 msgid "Status"
 msgstr "Estado"
+
+msgid "Stop using this file"
+msgstr ""
 
 msgid "Stop waiting"
 msgstr ""
@@ -876,6 +891,12 @@ msgstr ""
 msgid "This project appears to use \"/\" to store multiple languages within a single field. In this version of lameta, we have a better approach in which lameta knows which languages are used in a field. After you have selected the appropriate metadata languages above and arranged them in the correct order, all multilingual fields in Project, Sessions, and People should display with the correct language tags. Once you have confirmed that everything appears as expected, click the button below to apply these changes permanently."
 msgstr ""
 
+msgid "This rules file checks \"{0}\", which lameta does not support yet."
+msgstr ""
+
+msgid "This rules file was written for a different version of lameta (interface version {0})."
+msgstr ""
+
 msgid "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer."
 msgstr "Esta configuración es exclusiva para la cuenta que se utiliza en este equipo. Un colega deberá configurar este valor a la ubicación correcta en su equipo."
 
@@ -896,6 +917,12 @@ msgstr ""
 
 msgid "Update available"
 msgstr "Actualización disponible"
+
+msgid "Use a different file…"
+msgstr ""
+
+msgid "Use the built-in file"
+msgstr ""
 
 msgid "Use this for a language that has no ISO 639-3 code. Give the language a name, and a code between qaa and qtz."
 msgstr ""
@@ -921,14 +948,17 @@ msgstr "Ver Notas de esta Versión"
 msgid "Vocabulary scan failed"
 msgstr ""
 
-msgid "Vocabulary scan failed: {scanError}"
-msgstr ""
-
 msgid "Waiting"
 msgstr ""
 
 msgid "Warning"
 msgstr ""
+
+msgid ""
+"We don't have specific tips for this error. If you cannot solve it by\n"
+"restarting your computer, please report the problem to\n"
+"https://github.com/onset/lameta/issues."
+msgstr "No tenemos recomendaciones específicas para este error. Si el problema no se resuelve al reiniciar su equipo, reporte este problema a https://github.com/onset/lameta/issues."
 
 msgid "What would you like to call this project?"
 msgstr "¿Cómo desea llamar este proyecto?"
@@ -968,6 +998,9 @@ msgstr ""
 msgid "add at least {minItems}."
 msgstr ""
 
+msgid "built in"
+msgstr ""
+
 msgid "choose..."
 msgstr "elegir..."
 
@@ -1003,6 +1036,9 @@ msgstr "Lameta le permite especificar una \"carpeta de medios\". Cuando agregue 
 msgid "lameta and SayMore Project Files"
 msgstr "Archivos de Proyecto de Lameta y SayMore"
 
+msgid "lameta can only check IMDI so far, and the {configurationLabel} archive configuration does not use IMDI."
+msgstr ""
+
 msgid "lameta cannot export files while files are still being copied in."
 msgstr "Lameta no puede exportar archivos mientras otros archivos aún están siendo copiados."
 
@@ -1019,9 +1055,6 @@ msgid "lameta couldn't download 1 file from {providerName}. It may be offline or
 msgstr ""
 
 msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
-msgstr ""
-
-msgid "lameta does not recognize the Language name \"{trimmed}\""
 msgstr ""
 
 msgid "lameta expected to find a .link file at {e}"
@@ -1055,6 +1088,9 @@ msgstr ""
 msgid "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}."
 msgstr "Lameta abrirá esta carpeta en su disco duro externo y luego se cerrará. Deberá abrir estos archivos {projectType} en un editor de texto y debe decidir cuáles desea mantener y borrar el resto. El archivo que elija deberá llamarse {name}."
 
+msgid "local file"
+msgstr ""
+
 msgid "missing"
 msgstr ""
 
@@ -1072,6 +1108,9 @@ msgstr ""
 
 #. Follows a field's name, as in "Title needs a Spanish or Tok Pisin translation."
 msgid "needs a {languages} translation."
+msgstr ""
+
+msgid "none"
 msgstr ""
 
 msgid "or"
