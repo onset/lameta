@@ -31,8 +31,7 @@ msgid "A folder with an IMDI file for the project and each session."
 msgstr "پوشه‌ شامل فایل IMDI برای پروژه و هر نشست."
 
 msgid "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted."
-msgstr ""
-"\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
+msgstr "\"یک پوشه ای که با یک ویرگول جدا شده همراه با اطلاعات پروژه و یک ردیف برای هر نشست. \n"
 "بسیاری از فیلدهای لامتا حذف شده است."
 
 msgid "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People."
@@ -487,6 +486,10 @@ msgid "Mark for Export or Deletion"
 msgstr ""
 
 msgid "Media Folder"
+msgstr ""
+
+#. js-lingui-explicit-id
+msgid "Media Folder Settings"
 msgstr ""
 
 msgid "Media Folder Settings..."
@@ -954,8 +957,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""

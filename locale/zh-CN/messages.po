@@ -487,6 +487,10 @@ msgstr "标记以便导出或删除"
 msgid "Media Folder"
 msgstr "媒体文件夹"
 
+#. js-lingui-explicit-id
+msgid "Media Folder Settings"
+msgstr ""
+
 msgid "Media Folder Settings..."
 msgstr "媒体文件夹设置..."
 
@@ -952,8 +956,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr "我们没有针对此错误的具体提示。如果您无法通过重启计算机来解决该问题，请将问题报告至https://github.com/onset/lameta/issues。"

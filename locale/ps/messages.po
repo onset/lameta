@@ -482,6 +482,10 @@ msgstr ""
 msgid "Media Folder"
 msgstr ""
 
+#. js-lingui-explicit-id
+msgid "Media Folder Settings"
+msgstr ""
+
 msgid "Media Folder Settings..."
 msgstr ""
 
@@ -947,8 +951,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-msgid ""
-"We don't have specific tips for this error. If you cannot solve it by\n"
+msgid "We don't have specific tips for this error. If you cannot solve it by\n"
 "restarting your computer, please report the problem to\n"
 "https://github.com/onset/lameta/issues."
 msgstr ""
