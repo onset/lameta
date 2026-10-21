@@ -6,7 +6,7 @@ import fs from "fs";
 import * as Path from "path";
 const sanitize = require("sanitize-filename");
 import "./CreateProjectDialog.css";
-import { app } from "@electron/remote";
+import { getPath } from "../../other/windowIpc";
 import { t, Trans } from "@lingui/macro";
 import {
   DialogBottomButtons,
@@ -14,7 +14,7 @@ import {
   DialogCancelButton,
   DialogMiddle,
   DialogTitle,
-  LametaDialog
+  LametaDialog,
 } from "../LametaDialog";
 import { getTestEnvironment } from "../../getTestEnvironment";
 
@@ -27,24 +27,16 @@ interface IState {
   projectName: string;
 }
 
-export default class CreateProjectDialog extends React.Component<
-  IProps,
-  IState
-> {
+export default class CreateProjectDialog extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = { projectName: "" };
   }
   private handleCloseModal(doCreate: boolean) {
-    this.props.callback(
-      doCreate ? this.getChosenPath() : "",
-      this.props.useSampleProject
-    );
+    this.props.callback(doCreate ? this.getChosenPath() : "", this.props.useSampleProject);
   }
   private getChosenPath(): string {
-    const root = getTestEnvironment().E2E
-      ? getTestEnvironment().E2ERoot
-      : app.getPath("documents");
+    const root = getTestEnvironment().E2E ? getTestEnvironment().E2ERoot : getPath("documents");
     return Path.join(root, "lameta", sanitize(this.state.projectName));
   }
 
@@ -52,8 +44,7 @@ export default class CreateProjectDialog extends React.Component<
     const haveProjectName = this.state.projectName.length > 0;
     // const projectNameIsViable =
     //   haveProjectName && !fs.existsSync(this.getChosenPath());
-    const projectNameIsDuplicate =
-      haveProjectName && fs.existsSync(this.getChosenPath());
+    const projectNameIsDuplicate = haveProjectName && fs.existsSync(this.getChosenPath());
     let projectNameIsViable: boolean;
     let message = "";
     let messageClass = "black";
@@ -98,9 +89,7 @@ export default class CreateProjectDialog extends React.Component<
           <input
             id="projectNameInput"
             autoFocus
-            onChange={(event) =>
-              this.setState({ projectName: event.target.value })
-            }
+            onChange={(event) => this.setState({ projectName: event.target.value })}
             css={css`
               // because comonDialog.scss is messing us up, can remove once we get rid of it
               margin-left: revert !important;

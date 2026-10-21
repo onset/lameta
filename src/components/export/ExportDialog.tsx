@@ -14,7 +14,6 @@ import { observer } from "mobx-react";
 import "./ExportDialog.css";
 import { ProjectHolder } from "../../model/Project/Project";
 import { revealInFolder } from "../../other/crossPlatformUtilities";
-import * as remote from "@electron/remote";
 import * as Path from "path";
 import { t, Trans } from "@lingui/macro";
 import { ipcRenderer } from "electron";
@@ -317,8 +316,8 @@ export const ExportDialog: React.FunctionComponent<{
           );
           break;
       }
-      remote.dialog
-        .showSaveDialog({
+      ipcRenderer
+        .invoke("showSaveDialog", {
           title: t`Save As`,
           defaultPath,
           filters:

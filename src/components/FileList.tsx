@@ -4,7 +4,7 @@ import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import { ElectronDropZone } from "./ElectronDropZone";
 import { OpenDialogOptions, ipcRenderer } from "electron";
-import * as remote from "@electron/remote";
+import { popupMenu, runWebContentsCommand } from "../other/windowIpc";
 import "./FileList.css";
 import { revealInFolder } from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
@@ -309,7 +309,14 @@ export const _FileList: React.FunctionComponent<{
                 // then after it is selected, show the context menu
                 window.setTimeout(
                   () =>
-                    showFileMenu(props.folder, rowInfo.original, true, isSpecialSayMoreFile, x, y),
+                    showFileMenu(
+                      props.folder,
+                      rowInfo.original,
+                      true,
+                      rowInfo.original === props.folder.metadataFile,
+                      x,
+                      y,
+                    ),
                   0,
                 );
               },
@@ -358,7 +365,6 @@ function showFileMenu(
   x: number = 0,
   y: number = 0,
 ) {
-  const mainWindow = remote.getCurrentWindow(); // as any;
   if (!file) {
     return;
   }
@@ -406,7 +412,7 @@ function showFileMenu(
     {
       label: "Inspect element",
       click() {
-        (mainWindow as any).inspectElement(x, y);
+        runWebContentsCommand("inspectElement", x, y);
       },
       visible: contextMenu && showDevOnlyItems,
     },
@@ -414,7 +420,7 @@ function showFileMenu(
 
   items = items.filter((item) => item.visible !== false);
 
-  remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
+  popupMenu(items as any);
 }
 
 async function showAddFilesDialog(

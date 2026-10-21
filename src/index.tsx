@@ -1,6 +1,6 @@
 import { render } from "react-dom";
 import { ipcRenderer } from "electron";
-import { app, process } from "@electron/remote";
+import { quitApp } from "./other/windowIpc";
 import "./app.global.css";
 import { App } from "./containers/App";
 import { initializeAnalytics, analyticsEvent } from "./other/analytics";
@@ -22,29 +22,28 @@ import * as mobx from "mobx";
 // "observed" to write more idiomatic MobX code.
 mobx.configure({
   enforceActions: "never",
-  useProxies: "always"
+  useProxies: "always",
 });
 
-app.whenReady().then(async () => {
-  PatientFS.init();
-  initializeErrorReporting(false);
+// The main process creates this window only after the app is ready, so no need to wait for that here.
+PatientFS.init();
+initializeErrorReporting(false);
 
-  initializeLocalization();
-  initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
-  analyticsEvent("Launch", "Launch");
+initializeLocalization();
+initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
+analyticsEvent("Launch", "Launch");
 
-  document.body.setAttribute("class", process.platform);
-  const container = document.getElementById("root");
-  ReactModal.setAppElement(container!);
+document.body.setAttribute("class", process.platform);
+const container = document.getElementById("root");
+ReactModal.setAppElement(container!);
 
-  render(<App />, container, () => {
-    try {
-      // see test-launch.ts
-      ipcRenderer.send("renderer-ready");
-    } catch (e) {
-      console.error("Failed to notify main of renderer-ready:", e);
-    }
-  });
+render(<App />, container, () => {
+  try {
+    // see test-launch.ts
+    ipcRenderer.send("renderer-ready");
+  } catch (e) {
+    console.error("Failed to notify main of renderer-ready:", e);
+  }
 });
 
 window.onbeforeunload = (e: BeforeUnloadEvent) => {
@@ -54,12 +53,12 @@ window.onbeforeunload = (e: BeforeUnloadEvent) => {
         "confirm-quit",
         t`One or more files are still being copied into your project.`,
         t`Do not quit`,
-        t`Abandon files that are still copying`
+        t`Abandon files that are still copying`,
       )
       .then((result) => {
         if (result.response === 1) {
           CopyManager.abandonCopying(true);
-          app.quit(); // this time it will go through
+          quitApp(); // this time it will go through
         }
       });
     return "this is ignored but prevents quitting";

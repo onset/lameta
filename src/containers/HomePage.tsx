@@ -11,8 +11,7 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
-import { app } from "@electron/remote";
-import * as remote from "@electron/remote";
+import { getPath, getStartupArguments, onWindowBlur, setWindowTitle } from "../other/windowIpc";
 import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
@@ -23,25 +22,15 @@ import { ExportDialog } from "../components/export/ExportDialog";
 import { t, Trans } from "@lingui/macro";
 import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
-import {
-  MessageDialog,
-  ShowMessageDialog
-} from "../components/ShowMessageDialog/MessageDialog";
+import { MessageDialog, ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../other/errorHandling";
-import {
-  NotifyError,
-  NotifyRenameProblem,
-  NotifyWarning
-} from "../components/Notify";
+import { NotifyError, NotifyRenameProblem, NotifyWarning } from "../components/Notify";
 import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 import { copyDirSync } from "../other/crossPlatformUtilities";
 import { getTestEnvironment } from "../getTestEnvironment";
-import {
-  shouldUseE2EFastProjectCreation,
-  createProjectForE2E
-} from "./E2EProjectCreation";
+import { shouldUseE2EFastProjectCreation, createProjectForE2E } from "./E2EProjectCreation";
 
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -49,7 +38,7 @@ import {
   LoadingProjectDialog,
   LoadingProgress,
   shouldUseAsyncLoading,
-  loadProject
+  loadProject,
 } from "../components/LoadingProjectDialog";
 
 // Added this as part of a workaround in typing when upgrading to mobx6.
@@ -80,7 +69,7 @@ class HomePage extends React.Component<IProps, IState> {
     super(props);
 
     makeObservable(this, {
-      projectHolder: observable
+      projectHolder: observable,
     });
 
     this.projectHolder = new ProjectHolder();
@@ -91,15 +80,13 @@ class HomePage extends React.Component<IProps, IState> {
       loadingProgress: {
         phase: "sessions",
         overallCurrent: 0,
-        overallTotal: 0
-      }
+        overallTotal: 0,
+      },
     };
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
-    //const test = require("@electron/remote").getCurrentWebContents();
-    const p = remote.process;
-    const args = remote.getGlobal("arguments");
+    const args = getStartupArguments();
     // const args = [
     //   "ignore",
     //   "ignore",
@@ -149,7 +136,7 @@ class HomePage extends React.Component<IProps, IState> {
   public createProject(useSample: boolean) {
     this.setState({
       showCreateProjectDialog: true,
-      useSampleProject: useSample
+      useSampleProject: useSample,
     });
   }
 
@@ -162,8 +149,8 @@ class HomePage extends React.Component<IProps, IState> {
         loadingProgress: {
           phase: progress.phase,
           overallCurrent: progress.overallCurrent,
-          overallTotal: progress.overallTotal
-        }
+          overallTotal: progress.overallTotal,
+        },
       });
     });
 
@@ -224,7 +211,7 @@ class HomePage extends React.Component<IProps, IState> {
               text: "Thank you so much for testing this experimental version of lameta. Make sure you have a backup of your work.",
               width: "300px",
               buttonText: "I understand",
-              testId: "prerelease-warning-dialog"
+              testId: "prerelease-warning-dialog",
             });
             break;
           case "beta":
@@ -233,7 +220,7 @@ class HomePage extends React.Component<IProps, IState> {
               text: "This is a beta test version, so make sure you have a backup of your work.",
               width: "300px",
               buttonText: "I understand",
-              testId: "prerelease-warning-dialog"
+              testId: "prerelease-warning-dialog",
             });
             break;
           default:
@@ -248,43 +235,27 @@ class HomePage extends React.Component<IProps, IState> {
 
     // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", (e) => {
-      if (
-        this.projectHolder.project &&
-        this.projectHolder.project.saveAllFilesInFolder
-      ) {
+      if (this.projectHolder.project && this.projectHolder.project.saveAllFilesInFolder) {
         this.projectHolder.project.saveAllFilesInFolder();
       }
     });
 
-    // Without this timeout, one of: {remote, BrowserWindow, or getFocusedWindow()}, most likely the later,
-    // was unavailable sometimes, particularly when running production build via "yarn start" on Windows.
-    // So we give it a few seconds and catch the problem if it still fails.
-    window.setTimeout(() => {
-      try {
-        // Save when we lose focus. Review: this might take care of the quitting one, above.
-        remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
-          console.log("HomePage blur");
-          if (this.projectHolder.project) {
-            this.projectHolder.project.saveAllFilesInFolder();
-          }
-        });
-      } catch (error) {
-        log.error(
-          "Error trying to set the window blur event callback: " + error
-        );
+    // Save when we lose focus. Review: this might take care of the quitting one, above.
+    onWindowBlur(() => {
+      console.log("HomePage blur");
+      if (this.projectHolder.project) {
+        this.projectHolder.project.saveAllFilesInFolder();
       }
-    }, 3000);
+    });
 
     // for trying to figure out https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
     window.setInterval(() => {
       try {
         if (
           this.projectHolder.project &&
-          this.previousFolderNames !==
-            this.projectHolder.project.getFolderNamesForDebugging()
+          this.previousFolderNames !== this.projectHolder.project.getFolderNamesForDebugging()
         ) {
-          this.previousFolderNames =
-            this.projectHolder.project.getFolderNamesForDebugging();
+          this.previousFolderNames = this.projectHolder.project.getFolderNamesForDebugging();
           //console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
         }
       } catch (error) {
@@ -293,25 +264,20 @@ class HomePage extends React.Component<IProps, IState> {
     }, 1000);
   }
 
-  private handleCreateProjectDialogClose(
-    directory: string,
-    useSampleProject: boolean
-  ) {
+  private handleCreateProjectDialogClose(directory: string, useSampleProject: boolean) {
     this.setState({ showCreateProjectDialog: false });
     if (directory) {
       fs.ensureDirSync(directory);
       try {
         if (useSampleProject) {
-          const sampleSourceDir = locateDependencyForFilesystemCall(
-            "sample data/Edolo sample"
-          );
+          const sampleSourceDir = locateDependencyForFilesystemCall("sample data/Edolo sample");
           copyDirSync(sampleSourceDir, directory);
           const projectName = Path.basename(directory);
           const srcPath = Path.join(directory, "Edolo sample.sprj");
 
           PatientFS.renameSyncWithNotifyAndRethrow(
             srcPath,
-            Path.join(directory, projectName + ".sprj")
+            Path.join(directory, projectName + ".sprj"),
           );
 
           this.projectHolder.setProject(Project.fromDirectory(directory));
@@ -323,7 +289,7 @@ class HomePage extends React.Component<IProps, IState> {
         userSettings.PreviousProjectDirectory = directory;
       } catch (err) {
         NotifyError(
-          `lameta had a problem while creating the project at ${directory} (useSampleProject=${useSampleProject}): ${err}`
+          `lameta had a problem while creating the project at ${directory} (useSampleProject=${useSampleProject}): ${err}`,
         );
       }
     }
@@ -337,17 +303,12 @@ class HomePage extends React.Component<IProps, IState> {
 
     const directoryName = Path.basename(project.directory);
     const projectName = project.properties.getTextStringOrEmpty("name");
-    const projectTitle = project.properties
-      .getTextField("title")
-      .getTextForSimpleDisplay();
+    const projectTitle = project.properties.getTextField("title").getTextForSimpleDisplay();
     const projectDisplayName = project.displayName || directoryName;
     const shouldIncludeDirectoryName =
       directoryName !== projectName && directoryName !== projectTitle;
 
-    if (
-      shouldIncludeDirectoryName &&
-      projectDisplayName !== directoryName
-    ) {
+    if (shouldIncludeDirectoryName && projectDisplayName !== directoryName) {
       return `${directoryName} / ${projectDisplayName}`;
     }
 
@@ -373,7 +334,7 @@ class HomePage extends React.Component<IProps, IState> {
 
     title += " " + pkg.version;
 
-    remote.getCurrentWindow().setTitle(title);
+    setWindowTitle(title);
     return (
       <div style={{ height: "100%" }}>
         {(this.projectHolder.project && (
@@ -461,8 +422,8 @@ class HomePage extends React.Component<IProps, IState> {
 
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
-      app.getPath("documents"),
-      "lameta" // we don't translate this
+      getPath("documents"),
+      "lameta", // we don't translate this
     );
     sentryBreadCrumb("open project dialog");
     const options: OpenDialogOptions = {
@@ -474,9 +435,9 @@ class HomePage extends React.Component<IProps, IState> {
       filters: [
         {
           name: t`lameta and SayMore Project Files`,
-          extensions: ["sprj"]
-        }
-      ]
+          extensions: ["sprj"],
+        },
+      ],
     };
     ipcRenderer.invoke("showOpenDialog", options).then((results) => {
       sentryBreadCrumb("processing callback of open project dialog");
