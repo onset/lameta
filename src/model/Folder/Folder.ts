@@ -1,4 +1,4 @@
-import { File, OtherFile } from "../file/File";
+import { File, kLinkExtensionWithFullStop, OtherFile } from "../file/File";
 import { observable, makeObservable, runInAction } from "mobx";
 import { Field } from "../field/Field";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -149,14 +149,19 @@ export abstract class Folder {
       const n = sanitizeForArchive(newFileName ? newFileName : Path.basename(pathToOriginalFile));
       const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);
+      const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
+      const linkInsteadOfCopy = !!mediaFolder && isSubDirectory(mediaFolder, pathToOriginalFile);
+      // the name OtherFile.CreateLinkFile gives the link it writes
+      const linkDest = Path.join(
+        this.directory,
+        Path.basename(pathToOriginalFile) + kLinkExtensionWithFullStop,
+      );
 
-      if (fs.existsSync(dest)) {
+      if (fs.existsSync(dest) || (linkInsteadOfCopy && fs.existsSync(linkDest))) {
         NotifyWarning(t`There is already a file here with the name` + ` (${n})`);
         reject(new Error(`There is already a file at ${dest}`));
         return;
       }
-      const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
-      const linkInsteadOfCopy = !!mediaFolder && isSubDirectory(mediaFolder, pathToOriginalFile);
 
       if (linkInsteadOfCopy) {
         const f = OtherFile.CreateLinkFile(

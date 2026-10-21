@@ -66,6 +66,15 @@ describe("Folder.copyInOneFileAsync", () => {
     expect(session.files.length).toBe(filesBefore + 1);
   });
 
+  it("rejects adding the same media-folder file a second time", async () => {
+    media.folder = sourceDir;
+    const source = makeSource("big.wav");
+    await session.copyInOneFileAsync(source);
+    const filesBefore = session.files.length;
+    await expect(session.copyInOneFileAsync(source)).rejects.toThrow();
+    expect(session.files.length).toBe(filesBefore);
+  });
+
   it("rejects and drops the pending file when the copy fails", async () => {
     const spy = vi
       .spyOn(CopyManager, "safeAsyncCopyFileWithErrorNotification")
