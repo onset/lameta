@@ -143,6 +143,7 @@ export abstract class Folder {
     return new Promise((resolve, reject) => {
       if (["session", "person", "meta"].includes(getExtension(pathToOriginalFile)?.toLowerCase())) {
         NotifyWarning(t`Cannot add files of that type` + ` (${getExtension(pathToOriginalFile)}`);
+        reject(new Error(`Cannot add files of that type: ${pathToOriginalFile}`));
         return;
       }
       const n = sanitizeForArchive(newFileName ? newFileName : Path.basename(pathToOriginalFile));
@@ -151,6 +152,7 @@ export abstract class Folder {
 
       if (fs.existsSync(dest)) {
         NotifyWarning(t`There is already a file here with the name` + ` (${n})`);
+        reject(new Error(`There is already a file at ${dest}`));
         return;
       }
       const mediaFolder = getMediaFolderOrEmptyForThisProjectAndMachine();
@@ -164,6 +166,7 @@ export abstract class Folder {
         );
 
         this.files.push(f);
+        resolve();
       } else {
         const f = new OtherFile(dest, this.customVocabularies, true);
         f.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
@@ -186,7 +189,7 @@ export abstract class Folder {
                     // not translating for now
                     `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`,
                   );
-                  reject();
+                  reject(new Error(`No pending file for ${dest}`));
                   return;
                 }
                 pendingFile!.finishLoading();
@@ -202,10 +205,11 @@ export abstract class Folder {
                     error, // not translating for now
                     `Something went wrong copying ${pathToOriginalFile} to ${dest}: could not find a matching pending file.`,
                   );
-                  reject();
+                  reject(error instanceof Error ? error : new Error(String(error)));
                   return;
                 }
                 this.files.splice(fileIndex, 1);
+                reject(error instanceof Error ? error : new Error(String(error)));
               }),
           0,
         );
