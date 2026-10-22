@@ -3,6 +3,7 @@ import * as fs from "fs-extra";
 import { computed, makeObservable, observable, runInAction } from "mobx";
 import { resolvePrivateUseCodes } from "../../languageFinder/privateUseLanguages";
 import * as mobx from "mobx";
+import { capitalizeFolder } from "../field/capitalization";
 import * as Path from "path";
 import { getIdValidationMessageOrUndefined, Session } from "./Session/Session";
 import { Folder, IFolderType } from "../Folder/Folder";
@@ -567,6 +568,10 @@ export class Project extends Folder {
       project.sessions.selectedIndex = project.sessions.items.length > 0 ? 0 : -1;
       project.sessions.selectedIndex = project.sessions.items.length > 0 ? 0 : -1;
       project.persons.selectedIndex = project.persons.items.length > 0 ? 0 : -1;
+      // the Project tab displays the project's fields and its documents as it opens
+      capitalizeFolder(project);
+      capitalizeFolder(project.descriptionFolder);
+      capitalizeFolder(project.otherDocsFolder);
 
       // Check for slash-syntax multilingual fields that need conversion
       project.checkAndSetMultilingualConversionPending();
@@ -755,6 +760,10 @@ export class Project extends Folder {
 
       project.sessions.selectedIndex = project.sessions.items.length > 0 ? 0 : -1;
       project.persons.selectedIndex = project.persons.items.length > 0 ? 0 : -1;
+      // the Project tab displays the project's fields and its documents as it opens
+      capitalizeFolder(project);
+      capitalizeFolder(project.descriptionFolder);
+      capitalizeFolder(project.otherDocsFolder);
 
       // Check for slash-syntax multilingual fields that need conversion
       project.checkAndSetMultilingualConversionPending();
@@ -990,6 +999,14 @@ export class Project extends Folder {
         this.authorityLists.setAccessProtocol(currentProtocol, newValue);
       },
     );
+    // A session or person is put in its fields' capitalization when it is displayed,
+    // which is when it becomes the selected one
+    for (const group of [this.sessions, this.persons]) {
+      mobx.reaction(
+        () => group.items[group.selectedIndex],
+        (folder) => capitalizeFolder(folder),
+      );
+    }
 
     // this.properties
     //   .getValueOrThrow("customAccessChoices")

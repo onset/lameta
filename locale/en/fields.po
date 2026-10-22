@@ -594,10 +594,6 @@ msgctxt "ELAR/project/name/tipOnUsingThisField"
 msgid "Key + Grant Id. E.g. 0793-SG0123"
 msgstr ""
 
-msgctxt "ELAR/project/title/patternDescription"
-msgid "capitalised"
-msgstr ""
-
 msgctxt "ELAR/projectDocuments/access"
 msgid "Access"
 msgstr ""
@@ -632,10 +628,6 @@ msgstr ""
 
 msgctxt "ELAR/session/id/tipOnUsingThisField"
 msgid "Must be a maximum of 20 characters in length and consist of letters a-z, numbers 0-9, dashes and underscores only."
-msgstr ""
-
-msgctxt "ELAR/session/keyword/patternDescription"
-msgid "capitalised on the first word only"
 msgstr ""
 
 msgctxt "ELAR/session/keyword/separatorWithCommaInstructions"
@@ -678,16 +670,8 @@ msgctxt "ELAR/session/subgenre/tipOnUsingThisField"
 msgid "Subgenre is optional"
 msgstr ""
 
-msgctxt "ELAR/session/title/patternDescription"
-msgid "capitalised"
-msgstr ""
-
 msgctxt "ELAR/session/title/tipOnUsingThisField"
 msgid "Title should be a short, meaningful sentence"
-msgstr ""
-
-msgctxt "ELAR/session/topic/patternDescription"
-msgid "capitalised on the first word only"
 msgstr ""
 
 msgctxt "ELAR/session/topic/separatorWithCommaInstructions"

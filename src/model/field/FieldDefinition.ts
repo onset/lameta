@@ -45,6 +45,9 @@ export class FieldDefinition {
   // SayMore Windows, at least through version 3.3, has inconsistent capitalization
   public xmlTag?: string = "";
   public personallyIdentifiableInformation?: boolean;
+  // the case that the IMDI export puts the value in, in each language, or for topic
+  // and keyword, in each comma-separated item
+  public capitalization?: Capitalization;
 
   // Rules that an archive configuration can set on a field. src/problems/fieldRules.ts
   // checks them and writes the messages, which use the field's label.
@@ -84,6 +87,16 @@ export class FieldDefinition {
 }
 
 export type FieldRuleSeverity = "error" | "warning";
+
+// sentence: upper-cases the first letter and leaves the rest as typed, so that proper
+//   nouns keep their capitals
+// ELARTerm: the rule of checkTopicKeywordGenreCapitalisation in ELAR's metadata
+//   validator. Upper-cases the first letter and lower-cases each later word, except a
+//   word that is all capitals, up to two characters long, or has a character other
+//   than a-z.
+// title: upper-cases the main words, as the title-case package does
+// upper, lower: the whole text
+export type Capitalization = "sentence" | "ELARTerm" | "title" | "upper" | "lower";
 // the names of the rule properties of FieldDefinition
 export type FieldRule =
   | "required"
