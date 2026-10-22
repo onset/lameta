@@ -7,7 +7,7 @@ import {
   expect as plainExpect,
 } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
-import { textForExport } from "./Imdi-static-fns";
+import { applyCapitalization } from "../model/field/capitalization";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
 import { setResultXml, xexpect as expect } from "../other/xmlUnitTestUtils";
@@ -52,42 +52,44 @@ const generate = () =>
     ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true /*omit namespace*/),
   );
 
-describe("textForExport", () => {
+describe("applyCapitalization", () => {
   const capitalising = new FieldDefinition({ key: "title", capitalization: "sentence" });
 
   it("upper-cases a lower-case first letter", () => {
-    plainExpect(textForExport(capitalising, "the hunt")).toBe("The hunt");
-    plainExpect(textForExport(capitalising, "  élan")).toBe("  Élan");
+    plainExpect(applyCapitalization(capitalising, "the hunt")).toBe("The hunt");
+    plainExpect(applyCapitalization(capitalising, "  élan")).toBe("  Élan");
   });
 
   it("leaves text alone that does not start with a lower-case letter", () => {
-    plainExpect(textForExport(capitalising, "The hunt")).toBe("The hunt");
-    plainExpect(textForExport(capitalising, '"quoted"')).toBe('"quoted"');
-    plainExpect(textForExport(capitalising, "")).toBe("");
+    plainExpect(applyCapitalization(capitalising, "The hunt")).toBe("The hunt");
+    plainExpect(applyCapitalization(capitalising, '"quoted"')).toBe('"quoted"');
+    plainExpect(applyCapitalization(capitalising, "")).toBe("");
   });
 
   it("puts a term in ELAR's case", () => {
     const term = new FieldDefinition({ key: "topic", capitalization: "ELARTerm" });
-    plainExpect(textForExport(term, "life in Berthoud")).toBe("Life in berthoud");
+    plainExpect(applyCapitalization(term, "life in Berthoud")).toBe("Life in berthoud");
     // all capitals, up to two characters, and characters other than a-z stay as typed
-    plainExpect(textForExport(term, "songs by FAO UNESCO")).toBe("Songs by FAO UNESCO");
-    plainExpect(textForExport(term, "Myths Of The Ngäbe")).toBe("Myths Of the Ngäbe");
-    plainExpect(textForExport(term, "Kuna-Yala Songs 2024")).toBe("Kuna-Yala songs 2024");
+    plainExpect(applyCapitalization(term, "songs by FAO UNESCO")).toBe("Songs by FAO UNESCO");
+    plainExpect(applyCapitalization(term, "Myths Of The Ngäbe")).toBe("Myths Of the Ngäbe");
+    plainExpect(applyCapitalization(term, "Kuna-Yala Songs 2024")).toBe("Kuna-Yala songs 2024");
   });
 
   it("puts text in title, upper and lower case", () => {
     const inCase = (capitalization: string) =>
-      textForExport(new FieldDefinition({ key: "title", capitalization }), "the hunt");
+      applyCapitalization(new FieldDefinition({ key: "title", capitalization }), "the hunt");
     plainExpect(inCase("title")).toBe("The Hunt");
     plainExpect(inCase("upper")).toBe("THE HUNT");
     plainExpect(
-      textForExport(new FieldDefinition({ key: "x", capitalization: "lower" }), "ABC"),
+      applyCapitalization(new FieldDefinition({ key: "x", capitalization: "lower" }), "ABC"),
     ).toBe("abc");
   });
 
   it("leaves text alone when the definition does not ask for it", () => {
-    plainExpect(textForExport(new FieldDefinition({ key: "title" }), "the hunt")).toBe("the hunt");
-    plainExpect(textForExport(undefined, "the hunt")).toBe("the hunt");
+    plainExpect(applyCapitalization(new FieldDefinition({ key: "title" }), "the hunt")).toBe(
+      "the hunt",
+    );
+    plainExpect(applyCapitalization(undefined, "the hunt")).toBe("the hunt");
   });
 });
 

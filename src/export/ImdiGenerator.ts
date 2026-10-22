@@ -23,7 +23,8 @@ import { collectExportWarning } from "./ExportWarningCollector";
 import { getStatusOfFile } from "../model/file/FileStatus";
 import { capitalCase, sentenceCase, sentenceCaseUnlessAcronym } from "../other/case";
 import { Field } from "../model/field/Field";
-import { fieldElement, textForExport } from "./Imdi-static-fns";
+import { fieldElement } from "./Imdi-static-fns";
+import { applyCapitalization } from "../model/field/capitalization";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { makeLametaSourceComment } from "./lametaSourceComment";
 import { NavigationTarget } from "../navigation/NavigationTarget";
@@ -794,7 +795,7 @@ export default class ImdiGenerator {
                 shouldSplitByCommas
                   ? fieldContents.split(",").map((x) => x.trim())
                   : [fieldContents.trim()]
-              ).map((x) => textForExport(definition, x));
+              ).map((x) => applyCapitalization(definition, x));
               valueElements.forEach((v) => {
                 //https://trello.com/c/GdRJamgi/83-export-of-topic-field
                 // Hanna asks that we not do this to topic and keyword
@@ -845,7 +846,7 @@ export default class ImdiGenerator {
       const langContent = field.getTextAxisVirtual(lang, metadataSlotTags);
       const values = (
         shouldSplitByCommas ? langContent.split(",").map((x) => x.trim()) : [langContent.trim()]
-      ).map((x) => textForExport(field.definition, x));
+      ).map((x) => applyCapitalization(field.definition, x));
       valuesByLanguage.set(lang, values);
       maxValueCount = Math.max(maxValueCount, values.length);
     });
@@ -1565,7 +1566,7 @@ export default class ImdiGenerator {
         .replace(/_/g, " ");
 
       value = field?.definition?.capitalization
-        ? textForExport(field.definition, label)
+        ? applyCapitalization(field.definition, label)
         : sentenceCase(label);
     }
 
@@ -1714,7 +1715,7 @@ export default class ImdiGenerator {
   ) {
     const inCase = (value: string, sentenceCaseIt: boolean) =>
       definition?.capitalization
-        ? textForExport(definition, value)
+        ? applyCapitalization(definition, value)
         : sentenceCaseIt
           ? sentenceCase(value)
           : value;

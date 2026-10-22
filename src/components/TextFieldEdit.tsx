@@ -17,6 +17,7 @@ import {
   LanguageTagWithKebab,
 } from "./MultilingualTextFieldControls";
 import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
+import { capitalizeField } from "../model/field/capitalization";
 
 const rowStyleAffordanceWidth = "24px";
 
@@ -284,17 +285,28 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
   function finishEditing(event: React.FocusEvent<HTMLDivElement>) {
     const el = event.currentTarget;
     // Preserve leading spaces the user intentionally adds; only trim trailing newline noise.
-    const newValue = el.innerText.replace(/\n+$/g, "");
+    const typedValue = el.innerText.replace(/\n+$/g, "");
 
     if (props.languageSlot === undefined) {
-      if (newValue !== props.field.text) {
-        props.field.setValueFromString(newValue);
+      if (typedValue !== props.field.text) {
+        props.field.setValueFromString(typedValue);
       }
     } else {
-      if (newValue !== props.field.getTextAxis(props.languageSlot.tag)) {
-        props.field.setTextAxis(props.languageSlot.tag, newValue, props.allLanguageTags);
+      if (typedValue !== props.field.getTextAxis(props.languageSlot.tag)) {
+        props.field.setTextAxis(props.languageSlot.tag, typedValue, props.allLanguageTags);
       }
     }
+
+    // put the text in the case that the archive requires, and show it
+    const textBefore = props.field.text;
+    capitalizeField(props.field);
+    const newValue =
+      props.field.text === textBefore
+        ? typedValue
+        : props.languageSlot === undefined
+          ? props.field.text
+          : props.field.getTextAxis(props.languageSlot.tag);
+    if (newValue !== typedValue) el.textContent = newValue;
 
     if (props.onBlurWithValue) props.onBlurWithValue(newValue);
     if (props.onBlur) props.onBlur(event as any);
