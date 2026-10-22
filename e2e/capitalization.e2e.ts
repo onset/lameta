@@ -53,9 +53,21 @@ test.describe("Capitalization of typed text under ELAR", () => {
     const chooser = page.getByTestId("genre-chooser");
     await chooser.click();
     const input = chooser.locator("input");
+    // the genre that the chooser shows as chosen, not its menu or its announcements
+    const chosenGenre = chooser.locator("[class*=singleValue]");
     await input.fill("songs about NASA");
     await input.press("Enter");
-    await expect(chooser).toContainText("Songs about NASA");
+    await expect(chosenGenre).toHaveText("Songs about NASA");
+
+    // picking it again from the list, after another genre, keeps its capitals
+    await chooser.click();
+    await input.fill("Narrative");
+    await input.press("Enter");
+    await expect(chosenGenre).toHaveText("Narrative");
+    await chooser.click();
+    await input.fill("songs about");
+    await input.press("Enter");
+    await expect(chosenGenre).toHaveText("Songs about NASA");
   });
 
   test("the fixed text is still there after going to another session and back", async () => {

@@ -140,7 +140,10 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
           }),
         }}
         onChange={(s: any) => {
-          props.field.setValueFromString(s && s.value ? s.value : "");
+          // a genre that someone typed is kept by its label, which has their capitals;
+          // its id is in lower case
+          const value = s?.source === "custom" ? s.label : s?.value;
+          props.field.setValueFromString(value || "");
           // a genre that the person typed is put in the case that the archive requires
           capitalizeField(props.field);
         }}
