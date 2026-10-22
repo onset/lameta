@@ -1,6 +1,34 @@
 import * as XmlBuilder from "xmlbuilder";
 import { Field } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
+import { titleCase } from "title-case";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
+
+// The text as the IMDI export writes it, in the case that the field's definition asks for
+export function textForExport(definition: FieldDefinition | undefined, text: string): string {
+  switch (definition?.capitalization) {
+    case "sentence":
+      return upperFirst(text);
+    case "ELARTerm":
+      return upperFirst(text).replace(/(\s+)(\S+)/g, (_, space, word: string) =>
+        word === word.toUpperCase() || word.length <= 2 || /[^a-zA-Z]/.test(word)
+          ? space + word
+          : space + word.toLowerCase(),
+      );
+    case "title":
+      return titleCase(text);
+    case "upper":
+      return text.toUpperCase();
+    case "lower":
+      return text.toLowerCase();
+    default:
+      return text;
+  }
+}
+
+function upperFirst(text: string): string {
+  return text.replace(/^(\s*)(\p{Ll})/u, (_, space, letter) => space + letter.toUpperCase());
+}
 
 // public for testing
 // imdiSupportsMultipleElements: when true, creates separate elements with LanguageId attributes for each language.
@@ -106,14 +134,17 @@ function addElementsFromFieldContent(
           .filter((language) => field.getTextAxisVirtual(language, metadataSlotTags).trim() !== "")
       : field.getAllNonEmptyTextAxes();
     const getTextForLanguage = (language: string) =>
-      shouldUseVirtualMultilingual
-        ? field.getTextAxisVirtual(language, metadataSlotTags)
-        : field.getTextAxis(language);
+      textForExport(
+        field.definition,
+        shouldUseVirtualMultilingual
+          ? field.getTextAxisVirtual(language, metadataSlotTags)
+          : field.getTextAxis(language),
+      );
 
     // If IMDI doesn't support multiple elements with LanguageId (e.g., String_Type),
     // just use the first language's value
     if (axes.length === 0) {
-      element = tail.element(elementName, field.text);
+      element = tail.element(elementName, textForExport(field.definition, field.text));
       addExtraAttributes(element, extraAttributes);
     } else if (!imdiSupportsMultipleElements || axes.length === 1) {
       const firstLanguage = axes[0];

@@ -47,10 +47,6 @@ describe("ProjectProblems", () => {
     // nothing changes until the user pauses
     expect(problems.problemsOf(keyword).map((p) => p.checkId)).toEqual(["minItems"]);
     vi.advanceTimersByTime(500);
-    // "fishing" is not capitalised
-    expect(problems.problemsOf(keyword).map((p) => p.checkId)).toEqual(["pattern"]);
-    session.properties.setText("keyword", "Fishing");
-    vi.advanceTimersByTime(500);
     expect(problems.problemsOf(keyword)).toEqual([]);
 
     stop();

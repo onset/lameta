@@ -256,13 +256,9 @@ describe("checkProjectFields on the Edolo sample under ELAR", () => {
         field: session.properties.getValue("keyword"),
       }),
     );
-    // ETR009's topics are "fishing, poison": enough of them, but not capitalised. They
-    // need no translation, because the sample's only metadata language is English.
-    expect(
-      checkProjectFields(project)
-        .filter((p) => p.target.fieldKey === "topic")
-        .map((p) => p.checkId),
-    ).toEqual(["pattern"]);
+    // ETR009's topics are "fishing, poison". The export capitalises them, and they need
+    // no translation, because the sample's only metadata language is English.
+    expect(checkProjectFields(project).filter((p) => p.target.fieldKey === "topic")).toEqual([]);
   });
 
   it("reports a session id that ELAR does not allow, and stops when it is fixed", () => {
