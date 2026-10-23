@@ -15,9 +15,8 @@ import scrollSelectedIntoView from "./FixReactTableScroll";
 import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { NotifyError, NotifyWarning } from "./Notify";
-import * as fs from "fs-extra";
 import * as nodePath from "path";
-import { getExtension } from "../other/CopyManager";
+import { findPathsThatCannotBeAdded } from "./findPathsThatCannotBeAdded";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
 import { getLinkStatusIconPath, getStatusOfFile } from "../model/file/FileStatus";
 import { useLingui } from "@lingui/react";
@@ -503,27 +502,28 @@ async function addFiles(
     }
   });
 
-  // Block lameta internal file types by extension
-  if (validPaths.some((path) => ["session", "person", "meta"].includes(getExtension(path)))) {
-    try {
-      console.warn("[FileList:addFiles] Blocked internal lameta file type.", validPaths);
-    } catch {}
-    NotifyWarning(t`You cannot add files of that type`);
-    return;
-  }
-
-  // Disallow folders; catch and surface any fs errors as warnings
+  let refused: ReturnType<typeof findPathsThatCannotBeAdded>;
   try {
-    if (validPaths.some((path) => fs.lstatSync(path).isDirectory())) {
-      try {
-        console.warn("[FileList:addFiles] Folders are not allowed.", validPaths);
-      } catch {}
-      NotifyWarning(t`You cannot add folders.`);
-      return;
-    }
+    refused = findPathsThatCannotBeAdded(validPaths);
   } catch (err) {
     console.error("[FileList:addFiles] Error accessing file(s)", err);
     NotifyError(t`There was a problem adding files.`);
+    return;
+  }
+  if (refused.length > 0) {
+    NotifyWarning(
+      t`lameta did not add any of the files you chose.`,
+      refused
+        .map(
+          ({ path, reason }) =>
+            `${nodePath.basename(path)}: ${
+              reason === "folder"
+                ? t`You cannot add folders.`
+                : t`You cannot add files of that type`
+            }`,
+        )
+        .join("\n"),
+    );
     return;
   }
 
