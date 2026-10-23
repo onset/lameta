@@ -4,7 +4,7 @@ import { FolderGroup } from "../model/Folder/FolderGroup";
 import { File } from "../model/file/File";
 import { NavigationTarget } from "./NavigationTarget";
 import { FileTabId, NavigationState, navigationState, ProjectTabId } from "./NavigationState";
-import { revealField } from "./revealField";
+import { findVocabularyTranslationRow, revealElement, revealField } from "./revealField";
 import { kProjectTabOfForm } from "../components/project/projectTabOfForm";
 import { getFileTabOfField } from "../components/fileTabOfField";
 
@@ -26,7 +26,19 @@ export async function navigateTo(
   keepHighlightWhile: () => boolean = () => true,
 ): Promise<NavigationResult> {
   const result = selectTarget(project, target);
-  if (result.found && target.fieldKey) {
+  if (result.found && target.folderType === "project" && target.vocabularyTranslation) {
+    const { fieldKey, value } = target.vocabularyTranslation;
+    const selection = currentSelection(project, target);
+    await revealElement(
+      () => findVocabularyTranslationRow(fieldKey, value),
+      `the translations of ${fieldKey} "${value}"`,
+      () =>
+        currentSelection(project, target).every((s, i) => s === selection[i]) &&
+        keepHighlightWhile(),
+      // the Translations tab scans the sessions before it lists a value new to it
+      10000,
+    );
+  } else if (result.found && target.fieldKey) {
     const selection = currentSelection(project, target);
     await revealField(
       target.folderType === "project"
@@ -76,6 +88,11 @@ export function selectTarget(
     // a document's fields are on its Access tab
     state.requestFileTab(target.fieldKey ? { folder, file, fileTab: "access" } : undefined);
     state.setProjectTab(target.documents === "description" ? "description-docs" : "other-docs");
+    state.setTopTab("project");
+    return { found: true };
+  }
+  if (target.folderType === "project" && target.vocabularyTranslation) {
+    state.setProjectTab("translations");
     state.setTopTab("project");
     return { found: true };
   }

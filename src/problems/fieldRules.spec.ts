@@ -256,13 +256,9 @@ describe("checkProjectFields on the Edolo sample under ELAR", () => {
         field: session.properties.getValue("keyword"),
       }),
     );
-    // ETR009's topics are "fishing, poison": enough of them, but not capitalised. They
-    // need no translation, because the sample's only metadata language is English.
-    expect(
-      checkProjectFields(project)
-        .filter((p) => p.target.fieldKey === "topic")
-        .map((p) => p.checkId),
-    ).toEqual(["pattern"]);
+    // ETR009's topics are "fishing, poison". The export capitalises them, and they need
+    // no translation, because the sample's only metadata language is English.
+    expect(checkProjectFields(project).filter((p) => p.target.fieldKey === "topic")).toEqual([]);
   });
 
   it("reports a session id that ELAR does not allow, and stops when it is fixed", () => {
@@ -343,6 +339,37 @@ describe("checkProjectFields on the Edolo sample under ELAR", () => {
     document.properties.setText("accessDescription", "the speaker asked");
     expect(accessProblems()).toEqual([]);
     document.properties.setText("access", "");
+  });
+
+  // no field of ELAR's needs this yet; it shows that if one did, a click would go to
+  // where the translation is entered
+  it("sends a genre's missing translation to its row on the Translations tab", () => {
+    const genreField = session.properties.getValueOrThrow("genre");
+    const genre = genreField.text;
+    const metadataLanguages = project.properties.getTextStringOrEmpty("metadataLanguages");
+    genreField.definition.translationRequired = true;
+    try {
+      project.properties.setText("metadataLanguages", "en;es");
+      session.properties.setText("genre", "weird stuff");
+      const genreProblems = () => checkProjectFields(project).filter((p) => p.field === genreField);
+      expect(genreProblems().map((p) => [p.checkId, p.target, p.sessionId])).toEqual([
+        [
+          "translationRequired",
+          {
+            folderType: "project",
+            vocabularyTranslation: { fieldKey: "genre", value: "weird stuff" },
+          },
+          "ETR009",
+        ],
+      ]);
+      // the translation is in the project's vocabulary translations, not in the field
+      project.vocabularyTranslations.setGenre("weird stuff", "custom", { es: "cosas raras" });
+      expect(genreProblems()).toEqual([]);
+    } finally {
+      genreField.definition.translationRequired = undefined;
+      session.properties.setText("genre", genre);
+      project.properties.setText("metadataLanguages", metadataLanguages);
+    }
   });
 
   it("counts a person's languages", () => {

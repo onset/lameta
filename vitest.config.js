@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "url";
 import react from "@vitejs/plugin-react";
@@ -6,6 +7,23 @@ import { defineConfig } from "vite-plus";
 import dsv from "@rollup/plugin-dsv";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
+
+// Vitest keeps transformed modules in node_modules/.vitest-cache, under a key made from the
+// module's own text and from this file and the files it imports. The Lingui plugin compiles
+// locale/*/*.po (and the macros) by the Lingui config files, which it reads through
+// `configPath`, so they are not in that key, and a cached catalog compiled by an older version
+// of them would still be used. This puts their text in the key.
+function linguiConfigInCacheKey() {
+  return {
+    name: "lameta:lingui-config-in-cache-key",
+    configureVitest({ defineCacheKeyGenerator }) {
+      const linguiConfigText = ["lingui.vite.config.ts", "lingui.config.ts"]
+        .map((file) => fs.readFileSync(path.resolve(rootDir, file), "utf-8"))
+        .join("\n");
+      defineCacheKeyGenerator(() => linguiConfigText);
+    },
+  };
+}
 
 export default defineConfig({
   resolve: {
@@ -50,6 +68,7 @@ export default defineConfig({
       // same as vite.config.ts, so tests compile the macros the way the app does
       macroTransform: { macro: { descriptorFields: "all" } },
     }),
+    linguiConfigInCacheKey(),
     react(),
     dsv(), // without this, importing genres.csv causes a failure when it sees `"foo",,"bar"`
   ],

@@ -27,7 +27,7 @@ export function fromFieldProblem(p: IFieldProblem): IProblem {
     severity: p.severity,
     ...wordProblem(p.subject, p.text, p.reason),
     target: p.target,
-    sessionId: p.target.folderType === "session" ? p.target.folderId : undefined,
+    sessionId: p.sessionId ?? (p.target.folderType === "session" ? p.target.folderId : undefined),
   };
 }
 
@@ -65,6 +65,7 @@ export function withoutRulesFileDuplicates(
       target && target.folderType !== "project" ? target.folderId : "",
       target?.fileName ?? "",
       target?.fieldKey ?? "",
+      (target?.folderType === "project" && target.vocabularyTranslation) || "",
       m,
     ]);
   const reported = new Set(

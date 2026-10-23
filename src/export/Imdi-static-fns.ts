@@ -1,5 +1,6 @@
 import * as XmlBuilder from "xmlbuilder";
 import { Field } from "../model/field/Field";
+import { applyCapitalization } from "../model/field/capitalization";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 
 // public for testing
@@ -106,14 +107,17 @@ function addElementsFromFieldContent(
           .filter((language) => field.getTextAxisVirtual(language, metadataSlotTags).trim() !== "")
       : field.getAllNonEmptyTextAxes();
     const getTextForLanguage = (language: string) =>
-      shouldUseVirtualMultilingual
-        ? field.getTextAxisVirtual(language, metadataSlotTags)
-        : field.getTextAxis(language);
+      applyCapitalization(
+        field.definition,
+        shouldUseVirtualMultilingual
+          ? field.getTextAxisVirtual(language, metadataSlotTags)
+          : field.getTextAxis(language),
+      );
 
     // If IMDI doesn't support multiple elements with LanguageId (e.g., String_Type),
     // just use the first language's value
     if (axes.length === 0) {
-      element = tail.element(elementName, field.text);
+      element = tail.element(elementName, applyCapitalization(field.definition, field.text));
       addExtraAttributes(element, extraAttributes);
     } else if (!imdiSupportsMultipleElements || axes.length === 1) {
       const firstLanguage = axes[0];

@@ -15,6 +15,7 @@ import { buildTranslationTooltip } from "../TranslationTooltip";
 import WarningIcon from "@mui/icons-material/Warning";
 import { css } from "@emotion/react";
 import { FieldLabel } from "../FieldLabel";
+import { capitalizeField } from "../../model/field/capitalization";
 
 // For fields where there are choices but the user can enter new ones.
 const FieldOpenChoiceChooser: React.FunctionComponent<{
@@ -63,7 +64,8 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
       }
       return new Object({
         value: c.id,
-        label: props.translateChoice(c.label),
+        // a genre that someone typed has no translation and shows as it is saved
+        label: c.source === "custom" ? c.label : props.translateChoice(c.label),
         title: tip,
         source: c.source,
       });
@@ -138,7 +140,12 @@ const FieldOpenChoiceChooser: React.FunctionComponent<{
           }),
         }}
         onChange={(s: any) => {
-          props.field.setValueFromString(s && s.value ? s.value : "");
+          // a genre that someone typed is kept by its label, which has their capitals;
+          // its id is in lower case
+          const value = s?.source === "custom" ? s.label : s?.value;
+          props.field.setValueFromString(value || "");
+          // a genre that the person typed is put in the case that the archive requires
+          capitalizeField(props.field);
         }}
         components={{
           Option: (p: any) => <OptionWithTooltip {...p} />,

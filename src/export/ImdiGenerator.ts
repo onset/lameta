@@ -24,9 +24,13 @@ import { getStatusOfFile } from "../model/file/FileStatus";
 import { capitalCase, sentenceCase, sentenceCaseUnlessAcronym } from "../other/case";
 import { Field } from "../model/field/Field";
 import { fieldElement } from "./Imdi-static-fns";
-import { makeLametaSourceComment } from "./lametaSourceComment";
+import { applyCapitalization } from "../model/field/capitalization";
+import { FieldDefinition } from "../model/field/FieldDefinition";
+import { makeLametaSourceComment, makeLametaTranslationsComment } from "./lametaSourceComment";
+import { whereToTranslate } from "../model/Project/whereToTranslate";
 import { NavigationTarget } from "../navigation/NavigationTarget";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
+import { getCommonFieldDefinition } from "../model/field/ConfiguredFieldDefinitions";
 import { ImdiVocabularyTranslator } from "./ImdiVocabularyTranslator";
 import { staticLanguageFinder } from "../languageFinder/LanguageFinder";
 import { parseLanguageCodeAndName } from "../languageFinder/languageTagFieldValue";
@@ -335,6 +339,8 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
         this.vocabularyTranslator.getRoleTranslator(),
         role,
+        getCommonFieldDefinition("role"),
+        "role",
       );
     } else {
       this.element("Role", role);
@@ -456,6 +462,8 @@ export default class ImdiGenerator {
           "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
           this.vocabularyTranslator.getGenreTranslator(),
           genreValue,
+          session.properties.getFieldDefinition("genre"),
+          "genre",
         ),
       );
       this.keysThatHaveBeenOutput.add("Session.genre");
@@ -786,9 +794,11 @@ export default class ImdiGenerator {
               );
             } else {
               // Monolingual export (original behavior)
-              const valueElements = shouldSplitByCommas
-                ? fieldContents.split(",").map((x) => x.trim())
-                : [fieldContents.trim()];
+              const valueElements = (
+                shouldSplitByCommas
+                  ? fieldContents.split(",").map((x) => x.trim())
+                  : [fieldContents.trim()]
+              ).map((x) => applyCapitalization(definition, x));
               valueElements.forEach((v) => {
                 //https://trello.com/c/GdRJamgi/83-export-of-topic-field
                 // Hanna asks that we not do this to topic and keyword
@@ -837,9 +847,9 @@ export default class ImdiGenerator {
 
     languageAxes.forEach((lang) => {
       const langContent = field.getTextAxisVirtual(lang, metadataSlotTags);
-      const values = shouldSplitByCommas
-        ? langContent.split(",").map((x) => x.trim())
-        : [langContent.trim()];
+      const values = (
+        shouldSplitByCommas ? langContent.split(",").map((x) => x.trim()) : [langContent.trim()]
+      ).map((x) => applyCapitalization(field.definition, x));
       valuesByLanguage.set(lang, values);
       maxValueCount = Math.max(maxValueCount, values.length);
     });
@@ -1258,6 +1268,8 @@ export default class ImdiGenerator {
           "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
           this.vocabularyTranslator.getRoleTranslator(),
           role,
+          getCommonFieldDefinition("role"),
+          "role",
         ),
       );
 
@@ -1557,7 +1569,9 @@ export default class ImdiGenerator {
         // this probably isn't used. The idea is that if we didn't get new label, just replace the underscores
         .replace(/_/g, " ");
 
-      value = sentenceCase(label);
+      value = field?.definition?.capitalization
+        ? applyCapitalization(field.definition, label)
+        : sentenceCase(label);
     }
 
     this.withSource(source, () => {
@@ -1633,7 +1647,11 @@ export default class ImdiGenerator {
   // Puts a lameta-source comment before each element that `write` adds to the
   // current element, saying that it came from `source`. Adds nothing when building
   // a standalone fragment (no current element yet).
-  private withSource(source: NavigationTarget | undefined, write: () => void) {
+  private withSource(
+    source: NavigationTarget | undefined,
+    write: () => void,
+    makeComment: (target: NavigationTarget) => string = makeLametaSourceComment,
+  ) {
     const parent = this.tail as any;
     if (!source || !parent) {
       write();
@@ -1641,7 +1659,7 @@ export default class ImdiGenerator {
     }
     const countBefore = parent.children.length;
     write();
-    const comment = makeLametaSourceComment(source);
+    const comment = makeComment(source);
     parent.children
       .slice(countBefore)
       .filter((child: any) => child.attributes !== undefined)
@@ -1700,7 +1718,40 @@ export default class ImdiGenerator {
     vocabularyUrl: string,
     translateFn: (value: string, lang: string) => string | undefined,
     translationKey: string,
+    // the field whose capitalization, if it has one, replaces the sentence case below
+    definition?: FieldDefinition,
+    // the vocabulary field that the value is from, for a lameta-translations comment
+    // when the user enters its translations on the Translations tab
+    vocabularyFieldKey?: "genre" | "role",
   ) {
+    this.withSource(
+      vocabularyFieldKey && whereToTranslate(vocabularyFieldKey, translationKey),
+      () =>
+        this.writeMultilingualVocabularyElement(
+          elementName,
+          englishValue,
+          vocabularyUrl,
+          translateFn,
+          translationKey,
+          definition,
+        ),
+      makeLametaTranslationsComment,
+    );
+  }
+  private writeMultilingualVocabularyElement(
+    elementName: string,
+    englishValue: string,
+    vocabularyUrl: string,
+    translateFn: (value: string, lang: string) => string | undefined,
+    translationKey: string,
+    definition?: FieldDefinition,
+  ) {
+    const inCase = (value: string, sentenceCaseIt: boolean) =>
+      definition?.capitalization
+        ? applyCapitalization(definition, value)
+        : sentenceCaseIt
+          ? sentenceCase(value)
+          : value;
     if (!englishValue || englishValue.trim().length === 0) {
       // Output empty element with attributes if value is empty
       const newElement = this.tail.element(elementName, "");
@@ -1719,10 +1770,10 @@ export default class ImdiGenerator {
       // Standard IMDI 3.0: output single element without LanguageId
       // Apply sentenceCase only if the value starts with a lowercase letter
       // (e.g., user typed "myth" should become "Myth", but "MixedCase" should stay as-is)
-      const outputValue =
-        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase()
-          ? sentenceCase(englishValue)
-          : englishValue;
+      const outputValue = inCase(
+        englishValue,
+        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase(),
+      );
       const newElement = this.tail.element(elementName, outputValue);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
@@ -1740,7 +1791,7 @@ export default class ImdiGenerator {
       if (translation) {
         // Normalize to sentence case for consistent IMDI output
         // (ELAR prefers "Careful speech speaker" not "Careful Speech Speaker")
-        const normalizedTranslation = sentenceCase(translation);
+        const normalizedTranslation = inCase(translation, true);
         const newElement = this.tail.element(elementName, normalizedTranslation);
         // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
         const iso639_3 = this.iso639_3ForExport(slot.tag);
@@ -1756,10 +1807,10 @@ export default class ImdiGenerator {
     // If no translations were output, fall back to English
     // Apply sentenceCase only if the value starts with a lowercase letter
     if (outputCount === 0) {
-      const outputValue =
-        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase()
-          ? sentenceCase(englishValue)
-          : englishValue;
+      const outputValue = inCase(
+        englishValue,
+        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase(),
+      );
       const newElement = this.tail.element(elementName, outputValue);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
@@ -1929,6 +1980,8 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
         this.vocabularyTranslator.getGenreTranslator(),
         genre,
+        undefined,
+        "genre",
       );
       this.multilingualVocabularyElement(
         "SubGenre",

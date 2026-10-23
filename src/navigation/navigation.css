@@ -6,3 +6,7 @@
   background-color: #fff3c4;
   border-radius: 3px;
 }
+/* a table row's cells have backgrounds of their own */
+.navigation-highlight > td {
+  background-color: #fff3c4;
+}

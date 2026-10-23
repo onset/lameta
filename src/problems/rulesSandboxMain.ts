@@ -53,7 +53,7 @@ export async function rulesSandboxMain(
   loadModule?: (source: string) => Promise<any>,
 ): Promise<IRulesSandboxOutput> {
   const start = performance.now();
-  const { findLametaSource } = makeReader();
+  const { findLametaSource, findWhereToTranslate } = makeReader();
   const problems: IRulesFileProblem[] = [];
   const errors: IRulesFileError[] = [];
   const done = () => ({
@@ -152,7 +152,11 @@ export async function rulesSandboxMain(
       subject: p ? optionalText(p.subject) : undefined,
       message: p && p.message !== undefined ? String(p.message) : "",
       reason: p ? optionalText(p.reason) : undefined,
-      target: node ? findLametaSource(node) : undefined,
+      target: node
+        ? p.missingTranslation === true
+          ? findWhereToTranslate(node)
+          : findLametaSource(node)
+        : undefined,
       from,
       sessionId,
     });

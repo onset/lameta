@@ -28,10 +28,7 @@ import IcecreamIcon from "@mui/icons-material/Icecream";
 import BlenderIcon from "@mui/icons-material/Blender";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
-import {
-  getFieldDefinition,
-  getCommonFieldDefinition,
-} from "../../model/field/ConfiguredFieldDefinitions";
+import { isTranslatedOnTranslationsTab } from "../../model/Project/whereToTranslate";
 import { NotifyError } from "../Notify";
 
 /**
@@ -39,11 +36,7 @@ import { NotifyError } from "../Notify";
  * This is used by ProjectTab to decide whether to show the  Translations tab.
  */
 export function hasMultilingualVocabularyFields(): boolean {
-  const genreFieldDef = getFieldDefinition("session", "genre");
-  const roleFieldDef = getCommonFieldDefinition("role");
-  const isGenreMultilingual = genreFieldDef?.multilingual ?? false;
-  const isRoleMultilingual = roleFieldDef?.multilingual ?? false;
-  return isGenreMultilingual || isRoleMultilingual;
+  return isTranslatedOnTranslationsTab("genre") || isTranslatedOnTranslationsTab("role");
 }
 
 interface VocabularyTranslationsTabProps {
@@ -51,6 +44,8 @@ interface VocabularyTranslationsTabProps {
 }
 
 interface TranslationRowProps {
+  // the vocabulary field of the value, for navigateTo() to find the row
+  vocabularyFieldKey?: "genre" | "role";
   value: string;
   source: "custom" | "factory-value-used-in-sessions" | "factory-value-used-by-export";
   translations: Record<string, string>;
@@ -123,6 +118,7 @@ const TranslationInput: React.FC<TranslationInputProps> = ({
 };
 
 const TranslationRow: React.FC<TranslationRowProps> = ({
+  vocabularyFieldKey,
   value,
   source,
   translations,
@@ -144,6 +140,8 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
 
   return (
     <tr
+      data-vocabulary-field={vocabularyFieldKey}
+      data-vocabulary-value={vocabularyFieldKey && value}
       css={css`
         background-color: white;
         &:hover {
@@ -236,6 +234,7 @@ const TranslationRow: React.FC<TranslationRowProps> = ({
 
 interface FieldSectionProps {
   title: string;
+  vocabularyFieldKey?: "genre" | "role";
   fieldData: FieldVocabularyTranslations | undefined;
   languageCodes: string[];
   languageNames: Record<string, string>;
@@ -250,6 +249,7 @@ interface FieldSectionProps {
 
 const FieldSection: React.FC<FieldSectionProps> = ({
   title,
+  vocabularyFieldKey,
   fieldData,
   languageCodes,
   languageNames,
@@ -384,6 +384,7 @@ const FieldSection: React.FC<FieldSectionProps> = ({
           {entries.map(([value, entry]) => (
             <TranslationRow
               key={value}
+              vocabularyFieldKey={vocabularyFieldKey}
               value={value}
               source={entry.source}
               translations={entry.translations}
@@ -418,10 +419,10 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
     // 1. A translation CSV file in locale/
     // 2. A translateXxxToLanguage function in localization.ts
     // 3. Scanner and storage updates in VocabularyScanner.ts and VocabularyTranslations.ts
-    const genreFieldDef = getFieldDefinition("session", "genre");
-    const roleFieldDef = getCommonFieldDefinition("role");
-    const isGenreMultilingual = genreFieldDef?.multilingual ?? false;
-    const isRoleMultilingual = roleFieldDef?.multilingual ?? false;
+    // 4. A case in isTranslatedOnTranslationsTab(), so that a missing translation's
+    //    problem leads here
+    const isGenreMultilingual = isTranslatedOnTranslationsTab("genre");
+    const isRoleMultilingual = isTranslatedOnTranslationsTab("role");
 
     // Get metadata language codes from project
     const metadataLanguages = Project.getMetadataLanguageSlots();
@@ -643,6 +644,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         {isGenreMultilingual && (
           <FieldSection
             title={t`Genres`}
+            vocabularyFieldKey="genre"
             fieldData={translations.genres}
             languageCodes={languageCodes}
             languageNames={Object.fromEntries(
@@ -657,6 +659,7 @@ export const VocabularyTranslationsTab: React.FC<VocabularyTranslationsTabProps>
         {isRoleMultilingual && (
           <FieldSection
             title={t`Roles`}
+            vocabularyFieldKey="role"
             fieldData={translations.roles}
             languageCodes={languageCodes}
             languageNames={Object.fromEntries(

@@ -15,7 +15,9 @@ import { NavigationState } from "../navigation/NavigationState";
 import { selectTarget } from "../navigation/navigate";
 import {
   findLametaSource,
+  findWhereToTranslate,
   makeLametaSourceComment,
+  makeLametaTranslationsComment,
   parseLametaSourceComment,
 } from "./lametaSourceComment";
 
@@ -52,6 +54,31 @@ describe("lameta-source comment text", () => {
       `<a><!--${makeLametaSourceComment(target)}--><b/></a>`,
     );
     expect(findLametaSource(doc.getElementsByTagName("b")[0])).toEqual(target);
+  });
+  it("says where to translate an element: its lameta-translations comment, or else its source", () => {
+    const source: NavigationTarget = {
+      folderType: "session",
+      folderId: "ETR009",
+      fieldKey: "contributions",
+    };
+    const translations: NavigationTarget = {
+      folderType: "project",
+      vocabularyTranslation: { fieldKey: "role", value: "interviewer" },
+    };
+    const doc = new DOMParser().parseFromString(
+      `<Actor><!--${makeLametaSourceComment(source)}-->` +
+        `<Name>Dami</Name>` +
+        `<!--${makeLametaTranslationsComment(translations)}-->` +
+        `<!--${makeLametaSourceComment(source)}-->` +
+        `<Role LanguageId="ISO639-3:eng">Interviewer</Role></Actor>`,
+    );
+    const role = doc.getElementsByTagName("Role")[0];
+    expect(findWhereToTranslate(role)).toEqual(translations);
+    expect(findWhereToTranslate(role.getAttributeNode("LanguageId")!)).toEqual(translations);
+    // where it came from is still the contributions
+    expect(findLametaSource(role)).toEqual(source);
+    // the comment before <Role> is not the one before <Name>
+    expect(findWhereToTranslate(doc.getElementsByTagName("Name")[0])).toEqual(source);
   });
 });
 

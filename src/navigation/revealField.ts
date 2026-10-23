@@ -12,9 +12,25 @@ const kHighlightClass = "navigation-highlight";
 // A field is found by, in order:
 //  - data-field-key="<key>" on the editor's outer element (the way to make any editor findable)
 //  - data-testid="field-<key>-edit", which TextFieldEdit puts on its text box
-export async function revealField(
+export function revealField(
   topTab: TopTab,
   fieldKey: string,
+  keepHighlightWhile: () => boolean = () => true,
+  timeoutMilliseconds = 3000,
+): Promise<boolean> {
+  return revealElement(
+    () => findFieldElement(topTab, fieldKey),
+    `field "${fieldKey}"`,
+    keepHighlightWhile,
+    timeoutMilliseconds,
+  );
+}
+
+// What revealField() does, for the element that `find` returns. `description` is
+// for the warning if it never appears.
+export async function revealElement(
+  find: () => HTMLElement | undefined,
+  description: string,
   keepHighlightWhile: () => boolean = () => true,
   timeoutMilliseconds = 3000,
 ): Promise<boolean> {
@@ -22,9 +38,9 @@ export async function revealField(
   // previously selected folder, which would then be the one we focus.
   await nextFrame();
   await nextFrame();
-  const element = await waitFor(() => findFieldElement(topTab, fieldKey), timeoutMilliseconds);
+  const element = await waitFor(find, timeoutMilliseconds);
   if (!element) {
-    console.warn(`navigation: could not find field "${fieldKey}"`);
+    console.warn(`navigation: could not find ${description}`);
     return false;
   }
   // smooth, so that the user sees where the field is in the form
@@ -49,8 +65,26 @@ export function findFieldElement(topTab: TopTab, fieldKey: string): HTMLElement 
   return undefined;
 }
 
+// The row of the Translations tab for a value of a vocabulary field, marked by
+// VocabularyTranslationsTab with data-vocabulary-field and data-vocabulary-value
+export function findVocabularyTranslationRow(
+  fieldKey: string,
+  value: string,
+): HTMLElement | undefined {
+  const panel = document.querySelector(".react-tabs__tab-panel--selected.tab-panel-project");
+  if (!panel) return undefined;
+  const rows = panel.querySelectorAll(`[data-vocabulary-field="${CSS.escape(fieldKey)}"]`);
+  // the tab lists a value once, in the case that it first found it in
+  const wanted = value.trim().toLowerCase();
+  return visible(
+    Array.from(rows).filter(
+      (row) => (row.getAttribute("data-vocabulary-value") ?? "").trim().toLowerCase() === wanted,
+    ),
+  );
+}
+
 // Inactive tab panels stay in the DOM, so the first match may be hidden
-function visible(elements: NodeListOf<Element>): HTMLElement | undefined {
+function visible(elements: ArrayLike<Element>): HTMLElement | undefined {
   return Array.from(elements).find((e) => (e as HTMLElement).offsetParent !== null) as
     | HTMLElement
     | undefined;
@@ -58,7 +92,7 @@ function visible(elements: NodeListOf<Element>): HTMLElement | undefined {
 
 function findFocusable(element: HTMLElement): HTMLElement | undefined {
   const selector =
-    "[contenteditable='true'], input:not([type='hidden']), textarea, select, [tabindex]:not([tabindex='-1'])";
+    "[contenteditable='true'], input:not([type='hidden']):not(:disabled), textarea, select, [tabindex]:not([tabindex='-1'])";
   if (element.matches(selector)) return element;
   return (element.querySelector(selector) as HTMLElement) ?? undefined;
 }

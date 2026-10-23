@@ -194,6 +194,8 @@ describe("RulesFileProblems", () => {
     etr009.properties.setText("access", "S");
     etr009.properties.setText("accessDescription", "asked");
     etr009.metadataFile!.contributions.push(new Contribution("Ilawi Amosa", "", ""));
+    // a role that has no translation
+    etr009.metadataFile!.contributions.push(new Contribution("Awi Heole", "dancer", ""));
     const mp3 = etr009.files.find((f) => f.getTextProperty("filename") === "ETR009_Careful.mp3")!;
     mp3.contributions.push(new Contribution("Awi Heole", "", ""));
     for (const file of etr010.files) file.contributions.splice(0);
@@ -231,13 +233,26 @@ describe("RulesFileProblems", () => {
       ],
       ["checkWrittenResources/dateStamp", "File name", etr009At({ fileName: "ETR009_XDoc.docx" })],
       ["checkActorRole", "Ilawi Amosa", etr009At({ fieldKey: "contributions" })],
+      // a missing translation of a vocabulary value goes to its row on the Translations tab
+      [
+        "checkActorRole/translation",
+        "Awi Heole's role",
+        { folderType: "project", vocabularyTranslation: { fieldKey: "role", value: "dancer" } },
+      ],
       [
         "checkActorRole",
         "Awi Heole",
         etr009At({ fileName: "ETR009_Careful.mp3", fieldKey: "contributions" }),
       ],
       ["genreMapping", null, etr009At({ fieldKey: "genre" })],
-      ["genreTranslation", "Genre", etr009At({ fieldKey: "genre" })],
+      [
+        "genreTranslation",
+        "Genre",
+        {
+          folderType: "project",
+          vocabularyTranslation: { fieldKey: "genre", value: "weird stuff" },
+        },
+      ],
       [
         "accessDescriptionTranslation",
         "Access Explanation",

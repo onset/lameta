@@ -13,6 +13,9 @@ export type NavigationTarget =
       fileName?: string;
       // the `key` from fields.json5. If omitted, the Project tab is just selected.
       fieldKey?: string;
+      // A row of the Translations tab: the translations of one value of a vocabulary
+      // field, such as the role "interviewer". `value` is as the session stores it.
+      vocabularyTranslation?: { fieldKey: "genre" | "role"; value: string };
     }
   | {
       folderType: "session" | "person";

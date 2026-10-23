@@ -501,7 +501,10 @@ function hasProblemAt(target: NavigationTarget): boolean {
     t.fieldKey === target.fieldKey &&
     t.fileName === target.fileName &&
     (t.folderType === "project"
-      ? target.folderType === "project" && t.documents === target.documents
+      ? target.folderType === "project" &&
+        t.documents === target.documents &&
+        t.vocabularyTranslation?.fieldKey === target.vocabularyTranslation?.fieldKey &&
+        t.vocabularyTranslation?.value === target.vocabularyTranslation?.value
       : target.folderType !== "project" && t.folderId === target.folderId);
   return (
     projectProblems.problems.some((p) => same(p.target)) ||
@@ -535,16 +538,21 @@ function groupProblems(
     if (!groups.has(key)) groups.set(key, { title, rank, problems: [], folderType, folderKey });
     if (problem) groups.get(key)!.problems.push(problem);
   };
+  const addToSession = (sessionId: string, problem: IProblem | undefined) =>
+    add(
+      t`Session ${sessionId}`,
+      1 + indexOrEnd(sessionIds, sessionId),
+      problem,
+      "session",
+      sessionId,
+    );
   const addAtTarget = (target: NavigationTarget, problem: IProblem | undefined) => {
-    if (target.folderType === "project") add(t`Project`, 0, problem, "project");
-    else if (target.folderType === "session")
-      add(
-        t`Session ${target.folderId}`,
-        1 + indexOrEnd(sessionIds, target.folderId),
-        problem,
-        "session",
-        target.folderId,
-      );
+    // A value's translations are entered on the Project tab, but a missing one is a
+    // problem of the session that uses the value
+    if (target.folderType === "project" && target.vocabularyTranslation && problem?.sessionId)
+      addToSession(problem.sessionId, problem);
+    else if (target.folderType === "project") add(t`Project`, 0, problem, "project");
+    else if (target.folderType === "session") addToSession(target.folderId, problem);
     else
       add(
         t`Person ${target.folderId}`,
@@ -561,14 +569,7 @@ function groupProblems(
     if (p.from === "checkAcrossSessions") add(t`Across sessions`, 2_000_000, problem);
     else if (p.target) addAtTarget(p.target, problem);
     else if (p.from === "checkCorpus") add(t`Project`, 0, problem, "project");
-    else
-      add(
-        t`Session ${p.sessionId ?? ""}`,
-        1 + indexOrEnd(sessionIds, p.sessionId ?? ""),
-        problem,
-        "session",
-        p.sessionId,
-      );
+    else addToSession(p.sessionId ?? "", problem);
   }
   if (selected) addAtTarget(selected, undefined);
   return Array.from(groups.values()).sort((a, b) => a.rank - b.rank);
