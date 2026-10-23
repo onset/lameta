@@ -24,6 +24,7 @@ if (-not $env:LAMETA_SCALING_IN_JOB) {
   }
   exit $LASTEXITCODE
 }
+
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -57,3 +58,5 @@ $repo = Split-Path -Parent $PSScriptRoot
 $p = Start-Process -FilePath "cmd.exe" -ArgumentList "/c vp test run src/model/Project/ScalingMeasure.manual.spec.ts --maxWorkers=1 > `"$log`" 2>&1" -WorkingDirectory $repo -PassThru -WindowStyle Hidden
 $p.WaitForExit()
 Select-String -Path $log -Pattern 'Tests |Error' | ForEach-Object { $_.Line }
+# a failed measurement fails the script
+exit $p.ExitCode

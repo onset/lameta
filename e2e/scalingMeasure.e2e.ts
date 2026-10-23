@@ -91,7 +91,10 @@ test.describe("scaling in the app", () => {
   test("times every action at every size", async () => {
     const report: Record<string, Timing[]> = {};
     for (const source of dirs) {
-      const dir = Path.join(fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-scaling-")), "p");
+      const dir = Path.join(
+        fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-scaling-")),
+        Path.basename(source),
+      );
       fs.cpSync(source, dir, { recursive: true });
       const sprj = fs.readdirSync(dir).find((f) => f.endsWith(".sprj"))!;
       const results: Timing[] = [];

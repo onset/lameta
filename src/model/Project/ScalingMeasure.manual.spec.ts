@@ -194,10 +194,17 @@ describe.skipIf(dirs.length === 0)("scaling measurements", () => {
       // checking it costs, before the background check does both at once
       progress("generate every session's IMDI");
       const generateStart = performance.now();
-      const imdi = (project.sessions.items as Session[]).map((s) => ({
+      const sessionItems = project.sessions.items as Session[];
+      const imdi = sessionItems.map((s) => ({
         sessionId: s.id,
         xml: ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, s, project),
       }));
+      // as RulesFileProblems.checkNow() does
+      const corpusXml = ImdiGenerator.generateCorpus(
+        IMDIMode.RAW_IMDI,
+        project,
+        sessionItems.map((s) => `${s.id}.imdi`),
+      );
       results.push({
         action: "generate every session's IMDI",
         count: Math.round(imdi.reduce((n, s) => n + s.xml.length, 0) / 1024 / 1024),
@@ -209,8 +216,10 @@ describe.skipIf(dirs.length === 0)("scaling measurements", () => {
       const once = await checkWithElarRules({
         rulesSource: fs.readFileSync(findBuiltInRulesFile("ELAR")!, "utf8"),
         sessions: imdi,
-        corpusXml: undefined,
-        metadataLanguages: [],
+        corpusXml,
+        metadataLanguages: Project.parseLanguagesToSlots(
+          project.properties.getTextStringOrEmpty("metadataLanguages"),
+        ).map((slot) => slot.tag),
         maxProblems: 2000,
       });
       results.push({

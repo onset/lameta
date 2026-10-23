@@ -19,10 +19,12 @@ const kSessions = 300;
 const kRowsInView = 100;
 
 let lameta: LametaE2ERunner;
+let projectRoot: string;
 
 test.describe("rendering as the project grows", () => {
   test.beforeAll(async () => {
-    const dir = Path.join(fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-scaling-")), "Scaling");
+    projectRoot = fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-scaling-"));
+    const dir = Path.join(projectRoot, "Scaling");
     const ctx = {
       w: new ProjectWriter(dir),
       content: new ContentMaker(undefined),
@@ -37,6 +39,7 @@ test.describe("rendering as the project grows", () => {
   });
   test.afterAll(async () => {
     await lameta.quit();
+    fs.rmSync(projectRoot, { recursive: true, force: true });
   });
 
   // The two tests below are expected to fail, and so would pass if the project did not load

@@ -16,7 +16,10 @@ test.describe("profile typing", () => {
   test.setTimeout(1_800_000);
 
   test("profiles three keystrokes in a session's title", async () => {
-    const dir = Path.join(fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-profile-")), "p");
+    const dir = Path.join(
+      fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-profile-")),
+      Path.basename(projectDir!),
+    );
     fs.cpSync(projectDir!, dir, { recursive: true });
     const sprj = fs.readdirSync(dir).find((f) => f.endsWith(".sprj"))!;
     const lameta = new LametaE2ERunner();
