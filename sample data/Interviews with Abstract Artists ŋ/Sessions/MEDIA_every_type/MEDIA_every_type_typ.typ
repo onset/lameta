@@ -1,2 +1,0 @@
-\+typ typ file
-\-typ

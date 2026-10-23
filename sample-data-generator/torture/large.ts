@@ -1,4 +1,4 @@
-// Large and broken media, about 1.9 GB in all. Never committed. A file that is already
+// Large and broken media, about 1.9 GB in all. A file that is already
 // there with the expected size is kept, so running the generator again is quick.
 
 import { spawnSync } from "child_process";

@@ -1,5 +1,5 @@
-// Cases that are never committed:
-// - hostile names: names git can't check out everywhere, or that Explorer, OneDrive and
+// Cases that are left out unless asked for:
+// - hostile names: names that not every file system can hold, or that Explorer, OneDrive and
 //   other Win32 programs can't handle. Node creates them because it opens files through
 //   \\?\ paths on Windows.
 // - blocking cases: files that may stop the whole project from loading, or block a whole
