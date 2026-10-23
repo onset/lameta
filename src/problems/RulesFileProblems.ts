@@ -8,6 +8,7 @@ import {
   runInAction,
 } from "mobx";
 import { Project } from "../model/Project/Project";
+import { exportableSessions } from "../model/Project/exportableFolders";
 import { Session } from "../model/Project/Session/Session";
 import ImdiGenerator, { IMDIMode } from "../export/ImdiGenerator";
 import { withWarningsDiscarded } from "../export/ExportWarningCollector";
@@ -82,7 +83,7 @@ function generateCorpus(project: Project): Generated {
     ImdiGenerator.generateCorpus(
       IMDIMode.RAW_IMDI,
       project,
-      (project.sessions.items as Session[]).map((s) => `${s.id}.imdi`),
+      exportableSessions(project).map((s) => `${s.id}.imdi`),
     ),
   );
 }
@@ -122,7 +123,7 @@ export class RulesFileProblems {
   ): Promise<Pick<IRulesSandboxOutput, "problems" | "errors">> {
     if (!GetOtherConfigurationSettings().archiveUsesImdi) return { problems: [], errors: [] };
     const sessions = new Map(
-      (project.sessions.items as Session[]).map((s) => [s, generateSession(s, project)]),
+      exportableSessions(project).map((s) => [s, generateSession(s, project)]),
     );
     return this.runRulesOnGenerated(project, sessions, generateCorpus(project));
   }
@@ -238,7 +239,7 @@ export class RulesFileProblems {
     // runs again only when one of those values changes.
     const sessionWatchers = new Map<Session, IReactionDisposer>();
     const disposeSessionList = autorun(() => {
-      const sessions = [...(project.sessions.items as Session[])];
+      const sessions = exportableSessions(project);
       for (const [session, dispose] of sessionWatchers) {
         if (!sessions.includes(session)) {
           dispose();
@@ -297,7 +298,7 @@ export class RulesFileProblems {
         const generateMilliseconds = performance.now() - generateStart;
 
         const sessions = new Map(
-          (project.sessions.items as Session[])
+          exportableSessions(project)
             .filter((s) => generatedBySession.has(s))
             .map((s) => [s, generatedBySession.get(s)!]),
         );
