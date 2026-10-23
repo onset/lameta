@@ -16,6 +16,8 @@ import { LametaE2ERunner } from "./lametaE2ERunner";
 const dirs = (process.env.LAMETA_SCALING_DIRS ?? "").split(";").filter((d) => d.trim());
 const kCpuSlowdown = Number(process.env.LAMETA_SCALING_CPU_SLOWDOWN ?? 4);
 const kRepeats = 3;
+// what has been measured so far, by project folder name
+const report: Record<string, Timing[]> = {};
 
 interface Timing {
   action: string;
@@ -48,23 +50,25 @@ async function timed(
   run: (i: number) => Promise<void>,
   repeats = kRepeats,
 ) {
-  const ms: number[] = [];
-  const blockedMs: number[] = [];
+  const timing: Timing = { action, ms: [], blockedMs: [] };
+  results.push(timing);
   for (let i = 0; i < repeats; i++) {
     await startLongTasks(page);
     const start = Date.now();
     try {
       await run(i);
     } catch (e) {
-      results.push({ action, ms, blockedMs, error: String((e as Error).message ?? e) });
+      timing.error = String((e as Error).message ?? e);
+      writeReport(report);
       return;
     }
-    ms.push(Date.now() - start);
+    timing.ms.push(Date.now() - start);
     // let the observer deliver the last entries
     await page.waitForTimeout(100);
-    blockedMs.push(await page.evaluate(() => (window as any).__longTasks));
+    timing.blockedMs.push(await page.evaluate(() => (window as any).__longTasks));
+    // so that a run that stops early keeps what it measured
+    writeReport(report);
   }
-  results.push({ action, ms, blockedMs });
 }
 
 // the selected session's own fields, which show when its .session file is selected
@@ -86,10 +90,10 @@ const rows = (page: Page) => page.locator(".folderList .rt-tbody .rt-tr").count(
 
 test.describe("scaling in the app", () => {
   test.skip(dirs.length === 0, "LAMETA_SCALING_DIRS is not set");
-  test.setTimeout(3_600_000);
+  // at 3000 sessions under ELAR the actions together take more than an hour
+  test.setTimeout(3 * 3_600_000);
 
   test("times every action at every size", async () => {
-    const report: Record<string, Timing[]> = {};
     for (const source of dirs) {
       const dir = Path.join(
         fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-scaling-")),
@@ -98,6 +102,7 @@ test.describe("scaling in the app", () => {
       fs.cpSync(source, dir, { recursive: true });
       const sprj = fs.readdirSync(dir).find((f) => f.endsWith(".sprj"))!;
       const results: Timing[] = [];
+      report[Path.basename(source)] = results;
       const lameta = new LametaE2ERunner();
       const start = Date.now();
       await lameta.launch({ extraArgs: [Path.join(dir, sprj)] });
