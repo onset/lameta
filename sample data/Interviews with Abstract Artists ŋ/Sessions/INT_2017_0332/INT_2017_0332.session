@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2017_0332</id>
+  <title type="string">On the shadow of a canvas that was never painted</title>
+  <description type="string">Piotr Rautenbach talks about the moment before the first mark. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">a borrowed greenhouse</location>
+  <access type="string">O</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2017-09-25</date>
+  <Contributions>
+    <contributor>
+      <name>PR225</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Malak Jovanović</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

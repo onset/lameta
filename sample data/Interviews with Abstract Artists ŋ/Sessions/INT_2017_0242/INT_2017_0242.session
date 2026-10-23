@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2017_0242</id>
+  <title type="string">On why the frame is the real work</title>
+  <description type="string">Nnamdi Achterberg talks about painting the colour of a Tuesday. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">O</access>
+  <accessDescription type="string">The artist asks that this stay closed until the paint is dry.</accessDescription>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2017-03-19</date>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Achterberg</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

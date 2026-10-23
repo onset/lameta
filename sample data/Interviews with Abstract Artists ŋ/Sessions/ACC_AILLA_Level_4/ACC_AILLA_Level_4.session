@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">ACC_AILLA_Level_4</id>
+  <title type="string">Beyond a sculpture made entirely of hesitation (AILLA access 4: Depositor control)</title>
+  <description type="string">The artist talks about negative space and its landlord. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <genre type="string">narrative</genre>
+  <access type="string">Level 4</access>
+  <accessDescription type="string">[[en]]Access 4: Depositor control[[es]]Acceso 4: Depositor control</accessDescription>
+  <date>2024-04-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

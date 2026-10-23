@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2015_0170</id>
+  <title type="string">On why the canvas must stay blank</title>
+  <description type="string">Xochitl Whitehorse talks about how to hang a painting upside down on purpose. The interview stopped twice because the artist wanted to look at the corner of the room.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Frameless Expressionism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2015-03-03</date>
+  <Contributions>
+    <contributor>
+      <name>Xochitl Whitehorse</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>PR225</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ásdís Søndergaard</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Bartholomew Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1071,13 +1071,22 @@ msgstr ""
 msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
 msgstr ""
 
+msgid "lameta did not add any of the files you chose."
+msgstr ""
+
 msgid "lameta does not recognize the Language name \"{trimmed}\""
 msgstr ""
 
 msgid "lameta expected to find a .link file at {e}"
 msgstr "lameta espera encontrar um arquivo .link em {e}"
 
+msgid "lameta found no problems in what it could check."
+msgstr ""
+
 msgid "lameta found no problems."
+msgstr ""
+
+msgid "lameta must be able to check everything before {archiveName} will accept this export."
 msgstr ""
 
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <name type="string">Tenzin Dubois-Ngata</name>
+  <birthYear type="string">1983</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Curator of empty frames</primaryOccupation>
+  <ethnicGroup type="string">Lateral Minimalism</ethnicGroup>
+  <description type="string">Tenzin Dubois-Ngata belongs to The Wet Paint School and works in Gallery Huya. Asked about influences, Tenzin Dubois-Ngata said only &quot;why the canvas must stay blank&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+    <language tag="eng" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

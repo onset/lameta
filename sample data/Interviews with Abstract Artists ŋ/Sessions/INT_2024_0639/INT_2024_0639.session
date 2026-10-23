@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2024_0639</id>
+  <title type="string">Against eleven shades of white and one impostor</title>
+  <description type="string">Tenzin Dubois-Ngata talks about negative space and its landlord. The interview stopped twice because the artist wanted to look at the corner of the room.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">a borrowed greenhouse</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2024-04-24</date>
+  <Contributions>
+    <contributor>
+      <name>Tenzin Dubois-Ngata</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>FT175</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

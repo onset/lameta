@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <name type="string">Chiamaka Yılmaz</name>
+  <birthYear type="string">1995</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Paints with ladders</primaryOccupation>
+  <ethnicGroup type="string">Ladderism</ethnicGroup>
+  <description type="string">Chiamaka Yılmaz belongs to Frameless Expressionism and works in the disused swimming pool. Asked about influences, Chiamaka Yılmaz said only &quot;painting the colour of a Tuesday&quot;.</description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

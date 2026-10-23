@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2023_0158</id>
+  <title type="string">Notes on the emotional weight of beige</title>
+  <description type="string">Dmitri Dubois-Ngata talks about an exhibition in total darkness. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">a lift between floors 3 and 4</location>
+  <access type="string">O</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Post-Squarism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2023-03-19</date>
+  <Contributions>
+    <contributor>
+      <name>Dmitri Dubois-Ngata</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Tenzin Lindqvist</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>UJ160</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ếlodie Nakamura</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

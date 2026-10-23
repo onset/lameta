@@ -2,6 +2,8 @@
 // recording every exception and notification instead of stopping at the first. Skipped
 // unless LAMETA_TORTURE_DIR names the project folder. Writes report.json and the export
 // output to LAMETA_TORTURE_OUT (default: a temp folder).
+// sample-data-generator/torture/compare-exports.ts runs this in two versions of lameta and
+// compares what they wrote, so it uses only exporter functions that v3.0.21-beta also has.
 //
 //   $env:LAMETA_TORTURE_DIR="D:\torture-runs\Torture Prøject ŋ"; vp test run src/export/tortureProject.manual.spec.ts
 
@@ -40,7 +42,12 @@ import ImdiBundler from "./ImdiBundler";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { getRoCrate } from "./ROCrate/RoCrateExporter";
 import { RoCrateValidator } from "./ROCrate/RoCrateValidator";
-import { makeGenericCsvZipFile } from "./CsvExporter";
+import {
+  makeCsvForPeople,
+  makeCsvForProject,
+  makeCsvForSessions,
+  makeGenericCsvZipFile,
+} from "./CsvExporter";
 import { makeParadisecCsv } from "./ParadisecCsvExporter";
 // the app validates in the main process; the renderer-side mock always says "valid"
 import { validateImdiAsyncInternal } from "../mainProcess/validateImdi";
@@ -223,13 +230,37 @@ describe.skipIf(!projectDir)("torture project", () => {
         );
         if (v) facts.roCrateValidation = { errors: v.errors, warnings: v.warnings.length };
       }
+      const crateDir = Path.join(out, "ro-crate-per-session");
+      fs.mkdirSync(crateDir, { recursive: true });
       for (const s of project.sessions.items as any[]) {
-        await attempt("ro-crate session", s.filePrefix, () => getRoCrate(project, s));
+        const sessionCrate = await attempt("ro-crate session", s.filePrefix, () =>
+          getRoCrate(project, s),
+        );
+        // the session's folder name is a legal file name; percent-encoding a Tibetan one
+        // makes the path too long for Windows
+        if (sessionCrate)
+          await attempt("ro-crate session write", s.filePrefix, () =>
+            fs.writeFileSync(
+              Path.join(crateDir, `${s.filePrefix}.json`),
+              JSON.stringify(sessionCrate, null, 2),
+            ),
+          );
       }
 
       await attempt("csv zip", "project", () =>
         makeGenericCsvZipFile(Path.join(out, "export.zip"), project, () => true),
       );
+      // the same CSVs that the zip holds, as files that can be compared
+      const csvDir = Path.join(out, "csv");
+      fs.mkdirSync(csvDir, { recursive: true });
+      for (const [name, makeCsv] of [
+        ["project", () => makeCsvForProject(project)],
+        ["people", () => makeCsvForPeople(project)],
+        ["sessions", () => makeCsvForSessions(project, () => true)],
+      ] as const) {
+        const csv = await attempt(`csv ${name}`, "project", makeCsv);
+        if (csv !== undefined) fs.writeFileSync(Path.join(csvDir, `${name}.csv`), csv);
+      }
       await attempt("paradisec csv", "project", () =>
         makeParadisecCsv(Path.join(out, "paradisec.csv"), project, () => true),
       );

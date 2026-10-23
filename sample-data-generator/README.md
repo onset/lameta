@@ -42,6 +42,27 @@ The `.sprj` takes the name of the folder. It writes the same bytes on every run,
 LAMETA_TORTURE_DIR="<project folder>" LAMETA_TORTURE_OUT="<output folder>" vp test run src/export/tortureProject.manual.spec.ts
 ```
 
+### Comparing exports
+
+`torture/compare-exports.ts` runs that harness in a lameta worktree and compares what two runs exported, so you can see what a change, or a range of releases, did to lameta's exports.
+
+```bash
+pnpm run compare-exports run <lameta worktree> <project folder> <output folder>
+pnpm run compare-exports diff <before>/normalized <after>/normalized [--ignore-source-comments]
+```
+
+`run` runs the harness on a copy of the project in `<output folder>/project`, because loading a project writes into it. It writes the harness output to `<output folder>/raw` and a copy without what changes from run to run (export dates, lameta's version, RO-Crate's `datePublished` and the file times it reads from disk, the time in a date-parse note, a random project guid, the paths of the run) to `<output folder>/normalized`. A worktree of a lameta too old to have the harness gets a copy of this one's, and one from before Vite+ runs it under the Node version in its `package.json`. `diff` lists each changed line, or for a CSV each changed cell, once, with the files it is in, and exits with 1 if anything differs. `--ignore-source-comments` leaves out the `lameta-source` and `lameta-translations` comments that lameta writes before IMDI elements so that a problem can lead back to its field; comparing with a version that predates them, every line would differ otherwise.
+
+`torture/golden-exports` holds master's normalized output for the portable torture project. To check a change against it:
+
+```bash
+pnpm run make-torture-project "D:/runs/Interviews with Abstract Artists ŋ"
+pnpm run compare-exports run . "D:/runs/Interviews with Abstract Artists ŋ" D:/runs/out
+pnpm run compare-exports diff sample-data-generator/torture/golden-exports D:/runs/out/normalized
+```
+
+When the differences are the ones you meant, replace the golden files by running `run` again with `--normalized sample-data-generator/torture/golden-exports`, and commit them with the change.
+
 ## Requirements
 
 - [Bun](https://bun.sh/) runtime (faster TypeScript execution)

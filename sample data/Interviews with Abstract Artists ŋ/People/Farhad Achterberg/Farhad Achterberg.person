@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <name type="string">Farhad Achterberg</name>
+  <code type="string">FA145</code>
+  <birthYear type="string">1994</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Paints with ladders</primaryOccupation>
+  <ethnicGroup type="string">Post-Squarism</ethnicGroup>
+  <description type="string">Farhad Achterberg belongs to Neo-Beigeism and works in the disused swimming pool. Asked about influences, Farhad Achterberg said only &quot;painting the colour of a Tuesday&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+    <language tag="eng" primary="false" mother="false" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

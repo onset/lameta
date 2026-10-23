@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">ACC_AILCA_F</id>
+  <title type="string">Against the installation that was mistaken for scaffolding (AILCA access F: Free to All)</title>
+  <description type="string">The artist talks about drawing with a ladder. The interview stopped twice because the artist wanted to look at the corner of the room.</description>
+  <genre type="string">narrative</genre>
+  <access type="string">F</access>
+  <accessDescription type="string">[[en]]Access F: Free to All[[es]]Acceso F: Free to All</accessDescription>
+  <date>2024-04-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

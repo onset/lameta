@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">ACC_ANLA_Level_1</id>
+  <title type="string">Against the installation that was mistaken for scaffolding (ANLA access Unrestricted access)</title>
+  <description type="string">The artist talks about drawing with a ladder. The interview stopped twice because the artist wanted to look at the corner of the room.</description>
+  <genre type="string">narrative</genre>
+  <access type="string">Level 1</access>
+  <accessDescription type="string">[[en]]Access Unrestricted access[[es]]Acceso Unrestricted access</accessDescription>
+  <date>2024-04-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

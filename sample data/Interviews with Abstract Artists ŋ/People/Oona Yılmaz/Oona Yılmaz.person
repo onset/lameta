@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <name type="string">Oona Yılmaz</name>
+  <birthYear type="string">1999</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Colourist specialising in beige</primaryOccupation>
+  <ethnicGroup type="string">The Wet Paint School</ethnicGroup>
+  <description type="string">Oona Yılmaz belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Oona Yılmaz said only &quot;painting the colour of a Tuesday&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2024_0209</id>
+  <title type="string">Notes on the third side of a line</title>
+  <description type="string">Hiroshi Pereira talks about the politics of the colour orange. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">U</access>
+  <accessDescription type="string">The artist asks that this stay closed until the paint is dry.</accessDescription>
+  <status type="string">Incoming</status>
+  <keyword type="string">Frameless Expressionism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2024-06-14</date>
+  <Contributions>
+    <contributor>
+      <name>Hiroshi Pereira</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Nnamdi Nakamura</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Quilla Pereira</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

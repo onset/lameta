@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <name type="string">Wanjiru Tanaka</name>
+  <birthYear type="string">1999</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Painter of one grey square, repeatedly</primaryOccupation>
+  <ethnicGroup type="string">Lateral Minimalism</ethnicGroup>
+  <description type="string">Wanjiru Tanaka belongs to The Wet Paint School and works in Studio 4, the old soap factory. Asked about influences, Wanjiru Tanaka said only &quot;the shadow of a canvas that was never painted&quot;.</description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="true"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

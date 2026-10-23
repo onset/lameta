@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2020_0285</id>
+  <title type="string">About a dot, considered at length</title>
+  <description type="string">Greta Fontaine talks about the politics of the colour orange. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2020-10-06</date>
+  <Contributions>
+    <contributor>
+      <name>Greta Fontaine</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

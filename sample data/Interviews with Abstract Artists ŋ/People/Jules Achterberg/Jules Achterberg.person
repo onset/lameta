@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Jules Achterberg</name>
+  <birthYear type="string">1984</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Performance artist who performs mostly in the car park</primaryOccupation>
+  <ethnicGroup type="string">Ladderism</ethnicGroup>
+  <description type="string">Jules Achterberg belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Jules Achterberg said only &quot;a square that refuses to be a square&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Post-Squarism</Movement>
+    <Studio type="string">a lift between floors 3 and 4</Studio>
+  </CustomFields>
+</Person>

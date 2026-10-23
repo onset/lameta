@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Notes the curator wrote for DATE_impossible; a date that does not parse must not replace them.</notes>
+  <id type="string">DATE_impossible</id>
+  <title type="string">About painting the colour of a Tuesday</title>
+  <description type="string">The artist talks about why the frame is the real work. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</description>
+  <genre type="string">narrative</genre>
+  <access type="string">O</access>
+  <date>2020-02-30</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

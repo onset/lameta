@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2015_0300</id>
+  <title type="string">About a dot, considered at length</title>
+  <description type="string">Piotr Dubois-Ngata talks about the politics of the colour orange. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2015-01-21</date>
+  <Contributions>
+    <contributor>
+      <name>PD045</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>PD045</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Lindqvist</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

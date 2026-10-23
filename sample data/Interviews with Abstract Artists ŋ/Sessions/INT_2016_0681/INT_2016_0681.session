@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2016_0681</id>
+  <title type="string">Beyond a sculpture made entirely of hesitation</title>
+  <description type="string">Malak Castellanos talks about triangles as a form of apology. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">a borrowed greenhouse</location>
+  <access type="string">S</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2016-10-10</date>
+  <Contributions>
+    <contributor>
+      <name>Malak Castellanos</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

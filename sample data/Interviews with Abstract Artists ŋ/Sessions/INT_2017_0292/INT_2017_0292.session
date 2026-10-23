@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2017_0292</id>
+  <title type="string">Notes on silence, in three coats of varnish</title>
+  <description type="string">Rangi O'Shaughnessy talks about a square that refuses to be a square. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2017-05-13</date>
+  <Contributions>
+    <contributor>
+      <name>Rangi O'Shaughnessy</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

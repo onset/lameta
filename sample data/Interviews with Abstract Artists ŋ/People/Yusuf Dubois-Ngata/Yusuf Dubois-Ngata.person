@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Yusuf Dubois-Ngata</name>
+  <birthYear type="string">2002</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Performance artist who performs mostly in the car park</primaryOccupation>
+  <ethnicGroup type="string">Post-Squarism</ethnicGroup>
+  <description type="string">Yusuf Dubois-Ngata belongs to Hesitationism and works in the artist's kitchen. Asked about influences, Yusuf Dubois-Ngata said only &quot;a square that refuses to be a square&quot;.</description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="true"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Lateral Minimalism</Movement>
+    <Studio type="string">a lift between floors 3 and 4</Studio>
+  </CustomFields>
+</Person>

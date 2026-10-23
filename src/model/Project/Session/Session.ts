@@ -11,6 +11,7 @@ import { runInAction } from "mobx";
 import { i18n as appI18n } from "../../../other/localization";
 import { t } from "@lingui/core/macro";
 import { normalizeContinentValueForAmericasOnly } from "../ContinentMigration";
+import { loadOLACRoles } from "../AuthorityLists/AuthorityLists";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -116,17 +117,35 @@ export class Session extends Folder {
   // the roles of the participants are. All current versions still can read this in, and lameta (at least)
   // still emits it to the xml. But it has been superseded by a normal <contributions> element, just like
   // we had previously for individual files. This method checks the <participants> for any contributions that
-  // we might be missing in <contributions>.
+  // we might be missing in <contributions>. SayMore writes each participant as "name (role)".
   private handleLegacyParticipants() {
-    const legacyParticipantNames = this.properties
+    let roleIds: string[] | undefined;
+    const legacyParticipants = this.properties
       .getTextStringOrEmpty("participants")
       .split(";")
       .map((s) => s.trim())
-      .filter((s) => s);
-    legacyParticipantNames.forEach((name: string) => {
-      if (!this.metadataFile!.contributions.find((c) => c.personReference === name)) {
+      .filter((s) => s)
+      .map((s) => {
+        const nameAndRole = /^(.+?)\s*\(\s*([^()]+?)\s*\)$/.exec(s);
+        roleIds ??= nameAndRole ? loadOLACRoles().map((r) => r.id) : undefined;
+        return nameAndRole && roleIds!.includes(nameAndRole[2])
+          ? { name: nameAndRole[1], role: nameAndRole[2] }
+          : { name: s, role: undefined };
+      });
+    const namesListedWithRole = legacyParticipants
+      .filter((p) => p.role !== undefined)
+      .map((p) => p.name);
+    legacyParticipants.forEach(({ name, role }) => {
+      const alreadyContributes =
+        role === undefined
+          ? namesListedWithRole.includes(name) ||
+            this.metadataFile!.contributions.some((c) => c.personReference === name)
+          : this.metadataFile!.contributions.some(
+              (c) => c.personReference === name && c.role === role,
+            );
+      if (!alreadyContributes) {
         runInAction(() =>
-          this.metadataFile!.contributions.push(new Contribution(name, "participant", "")),
+          this.metadataFile!.contributions.push(new Contribution(name, role ?? "participant", "")),
         );
       }
     });

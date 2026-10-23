@@ -7,6 +7,7 @@ import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
+import { taggedAxis } from "../model/field/TextHolderMigration";
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import { NotifyError } from "../components/Notify";
@@ -46,7 +47,7 @@ function buildMultilingualExportString(englishValue: string, project: Project): 
       );
     }
     if (translation) {
-      parts.push(`[[${slot.tag}]]${translation}`);
+      parts.push(taggedAxis(slot.tag, translation));
     }
   }
 

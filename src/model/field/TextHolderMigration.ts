@@ -9,6 +9,14 @@
  */
 
 /**
+ * One language's text in tagged multilingual format, "[[es]]casa". The format cannot
+ * hold "[[" or "]]" inside a text, so each becomes a single bracket.
+ */
+export function taggedAxis(tag: string, text: string): string {
+  return `[[${tag}]]${text.replace(/\[{2,}/g, "[").replace(/\]{2,}/g, "]")}`;
+}
+
+/**
  * Result of parsing slash syntax text.
  * Each segment preserves whitespace exactly as provided.
  */
@@ -143,7 +151,7 @@ export function slashSyntaxToTaggedText(input: string, languageTags: string[]): 
   for (const tag of orderedTags) {
     const text = assignments.get(tag) ?? "";
     // Include all tags, even empty ones, to preserve structure
-    parts.push(`[[${tag}]]${text}`);
+    parts.push(taggedAxis(tag, text));
   }
 
   return parts.join("");
@@ -289,7 +297,7 @@ export function commaSeparatedSlashSyntaxToTaggedText(
   for (const tag of orderedTags) {
     const text = assignments.get(tag) ?? "";
     if (text.length > 0) {
-      parts.push(`[[${tag}]]${text}`);
+      parts.push(taggedAxis(tag, text));
     }
   }
 

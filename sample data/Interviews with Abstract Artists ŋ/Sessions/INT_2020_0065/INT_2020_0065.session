@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2020_0065</id>
+  <title type="string">About a dot, considered at length</title>
+  <description type="string">Bartholomew Søndergaard talks about the long argument with the colour blue. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">U</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2020-06-10</date>
+  <Contributions>
+    <contributor>
+      <name>Bartholomew Søndergaard</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ásdís Zielińska</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi Ulloa</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <name type="string">Kalani Lindqvist</name>
+  <code type="string">KL110</code>
+  <birthYear type="string">1979</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Performance artist who performs mostly in the car park</primaryOccupation>
+  <ethnicGroup type="string">Greyscale Romanticism</ethnicGroup>
+  <description type="string">Kalani Lindqvist belongs to Ladderism and works in Studio 4, the old soap factory. Asked about influences, Kalani Lindqvist said only &quot;the shadow of a canvas that was never painted&quot;.</description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

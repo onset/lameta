@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2022_0717</id>
+  <title type="string">About painting the colour of a Tuesday</title>
+  <description type="string">Quilla Ikeda talks about a square that refuses to be a square. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">S</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2022-10-18</date>
+  <Contributions>
+    <contributor>
+      <name>Quilla Ikeda</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>AH090</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>FA145</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

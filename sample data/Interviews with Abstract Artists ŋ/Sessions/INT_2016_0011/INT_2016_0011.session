@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2016_0011</id>
+  <title type="string">About a dot, considered at length</title>
+  <description type="string">Farhad Zielińska talks about the long argument with the colour blue. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">O</access>
+  <accessDescription type="string">The artist asks that this stay closed until the paint is dry.</accessDescription>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Greyscale Romanticism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2016-12-12</date>
+  <Contributions>
+    <contributor>
+      <name>FZ025</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi Haddad</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>
