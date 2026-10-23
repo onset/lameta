@@ -9,7 +9,7 @@ import {
   prepareGlobalFieldDefinitionCatalog,
 } from "../field/ConfiguredFieldDefinitions";
 import { PatientFS } from "../../other/patientFile";
-import { isMacOSMetadataFile } from "../../other/crossPlatformUtilities";
+import { hasMetadataExtension, isMacOSMetadataFile } from "../../other/crossPlatformUtilities";
 import { isMissingCloudPlaceholder } from "../../other/cloudFileStatus";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
@@ -23,21 +23,26 @@ export class FolderMetadataFile extends File {
     fieldCatalog: FieldDefinition[],
     customVocabularies: EncounteredVocabularyRegistry,
   ) {
-    const name = Path.basename(directory);
+    const expectedName = Path.basename(directory) + fileExtensionForMetadata;
 
-    let metadataPath = Path.join(directory, name + fileExtensionForMetadata);
-    //if the metadata file doesn't exist yet or has the wrong name. A file that
-    // the cloud provider evicted (only an iCloud ".<name>.icloud" sibling is
-    // left) does exist; readMetadataFile requests it instead.
-    if (!fs.existsSync(metadataPath) && !isMissingCloudPlaceholder(metadataPath)) {
+    let metadataPath = Path.join(directory, expectedName);
+    //if the metadata file doesn't exist yet or has the wrong name, including a
+    // name that differs only in case. A file that the cloud provider evicted
+    // (only an iCloud ".<name>.icloud" sibling is left) does exist;
+    // readMetadataFile requests it instead.
+    const files = fs.readdirSync(directory);
+    if (!files.includes(expectedName) && !isMissingCloudPlaceholder(metadataPath)) {
       // does a file exist here with the right extension but the wrong name?
-      const files = fs.readdirSync(directory);
       const possibleFiles = files.filter(
-        (f) => f.endsWith(fileExtensionForMetadata) && !isMacOSMetadataFile(f),
+        (f) => hasMetadataExtension(f, fileExtensionForMetadata) && !isMacOSMetadataFile(f),
       );
       if (possibleFiles.length > 0) {
-        // use the first one. The next save will try to sort out the names
-        const pathToFileWithUnexpectedName = Path.join(directory, possibleFiles[0]);
+        // prefer the one that differs only in case, else use the first one.
+        // The next save will try to sort out the names
+        const unexpectedName =
+          possibleFiles.find((f) => f.toLowerCase() === expectedName.toLowerCase()) ??
+          possibleFiles[0];
+        const pathToFileWithUnexpectedName = Path.join(directory, unexpectedName);
         try {
           PatientFS.renameSync(pathToFileWithUnexpectedName, metadataPath);
           console.log(`renamed ${pathToFileWithUnexpectedName} to ${metadataPath}`);

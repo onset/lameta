@@ -16,6 +16,7 @@ import assert from "assert";
 import {
   asyncTrash,
   getAllFilesSync,
+  hasMetadataExtension,
   isMacOSMetadataFile,
 } from "../../other/crossPlatformUtilities";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
@@ -623,9 +624,6 @@ export abstract class Folder {
       }
     }
   }
-}
-function hasMetadataExtension(fileName: string, extensionWithDot: string): boolean {
-  return fileName.toLowerCase().endsWith(extensionWithDot.toLowerCase());
 }
 function isSubDirectory(root: string, path: string) {
   const relative = Path.relative(root, path);
