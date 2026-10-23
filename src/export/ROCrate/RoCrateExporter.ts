@@ -45,6 +45,7 @@ import {
 import {
   createLdacAccessTypeDefinitions,
   createDistinctLicenses,
+  getFileAccessValue,
   RoCrateLicense,
 } from "./RoCrateLicenseManager";
 import { createSessionEntry } from "./RoCrateSessions";
@@ -1337,12 +1338,10 @@ function collectDocumentAccessValues(folders: Array<Folder | undefined>): string
     if (!folder || !folder.files) {
       return;
     }
-    folder.files.forEach((file: any) => {
-      const rawAccess =
-        file.getTextProperty?.("access") || file.properties?.getTextStringOrEmpty?.("access") || "";
-      const trimmed = rawAccess.trim();
-      if (trimmed && trimmed !== "unspecified") {
-        uniqueValues.add(trimmed);
+    folder.files.forEach((file) => {
+      const access = getFileAccessValue(file);
+      if (access) {
+        uniqueValues.add(access);
       }
     });
   });
