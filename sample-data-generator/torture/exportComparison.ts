@@ -26,8 +26,16 @@ export interface RunPaths {
   outDir: string;
 }
 
+// ImdiBundler also copies the project's files into the bundle folders, without waiting for the
+// copies to finish, so there only the IMDI and OPEX that it writes are lameta's output.
+const kBundleFolders = ["imdi-bundle/", "opex-bundle/"];
+const kBundleExtensions = new Set([".imdi", ".opex"]);
+
 export function isCompared(relativePath: string): boolean {
-  return kComparedExtensions.has(path.extname(relativePath).toLowerCase());
+  const extension = path.extname(relativePath).toLowerCase();
+  return kBundleFolders.some((folder) => relativePath.startsWith(folder))
+    ? kBundleExtensions.has(extension)
+    : kComparedExtensions.has(extension);
 }
 
 // The IMDI files that ImdiBundler makes for the project's documents. Each is a session that
@@ -104,6 +112,12 @@ export function normalizeExportFile(relativePath: string, text: string, paths: R
   return kDocumentPseudoSessions.has(name)
     ? normalized.replace(/<Date>\d{4}-\d\d-\d\d<\/Date>/g, "<Date>(export date)</Date>")
     : normalized;
+}
+
+// true if `inner` is `outer` or a folder below it
+export function isInside(inner: string, outer: string): boolean {
+  const relative = path.relative(path.resolve(outer), path.resolve(inner));
+  return relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
 }
 
 export function listFiles(dir: string, sub = ""): string[] {
@@ -186,23 +200,31 @@ export function compareCsv(before: string, after: string): string[] {
   const result: string[] = [];
   for (const h of headA) if (!headB.includes(h)) result.push(`column removed: ${h}`);
   for (const h of headB) if (!headA.includes(h)) result.push(`column added: ${h}`);
+  // The key is the first cell and which occurrence of it the row is, joined by a character
+  // that a CSV cell does not hold, so that a person really named "Maria (2)" is not taken for
+  // the second Maria. It is shown with the occurrence in parentheses.
   const keyed = (rows: string[][]) => {
     const seen = new Map<string, number>();
     return new Map(
       rows.map((r) => {
         const n = (seen.get(r[0]) ?? 0) + 1;
         seen.set(r[0], n);
-        return [n === 1 ? r[0] : `${r[0]} (${n})`, r];
+        return [`${r[0]}\0${n}`, r];
       }),
     );
   };
+  const shown = (key: string) => {
+    const [first, n] = key.split("\0");
+    return n === "1" ? first : `${first} (${n})`;
+  };
   const a = keyed(rowsA);
   const b = keyed(rowsB);
-  for (const key of a.keys()) if (!b.has(key)) result.push(`row removed: ${key}`);
-  for (const key of b.keys()) if (!a.has(key)) result.push(`row added: ${key}`);
-  for (const [key, rowA] of a) {
-    const rowB = b.get(key);
+  for (const key of a.keys()) if (!b.has(key)) result.push(`row removed: ${shown(key)}`);
+  for (const key of b.keys()) if (!a.has(key)) result.push(`row added: ${shown(key)}`);
+  for (const [k, rowA] of a) {
+    const rowB = b.get(k);
     if (!rowB) continue;
+    const key = shown(k);
     headA.forEach((h, i) => {
       const j = headB.indexOf(h);
       if (j < 0) return;

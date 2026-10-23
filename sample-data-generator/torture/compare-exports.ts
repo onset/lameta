@@ -14,7 +14,13 @@
 import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { compareFolders, formatComparison, isEmpty, writeNormalizedCopy } from "./exportComparison";
+import {
+  compareFolders,
+  formatComparison,
+  isEmpty,
+  isInside,
+  writeNormalizedCopy,
+} from "./exportComparison";
 
 const kHarness = "src/export/tortureProject.manual.spec.ts";
 const kThisLameta = path.resolve(__dirname, "../..");
@@ -102,6 +108,12 @@ function run(args: string[]) {
   // so each run gets its own copy, and every run starts from the same files. The copy keeps
   // the folder's name, which the .sprj is named after.
   const projectDir = path.join(outDir, "project", path.basename(sourceProjectDir));
+  // a run empties <outDir>/project before copying, so it must not hold the source, and the
+  // copy cannot go inside what it copies
+  if (isInside(sourceProjectDir, outDir) || isInside(outDir, sourceProjectDir)) {
+    console.error(`The output folder and the project folder must not contain each other.`);
+    process.exit(2);
+  }
   fs.rmSync(path.dirname(projectDir), { recursive: true, force: true });
   fs.cpSync(sourceProjectDir, projectDir, { recursive: true, preserveTimestamps: true });
   fs.rmSync(rawDir, { recursive: true, force: true });

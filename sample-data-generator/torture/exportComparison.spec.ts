@@ -6,6 +6,8 @@ import {
   compareCsv,
   compareFolders,
   compareLines,
+  isCompared,
+  isInside,
   normalizeExportFile,
   normalizeExportText,
   normalizeReport,
@@ -162,6 +164,12 @@ describe("compareCsv", () => {
     ]);
   });
 
+  it("does not take a row named like a repeat for that repeat", () => {
+    const before = "name,job\nMaria,cleaner\nMaria,painter\nMaria (2),potter\n";
+    const after = "name,job\nMaria,cleaner\nMaria,sculptor\nMaria (2),potter\n";
+    expect(compareCsv(before, after)).toEqual(['job of Maria (2): "painter" -> "sculptor"']);
+  });
+
   it("tells apart rows that share a first cell by their order", () => {
     const before = "name,job\nMaria,cleaner\nMaria,painter\n";
     const after = "name,job\nMaria,cleaner\nMaria,sculptor\n";
@@ -212,6 +220,28 @@ describe("compareFolders", () => {
         files: ["a.imdi", "c.csv"],
       },
     ]);
+  });
+});
+
+describe("isCompared", () => {
+  it("compares only lameta's IMDI and OPEX in the bundles, not the files they copy", () => {
+    expect(isCompared("imdi-bundle/P/S1/S1.imdi")).toBe(true);
+    expect(isCompared("opex-bundle/P/S1/S1.opex")).toBe(true);
+    expect(isCompared("imdi-bundle/P/S1/notes.json")).toBe(false);
+    expect(isCompared("opex-bundle/P/S1/S1.session")).toBe(false);
+    expect(isCompared("ro-crate-per-session/S1.json")).toBe(true);
+    expect(isCompared("would-save/Sessions/S1/S1.session")).toBe(true);
+  });
+});
+
+describe("isInside", () => {
+  it("is true for the folder itself and folders below it, and only those", () => {
+    const out = path.resolve("runs", "out");
+    expect(isInside(path.join(out, "project", "P"), out)).toBe(true);
+    expect(isInside(out, out)).toBe(true);
+    expect(isInside(path.resolve("runs", "P"), out)).toBe(false);
+    expect(isInside(path.join(path.dirname(out), "..out2"), out)).toBe(false);
+    expect(isInside(path.join(out, "..cache"), out)).toBe(true);
   });
 });
 
