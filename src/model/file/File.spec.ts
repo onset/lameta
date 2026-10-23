@@ -205,16 +205,18 @@ describe("file", () => {
     }
   });
 
-  it("reads a contributor that lacks a role or comments element as having empty ones", () => {
+  it("reads a contributor that lacks a name, role or comments element as having empty ones", () => {
     const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Contributions>
         <contributor><name>Ana</name></contributor>
+        <contributor><role>speaker</role></contributor>
       </Contributions>
     `);
     try {
       const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
       expect(f.contributions.map((c) => [c.personReference, c.role, c.comments])).toEqual([
         ["Ana", "", ""],
+        ["", "speaker", ""],
       ]);
     } finally {
       fs.removeSync(tmpFolder);
