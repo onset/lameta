@@ -188,6 +188,24 @@ describe("work per action as the project grows", () => {
     }
   });
 
+  // finding 14: generating a session finds a person's file by scanning every folder, so each
+  // session's IMDI depends on the list of sessions
+  it.fails("adding a session generates IMDI for the new session only (finding 14)", async () => {
+    vi.useFakeTimers();
+    const generated: number[] = [];
+    for (const n of [kSmall, kLarge]) {
+      const project = open(n);
+      const { runner } = rulesRunner();
+      const stop = runner.watch(project);
+      await vi.advanceTimersByTimeAsync(10);
+      project.addSession();
+      await vi.advanceTimersByTimeAsync(2000);
+      generated.push(runner.timing.sessionsGenerated);
+      stop();
+    }
+    expect(generated).toEqual([1, 1]);
+  });
+
   // finding 4: every rules run sends the IMDI of every session to the sandbox
   it.fails("the rules recheck after one edit checks only that session (finding 4)", async () => {
     vi.useFakeTimers();
