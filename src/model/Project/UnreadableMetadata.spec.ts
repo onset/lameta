@@ -112,6 +112,17 @@ describe("a project with metadata files that lameta cannot read", () => {
     expect(fs.readFileSync(sprj, "utf8")).toBe("");
   });
 
+  it("opens when the .sprj cannot be read at all", () => {
+    const sprj = Path.join(projectDirectory, "Torture.sprj");
+    fs.rmSync(sprj);
+    fs.mkdirSync(sprj);
+
+    const project = open();
+
+    expect(project.metadataFile!.metadataReadProblem).toBeTruthy();
+    expect(fs.statSync(sprj).isDirectory()).toBe(true);
+  });
+
   it("names the version that a file from a newer lameta needs", () => {
     writeSession(
       "Future",

@@ -1533,7 +1533,13 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     }
 
     // read in the metadataPath xml file and then use a regex to extract the value of the AccessProtocol element.
-    const contents = fs.readFileSync(metadataPath, "utf8");
+    let contents: string;
+    try {
+      contents = fs.readFileSync(metadataPath, "utf8");
+    } catch {
+      // readMetadataFile records why the file could not be read
+      return "default";
+    }
 
     // Initially (up through v2), lameta only had an "Access Protocol", not the full set of configurations
     // that we have now (which include and access protocol).
