@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ANNOTATION_DOCUMENT AUTHOR="" DATE="2024-06-01T12:00:00+00:00" FORMAT="3.0" VERSION="3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv3.0.xsd">
-  <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds"/>
-  <TIME_ORDER><TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="0"/><TIME_SLOT TIME_SLOT_ID="ts2" TIME_VALUE="900"/></TIME_ORDER>
-  <TIER LINGUISTIC_TYPE_REF="default-lt" TIER_ID="Transcription">
-    <ANNOTATION><ALIGNABLE_ANNOTATION ANNOTATION_ID="a1" TIME_SLOT_REF1="ts1" TIME_SLOT_REF2="ts2"><ANNOTATION_VALUE>Towards how to hang a painting upside down on purpose</ANNOTATION_VALUE></ALIGNABLE_ANNOTATION></ANNOTATION>
-  </TIER>
-  <LINGUISTIC_TYPE GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="default-lt" TIME_ALIGNABLE="true"/>
-</ANNOTATION_DOCUMENT>
