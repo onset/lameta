@@ -252,6 +252,32 @@ describe("file", () => {
     }
   });
 
+  it("leaves the text of a custom field named Genre as the user typed it", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
+      <genre type="string">narrative</genre>
+      <CustomFields><Genre type="string">Procedural Discourse</Genre></CustomFields>
+    `);
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(f.getTextProperty("Genre")).toBe("Procedural Discourse");
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
+  it("moves a known field back even when that field has a default value", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(
+      `<CustomFields><Status type="string">Finished</Status></CustomFields>`,
+    );
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(f.getTextProperty("status")).toBe("Finished");
+      expect(f.properties.containsKey("Status")).toBe(false);
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
   it("moves a known field that SayMore Classic put among the custom fields back to the known field", () => {
     const { tmpFolder, sessionFolder } = writeSessionFile(
       `<CustomFields><Genre type="string">narrative</Genre></CustomFields>`,

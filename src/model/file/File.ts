@@ -90,6 +90,12 @@ export class Contribution {
   }
 }
 
+// xml2js gives a plain string for <tag>text</tag>, and an object with the text in "_" when the element has attributes
+function textOfXmlValue(value: any): string {
+  if (typeof value === "string") return value;
+  return typeof value?._ === "string" ? value._ : "";
+}
+
 export /*babel doesn't like this: abstract*/ class File {
   // can be changed to Session, Project, or Person in constructor
   //protected xmlRootName: string = "MetaData";
@@ -693,8 +699,13 @@ export /*babel doesn't like this: abstract*/ class File {
     // one the user made, and it stays custom.
     for (const { xmlTag, value } of customFieldsNamedLikeKnownFields) {
       const knownKey = this.properties.getKeyFromXmlTag(xmlTag);
-      const knownFieldIsEmpty = !this.properties.getValue(knownKey)?.text.trim();
-      this.loadOnePersistentProperty(xmlTag, value, !knownFieldIsEmpty);
+      const fileHasItsOwnValue = tags.some(
+        (tag) =>
+          tag.toLowerCase() !== "customfields" &&
+          this.properties.getKeyFromXmlTag(tag) === knownKey &&
+          textOfXmlValue(propertiesFromXml[tag]).trim().length > 0,
+      );
+      this.loadOnePersistentProperty(xmlTag, value, fileHasItsOwnValue);
     }
   }
 
@@ -805,7 +816,7 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     // Apply genre normalization after fixedKey is determined
-    if (fixedKey.toLowerCase() === "genre") {
+    if (!isCustom && fixedKey.toLowerCase() === "genre") {
       const normalizedGenre = this.normalizeGenreValue(textValue);
       if (normalizedGenre !== textValue) {
         // Track that normalization occurred during reading
