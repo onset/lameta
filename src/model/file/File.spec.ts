@@ -265,6 +265,20 @@ describe("file", () => {
     }
   });
 
+  it("keeps a custom field named like a known field that has its value among the AdditionalFields", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
+      <AdditionalFields><Location_Country type="string">Ghana</Location_Country></AdditionalFields>
+      <CustomFields><Location_Country type="string">my own country</Location_Country></CustomFields>
+    `);
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      const knownKey = f.properties.getKeyFromXmlTag("Location_Country");
+      expect(f.getTextProperty(knownKey)).toBe("Ghana");
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
   it("moves a known field back even when that field has a default value", () => {
     const { tmpFolder, sessionFolder } = writeSessionFile(
       `<CustomFields><Status type="string">Finished</Status></CustomFields>`,

@@ -651,6 +651,13 @@ export /*babel doesn't like this: abstract*/ class File {
   }
   private loadPropertiesFromXml(propertiesFromXml: any) {
     const customFieldsNamedLikeKnownFields: { xmlTag: string; value: any }[] = [];
+    const keysWithAValueInTheFile = new Set<string>();
+    const loadOwnField = (xmlTag: string, value: any) => {
+      if (textOfXmlValue(value).trim().length > 0) {
+        keysWithAValueInTheFile.add(this.properties.getKeyFromXmlTag(xmlTag));
+      }
+      this.loadOnePersistentProperty(xmlTag, value, false);
+    };
     const tags = Object.keys(propertiesFromXml);
     for (const tag of tags) {
       if (this.specialLoadingOfField(tag, propertiesFromXml)) {
@@ -683,12 +690,12 @@ export /*babel doesn't like this: abstract*/ class File {
         for (const childTag of tagsInAdditionalFieldSection) {
           // first one is just $":{"type":"xml"}
           if (childTag !== "$") {
-            this.loadOnePersistentProperty(childTag, propertiesFromXml[tag][childTag], false);
+            loadOwnField(childTag, propertiesFromXml[tag][childTag]);
           }
         }
       } else {
         // "Normal" fields
-        this.loadOnePersistentProperty(tag, propertiesFromXml[tag], false);
+        loadOwnField(tag, propertiesFromXml[tag]);
       }
     }
     // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
@@ -698,12 +705,8 @@ export /*babel doesn't like this: abstract*/ class File {
     // unless the file has its own value for that field, in which case the custom field is
     // one the user made, and it stays custom.
     for (const { xmlTag, value } of customFieldsNamedLikeKnownFields) {
-      const knownKey = this.properties.getKeyFromXmlTag(xmlTag);
-      const fileHasItsOwnValue = tags.some(
-        (tag) =>
-          tag.toLowerCase() !== "customfields" &&
-          this.properties.getKeyFromXmlTag(tag) === knownKey &&
-          textOfXmlValue(propertiesFromXml[tag]).trim().length > 0,
+      const fileHasItsOwnValue = keysWithAValueInTheFile.has(
+        this.properties.getKeyFromXmlTag(xmlTag),
       );
       this.loadOnePersistentProperty(xmlTag, value, fileHasItsOwnValue);
     }
