@@ -132,14 +132,17 @@ export class Session extends Folder {
           ? { name: nameAndRole[1], role: nameAndRole[2] }
           : { name: s, role: undefined };
       });
-    const withRoleFirst = [
-      ...legacyParticipants.filter((p) => p.role !== undefined),
-      ...legacyParticipants.filter((p) => p.role === undefined),
-    ];
-    withRoleFirst.forEach(({ name, role }) => {
-      const alreadyContributes = this.metadataFile!.contributions.some(
-        (c) => c.personReference === name && (role === undefined || c.role === role),
-      );
+    const namesListedWithRole = legacyParticipants
+      .filter((p) => p.role !== undefined)
+      .map((p) => p.name);
+    legacyParticipants.forEach(({ name, role }) => {
+      const alreadyContributes =
+        role === undefined
+          ? namesListedWithRole.includes(name) ||
+            this.metadataFile!.contributions.some((c) => c.personReference === name)
+          : this.metadataFile!.contributions.some(
+              (c) => c.personReference === name && c.role === role,
+            );
       if (!alreadyContributes) {
         runInAction(() =>
           this.metadataFile!.contributions.push(new Contribution(name, role ?? "participant", "")),
