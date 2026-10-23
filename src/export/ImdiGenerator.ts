@@ -15,7 +15,7 @@ import {
   getMimeType,
 } from "../model/file/FileTypeInfo";
 import { titleCase } from "title-case";
-import { sanitizeForArchive } from "../other/sanitizeForArchive";
+import { sanitizeForExport } from "../other/sanitizeForArchive";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyWarning } from "../components/Notify";
@@ -995,11 +995,8 @@ export default class ImdiGenerator {
     // files as they get copied to the export, regardless of that setting. This is because this is a *requirement* of
     // IMDI archives. Anyhow, since the bundler would have (or will have) export the sanitized version, we need to do
     // that to the file name we use for it in the xml.
-    const filename = sanitizeForArchive(Path.basename(path), "ASCII");
-    const immediateParentDirectoryName = sanitizeForArchive(
-      Path.basename(Path.dirname(path)),
-      "ASCII",
-    );
+    const filename = sanitizeForExport(Path.basename(path));
+    const immediateParentDirectoryName = sanitizeForExport(Path.basename(Path.dirname(path)));
 
     const relativePath = Path.join(immediateParentDirectoryName, filename)
       // get a path that works across platforms.

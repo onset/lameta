@@ -200,7 +200,7 @@ describe("generateExportData async generator", () => {
 
 describe("names that Windows or the archive cannot take", () => {
   let hostileProject: Project;
-  const sessionFolders = ["COM1", "Trailing dot.", "Café".normalize("NFD")];
+  const sessionFolders = ["COM1", "Trailing dot.", "Café".normalize("NFD"), "!!!"];
 
   beforeAll(() => {
     const dir = Path.join(temp.mkdirSync("lameta hostile names"), "Hostile ŋ");

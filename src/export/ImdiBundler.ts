@@ -5,7 +5,7 @@ import { File } from "../model/file/File";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
-import { sanitizeForArchive } from "../other/sanitizeForArchive";
+import { sanitizeForExport } from "../other/sanitizeForArchive";
 import { taggedAxis } from "../model/field/TextHolderMigration";
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
@@ -170,7 +170,7 @@ export default class ImdiBundler {
     omitNamespaces?: boolean,
   ): AsyncGenerator<ExportSessionData, ExportCorpusData, void> {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
-    const secondLevel = sanitizeForArchive(Path.basename(project.directory), "ASCII");
+    const secondLevel = sanitizeForExport(Path.basename(project.directory));
     const childrenSubpaths: string[] = [];
 
     // --- Project Documents ---
@@ -235,7 +235,7 @@ export default class ImdiBundler {
         copyInProjectFiles,
       );
       childrenSubpaths.push(
-        secondLevel + "/" + sanitizeForArchive(session.filePrefix + extensionWithDot, "ASCII"),
+        secondLevel + "/" + sanitizeForExport(session.filePrefix + extensionWithDot),
       );
       yield sessionData;
     }
@@ -253,7 +253,7 @@ export default class ImdiBundler {
       imdiXml: corpusImdi,
       imdiPath: Path.join(
         targetDirForProjectFile,
-        sanitizeForArchive(`${project.displayName}${extensionWithDot}`, "ASCII"),
+        sanitizeForExport(`${project.displayName}${extensionWithDot}`),
       ),
       displayName: project.displayName,
     };
@@ -274,7 +274,7 @@ export default class ImdiBundler {
     return {
       totalSessions,
       rootDirectory,
-      secondLevelDirectory: sanitizeForArchive(Path.basename(project.directory), "ASCII"),
+      secondLevelDirectory: sanitizeForExport(Path.basename(project.directory)),
     };
   }
 
@@ -295,16 +295,16 @@ export default class ImdiBundler {
     const sessionImdi = ImdiGenerator.generateSession(imdiMode, session, project);
     await validateImdiOrThrow(sessionImdi, session.displayName);
 
-    const sessionDirName = sanitizeForArchive(Path.basename(session.directory), "ASCII");
+    const sessionDirName = sanitizeForExport(Path.basename(session.directory));
     const directoriesToCreate: string[] = [];
     let imdiPath: string;
 
     if (imdiMode === IMDIMode.OPEX) {
       const sessionOutputDir = Path.join(rootDirectory, secondLevel, sessionDirName);
       directoriesToCreate.push(sessionOutputDir);
-      imdiPath = Path.join(sessionOutputDir, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(sessionOutputDir, sanitizeForExport(imdiFileName));
     } else {
-      imdiPath = Path.join(rootDirectory, secondLevel, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(rootDirectory, secondLevel, sanitizeForExport(imdiFileName));
     }
 
     const filesToCopy: FileCopyRequest[] = [];
@@ -318,7 +318,7 @@ export default class ImdiBundler {
             source: f.getActualFilePath(),
             destination: Path.join(
               targetDirectory,
-              sanitizeForArchive(f.getNameToUseWhenExportingUsingTheActualFile(), "ASCII"),
+              sanitizeForExport(f.getNameToUseWhenExportingUsingTheActualFile()),
             ),
           });
         }
@@ -372,11 +372,11 @@ export default class ImdiBundler {
 
     if (imdiMode === IMDIMode.OPEX) {
       directoriesToCreate.push(destinationFolderPath);
-      imdiPath = Path.join(destinationFolderPath, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(destinationFolderPath, sanitizeForExport(imdiFileName));
     } else {
       const imdiOnlyFolderPath = Path.join(rootDirectory, secondLevel);
       directoriesToCreate.push(imdiOnlyFolderPath);
-      imdiPath = Path.join(imdiOnlyFolderPath, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(imdiOnlyFolderPath, sanitizeForExport(imdiFileName));
     }
 
     const filesToCopy: FileCopyRequest[] = [];
@@ -388,7 +388,7 @@ export default class ImdiBundler {
             source: f.getActualFilePath(),
             destination: Path.join(
               destinationFolderPath,
-              sanitizeForArchive(f.getNameToUseWhenExportingUsingTheActualFile(), "ASCII"),
+              sanitizeForExport(f.getNameToUseWhenExportingUsingTheActualFile()),
             ),
           });
         }
@@ -505,10 +505,7 @@ export default class ImdiBundler {
       const addedFiles = new Set<string>();
       originalConsentFiles.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-          const destName = sanitizeForArchive(
-            f.getNameToUseWhenExportingUsingTheActualFile(),
-            "ASCII",
-          );
+          const destName = sanitizeForExport(f.getNameToUseWhenExportingUsingTheActualFile());
           if (!addedFiles.has(destName)) {
             addedFiles.add(destName);
             filesToCopy.push({
