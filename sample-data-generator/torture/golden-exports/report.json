@@ -33,7 +33,6 @@
       "Sessions\\DATE_eu_only\\DATE_eu_only.session /date: \"13/06/2020\" -> \"2020-06-13\"",
       "Sessions\\DATE_iso_with_time\\DATE_iso_with_time.session /date: \"2010-01-01T05:06:07\" -> \"2010-01-01\"",
       "Sessions\\DATE_words\\DATE_words.session /date: \"June 6, 2010\" -> \"2010-06-06\"",
-      "Sessions\\FIELD_custom_fields\\FIELD_custom_fields.session /genre: \"narrative\" -> \"custom field shadowing a known field\"",
       "Sessions\\FIELD_xml_specials\\FIELD_xml_specials.session: not compared, happy-dom's DOMParser could not parse it",
       "Sessions\\GEN_label_form\\GEN_label_form.session /genre: \"Procedural Discourse\" -> \"procedural_discourse\"",
       "Sessions\\GEN_upper_case\\GEN_upper_case.session /genre: \"NARRATIVE\" -> \"narrative\"",
@@ -64,11 +63,6 @@
     },
     {
       "step": "imdi session",
-      "target": "ROLE_no_role_element",
-      "error": "Cannot read properties of undefined (reading 'trim')"
-    },
-    {
-      "step": "imdi session",
       "target": "ལོ་རྒྱུས་མེ་ལོང་། སྔོན་གླེང་།",
       "error": "IMDI field f.type was null"
     },
@@ -85,22 +79,12 @@
     {
       "step": "ro-crate",
       "target": "project",
-      "error": "Cannot read properties of undefined (reading 'trim')"
+      "error": "ENOENT: no such file or directory, stat '(lameta)\\recordings\\does-not-exist.wav'"
     },
     {
       "step": "ro-crate session",
       "target": "MEDIA_meta_variants",
       "error": "ENOENT: no such file or directory, stat '(lameta)\\recordings\\does-not-exist.wav'"
-    },
-    {
-      "step": "ro-crate session",
-      "target": "ROLE_no_role_element",
-      "error": "Cannot read properties of undefined (reading 'trim')"
-    },
-    {
-      "step": "paradisec csv",
-      "target": "project",
-      "error": "Cannot read properties of undefined (reading 'indexOf')"
     }
   ],
   "notifications": [

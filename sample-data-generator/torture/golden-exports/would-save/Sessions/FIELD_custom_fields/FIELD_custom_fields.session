@@ -6,7 +6,7 @@
   <synopsis type="string">The artist talks about the politics of the colour orange. There is a long passage about a single brush, which the artist calls "the elder".</synopsis>
   <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
   <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
-  <Genre type="string">custom field shadowing a known field</Genre>
+  <Genre type="string">narrative</Genre>
   <Access type="string">O</Access>
   <Status type="string">Incoming</Status>
   <Date>2024-09-02</Date>
@@ -20,5 +20,6 @@
   <CustomFields type="xml">
     <Topic_Ñ type="string">non-ASCII element name</Topic_Ñ>
     <Medium type="string">oil, regret</Medium>
+    <Genre type="string">custom field shadowing a known field</Genre>
   </CustomFields>
 </Session>

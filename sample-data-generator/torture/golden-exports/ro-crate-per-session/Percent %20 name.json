@@ -27,10 +27,13 @@
       "collectionEventType": "https://w3id.org/ldac/terms#Session",
       "hasPart": [
         {
-          "@id": "Sessions/Percent%20%20%20name/Percent%20%20%20name.session"
+          "@id": "Sessions/Percent%20%2520%20name/Percent%20%2520%20name.session"
         },
         {
-          "@id": "Sessions/Percent%20%20%20name/a%20b.wav"
+          "@id": "Sessions/Percent%20%2520%20name/a%20b.wav"
+        },
+        {
+          "@id": "Sessions/Percent%20%2520%20name/a%2520b.wav"
         }
       ],
       "publisher": {
@@ -163,7 +166,7 @@
       "name": "Linguistic Genre Terms"
     },
     {
-      "@id": "Sessions/Percent%20%20%20name/Percent%20%20%20name.session",
+      "@id": "Sessions/Percent%20%2520%20name/Percent%20%2520%20name.session",
       "@type": "File",
       "contentSize": 837,
       "dateCreated": "(file time)",
@@ -178,7 +181,7 @@
       }
     },
     {
-      "@id": "Sessions/Percent%20%20%20name/a%20b.wav",
+      "@id": "Sessions/Percent%20%2520%20name/a%20b.wav",
       "@type": [
         "File",
         "AudioObject"
@@ -188,6 +191,21 @@
       "dateModified": "(file time)",
       "encodingFormat": "audio/wav",
       "name": "a b.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/Percent%20%2520%20name/a%2520b.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 16044,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "a%20b.wav",
       "isPartOf": {
         "@id": "./"
       }

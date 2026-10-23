@@ -55,12 +55,13 @@
       },
       "ldac:linguisticGenre": [
         {
-          "@id": "tag:lameta,Interviews with Abstract Artists: The Unseen Line:genre/custom field shadowing a known field"
+          "@id": "ldac:Narrative"
         }
       ],
       "dateCreated": "2024-09-02",
       "Topic_Ñ": "non-ASCII element name",
       "Medium": "oil, regret",
+      "Genre": "custom field shadowing a known field",
       "ldac:speaker": [
         {
           "@id": "#Nɔkɔ%20Ɛsi"
@@ -151,18 +152,18 @@
       }
     },
     {
-      "@id": "tag:lameta,Interviews with Abstract Artists: The Unseen Line:genre/custom field shadowing a known field",
+      "@id": "ldac:Narrative",
       "@type": "DefinedTerm",
-      "name": "custom field shadowing a known field",
-      "description": "Custom term: custom field shadowing a known field",
+      "name": "Narrative",
+      "description": "A monologic discourse which represents temporally organized events.",
       "inDefinedTermSet": {
-        "@id": "#CustomGenreTerms"
+        "@id": "ldac:LinguisticGenreTerms"
       }
     },
     {
-      "@id": "#CustomGenreTerms",
+      "@id": "ldac:LinguisticGenreTerms",
       "@type": "DefinedTermSet",
-      "name": "Custom Project Genres"
+      "name": "Linguistic Genre Terms"
     },
     {
       "@id": "Sessions/FIELD_custom_fields/FIELD_custom_fields.session",
