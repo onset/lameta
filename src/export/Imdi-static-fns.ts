@@ -22,10 +22,10 @@ export function fieldElement(
   mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
 } {
   const field = fieldOrString instanceof Field ? fieldOrString : undefined;
-  const text = typeof fieldOrString === "string" ? fieldOrString : undefined;
+  const text = typeof fieldOrString === "string" ? fieldOrString.trim() : undefined;
+  const fieldIsBlank = !field || field.isEmpty() || field.text.trim() === "";
   let lastElementWeAdded: XmlBuilder.XMLElementOrXMLNode = tail;
-  const needToUseDefaultValue =
-    xmlElementIsRequired && ((field && field.isEmpty()) || !field) && !text;
+  const needToUseDefaultValue = xmlElementIsRequired && fieldIsBlank && !text;
 
   if (needToUseDefaultValue) {
     lastElementWeAdded = tail.element(elementName, defaultValue);
@@ -37,7 +37,7 @@ export function fieldElement(
       tail,
       extraAttributes,
     );
-  } else if (field && !field.isEmpty()) {
+  } else if (field && !fieldIsBlank) {
     lastElementWeAdded = addElementsFromFieldContent(
       elementName,
       field,
@@ -88,7 +88,7 @@ function addElementsFromFieldContent(
   let element;
   if (field.definition?.imdiRange) {
     // wer're assuming at this point that we don't have mulilingual vocabularies
-    element = tail.element(elementName, field.text);
+    element = tail.element(elementName, field.text.trim());
     element.attribute("Link", field.definition.imdiRange);
     const type = field.definition.imdiIsClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
     element.attribute("Type", type);
@@ -112,12 +112,12 @@ function addElementsFromFieldContent(
         shouldUseVirtualMultilingual
           ? field.getTextAxisVirtual(language, metadataSlotTags)
           : field.getTextAxis(language),
-      );
+      ).trim();
 
     // If IMDI doesn't support multiple elements with LanguageId (e.g., String_Type),
     // just use the first language's value
     if (axes.length === 0) {
-      element = tail.element(elementName, applyCapitalization(field.definition, field.text));
+      element = tail.element(elementName, applyCapitalization(field.definition, field.text).trim());
       addExtraAttributes(element, extraAttributes);
     } else if (!imdiSupportsMultipleElements || axes.length === 1) {
       const firstLanguage = axes[0];

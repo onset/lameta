@@ -30,6 +30,27 @@ describe("imdi monolingual field export", () => {
     });
     expect("//wallcolor").toHaveText("yellow");
   });
+  it("exports a value without the spaces around it", () => {
+    run((builder) => {
+      fieldElement("Name", new Field("name", FieldType.Text, " Ana López "), builder, builder);
+      fieldElement("FullName", " Ana López ", builder, builder);
+    });
+    expect("//Name").toHaveText("Ana López");
+    expect("//FullName").toHaveText("Ana López");
+  });
+  it("exports the default for a required value that is only spaces", () => {
+    run((builder) => {
+      fieldElement(
+        "Name",
+        new Field("name", FieldType.Text, "   "),
+        builder,
+        builder,
+        true,
+        "Unspecified",
+      );
+    });
+    expect("//Name").toHaveText("Unspecified");
+  });
   it("exports imdirange with attributes", () => {
     const field = new Field("unused", FieldType.Text, "Guatemala");
     field.definition = new FieldDefinition({
