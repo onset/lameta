@@ -482,6 +482,9 @@ export /*babel doesn't like this: abstract*/ class File {
     return trimSuffix(this.getTextProperty("filename"), kLinkExtensionWithFullStop);
   }
   public getActualFileExists(): boolean {
+    if (this.isLinkFile() && !fs.existsSync(this.describedFileOrLinkFilePath)) {
+      return false;
+    }
     return fs.existsSync(this.getActualFilePath());
   }
 

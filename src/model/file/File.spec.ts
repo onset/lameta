@@ -77,6 +77,21 @@ describe("FolderMetadataFile constructor", () => {
   });
 });
 
+describe("getActualFileExists", () => {
+  it("answers false for a link whose .link file has been removed", () => {
+    const folder = temp.mkdirSync("link removed");
+    const linkPath = Path.join(folder, "far away.wav.link");
+    fs.writeFileSync(linkPath, "recordings/far away.wav");
+    try {
+      const f = new OtherFile(linkPath, new EncounteredVocabularyRegistry());
+      fs.removeSync(linkPath);
+      expect(f.getActualFileExists()).toBe(false);
+    } finally {
+      fs.removeSync(folder);
+    }
+  });
+});
+
 describe("file", () => {
   it("should roundtrip notes with dangerous characters", () => {
     const mediaFilePath = getPretendAudioFile();

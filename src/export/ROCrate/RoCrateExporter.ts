@@ -41,6 +41,7 @@ import {
   createPersonId,
   createPersonFilesDatasetId,
   createSessionId,
+  createSessionDirectoryId,
   expandLdacId,
   linkContainment,
   createHasPartReferences,
@@ -619,7 +620,6 @@ function addFileLicenseProperty(
   // For session files, ensure they inherit the session license first
   // This must happen before checking existing licenses to normalize any raw values
   if (folder instanceof Session) {
-    const file = folder.files.find((f) => f.getActualFilePath() === filePath);
     if (file) {
       rocrateLicense.ensureFileLicense(file, folder as Session, project);
       const inheritedLicense = rocrateLicense.getFileLicense(filePath);
@@ -685,12 +685,13 @@ interface FileToExport {
 function filesToExport(folder: Folder): FileToExport[] {
   const result: FileToExport[] = [];
   folder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    if (Path.basename(path).startsWith("ro-crate")) {
-      return;
-    }
     let stats: fs.Stats;
     try {
+      // for a link, getActualFilePath reads the .link file, which can be missing too
+      const path = file.getActualFilePath();
+      if (Path.basename(path).startsWith("ro-crate")) {
+        return;
+      }
       stats = fs.statSync(path);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
@@ -951,7 +952,11 @@ function createSessionsDatasetHierarchy(
   // Group file entries by session directory
   // Files have IDs like "Sessions/ETR008/ETR008.session"
   // Session events have IDs like "#session-ETR008"
-  const filesBySessionDir = new Map<string, any[]>();
+  // every session gets its directory, even one whose files are all missing, because the
+  // session's subjectOf points at it
+  const filesBySessionDir = new Map<string, any[]>(
+    exportableSessions(project).map((session) => [createSessionDirectoryId(session), []]),
+  );
 
   flattenedSessionEntries.forEach((entry: any) => {
     const id = entry["@id"];
