@@ -235,8 +235,8 @@ describe("a project with metadata files that lameta cannot read", () => {
         if (r.done) break;
       }
       const all = xml.join("\n");
-      expect(all).toContain("Uses Broken");
-      expect(all).not.toMatch(/<Name>Broken<\/Name>/);
+      expect(all).toContain("<Name>Good</Name>");
+      expect(all).not.toContain("<Name>Broken</Name>");
       // the contributor is exported as a person that lameta does not know
       expect(all).toContain('Could not find a person with name "Broken Person"');
     });
