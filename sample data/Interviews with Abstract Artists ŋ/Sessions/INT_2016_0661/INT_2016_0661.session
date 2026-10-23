@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2016_0661</id>
+  <title type="string">Against the politics of the colour orange</title>
+  <description type="string">Quilla O'Shaughnessy talks about the third side of a line. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">S</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2016-02-18</date>
+  <Contributions>
+    <contributor>
+      <name>Quilla O'Shaughnessy</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

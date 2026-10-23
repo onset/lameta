@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <name type="string"></name>
+  <primaryOccupation type="string">Colourist specialising in beige</primaryOccupation>
+  <description type="string">Folder Name Only belongs to Accidental Constructivism and works in a lift between floors 3 and 4. Asked about influences, Folder Name Only said only &quot;how to hang a painting upside down on purpose&quot;.</description>
+  <contributions type="xml"></contributions>
+</Person>

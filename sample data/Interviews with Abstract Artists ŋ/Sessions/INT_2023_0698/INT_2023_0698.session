@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2023_0698</id>
+  <title type="string">On why the canvas must stay blank</title>
+  <description type="string">Tenzin Eriksdóttir talks about the third side of a line. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">The Wet Paint School, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2023-03-27</date>
+  <Contributions>
+    <contributor>
+      <name>Tenzin Eriksdóttir</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

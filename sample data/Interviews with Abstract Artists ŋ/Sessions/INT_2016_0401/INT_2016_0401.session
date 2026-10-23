@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2016_0401</id>
+  <title type="string">Against what the gallery cleaner threw away</title>
+  <description type="string">Jules Blanc talks about a portrait of the wind, from behind. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">the artist's kitchen</location>
+  <access type="string">O</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2016-06-10</date>
+  <Contributions>
+    <contributor>
+      <name>Jules Blanc</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Bartholomew Søndergaard</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Jules Haddad</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Hiroshi Quispe</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

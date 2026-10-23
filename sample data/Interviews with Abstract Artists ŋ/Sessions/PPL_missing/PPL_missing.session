@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">PPL_missing</id>
+  <title type="string">On why the canvas must stay blank</title>
+  <description type="string">The artist talks about the third side of a line. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <genre type="string">dialog</genre>
+  <access type="string">O</access>
+  <date>2024-07-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nobody Here</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>language_eng</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name></name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>   </name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

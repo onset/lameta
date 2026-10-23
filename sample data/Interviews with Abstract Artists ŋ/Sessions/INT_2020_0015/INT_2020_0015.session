@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2020_0015</id>
+  <title type="string">Beyond a sculpture made entirely of hesitation</title>
+  <description type="string">Vũ Nakamura talks about negative space and its landlord. The interview stopped twice because the artist wanted to look at the corner of the room.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">a borrowed greenhouse</location>
+  <access type="string">S</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">The Wet Paint School, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2020-04-16</date>
+  <Contributions>
+    <contributor>
+      <name>Vũ Nakamura</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>UV100</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Xochitl Fontaine</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

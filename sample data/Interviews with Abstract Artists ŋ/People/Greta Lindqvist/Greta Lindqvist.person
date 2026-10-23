@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <name type="string">Greta Lindqvist</name>
+  <birthYear type="string">1979</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Installation artist, mainly scaffolding</primaryOccupation>
+  <ethnicGroup type="string">Frameless Expressionism</ethnicGroup>
+  <description type="string">Greta Lindqvist belongs to Ladderism and works in a lift between floors 3 and 4. Asked about influences, Greta Lindqvist said only &quot;the third side of a line&quot;.</description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Accidental Constructivism</Movement>
+    <Studio type="string">a borrowed greenhouse</Studio>
+  </CustomFields>
+</Person>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2020_0375</id>
+  <title type="string">About a dot, considered at length</title>
+  <description type="string">Ếlodie Ikeda talks about the politics of the colour orange. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2020-04-12</date>
+  <Contributions>
+    <contributor>
+      <name>Ếlodie Ikeda</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Bartholomew Zielińska</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

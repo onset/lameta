@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2018_0133</id>
+  <title type="string">On listening to grey</title>
+  <description type="string">Oona Mbeki talks about a portrait of the wind, from behind. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">the artist's kitchen</location>
+  <access type="string">U</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Post-Squarism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2018-02-22</date>
+  <Contributions>
+    <contributor>
+      <name>Oona Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>FT175</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

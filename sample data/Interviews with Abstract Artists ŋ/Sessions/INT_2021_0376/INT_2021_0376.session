@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2021_0376</id>
+  <title type="string">About the brushstroke that got away</title>
+  <description type="string">Nnamdi Ulloa talks about an exhibition in total darkness. The artist asked that the microphone face away from the painting, so as not to influence it.</description>
+  <languages type="string">fr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">a lift between floors 3 and 4</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2021-05-13</date>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Ulloa</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Yusuf Pereira</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>KL110</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

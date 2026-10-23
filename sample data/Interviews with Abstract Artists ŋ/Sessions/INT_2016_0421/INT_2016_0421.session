@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2016_0421</id>
+  <title type="string">Against eleven shades of white and one impostor</title>
+  <description type="string">Yusuf Pereira talks about the moment before the first mark. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">a borrowed greenhouse</location>
+  <access type="string">U</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2016-02-02</date>
+  <Contributions>
+    <contributor>
+      <name>Yusuf Pereira</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ếlodie Ulloa</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Oona Fontaine</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

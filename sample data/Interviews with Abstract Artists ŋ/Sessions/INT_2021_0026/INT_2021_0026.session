@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2021_0026</id>
+  <title type="string">About a dot, considered at length</title>
+  <description type="string">Oona Mbeki talks about the long argument with the colour blue. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Greyscale Romanticism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2021-03-27</date>
+  <Contributions>
+    <contributor>
+      <name>Oona Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Oona Zielińska</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ếlodie Castellanos</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

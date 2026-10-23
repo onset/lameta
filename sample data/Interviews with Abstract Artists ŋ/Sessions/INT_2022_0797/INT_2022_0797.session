@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2022_0797</id>
+  <title type="string">About painting the colour of a Tuesday</title>
+  <description type="string">Lucía Kowalczyk talks about why the frame is the real work. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</description>
+  <languages type="string">etr;tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2022-06-14</date>
+  <Contributions>
+    <contributor>
+      <name>Lucía Kowalczyk</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2021_0476</id>
+  <title type="string">Against the politics of the colour orange</title>
+  <description type="string">Oona Lindqvist talks about a dot, considered at length. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">etr;tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">U</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2021-09-01</date>
+  <Contributions>
+    <contributor>
+      <name>Oona Lindqvist</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

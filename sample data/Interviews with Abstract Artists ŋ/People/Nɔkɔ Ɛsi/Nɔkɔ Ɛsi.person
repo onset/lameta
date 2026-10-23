@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <name type="string">Nɔkɔ Ɛsi</name>
+  <nickname type="string">Nɔkɔ</nickname>
+  <birthYear type="string">1972</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Painter of one grey square, repeatedly</primaryOccupation>
+  <description type="string">[[en]]Has painted the same grey square since 1994 and considers it unfinished.[[es]]Pinta el mismo cuadrado gris desde 1994 y lo considera inacabado.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+    <language tag="etr" primary="false" mother="false" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Neo-Beigeism</Movement>
+    <Reviewed_By type="string">Wilema Dimo</Reviewed_By>
+  </CustomFields>
+</Person>

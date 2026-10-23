@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2016_0451</id>
+  <title type="string">Notes on the third side of a line</title>
+  <description type="string">Saoirse Achterberg talks about the politics of the colour orange. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">O</access>
+  <accessDescription type="string">The artist asks that this stay closed until the paint is dry.</accessDescription>
+  <status type="string">Finished</status>
+  <keyword type="string">The Wet Paint School, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2016-08-04</date>
+  <Contributions>
+    <contributor>
+      <name>Saoirse Achterberg</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ásdís Nakamura</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

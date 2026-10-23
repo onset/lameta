@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Ŋozi Lindqvist</name>
+  <birthYear type="string">1946</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Painter of one grey square, repeatedly</primaryOccupation>
+  <ethnicGroup type="string">The Wet Paint School</ethnicGroup>
+  <description type="string">Ŋozi Lindqvist belongs to Accidental Constructivism and works in Studio 4, the old soap factory. Asked about influences, Ŋozi Lindqvist said only &quot;a sculpture made entirely of hesitation&quot;.</description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="false"></language>
+    <language tag="tpi" primary="false" mother="false" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Lateral Minimalism</Movement>
+    <Studio type="string">the back room of a frame shop</Studio>
+  </CustomFields>
+</Person>

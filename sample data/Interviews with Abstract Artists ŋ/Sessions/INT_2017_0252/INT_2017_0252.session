@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2017_0252</id>
+  <title type="string">About the moment before the first mark</title>
+  <description type="string">Quilla Castellanos talks about the shadow of a canvas that was never painted. The artist asked that the microphone face away from the painting, so as not to influence it.</description>
+  <languages type="string">etr;tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">proverb</genre>
+  <location type="string">the disused swimming pool</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Frameless Expressionism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2017-01-01</date>
+  <Contributions>
+    <contributor>
+      <name>Quilla Castellanos</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>UC070</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

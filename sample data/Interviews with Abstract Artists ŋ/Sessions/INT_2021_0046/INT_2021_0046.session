@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2021_0046</id>
+  <title type="string">Towards negative space and its landlord</title>
+  <description type="string">Lucía Jovanović talks about eleven shades of white and one impostor. The artist asked that the microphone face away from the painting, so as not to influence it.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">the disused swimming pool</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Accidental Constructivism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2021-11-19</date>
+  <Contributions>
+    <contributor>
+      <name>Lucía Jovanović</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi O'Shaughnessy</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Quilla Pereira</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

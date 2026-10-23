@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Rangi Ulloa</name>
+  <birthYear type="string">1942</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Performance artist who performs mostly in the car park</primaryOccupation>
+  <ethnicGroup type="string">Greyscale Romanticism</ethnicGroup>
+  <description type="string">Rangi Ulloa belongs to Accidental Constructivism and works in the artist's kitchen. Asked about influences, Rangi Ulloa said only &quot;why the frame is the real work&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

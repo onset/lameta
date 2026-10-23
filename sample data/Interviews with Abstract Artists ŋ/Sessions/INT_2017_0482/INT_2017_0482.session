@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2017_0482</id>
+  <title type="string">Beyond the long argument with the colour blue</title>
+  <description type="string">Ingrid Ulloa talks about a dot, considered at length. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">O</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2017-03-07</date>
+  <Contributions>
+    <contributor>
+      <name>Ingrid Ulloa</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ingrid Vasquez</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

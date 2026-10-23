@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2019_0044</id>
+  <title type="string">Against the politics of the colour orange</title>
+  <description type="string">Wanjiru Gómez talks about the third side of a line. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</description>
+  <languages type="string">fr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">O</access>
+  <accessDescription type="string">The artist asks that this stay closed until the paint is dry.</accessDescription>
+  <status type="string">Skipped</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2019-09-17</date>
+  <Contributions>
+    <contributor>
+      <name>Wanjiru Gómez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ếlodie Blanc</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía Yılmaz</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ömer Blanc</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2022_0537</id>
+  <title type="string">Towards drawing with a ladder</title>
+  <description type="string">Zofia Blanc talks about the installation that was mistaken for scaffolding. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2022-10-06</date>
+  <Contributions>
+    <contributor>
+      <name>ZB095</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Þóra Vasquez</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Chiamaka Zielińska</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Greta Søndergaard</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

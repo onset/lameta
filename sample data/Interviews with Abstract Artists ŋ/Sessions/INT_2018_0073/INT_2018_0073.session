@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2018_0073</id>
+  <title type="string">Notes on triangles as a form of apology</title>
+  <description type="string">Nnamdi Gómez talks about the shadow of a canvas that was never painted. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the disused swimming pool</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2018-02-18</date>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Gómez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>UV100</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>FG115</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

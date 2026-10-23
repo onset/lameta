@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2022_0267</id>
+  <title type="string">About painting the colour of a Tuesday</title>
+  <description type="string">Zofia Haddad talks about a square that refuses to be a square. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">O</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2022-04-16</date>
+  <Contributions>
+    <contributor>
+      <name>ZH065</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

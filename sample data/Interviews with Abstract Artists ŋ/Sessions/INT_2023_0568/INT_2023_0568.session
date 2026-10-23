@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2023_0568</id>
+  <title type="string">On why the frame is the real work</title>
+  <description type="string">Ếlodie Vasquez talks about painting the colour of a Tuesday. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Frameless Expressionism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2023-05-09</date>
+  <Contributions>
+    <contributor>
+      <name>Ếlodie Vasquez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Yusuf Quispe</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>PR225</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Notes the curator wrote for DATE_eu_only; a date that does not parse must not replace them.</notes>
+  <id type="string">DATE_eu_only</id>
+  <title type="string">Towards negative space and its landlord</title>
+  <description type="string">The artist talks about eleven shades of white and one impostor. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</description>
+  <genre type="string">narrative</genre>
+  <access type="string">O</access>
+  <date>13/06/2020</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

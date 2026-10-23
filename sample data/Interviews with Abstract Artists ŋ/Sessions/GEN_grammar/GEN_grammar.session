@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">GEN_grammar</id>
+  <title type="string">Towards negative space and its landlord (Grammar)</title>
+  <description type="string">The artist talks about eleven shades of white and one impostor. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</description>
+  <genre type="string">grammar</genre>
+  <access type="string">O</access>
+  <date>2024-02-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

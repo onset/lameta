@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Kalani Mbeki</name>
+  <code type="string">KM230</code>
+  <birthYear type="string">1994</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Conceptual artist; the best work is the absence of work</primaryOccupation>
+  <ethnicGroup type="string">Lateral Minimalism</ethnicGroup>
+  <description type="string">Kalani Mbeki belongs to Hesitationism and works in the artist's kitchen. Asked about influences, Kalani Mbeki said only &quot;why the frame is the real work&quot;.</description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

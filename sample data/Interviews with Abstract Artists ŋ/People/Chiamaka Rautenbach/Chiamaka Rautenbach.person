@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Chiamaka Rautenbach</name>
+  <birthYear type="string">2000</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Curator of empty frames</primaryOccupation>
+  <ethnicGroup type="string">Ladderism</ethnicGroup>
+  <description type="string">Chiamaka Rautenbach belongs to Greyscale Romanticism and works in Gallery Huya. Asked about influences, Chiamaka Rautenbach said only &quot;the long argument with the colour blue&quot;.</description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

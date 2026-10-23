@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2023_0768</id>
+  <title type="string">Against the politics of the colour orange</title>
+  <description type="string">Dmitri Vasquez talks about a dot, considered at length. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">O</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2023-01-13</date>
+  <Contributions>
+    <contributor>
+      <name>Dmitri Vasquez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>
