@@ -50,6 +50,19 @@ function report_(report, id, node, subject, message, reason) {
 function reportWarning(report, id, node, subject, message, reason) {
   report({ id, severity: "warning", subject, message, reason, node });
 }
+// lameta takes the user to where they enter the translation, which for a genre or
+// a role is not the field itself
+function reportMissingTranslation(report, id, node, subject, reason) {
+  report({
+    id,
+    severity: "warning",
+    subject,
+    message: "needs a translation.",
+    reason,
+    node,
+    missingTranslation: true,
+  });
+}
 
 // The English value and whether there is a translation, for the elements of one
 // field: either several elements with LanguageId, or one value in the
@@ -290,12 +303,11 @@ function checkActors(session, expectTranslations, report) {
           "has no English.",
         );
       } else if (expectTranslations && !role.hasTranslation) {
-        reportWarning(
+        reportMissingTranslation(
           report,
           "checkActorRole/translation",
           role.node,
           `${actorName}'s role`,
-          "needs a translation.",
         );
       }
     } else if (value.includes("/") && !value.includes(" / ")) {
@@ -307,12 +319,11 @@ function checkActors(session, expectTranslations, report) {
         `Multilingual metadata available but incorrect format in Role for Actor "${actorName}": "${value}" (expected format: "English / Translation" with spaces around /)`,
       );
     } else if (expectTranslations && !value.includes("/")) {
-      reportWarning(
+      reportMissingTranslation(
         report,
         "checkActorRole/translation",
         roles[0],
         `${actorName}'s role`,
-        "needs a translation.",
       );
     }
   }
@@ -337,7 +348,7 @@ function checkGenres(session, expectTranslations, report) {
     );
   }
   if (expectTranslations && !genre.hasTranslation) {
-    reportWarning(report, "genreTranslation", genre.node, "Genre", "needs a translation.");
+    reportMissingTranslation(report, "genreTranslation", genre.node, "Genre");
   }
 }
 
@@ -352,12 +363,11 @@ function checkAccessDescriptionTranslations(session, report) {
       const reason = !availability
         ? "The access level is also missing."
         : "Required for access level S.";
-      reportWarning(
+      reportMissingTranslation(
         report,
         "accessDescriptionTranslation",
         description.node,
         "Access Explanation",
-        "needs a translation.",
         reason,
       );
     }

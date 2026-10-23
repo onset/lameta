@@ -21,7 +21,7 @@ import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 //
 // All three functions are optional. Each reports a problem by calling
 //
-//   report({ id, severity, subject, message, reason, node });
+//   report({ id, severity, subject, message, reason, node, missingTranslation });
 //
 // where only `message` is required; IReportedProblem below says what each one is.
 
@@ -64,6 +64,10 @@ export interface IReportedProblem {
   // Any node of the Document the check was given. findLametaSource() in
   // export/lametaSourceComment.ts maps it to the place in lameta to fix it.
   node?: Node;
+  // Optional. True when the problem is that `node` lacks a translation. The user is
+  // then taken to where they enter its translations, which for a value from a
+  // vocabulary, such as a role, is the Translations tab instead of the field.
+  missingTranslation?: boolean;
 }
 
 // The rules file that comes with lameta for this archive configuration, if it has one.

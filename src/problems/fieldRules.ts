@@ -10,6 +10,11 @@ import { FieldRule } from "../model/field/FieldDefinition";
 import { LanguageSlot } from "../model/field/TextHolder";
 import { NavigationTarget } from "../navigation/NavigationTarget";
 import { ProblemSeverity } from "./rulesFile";
+import {
+  isTranslatedOnTranslationsTab,
+  translateVocabularyValue,
+  whereToTranslate,
+} from "../model/Project/whereToTranslate";
 
 // Checks the rules that fields.json5 sets on single fields (see the rule properties
 // of FieldDefinition) against the project's own data. No export is involved.
@@ -31,6 +36,8 @@ export interface IFieldProblem extends IProblemWording {
   checkId: string;
   severity: ProblemSeverity;
   target: NavigationTarget;
+  // the session that the problem is in, when `target` is outside it
+  sessionId?: string;
   // the field that breaks the rule, so that its editor can show the problem too
   field?: Field;
 }
@@ -91,6 +98,10 @@ export function checkProjectFields(
         sessionProperties,
         metadataLanguageNames,
       })) {
+        const whereTranslated =
+          broken.rule === "translationRequired"
+            ? whereToTranslate(field.key, field.text)
+            : undefined;
         problems.push({
           checkId: broken.rule,
           severity: getRuleSeverity(field, broken.rule),
@@ -98,7 +109,8 @@ export function checkProjectFields(
           text: broken.text,
           reason: broken.reason,
           message: broken.message,
-          target: { ...place, fieldKey: field.key } as NavigationTarget,
+          target: whereTranslated ?? ({ ...place, fieldKey: field.key } as NavigationTarget),
+          sessionId: whereTranslated && place.folderType === "session" ? place.folderId : undefined,
           field,
         });
       }
@@ -346,11 +358,12 @@ export function checkField(
   const translationLanguages = metadataSlotTags
     .filter((tag) => tag !== "en")
     .map((tag) => metadataLanguageNames?.get(tag) ?? tag);
-  if (
-    d.translationRequired &&
-    translationLanguages.length > 0 &&
-    !textsByLanguage.some((x) => x.tag !== "en")
-  ) {
+  // the translations of a vocabulary value are not in the field
+  const key = field.key;
+  const hasTranslation = isTranslatedOnTranslationsTab(key)
+    ? metadataSlotTags.some((tag) => tag !== "en" && !!translateVocabularyValue(key, value, tag))
+    : textsByLanguage.some((x) => x.tag !== "en");
+  if (d.translationRequired && translationLanguages.length > 0 && !hasTranslation) {
     const languages = translationLanguages.join(" " + t`or` + " ");
     add(
       "translationRequired",

@@ -26,7 +26,8 @@ import { Field } from "../model/field/Field";
 import { fieldElement } from "./Imdi-static-fns";
 import { applyCapitalization } from "../model/field/capitalization";
 import { FieldDefinition } from "../model/field/FieldDefinition";
-import { makeLametaSourceComment } from "./lametaSourceComment";
+import { makeLametaSourceComment, makeLametaTranslationsComment } from "./lametaSourceComment";
+import { whereToTranslate } from "../model/Project/whereToTranslate";
 import { NavigationTarget } from "../navigation/NavigationTarget";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import { getCommonFieldDefinition } from "../model/field/ConfiguredFieldDefinitions";
@@ -339,6 +340,7 @@ export default class ImdiGenerator {
         this.vocabularyTranslator.getRoleTranslator(),
         role,
         getCommonFieldDefinition("role"),
+        "role",
       );
     } else {
       this.element("Role", role);
@@ -461,6 +463,7 @@ export default class ImdiGenerator {
           this.vocabularyTranslator.getGenreTranslator(),
           genreValue,
           session.properties.getFieldDefinition("genre"),
+          "genre",
         ),
       );
       this.keysThatHaveBeenOutput.add("Session.genre");
@@ -1266,6 +1269,7 @@ export default class ImdiGenerator {
           this.vocabularyTranslator.getRoleTranslator(),
           role,
           getCommonFieldDefinition("role"),
+          "role",
         ),
       );
 
@@ -1643,7 +1647,11 @@ export default class ImdiGenerator {
   // Puts a lameta-source comment before each element that `write` adds to the
   // current element, saying that it came from `source`. Adds nothing when building
   // a standalone fragment (no current element yet).
-  private withSource(source: NavigationTarget | undefined, write: () => void) {
+  private withSource(
+    source: NavigationTarget | undefined,
+    write: () => void,
+    makeComment: (target: NavigationTarget) => string = makeLametaSourceComment,
+  ) {
     const parent = this.tail as any;
     if (!source || !parent) {
       write();
@@ -1651,7 +1659,7 @@ export default class ImdiGenerator {
     }
     const countBefore = parent.children.length;
     write();
-    const comment = makeLametaSourceComment(source);
+    const comment = makeComment(source);
     parent.children
       .slice(countBefore)
       .filter((child: any) => child.attributes !== undefined)
@@ -1711,6 +1719,31 @@ export default class ImdiGenerator {
     translateFn: (value: string, lang: string) => string | undefined,
     translationKey: string,
     // the field whose capitalization, if it has one, replaces the sentence case below
+    definition?: FieldDefinition,
+    // the vocabulary field that the value is from, for a lameta-translations comment
+    // when the user enters its translations on the Translations tab
+    vocabularyFieldKey?: "genre" | "role",
+  ) {
+    this.withSource(
+      vocabularyFieldKey && whereToTranslate(vocabularyFieldKey, translationKey),
+      () =>
+        this.writeMultilingualVocabularyElement(
+          elementName,
+          englishValue,
+          vocabularyUrl,
+          translateFn,
+          translationKey,
+          definition,
+        ),
+      makeLametaTranslationsComment,
+    );
+  }
+  private writeMultilingualVocabularyElement(
+    elementName: string,
+    englishValue: string,
+    vocabularyUrl: string,
+    translateFn: (value: string, lang: string) => string | undefined,
+    translationKey: string,
     definition?: FieldDefinition,
   ) {
     const inCase = (value: string, sentenceCaseIt: boolean) =>
@@ -1947,6 +1980,8 @@ export default class ImdiGenerator {
         "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
         this.vocabularyTranslator.getGenreTranslator(),
         genre,
+        undefined,
+        "genre",
       );
       this.multilingualVocabularyElement(
         "SubGenre",

@@ -65,6 +65,22 @@ describe("selectTarget", () => {
     expect(state.topTab).toBe("people");
   });
 
+  it("finds the Translations tab for the translations of a role", () => {
+    state.setTopTab("sessions");
+    expect(
+      selectTarget(
+        project,
+        {
+          folderType: "project",
+          vocabularyTranslation: { fieldKey: "role", value: "interviewer" },
+        },
+        state,
+      ),
+    ).toEqual({ found: true });
+    expect(state.topTab).toBe("project");
+    expect(state.projectTab).toBe("translations");
+  });
+
   it("reports a project field that does not exist", () => {
     expect(selectTarget(project, { folderType: "project", fieldKey: "nope" }, state)).toEqual({
       found: false,

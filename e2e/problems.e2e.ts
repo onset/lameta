@@ -4,6 +4,12 @@ import * as os from "os";
 import * as Path from "path";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
+import { ContributorsHelper } from "./contributors-e2e-helpers";
+import {
+  MultilingualTestContext,
+  setupMultilingualTestContextFast,
+  teardownMultilingualTestContext,
+} from "./multilingualTextField-e2e-helpers";
 
 // The Problems sidebar, the problems under fields, and the Export dialog's checks,
 // in a brand-new project: under ELAR, which finds problems at once, and under
@@ -413,6 +419,53 @@ test.describe("Problems in a brand-new ELAR project", () => {
     await expect(exportButton).toBeEnabled();
 
     await cancelExportDialog(page);
+  });
+});
+
+test.describe("A role that lacks a translation, in an ELAR project", () => {
+  let context: MultilingualTestContext;
+
+  test.beforeAll(async () => {
+    // Tok Pisin, because lameta has no built-in Tok Pisin translation of Interviewer
+    context = await setupMultilingualTestContextFast("RoleTranslation", ["eng", "tpi"]);
+  });
+  test.afterAll(async () => {
+    await teardownMultilingualTestContext(context);
+  });
+
+  test("a click goes to the role's row on the Translations tab, and a translation there fixes it", async () => {
+    const { page, project } = context;
+    await newSession(project, page, "ROLE-TRANSLATION");
+    const contributors = new ContributorsHelper(page, project);
+    await contributors.goToContributorsTab();
+    await contributors.addContributor("Dami Asan");
+    await contributors.setRole(0, "Interviewer");
+
+    await openSidebar(page);
+    // the problem is the session's, though its translation is entered on the Project tab
+    const roleTranslation = groupOf(page, "session:ROLE-TRANSLATION").locator(
+      entries(page, "checkActorRole/translation"),
+    );
+    await expect(roleTranslation).toBeVisible({ timeout: 15000 });
+
+    await roleTranslation.click();
+    await expect(page.getByTestId("project-vocabulary-translations-tab")).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    const highlighted = page.locator(".navigation-highlight");
+    await expect(highlighted).toHaveAttribute("data-vocabulary-field", "role", {
+      timeout: 15000,
+    });
+    await expect(highlighted).toHaveAttribute("data-vocabulary-value", "interviewer");
+    await expect(highlighted).toBeInViewport();
+    await expect(roleTranslation).toBeVisible();
+
+    const tokPisin = highlighted.locator("input:not([disabled])").first();
+    await expect(tokPisin).toBeFocused();
+    await page.keyboard.type("Man bilong askim");
+    await page.keyboard.press("Tab");
+    await expect(roleTranslation).toHaveCount(0, { timeout: 15000 });
   });
 });
 

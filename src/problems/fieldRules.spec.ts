@@ -341,6 +341,37 @@ describe("checkProjectFields on the Edolo sample under ELAR", () => {
     document.properties.setText("access", "");
   });
 
+  // no field of ELAR's needs this yet; it shows that if one did, a click would go to
+  // where the translation is entered
+  it("sends a genre's missing translation to its row on the Translations tab", () => {
+    const genreField = session.properties.getValueOrThrow("genre");
+    const genre = genreField.text;
+    const metadataLanguages = project.properties.getTextStringOrEmpty("metadataLanguages");
+    genreField.definition.translationRequired = true;
+    try {
+      project.properties.setText("metadataLanguages", "en;es");
+      session.properties.setText("genre", "weird stuff");
+      const genreProblems = () => checkProjectFields(project).filter((p) => p.field === genreField);
+      expect(genreProblems().map((p) => [p.checkId, p.target, p.sessionId])).toEqual([
+        [
+          "translationRequired",
+          {
+            folderType: "project",
+            vocabularyTranslation: { fieldKey: "genre", value: "weird stuff" },
+          },
+          "ETR009",
+        ],
+      ]);
+      // the translation is in the project's vocabulary translations, not in the field
+      project.vocabularyTranslations.setGenre("weird stuff", "custom", { es: "cosas raras" });
+      expect(genreProblems()).toEqual([]);
+    } finally {
+      genreField.definition.translationRequired = undefined;
+      session.properties.setText("genre", genre);
+      project.properties.setText("metadataLanguages", metadataLanguages);
+    }
+  });
+
   it("counts a person's languages", () => {
     const person = project.persons.items[0] as Person;
     const languageProblems = () =>
