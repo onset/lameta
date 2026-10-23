@@ -15,6 +15,10 @@ import {
  * When there is more than one language, the strings are stored in tagged format:
  *   [[en]]This is the English text[[es]]Este es el texto en español[[fr]]C'est le texte en français
  *
+ * The implementation reads that format with one regular expression for a [[tag]]text pair,
+ * which keeps the serialization format transparent. The format cannot hold "[[" or "]]"
+ * inside a text, so text that is not entirely such pairs is read as plain text.
+ *
  * Slash syntax migration:
  *   Text like "casa/house/maison" can be virtually interpreted as multilingual
  *   without modifying the stored text. Use `looksLikeSlashSyntax()` to detect,
@@ -284,12 +288,14 @@ export class TextHolder {
       return { en: this._text };
     }
 
+    // add each axis/text pair to the result
     const result: MultiAxisText = {};
     for (const [, tag, text] of this._text.matchAll(TextHolder.axisTextPairPattern)) {
       result[tag] = text;
     }
     return result;
   }
+  // a language tag in [[ ]], then its text, which holds neither [[ nor ]]
   private static readonly axisTextPair = String.raw`\[\[([^\[\]]+)\]\]((?:(?!\[\[|\]\]).)*)`;
   private static readonly taggedTextPattern = new RegExp(`^(?:${TextHolder.axisTextPair})+$`, "s");
   private static readonly axisTextPairPattern = new RegExp(TextHolder.axisTextPair, "gs");
