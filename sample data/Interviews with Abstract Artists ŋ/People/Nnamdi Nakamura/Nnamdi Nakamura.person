@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <name type="string">Nnamdi Nakamura</name>
+  <birthYear type="string">1991</birthYear>
+  <gender type="string">Other</gender>
+  <primaryOccupation type="string">Gallery cleaner and, by accident, prize-winning artist</primaryOccupation>
+  <ethnicGroup type="string">Ladderism</ethnicGroup>
+  <description type="string">Nnamdi Nakamura belongs to Frameless Expressionism and works in a lift between floors 3 and 4. Asked about influences, Nnamdi Nakamura said only &quot;a dot, considered at length&quot;.</description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="true"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

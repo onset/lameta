@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <name type="string">Þóra Quispe</name>
+  <birthYear type="string">1938</birthYear>
+  <gender type="string">Other</gender>
+  <primaryOccupation type="string">Paints with ladders</primaryOccupation>
+  <ethnicGroup type="string">Lateral Minimalism</ethnicGroup>
+  <description type="string">Þóra Quispe belongs to Hesitationism and works in the disused swimming pool. Asked about influences, Þóra Quispe said only &quot;drawing with a ladder&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="true"></language>
+    <language tag="eng" primary="false" mother="false" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

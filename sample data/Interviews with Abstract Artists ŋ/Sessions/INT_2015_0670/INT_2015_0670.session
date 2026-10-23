@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2015_0670</id>
+  <title type="string">Towards a portrait of the wind, from behind</title>
+  <description type="string">Chiamaka Kowalczyk talks about what the gallery cleaner threw away. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">etr;tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">a lift between floors 3 and 4</location>
+  <access type="string">S</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Accidental Constructivism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2015-11-27</date>
+  <Contributions>
+    <contributor>
+      <name>Chiamaka Kowalczyk</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía Pereira</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Chiamaka Kowalczyk</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2021_0576</id>
+  <title type="string">About the moment before the first mark</title>
+  <description type="string">Ếlodie Ulloa talks about the shadow of a canvas that was never painted. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">photograph</genre>
+  <location type="string">the disused swimming pool</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2021-01-17</date>
+  <Contributions>
+    <contributor>
+      <name>Ếlodie Ulloa</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía Pereira</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Malak Pereira</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

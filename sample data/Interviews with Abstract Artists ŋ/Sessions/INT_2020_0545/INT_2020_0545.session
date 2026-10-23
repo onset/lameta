@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2020_0545</id>
+  <title type="string">Beyond an exhibition in total darkness</title>
+  <description type="string">Tenzin Lindqvist talks about the emotional weight of beige. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</description>
+  <languages type="string">etr;tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">the artist's kitchen</location>
+  <access type="string">O</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2020-06-14</date>
+  <Contributions>
+    <contributor>
+      <name>Tenzin Lindqvist</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

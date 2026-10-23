@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2019_0684</id>
+  <title type="string">On why the frame is the real work</title>
+  <description type="string">Wanjiru Lindqvist talks about drawing with a ladder. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">proverb</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2019-01-13</date>
+  <Contributions>
+    <contributor>
+      <name>Wanjiru Lindqvist</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Greta Eriksdóttir</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi Blanc</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Tenzin Whitehorse</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

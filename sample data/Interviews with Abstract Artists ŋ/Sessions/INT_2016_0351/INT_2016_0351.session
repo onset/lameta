@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2016_0351</id>
+  <title type="string">Beyond the long argument with the colour blue</title>
+  <description type="string">Saoirse Søndergaard talks about how to hang a painting upside down on purpose. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">unintelligible_speech</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">O</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2016-04-16</date>
+  <Contributions>
+    <contributor>
+      <name>Saoirse Søndergaard</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Quilla Ulloa</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

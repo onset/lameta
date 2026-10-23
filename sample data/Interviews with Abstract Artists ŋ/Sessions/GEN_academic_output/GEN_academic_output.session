@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">GEN_academic_output</id>
+  <title type="string">Towards drawing with a ladder (Academic output)</title>
+  <description type="string">The artist talks about why the frame is the real work. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</description>
+  <genre type="string">academic_output</genre>
+  <access type="string">O</access>
+  <date>2024-02-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Tenzin Yılmaz</name>
+  <birthYear type="string">2000</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Curator of empty frames</primaryOccupation>
+  <ethnicGroup type="string">The Wet Paint School</ethnicGroup>
+  <description type="string">Tenzin Yılmaz belongs to Accidental Constructivism and works in the artist's kitchen. Asked about influences, Tenzin Yılmaz said only &quot;a square that refuses to be a square&quot;.</description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="false"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

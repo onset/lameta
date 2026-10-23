@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">GEN_dictionary</id>
+  <title type="string">On why the frame is the real work (Dictionary)</title>
+  <description type="string">The artist talks about drawing with a ladder. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <genre type="string">dictionary</genre>
+  <access type="string">O</access>
+  <date>2024-02-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

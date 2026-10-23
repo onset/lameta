@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2018_0593</id>
+  <title type="string">Beyond a square that refuses to be a square</title>
+  <description type="string">Nnamdi Mbeki talks about painting the colour of a Tuesday. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">S</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2018-06-06</date>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Tenzin Whitehorse</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Xochitl Quispe</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

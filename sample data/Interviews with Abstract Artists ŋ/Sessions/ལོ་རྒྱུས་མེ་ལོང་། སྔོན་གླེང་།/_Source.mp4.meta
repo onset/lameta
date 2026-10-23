@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MetaData>
+  <Video_Bit_Rate type="string">102 kbps</Video_Bit_Rate>
+  <Resolution type="string">640 x 360</Resolution>
+  <Frame_Rate type="string">25 frames/second</Frame_Rate>
+</MetaData>

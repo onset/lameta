@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Xochitl Rautenbach</name>
+  <birthYear type="string">1968</birthYear>
+  <gender type="string">Other</gender>
+  <primaryOccupation type="string">Painter of one grey square, repeatedly</primaryOccupation>
+  <ethnicGroup type="string">Ladderism</ethnicGroup>
+  <description type="string">Xochitl Rautenbach belongs to Greyscale Romanticism and works in a borrowed greenhouse. Asked about influences, Xochitl Rautenbach said only &quot;an exhibition in total darkness&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+    <language tag="etr" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

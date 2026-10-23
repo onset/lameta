@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <name type="string">Lucía Yılmaz</name>
+  <birthYear type="string">1942</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Performance artist who performs mostly in the car park</primaryOccupation>
+  <ethnicGroup type="string">Post-Squarism</ethnicGroup>
+  <description type="string">Lucía Yılmaz belongs to Neo-Beigeism and works in Studio 4, the old soap factory. Asked about influences, Lucía Yılmaz said only &quot;a sculpture made entirely of hesitation&quot;.</description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

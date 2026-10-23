@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">GEN_oratory</id>
+  <title type="string">On the shadow of a canvas that was never painted (Oratory)</title>
+  <description type="string">The artist talks about triangles as a form of apology. The interview stopped twice because the artist wanted to look at the corner of the room.</description>
+  <genre type="string">oratory</genre>
+  <access type="string">O</access>
+  <date>2024-02-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

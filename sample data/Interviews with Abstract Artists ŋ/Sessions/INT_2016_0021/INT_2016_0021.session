@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2016_0021</id>
+  <title type="string">On why the frame is the real work</title>
+  <description type="string">Zofia Blanc talks about painting the colour of a Tuesday. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">etr;tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2016-10-22</date>
+  <Contributions>
+    <contributor>
+      <name>ZB095</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Wanjiru Gómez</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

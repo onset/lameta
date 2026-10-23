@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2018_0413</id>
+  <title type="string">Notes on the third side of a line</title>
+  <description type="string">Nnamdi Nakamura talks about why the canvas must stay blank. The artist asked that the microphone face away from the painting, so as not to influence it.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Greyscale Romanticism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2018-06-22</date>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Nakamura</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Yusuf Dubois-Ngata</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Quilla O'Shaughnessy</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Jules Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

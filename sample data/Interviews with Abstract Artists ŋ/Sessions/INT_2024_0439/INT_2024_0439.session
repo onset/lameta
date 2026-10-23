@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2024_0439</id>
+  <title type="string">On why the canvas must stay blank</title>
+  <description type="string">Ásdís Mbeki talks about the third side of a line. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Accidental Constructivism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2024-08-20</date>
+  <Contributions>
+    <contributor>
+      <name>Ásdís Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi Tanaka</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ömer O'Shaughnessy</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Wanjiru Mbeki</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

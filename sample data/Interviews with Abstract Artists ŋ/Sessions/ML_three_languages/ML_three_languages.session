@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">ML_three_languages</id>
+  <title type="string">[[en]]Fish[[es]]Pez[[tpi]]Pis</title>
+  <description type="string">[[en]]English only in a multilingual field</description>
+  <genre type="string">narrative</genre>
+  <access type="string">O</access>
+  <date>2024-06-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

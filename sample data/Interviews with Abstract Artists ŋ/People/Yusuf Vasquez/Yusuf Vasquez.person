@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <name type="string">Yusuf Vasquez</name>
+  <birthYear type="string">1974</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Paints with ladders</primaryOccupation>
+  <ethnicGroup type="string">Ladderism</ethnicGroup>
+  <description type="string">Yusuf Vasquez belongs to Greyscale Romanticism and works in the disused swimming pool. Asked about influences, Yusuf Vasquez said only &quot;painting the colour of a Tuesday&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+    <language tag="eng" primary="false" mother="false" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Frameless Expressionism</Movement>
+    <Studio type="string">the artist's kitchen</Studio>
+  </CustomFields>
+</Person>

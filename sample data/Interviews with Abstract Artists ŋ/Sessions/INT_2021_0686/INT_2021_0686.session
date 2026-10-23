@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2021_0686</id>
+  <title type="string">Towards a portrait of the wind, from behind</title>
+  <description type="string">Hiroshi Quispe talks about what the gallery cleaner threw away. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">a lift between floors 3 and 4</location>
+  <access type="string">U</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Accidental Constructivism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2021-03-15</date>
+  <Contributions>
+    <contributor>
+      <name>Hiroshi Quispe</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía Dubois-Ngata</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

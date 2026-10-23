@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2017_0132</id>
+  <title type="string">Against the politics of the colour orange</title>
+  <description type="string">Xochitl Quispe talks about the third side of a line. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">U</access>
+  <accessDescription type="string">The artist asks that this stay closed until the paint is dry.</accessDescription>
+  <status type="string">Skipped</status>
+  <keyword type="string">Frameless Expressionism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2017-01-21</date>
+  <Contributions>
+    <contributor>
+      <name>Xochitl Quispe</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Oona Søndergaard</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ingrid O'Shaughnessy</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ingrid Ulloa</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

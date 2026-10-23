@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">ACC_empty</id>
+  <title type="string">Against the politics of the colour orange</title>
+  <description type="string">The artist talks about a dot, considered at length. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <genre type="string">narrative</genre>
+  <access type="string"></access>
+  <date>2024-04-02</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

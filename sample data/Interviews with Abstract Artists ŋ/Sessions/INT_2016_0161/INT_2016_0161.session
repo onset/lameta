@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2016_0161</id>
+  <title type="string">Towards a portrait of the wind, from behind</title>
+  <description type="string">Nnamdi Mbeki talks about what the gallery cleaner threw away. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">a lift between floors 3 and 4</location>
+  <access type="string">U</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2016-06-22</date>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Yusuf Dubois-Ngata</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Saoirse Rautenbach</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>
