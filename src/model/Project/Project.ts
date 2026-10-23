@@ -14,6 +14,7 @@ import { ProjectDocuments } from "./ProjectDocuments";
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import { asyncTrash, asyncTrashWithContext } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
+import { PatientFS } from "../../other/patientFile";
 import { languageSlotColors } from "../../containers/theme";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -1535,7 +1536,7 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     // read in the metadataPath xml file and then use a regex to extract the value of the AccessProtocol element.
     let contents: string;
     try {
-      contents = fs.readFileSync(metadataPath, "utf8");
+      contents = PatientFS.readFileSyncNoNotify(metadataPath);
     } catch {
       // readMetadataFile records why the file could not be read
       return "default";
