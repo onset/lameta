@@ -34,6 +34,8 @@ app/node_modules
 
 # OSX
 .DS_Store
+# a case in the generated torture project
+!/sample data/Interviews with Abstract Artists*/**/.DS_Store
 
 # App packaged
 release

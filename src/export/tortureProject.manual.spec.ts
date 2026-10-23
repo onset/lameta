@@ -1,0 +1,244 @@
+// Loads a project made by sample-data-generator/torture and runs every exporter over it,
+// recording every exception and notification instead of stopping at the first. Skipped
+// unless LAMETA_TORTURE_DIR names the project folder. Writes report.json and the export
+// output to LAMETA_TORTURE_OUT (default: a temp folder).
+//
+//   $env:LAMETA_TORTURE_DIR="D:\torture-runs\Torture Prøject ŋ"; vp test run src/export/tortureProject.manual.spec.ts
+
+import { describe, it, expect, vi } from "vite-plus/test";
+import fs from "fs";
+import * as Path from "path";
+import * as temp from "temp";
+
+const notifications: Array<{ kind: string; message: string; details?: string }> = [];
+vi.mock("../components/Notify", async (importOriginal) => {
+  const original: any = await importOriginal();
+  const record =
+    (kind: string) =>
+    (...args: any[]) => {
+      notifications.push({
+        kind,
+        message: String(args[0]?.message ?? args[0]),
+        details: args[1] === undefined ? undefined : String(args[1]?.message ?? args[1]),
+      });
+    };
+  return {
+    ...original,
+    NotifyError: record("error"),
+    NotifyWarning: record("warning"),
+    NotifyException: record("exception"),
+    NotifyFileAccessProblem: record("fileAccess"),
+    NotifyRenameProblem: record("rename"),
+    NotifyNoBigDeal: record("noBigDeal"),
+    NotifyErrorWithClick: record("errorWithClick"),
+    NotifyMultipleProjectFiles: record("multipleProjectFiles"),
+  };
+});
+
+import { Project } from "../model/Project/Project";
+import ImdiBundler from "./ImdiBundler";
+import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
+import { getRoCrate } from "./ROCrate/RoCrateExporter";
+import { RoCrateValidator } from "./ROCrate/RoCrateValidator";
+import { makeGenericCsvZipFile } from "./CsvExporter";
+import { makeParadisecCsv } from "./ParadisecCsvExporter";
+// the app validates in the main process; the renderer-side mock always says "valid"
+import { validateImdiAsyncInternal } from "../mainProcess/validateImdi";
+
+const projectDir = process.env.LAMETA_TORTURE_DIR;
+
+interface Failure {
+  step: string;
+  target: string;
+  error: string;
+  stack?: string;
+}
+
+describe.skipIf(!projectDir)("torture project", () => {
+  it("loads and exports, recording every failure", async () => {
+    const out = process.env.LAMETA_TORTURE_OUT ?? temp.mkdirSync("lameta-torture-out");
+    fs.mkdirSync(out, { recursive: true });
+    const failures: Failure[] = [];
+    const facts: Record<string, any> = {};
+    const attempt = async (step: string, target: string, fn: () => any) => {
+      const before = notifications.length;
+      try {
+        const r = await fn();
+        return r;
+      } catch (e: any) {
+        failures.push({
+          step,
+          target,
+          error: String(e?.message ?? e),
+          stack: e?.stack?.split("\n").slice(0, 6).join("\n"),
+        });
+        return undefined;
+      } finally {
+        for (const n of notifications.slice(before)) (n as any).step = `${step}: ${target}`;
+      }
+    };
+
+    const project: Project = (await attempt("load", projectDir!, () =>
+      Project.fromDirectory(projectDir!),
+    )) as Project;
+    expect(project).toBeDefined();
+    if ((project as any).loadingError) {
+      failures.push({ step: "load", target: projectDir!, error: (project as any).loadingError });
+    } else {
+      const folderCount = (sub: string) =>
+        fs
+          .readdirSync(Path.join(projectDir!, sub), { withFileTypes: true })
+          .filter((d) => d.isDirectory()).length;
+      facts.sessionsOnDisk = folderCount("Sessions");
+      facts.sessionsLoaded = project.sessions.items.length;
+      facts.peopleOnDisk = folderCount("People");
+      facts.peopleLoaded = project.persons.items.length;
+
+      // contributors that resolve to no person
+      facts.unresolvedContributors = [];
+      for (const s of project.sessions.items as any[]) {
+        await attempt("contributions", s.displayName, () => {
+          for (const c of s.getAllContributionsToAllFiles()) {
+            if (!project.findPerson(c.personReference))
+              facts.unresolvedContributors.push(
+                `${s.filePrefix}: ${JSON.stringify(c.personReference)} (${c.role})`,
+              );
+          }
+        });
+      }
+
+      // fields that exporters expect to have a definition
+      facts.fieldsWithoutDefinition = [];
+      for (const folder of [
+        project,
+        ...project.sessions.items,
+        ...project.persons.items,
+      ] as any[]) {
+        folder.metadataFile?.properties.forEach((key: string, field: any) => {
+          if (!field.definition) facts.fieldsWithoutDefinition.push(`${folder.filePrefix}: ${key}`);
+        });
+      }
+
+      // what each file would write if saved now, and which values that would lose
+      const leaves = (xml: string): Map<string, string> => {
+        const doc = new DOMParser().parseFromString(xml.replace(/^﻿/, ""), "text/xml");
+        const result = new Map<string, string>();
+        const walk = (el: Element, path: string) => {
+          const kids = Array.from(el.children);
+          if (kids.length === 0) {
+            const text = (el.textContent ?? "").trim();
+            if (text && !result.has(path)) result.set(path, text);
+          }
+          // contributors repeat, so key them by position
+          kids.forEach((k, i) =>
+            walk(
+              k,
+              `${path}/${k.tagName.toLowerCase()}${k.tagName === "contributor" ? `[${i}]` : ""}`,
+            ),
+          );
+        };
+        if (doc.documentElement) walk(doc.documentElement, "");
+        return result;
+      };
+      facts.valuesLostOnSave = [];
+      for (const folder of [
+        project,
+        ...project.sessions.items,
+        ...project.persons.items,
+      ] as any[]) {
+        for (const f of folder.files) {
+          const xml = await attempt("getXml", f.metadataFilePath, () => f.getXml());
+          if (!xml || !fs.existsSync(f.metadataFilePath)) continue;
+          const savedCopy = Path.join(
+            out,
+            "would-save",
+            Path.relative(projectDir!, f.metadataFilePath),
+          );
+          fs.mkdirSync(Path.dirname(savedCopy), { recursive: true });
+          fs.writeFileSync(savedCopy, xml);
+          const before = leaves(fs.readFileSync(f.metadataFilePath, "utf8"));
+          const after = leaves(xml);
+          if ([...before.keys(), ...after.keys()].some((k) => k.startsWith("/parsererror"))) {
+            facts.valuesLostOnSave.push(
+              `${Path.relative(projectDir!, f.metadataFilePath)}: not compared, happy-dom's DOMParser could not parse it`,
+            );
+            continue;
+          }
+          const afterValues = [...after.values()];
+          for (const [p, v] of before) {
+            if (after.get(p) === v) continue;
+            // moved to another element, or appended to one, is not a loss
+            if (afterValues.some((a) => a.includes(v))) continue;
+            facts.valuesLostOnSave.push(
+              `${Path.relative(projectDir!, f.metadataFilePath)} ${p}: ${JSON.stringify(v.slice(0, 80))} -> ${JSON.stringify(after.get(p)?.slice(0, 80) ?? null)}`,
+            );
+          }
+        }
+      }
+
+      // per-session IMDI, so one bad session doesn't hide the others
+      const imdiDir = Path.join(out, "imdi-per-session");
+      fs.mkdirSync(imdiDir, { recursive: true });
+      for (const s of project.sessions.items as any[]) {
+        const xml = await attempt("imdi session", s.filePrefix, () =>
+          ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, s, project),
+        );
+        if (xml) {
+          fs.writeFileSync(Path.join(imdiDir, `${encodeURIComponent(s.filePrefix)}.imdi`), xml);
+          const result: any = await attempt("imdi validate", s.filePrefix, () =>
+            validateImdiAsyncInternal(process.cwd(), xml, "IMDI_3.0_elar.xsd"),
+          );
+          if (result && !result.valid)
+            failures.push({
+              step: "imdi schema",
+              target: s.filePrefix,
+              error: result.errors
+                .slice(0, 3)
+                .map((e: any) => e.message ?? e.rawMessage ?? String(e))
+                .join(" | "),
+            });
+        }
+      }
+
+      for (const [name, mode] of [
+        ["imdi", IMDIMode.RAW_IMDI],
+        ["opex", IMDIMode.OPEX],
+      ] as const) {
+        await attempt(`${name} bundle`, "project", () =>
+          ImdiBundler.saveImdiBundleToFolder(
+            project,
+            Path.join(out, `${name}-bundle`),
+            mode,
+            true,
+            () => true,
+          ),
+        );
+      }
+
+      const crate: any = await attempt("ro-crate", "project", () => getRoCrate(project, project));
+      if (crate) {
+        fs.writeFileSync(Path.join(out, "ro-crate-metadata.json"), JSON.stringify(crate, null, 2));
+        const v = await attempt("ro-crate validate", "project", () =>
+          new RoCrateValidator().validate(crate),
+        );
+        if (v) facts.roCrateValidation = { errors: v.errors, warnings: v.warnings.length };
+      }
+      for (const s of project.sessions.items as any[]) {
+        await attempt("ro-crate session", s.filePrefix, () => getRoCrate(project, s));
+      }
+
+      await attempt("csv zip", "project", () =>
+        makeGenericCsvZipFile(Path.join(out, "export.zip"), project, () => true),
+      );
+      await attempt("paradisec csv", "project", () =>
+        makeParadisecCsv(Path.join(out, "paradisec.csv"), project, () => true),
+      );
+    }
+
+    const report = { projectDir, out, facts, failures, notifications };
+    fs.writeFileSync(Path.join(out, "report.json"), JSON.stringify(report, null, 2));
+    console.log(
+      `torture report: ${Path.join(out, "report.json")} (${failures.length} failures, ${notifications.length} notifications)`,
+    );
+  }, 600_000);
+});

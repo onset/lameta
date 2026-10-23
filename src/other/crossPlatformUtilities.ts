@@ -118,6 +118,11 @@ export function isMacOSMetadataFile(fileName: string): boolean {
   return base.startsWith("._") || base === ".DS_Store";
 }
 
+// File systems on Windows and macOS ignore case, so "Foo.SESSION" is a session's metadata file.
+export function hasMetadataExtension(fileName: string, extensionWithDot: string): boolean {
+  return fileName.toLowerCase().endsWith(extensionWithDot.toLowerCase());
+}
+
 // PERFORMANCE: Replaced glob-based implementation with fs.readdirSync
 // Glob was taking 5800ms for 89 directories, fs.readdirSync takes ~2ms
 // The original used "*.*" pattern which only matches files with extensions,

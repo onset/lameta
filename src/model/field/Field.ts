@@ -155,14 +155,6 @@ export class Field {
     //   //imdiIsClosedVocabulary?: boolean;
     //   isCustom: false
     // };
-    //assert.ok(
-    // this.key.toLowerCase().indexOf("date") === -1 ||
-    //   this.type === FieldType.Date,
-    // "SHOULDN'T " + key + " BE A DATE?"
-    //);
-    if (this.key.toLowerCase().indexOf("date") > -1 && this.type !== FieldType.Date) {
-      console.log("***" + key + " should be a date? ");
-    }
   }
   // returns the label translated or if unavailable, English
   public get labelInUILanguage(): string {
