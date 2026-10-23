@@ -114,12 +114,6 @@ export function normalizeExportFile(relativePath: string, text: string, paths: R
     : normalized;
 }
 
-// true if `inner` is `outer` or a folder below it
-export function isInside(inner: string, outer: string): boolean {
-  const relative = path.relative(path.resolve(outer), path.resolve(inner));
-  return relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
-}
-
 export function listFiles(dir: string, sub = ""): string[] {
   return fs
     .readdirSync(path.join(dir, sub), { withFileTypes: true })

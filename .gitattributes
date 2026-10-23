@@ -9,5 +9,3 @@
 sample[[:space:]]data/*.csv -text
 # the generated torture project must stay byte for byte as the generator writes it (CRLF, BOMs)
 sample[[:space:]]data/Interviews[[:space:]]with[[:space:]]Abstract[[:space:]]Artists*/** -text
-# compare-exports.ts compares these byte for byte
-sample-data-generator/torture/golden-exports/** -text

@@ -13,8 +13,9 @@ export interface CaseRecord {
   tier: Tier;
 }
 
-// Paths in the portable tier must check out on Windows without core.longpaths, from a
-// clone at a path of up to about 90 characters.
+// Paths in the portable tier must stay under Windows' 260-character limit when the project
+// folder's own path is up to about 90 characters, as it is under compare-exports.ts's output
+// folder. Windows programs that are not long-path aware cannot open longer ones.
 export const kMaxPortableRelativePath = 170;
 
 // Windows file systems are case-insensitive, and macOS usually is, so the portable

@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "url";
 import react from "@vitejs/plugin-react";
 import { lingui } from "@lingui/vite-plugin";
-import { defineConfig } from "vite-plus";
+import { configDefaults, defineConfig } from "vite-plus";
 import dsv from "@rollup/plugin-dsv";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
@@ -44,6 +44,8 @@ export default defineConfig({
 
     //deps: { interopDefault: true }, // needed this when I was attempting environment:"node" see https://github.com/vitest-dev/vitest/issues/2544
     include: ["./**/*.spec.ts"],
+    // tmp/ holds other checkouts of lameta, such as the worktree that compare-exports.ts makes
+    exclude: [...configDefaults.exclude, "tmp/**"],
 
     // Note: the __mocks__ system seems to not be working. In mainProcess/__mocks__ there is a MainProcessApiAccess.ts, but it is ignored,
     // so I had to detect when we're tesitng within the real MainProcessApiAccess.ts and create a mock there.
