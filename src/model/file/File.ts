@@ -19,12 +19,7 @@ import {
   getProjectDocumentFieldDefinition,
 } from "../field/ConfiguredFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
-import {
-  NotifyError,
-  NotifyException,
-  NotifyFileAccessProblem,
-  NotifyWarning,
-} from "../../components/Notify";
+import { NotifyError, NotifyFileAccessProblem, NotifyWarning } from "../../components/Notify";
 import _ from "lodash";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 import genres from "../Project/Session/genres.json";
@@ -123,13 +118,14 @@ export /*babel doesn't like this: abstract*/ class File {
   // that need re-reading. See cloudReadGuard.
   public cloudMetadataUnavailable: boolean = false;
 
-  // True when readMetadataFile() failed to parse the on-disk XML (0-byte file,
-  // truncated write from an interrupted cloud sync, etc.). The in-memory
+  // Why readMetadataFile() could not read the metadata file (0-byte file,
+  // truncated write from an interrupted cloud sync, another encoding, a file
+  // from a newer lameta, etc.), or undefined when it could. The in-memory
   // properties are then empty/default, so save() must refuse to write --
   // otherwise it would overwrite the user's real (possibly recoverable) bytes
   // with an empty template. There is no automatic Retry for this (unlike
   // cloudMetadataUnavailable): the file needs manual recovery.
-  public metadataReadFailed: boolean = false;
+  public metadataReadProblem: string | undefined = undefined;
 
   // True when the folder that should contain this file has vanished from disk
   // while the project was open -- e.g. a collaborator deleted/renamed the
@@ -148,7 +144,7 @@ export /*babel doesn't like this: abstract*/ class File {
   // editor) and moved that version aside so our write wouldn't silently revert
   // it. Purely informational; the once-per-change notification is driven by the
   // disk-identity tracking below, not by this flag. Siblings: fileMissing,
-  // metadataReadFailed, cloudMetadataUnavailable.
+  // metadataReadProblem, cloudMetadataUnavailable.
   public metadataChangedExternally: boolean = false;
 
   // On-disk identity (mtimeMs + size) of the metadata file as of the last time
@@ -450,7 +446,7 @@ export /*babel doesn't like this: abstract*/ class File {
       copyProgress: observable,
       cloudStatus: observable,
       cloudMetadataUnavailable: observable,
-      metadataReadFailed: observable,
+      metadataReadProblem: observable,
       fileMissing: observable,
       metadataChangedExternally: observable,
       hydratingSinceMs: observable,
@@ -962,9 +958,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
         let xml: string;
         try {
-          xml = isCloudPlaceholder
-            ? PatientFS.readFileSyncNoNotify(this.metadataFilePath)
-            : PatientFS.readFileSyncWithNotifyAndRethrow(this.metadataFilePath);
+          xml = PatientFS.readFileSyncNoNotify(this.metadataFilePath);
         } catch (err) {
           if (isCloudPlaceholder && isCloudProviderReadFailure(err)) {
             // The provider couldn't hydrate this placeholder. Trip the breaker,
@@ -973,11 +967,8 @@ export /*babel doesn't like this: abstract*/ class File {
             this.markCloudMetadataUnavailable();
             return;
           }
-          // A genuine file problem (missing, locked, corrupt). Preserve the
-          // original notify-and-rethrow behavior.
-          if (isCloudPlaceholder) {
-            NotifyFileAccessProblem(`Could not read ${this.metadataFilePath}`, err);
-          }
+          // A genuine file problem (missing, locked, a folder with the name of a
+          // file): the catch below records it.
           throw err;
         }
 
@@ -1010,16 +1001,14 @@ export /*babel doesn't like this: abstract*/ class File {
           },
           (err, result) => {
             if (err) {
-              throw Error(
-                `There was a problem reading the XML in ${this.metadataFilePath}: ${err.message}`,
-              );
+              throw err;
             }
             xmlAsObject = result;
           },
         );
         if (!xmlAsObject) {
           // there was a sentry error report that seemed to implicate this being null
-          throw new Error(`Got null xmlAsObject in readMetadataFile ${this.metadataFilePath}`);
+          throw new Error(t`The file is empty.`);
         }
         // that will have a root with one child, like "Session" or "Meta". Zoom in on that
         // so that we just have the object with its properties.
@@ -1035,7 +1024,7 @@ export /*babel doesn't like this: abstract*/ class File {
           const current = pkg.version;
           if (compareVersions(minimumVersion, current) === 1) {
             throw Error(
-              `The file ${this.metadataFilePath} is from a later version of lameta. It claims to require at least lameta version ${minimumVersion}. Please upgrade.`,
+              t`It is from a later version of lameta and needs lameta ${minimumVersion} or later.`,
             );
           }
         }
@@ -1058,11 +1047,10 @@ export /*babel doesn't like this: abstract*/ class File {
       // empty/default at this point, so save() must refuse to write -- see the
       // matching guard there. `haveReadMetadataFile` stays true (nothing below
       // resets it, unlike the cloud-placeholder retry path), so a later call to
-      // this method just no-ops instead of re-attempting the read -- which is
-      // also why NotifyException below cannot fire more than once per file load.
-      this.metadataReadFailed = true;
-      NotifyException(err, `There was a problem reading ${this.metadataFilePath}`);
-      throw err;
+      // this method just no-ops instead of re-attempting the read. The rest of
+      // the project still loads; the problem list and the file's own pane say
+      // what went wrong, so there is no notification here.
+      this.metadataReadProblem = err instanceof Error ? err.message : String(err);
     } finally {
       sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
     }
@@ -1117,7 +1105,7 @@ export /*babel doesn't like this: abstract*/ class File {
     // readMetadataFile's catch), so writing them would destroy the user's real
     // -- possibly still recoverable -- bytes on disk. There is no automatic
     // Retry for this case, so leave the file alone for manual recovery.
-    if (this.metadataReadFailed) {
+    if (this.metadataReadProblem !== undefined) {
       console.warn(
         `Refusing to save ${this.metadataFilePath} because its metadata failed to read/parse; the file on disk was left untouched.`,
       );
