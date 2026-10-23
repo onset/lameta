@@ -1,4 +1,4 @@
-import { OtherFile } from "./File";
+import { Contribution, OtherFile } from "./File";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
@@ -202,6 +202,26 @@ describe("file", () => {
       } finally {
         fs.removeSync(tmpFolder);
       }
+    }
+  });
+
+  it("keeps a contributor whose name is blank but who has a role", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
+      <Contributions>
+        <contributor><name>   </name><role>consultant</role></contributor>
+      </Contributions>
+    `);
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(f.contributions.map((c) => c.role)).toEqual(["consultant"]);
+      // the empty row that the contributors table keeps at the bottom
+      f.contributions.push(new Contribution("", "", ""));
+      f.save(/*forceSave*/ true);
+
+      const reloaded = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(reloaded.contributions.map((c) => c.role)).toEqual(["consultant"]);
+    } finally {
+      fs.removeSync(tmpFolder);
     }
   });
 
