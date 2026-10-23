@@ -294,6 +294,26 @@ describe("TextHolder migration: multilingual ↔ monolingual", () => {
       expect(textHolder.getTextAxis("en")).toBe(textWithBrackets);
     });
 
+    it.each(["[[en]]a]]b", "[[en]Fish", "[[]]Fish", "[[en]]Fish[[es"])(
+      "should read malformed tagged text %s as plain text",
+      (malformed) => {
+        const textHolder = new TextHolder();
+        textHolder.monoLingualText = malformed;
+
+        expect(textHolder.getTextAxis("en")).toBe(malformed);
+        expect(textHolder.getAllNonEmptyTextAxes()).toEqual(["en"]);
+        expect(textHolder.getEffectiveSlotTags(["en", "es"])).toEqual(["en"]);
+        expect(textHolder.getFirstNonEmptyText(["en"])).toBe(malformed);
+      },
+    );
+
+    it("should let the user correct malformed tagged text", () => {
+      const textHolder = new TextHolder();
+      textHolder.monoLingualText = "[[en]]a]]b";
+      textHolder.setTextAxis("en", "ab");
+      expect(textHolder.getSerialized()).toBe("ab");
+    });
+
     it("should handle multilingual text without English", () => {
       const textHolder = new TextHolder();
       textHolder.setTextAxis("es", "solo español");
