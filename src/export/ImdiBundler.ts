@@ -7,7 +7,7 @@ import * as fs from "fs-extra";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { sanitizeForExport } from "../other/sanitizeForArchive";
 import { taggedAxis } from "../model/field/TextHolderMigration";
-import { fileExportNames, sessionFolderExportNames } from "./exportNames";
+import { corpusExportName, fileExportNames, sessionFolderExportNames } from "./exportNames";
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import { NotifyError } from "../components/Notify";
@@ -253,10 +253,7 @@ export default class ImdiBundler {
 
     return {
       imdiXml: corpusImdi,
-      imdiPath: Path.join(
-        targetDirForProjectFile,
-        sanitizeForExport(`${project.displayName}${extensionWithDot}`),
-      ),
+      imdiPath: Path.join(targetDirForProjectFile, corpusExportName(project) + extensionWithDot),
       displayName: project.displayName,
     };
   }
@@ -500,11 +497,22 @@ export default class ImdiBundler {
 
     // Build filesToCopy from the ORIGINAL consent files (not the temp copies)
     if (copyInProjectFiles) {
+      // The consent IMDI links to the copies in the dummy session, which have the original
+      // files' names, so name each original file as the IMDI names its copy
+      const copyExportNames = fileExportNames(dummySession.files);
+      const exportNameOfCopyNamed = new Map(
+        dummySession.files.map((f) => [
+          f.getNameToUseWhenExportingUsingTheActualFile(),
+          copyExportNames.get(f)!,
+        ]),
+      );
       // Track which files we've already added (by their destination name) to avoid duplicates
       const addedFiles = new Set<string>();
       originalConsentFiles.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-          const destName = sanitizeForExport(f.getNameToUseWhenExportingUsingTheActualFile());
+          const destName = exportNameOfCopyNamed.get(
+            f.getNameToUseWhenExportingUsingTheActualFile(),
+          )!;
           if (!addedFiles.has(destName)) {
             addedFiles.add(destName);
             filesToCopy.push({

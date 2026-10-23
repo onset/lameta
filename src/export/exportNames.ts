@@ -31,13 +31,19 @@ export function uniqueExportNames(names: string[], taken: string[] = []): string
   return result;
 }
 
-// The name of each session's folder in an IMDI or OPEX export. It is worked out from all
-// of the project's sessions, so that it does not depend on which of them are exported.
+// The name of the corpus file of an IMDI or OPEX export, without its extension
+export function corpusExportName(project: Project): string {
+  return uniqueExportNames([project.displayName], kDocumentFolderNames)[0];
+}
+
+// The name of each session's folder in an IMDI or OPEX export, which also names its IMDI
+// or OPEX file. It is worked out from all of the project's sessions, so that it does not
+// depend on which of them are exported.
 export function sessionFolderExportNames(project: Project): Map<Folder, string> {
   const sessions = project.sessions.items;
   const names = uniqueExportNames(
     sessions.map((s) => Path.basename(s.directory)),
-    kDocumentFolderNames,
+    [...kDocumentFolderNames, corpusExportName(project)],
   );
   return new Map(sessions.map((s, i) => [s, names[i]]));
 }

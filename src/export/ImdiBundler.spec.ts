@@ -199,6 +199,10 @@ describe("generateExportData async generator", () => {
   });
 });
 
+// the text of each of the given elements in an IMDI document
+const links = (xml: string, element: string) =>
+  [...xml.matchAll(new RegExp(`<${element}[^>]*>([^<]*)</${element}>`, "g"))].map((m) => m[1]);
+
 describe("names that Windows or the archive cannot take", () => {
   let hostileProject: Project;
   // "Tape 1" and "Tape_1" are different folders that sanitize to the same name
@@ -257,9 +261,6 @@ describe("names that Windows or the archive cannot take", () => {
     }
   }
 
-  const links = (xml: string, element: string) =>
-    [...xml.matchAll(new RegExp(`<${element}[^>]*>([^<]*)</${element}>`, "g"))].map((m) => m[1]);
-
   it.each([
     ["IMDI", IMDIMode.RAW_IMDI],
     ["OPEX", IMDIMode.OPEX],
@@ -314,6 +315,79 @@ describe("names that Windows or the archive cannot take", () => {
           fs.readFileSync(copy.source, "utf8"),
         );
       }
+    }
+  });
+});
+
+describe("names that clash only after sanitizing", () => {
+  // A project with sessions "Tape 1" and "Tape_1", whose files are contributed to by two
+  // people with consent files "a b Consent.JPG" and "a_b Consent.JPG", and whose corpus
+  // file would be named like the numbered session's file
+  function makeProject(): Project {
+    const dir = Path.join(temp.mkdirSync("lameta clashing names"), "Clash");
+    const edolo = "sample data/Edolo sample";
+    const sessionXml = fs.readFileSync(`${edolo}/Sessions/ETR009/ETR009.session`, "utf8");
+    for (const folder of ["Tape 1", "Tape_1"]) {
+      const sessionDir = Path.join(dir, "Sessions", folder);
+      fs.mkdirSync(sessionDir, { recursive: true });
+      fs.writeFileSync(Path.join(sessionDir, folder + ".session"), sessionXml);
+      fs.writeFileSync(Path.join(sessionDir, "notes.txt"), "notes");
+      fs.writeFileSync(
+        Path.join(sessionDir, "notes.txt.meta"),
+        `<?xml version="1.0" encoding="utf-8"?>
+<MetaData>
+  <contributions type="xml">
+    <contributor><name>Awi Heole</name><role>speaker</role></contributor>
+    <contributor><name>Ilawi Amosa</name><role>speaker</role></contributor>
+  </contributions>
+</MetaData>`,
+      );
+    }
+    for (const [person, consent] of [
+      ["Awi_Heole", "a b Consent.JPG"],
+      ["Ilawi_Amosa", "a_b Consent.JPG"],
+    ]) {
+      const personDir = Path.join(dir, "People", person);
+      fs.mkdirSync(personDir, { recursive: true });
+      fs.copyFileSync(
+        `${edolo}/People/${person}/${person}.person`,
+        Path.join(personDir, `${person}.person`),
+      );
+      fs.writeFileSync(Path.join(personDir, consent), "consent of " + person);
+    }
+    const project = Project.fromDirectory(dir);
+    project.properties.setText("name", "");
+    project.properties.setText("title", "Tape_1_2");
+    return project;
+  }
+
+  it("writes every session, consent file and corpus to a place of its own", async () => {
+    const project = makeProject();
+    const target = temp.mkdirSync("lameta clashing names output");
+    const generator = ImdiBundler.generateExportData(
+      project,
+      target,
+      IMDIMode.RAW_IMDI,
+      true,
+      () => true,
+    );
+    const sessions: ExportSessionData[] = [];
+    let result = await generator.next();
+    while (!result.done) {
+      sessions.push(result.value as ExportSessionData);
+      result = await generator.next();
+    }
+    const corpus = result.value;
+    const consent = sessions.find((s) => s.sessionId === "ConsentDocuments")!;
+    expect(consent.filesToCopy.length).toBe(2);
+
+    const written = [corpus.imdiPath, ...sessions.map((s) => s.imdiPath)];
+    expect(new Set(written.map((p) => p.toLowerCase())).size).toBe(written.length);
+
+    const destinations = consent.filesToCopy.map((f) => f.destination);
+    expect(new Set(destinations).size).toBe(2);
+    for (const link of links(consent.imdiXml, "ResourceLink").filter((l) => l)) {
+      expect(destinations).toContain(Path.join(Path.dirname(consent.imdiPath), link));
     }
   });
 });
