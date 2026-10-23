@@ -91,3 +91,38 @@ test.describe("metadata files that lameta cannot read", () => {
     expect(fs.readFileSync(sessionPath("Good", "corrupt.wav.meta"), "utf8")).toBe(truncatedMeta);
   });
 });
+
+test.describe("a project whose .sprj lameta cannot read", () => {
+  test.setTimeout(120_000);
+  let sprj: string;
+
+  test.beforeAll(async () => {
+    const first = new LametaE2ERunner();
+    const created = await launchWithProject(first, "UnreadableSprj");
+    await first.quit();
+    sprj = Path.join(created.projectDirectory, Path.basename(created.projectDirectory) + ".sprj");
+    fs.writeFileSync(sprj, "");
+
+    lameta = new LametaE2ERunner();
+    page = await lameta.launch({ extraArgs: [sprj] });
+    await lameta.cancelRegistration();
+    project = Object.assign(new E2eProject(lameta), {
+      projectDirectory: created.projectDirectory,
+    });
+    await page.getByTestId("project-tab").waitFor({ state: "visible", timeout: 15000 });
+  });
+  test.afterAll(async () => {
+    await lameta?.quit();
+  });
+
+  test("shows why on the tabs that edit the project, and writes nothing", async () => {
+    await project.goToProject();
+    for (const tab of ["project-configuration-tab", "project-funding-project-tab"]) {
+      await page.getByTestId(tab).click();
+      await expect(page.getByTestId("unreadable-metadata")).toBeVisible();
+    }
+    await project.goToSessions();
+    await project.goToProject();
+    expect(fs.readFileSync(sprj, "utf8")).toBe("");
+  });
+});

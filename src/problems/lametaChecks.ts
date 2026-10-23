@@ -6,42 +6,52 @@ import { Person } from "../model/Project/Person/Person";
 import { Folder } from "../model/Folder/Folder";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { IFieldProblem, wordProblem } from "./fieldRules";
+import { File } from "../model/file/File";
+import { NavigationTarget } from "../navigation/NavigationTarget";
 
 // Checks that lameta makes for every archive configuration, beyond the rules of
-// single fields: metadata files that lameta could not read, file names against
-// the configuration's fileNameRules, and contributors who have no matching person. Like the field rules, they read only
-// the project's own data, so they are cheap enough to run after each edit.
+// single fields: metadata files that lameta could not read, file names against the
+// configuration's fileNameRules, and contributors who have no matching person. Like
+// the field rules, they read only the project's own data, so they are cheap enough
+// to run after each edit.
 export function checkProjectFolders(project: Project): IFieldProblem[] {
   const problems: IFieldProblem[] = [];
+  const checkReadable = (file: File, target: NavigationTarget, text: string) => {
+    if (file.metadataReadProblem === undefined) return;
+    problems.push({
+      checkId: "metadataUnreadable",
+      severity: "error",
+      ...wordProblem(Path.basename(file.metadataFilePath), text, file.metadataReadProblem),
+      target,
+    });
+  };
+  const couldNotBeRead = () =>
+    t({
+      message: "could not be read.",
+      comment: 'Follows a file name, as in "song.wav.meta could not be read."',
+    });
   const checkFiles = (folder: Folder, folderType: "session" | "person", folderId: string) => {
     for (const file of folder.files) {
-      if (file.metadataReadProblem !== undefined) {
-        const isFolderFile = file === folder.metadataFile;
-        problems.push({
-          checkId: "metadataUnreadable",
-          severity: "error",
-          ...wordProblem(
-            Path.basename(file.metadataFilePath),
-            isFolderFile
-              ? folderType === "session"
-                ? t({
-                    message: "could not be read, so export leaves this session out.",
-                    comment: 'Follows a file name, as in "ETR009.session could not be read…"',
-                  })
-                : t({
-                    message: "could not be read, so export leaves this person out.",
-                    comment: 'Follows a file name, as in "Awi.person could not be read…"',
-                  })
-              : t({
-                  message: "could not be read.",
-                  comment: 'Follows a file name, as in "song.wav.meta could not be read."',
-                }),
-            file.metadataReadProblem,
-          ),
-          target: isFolderFile
-            ? { folderType, folderId }
-            : { folderType, folderId, fileName: file.getTextProperty("filename", "") },
-        });
+      if (file === folder.metadataFile) {
+        checkReadable(
+          file,
+          { folderType, folderId },
+          folderType === "session"
+            ? t({
+                message: "could not be read, so export leaves this session out.",
+                comment: 'Follows a file name, as in "ETR009.session could not be read…"',
+              })
+            : t({
+                message: "could not be read, so export leaves this person out.",
+                comment: 'Follows a file name, as in "Awi.person could not be read…"',
+              }),
+        );
+      } else {
+        checkReadable(
+          file,
+          { folderType, folderId, fileName: file.getTextProperty("filename", "") },
+          couldNotBeRead(),
+        );
       }
       if (file === folder.metadataFile) continue;
       const fileName = Path.basename(file.getActualFilePath());
@@ -109,6 +119,22 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
   }
   for (const person of project.persons.items as Person[]) {
     checkFiles(person, "person", person.getIdToUseForReferences());
+  }
+  if (project.metadataFile) {
+    checkReadable(project.metadataFile, { folderType: "project" }, couldNotBeRead());
+  }
+  const documentFolders = [
+    ["description", project.descriptionFolder],
+    ["other", project.otherDocsFolder],
+  ] as const;
+  for (const [documents, folder] of documentFolders) {
+    for (const file of folder?.files ?? []) {
+      checkReadable(
+        file,
+        { folderType: "project", documents, fileName: file.getTextProperty("filename", "") },
+        couldNotBeRead(),
+      );
+    }
   }
   return problems;
 }

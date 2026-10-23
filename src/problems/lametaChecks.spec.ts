@@ -142,5 +142,27 @@ describe("checkProjectFolders", () => {
         ],
       ]);
     });
+
+    it("reports the project's .sprj", () => {
+      const project = loadEdolo(undefined, (dir) =>
+        fs.writeFileSync(Path.join(dir, "Edolo sample.sprj"), ""),
+      );
+      expect(unreadable(project)).toEqual([
+        ["error", "Edolo sample.sprj", { folderType: "project" }],
+      ]);
+    });
+
+    it("reports a project document whose .meta could not be read", () => {
+      const project = loadEdolo(undefined, (dir) =>
+        fs.writeFileSync(Path.join(dir, "OtherDocuments", "some other doc.txt.meta"), "<Meta"),
+      );
+      expect(unreadable(project)).toEqual([
+        [
+          "error",
+          "some other doc.txt.meta",
+          { folderType: "project", documents: "other", fileName: "some other doc.txt" },
+        ],
+      ]);
+    });
   });
 });

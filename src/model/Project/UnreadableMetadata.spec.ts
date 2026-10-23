@@ -100,6 +100,18 @@ describe("a project with metadata files that lameta cannot read", () => {
     expect(session(project, "Evicted").metadataFile!.metadataReadProblem).toBeTruthy();
   });
 
+  it("opens with an unreadable .sprj and never writes over it", () => {
+    const sprj = Path.join(projectDirectory, "Torture.sprj");
+    fs.writeFileSync(sprj, "");
+
+    const project = open();
+
+    expect(project.metadataFile!.metadataReadProblem).toBeTruthy();
+    expect(session(project, "Good")).toBeDefined();
+    project.saveFolderMetaData();
+    expect(fs.readFileSync(sprj, "utf8")).toBe("");
+  });
+
   it("names the version that a file from a newer lameta needs", () => {
     writeSession(
       "Future",
