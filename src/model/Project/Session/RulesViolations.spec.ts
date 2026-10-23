@@ -17,4 +17,13 @@ describe("Session.getRulesViolationsString", () => {
     session.metadataFile!.contributions.push(new Contribution("Hatton", "speaker", ""));
     expect(session.getRulesViolationsString([])).toMatch(/: Hatton \(speaker\)$/);
   });
+
+  it("finds a person whose id differs from the contributor's name only by spaces or accent composition", () => {
+    const project = Project.fromDirectory(temp.mkdirSync("lameta rules violations test"));
+    const session = project.addSession();
+    session.metadataFile!.contributions.push(
+      new Contribution(" José Núñez ".normalize("NFD"), "speaker", ""),
+    );
+    expect(session.getRulesViolationsString(["José Núñez".normalize("NFC")])).toBe("");
+  });
 });

@@ -297,7 +297,7 @@ export class Session extends Folder {
       }
     });
     contributors.forEach((c) => {
-      if (!existingPersonIds.some((id) => id.toLowerCase() == c.toLowerCase())) {
+      if (!existingPersonIds.some((id) => personReferenceKey(id) === personReferenceKey(c))) {
         const roles = contributorRoles.get(c)!.join(", ");
         violations.push(`${c} (${roles})`);
       }
