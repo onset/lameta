@@ -83,6 +83,11 @@ export class Contribution {
     this.role = role;
     this.comments = comments;
   }
+
+  // A row with only a role or comments is kept; the person may not be known yet.
+  public get isEmpty(): boolean {
+    return !this.personReference?.trim() && !this.role?.trim() && !this.comments?.trim();
+  }
 }
 
 export /*babel doesn't like this: abstract*/ class File {
@@ -196,23 +201,13 @@ export /*babel doesn't like this: abstract*/ class File {
     this.metadataFilePath = "error: this file was previously put in trash";
     this.describedFileOrLinkFilePath = "";
   }
-  protected addDatePropertyFromString(key: string, dateString: string) {
-    // Note: I am finding it rather hard to not mess up dates, because in javascript
-    // everything (including moment) wants to over-think things and convert dates
-    // to one's local timezone. You get bugs like having the file say 2015-3-21, but
-    // then saving as 2015-3-20 because you're running this in America. Ugghhh.
-    // It's just too easy to mess up. So what I'm trying for now
-    // is to confine anything that could mess with the date to 2 places: here,
-    // at import time where we have to be permissive, and when displaying in the UI.
-    // Other than those two places, the rule is that all strings are YYYY-MM-DD in UTC.
-
-    //assert.ok(moment(dateString).isValid()); //todo: handle bad data
-
-    this.properties.setValue(
-      key,
-      new Field(key, FieldType.Date, this.normalizeIncomingDateString(dateString)),
-    );
-  }
+  // Note: I am finding it rather hard to not mess up dates, because in javascript
+  // everything (including moment) wants to over-think things and convert dates
+  // to one's local timezone. You get bugs like having the file say 2015-3-21, but
+  // then saving as 2015-3-20 because you're running this in America. Ugghhh.
+  // So anything that could mess with the date is confined to 2 places: here,
+  // at import time where we have to be permissive, and when displaying in the UI.
+  // Other than those two places, the rule is that all strings are YYYY-MM-DD in UTC.
   protected normalizeIncomingDateString(dateString: string): string {
     if (!dateString || dateString.trim().length === 0) {
       return "";
@@ -271,12 +266,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     // If both US and EU interpretations parse, treat as ambiguous regardless of equality
     if (usResults.length > 0 && euResults.length > 0) {
-      this.setTextProperty(
-        "notes",
-        `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
-          moment.now(),
-        ).toString()}`,
-      );
+      this.reportUnparseableDate(dateString);
       return "";
     }
 
@@ -302,13 +292,23 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     // If we reach here, either nothing parsed or it was ambiguous
-    this.setTextProperty(
-      "notes",
+    this.reportUnparseableDate(dateString);
+    return ""; // Our GUI controls need an unambiguous date, so it's safer to just clear the date and leave it for the human to fix it using the error we put in the notes
+  }
+  // The notes may not have been read yet, so these are added to them after loading.
+  private dateParsingProblems: string[] = [];
+  private reportUnparseableDate(dateString: string) {
+    this.dateParsingProblems.push(
       `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
         moment.now(),
       ).toString()}`,
     );
-    return ""; // Our GUI controls need an unambiguous date, so it's safer to just clear the date and leave it for the human to fix it using the error we put in the notes
+  }
+  private addDateParsingProblemsToNotes() {
+    if (this.dateParsingProblems.length === 0) return;
+    const notes = this.properties.getTextStringOrEmpty("notes");
+    this.setTextProperty("notes", [notes, ...this.dateParsingProblems].filter((n) => n).join("\n"));
+    this.dateParsingProblems = [];
   }
   protected addDateProperty(key: string, date: Date, persist: boolean = true) {
     this.checkType(key, date);
@@ -806,26 +806,16 @@ export /*babel doesn't like this: abstract*/ class File {
       processedTextValue = normalizedGenre;
     }
 
-    // ---- DATES  --
-    if (xmlTag.toLowerCase().indexOf("date") > -1) {
-      const normalizedDateString = this.normalizeIncomingDateString(processedTextValue);
-      if (this.properties.containsKey(fixedKey)) {
-        const existingDateField = this.properties.getValueOrThrow(fixedKey);
-        existingDateField.setValueFromString(normalizedDateString);
-        //console.log("11111" + key);
-      } else {
-        this.addDatePropertyFromString(fixedKey, normalizedDateString);
-      }
+    const existingField = this.properties.containsKey(fixedKey)
+      ? this.properties.getValueOrThrow(fixedKey)
+      : undefined;
+    if (existingField?.type === FieldType.Date) {
+      existingField.setValueFromString(this.normalizeIncomingDateString(processedTextValue));
     }
-
-    // --- Text ----
-    // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
-    else if (this.properties.containsKey(fixedKey)) {
-      const v = this.properties.getValueOrThrow(fixedKey);
-      v.setValueFromString(processedTextValue);
-      //console.log("11111" + key);
+    // if it's already defined, let the existing field parse this into whatever structure it has
+    else if (existingField) {
+      existingField.setValueFromString(processedTextValue);
     } else {
-      //console.log("extra" + fixedKey + "=" + value);
       // otherwise treat it as a string
       this.addTextProperty(
         fixedKey,
@@ -1027,6 +1017,7 @@ export /*babel doesn't like this: abstract*/ class File {
         }
         //copies from this object (which is just the xml as an object) into this File object
         this.loadPropertiesFromXml(properties);
+        this.addDateParsingProblemsToNotes();
         // But otherwise, we don't want to spend time saving, notifying, and messing with the file change dates.
         this.clearDirty();
 

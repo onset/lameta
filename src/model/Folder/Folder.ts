@@ -16,6 +16,7 @@ import assert from "assert";
 import {
   asyncTrash,
   getAllFilesSync,
+  hasMetadataExtension,
   isMacOSMetadataFile,
 } from "../../other/crossPlatformUtilities";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
@@ -566,7 +567,7 @@ export abstract class Folder {
       (f) =>
         // ignore macOS AppleDouble sidecars (._*) — a binary "._Foo.session"
         // must never be renamed into place as the real metadata file (issue #68)
-        !isMacOSMetadataFile(f) && f.match(new RegExp(`.*(${extension})$`, "ig")),
+        !isMacOSMetadataFile(f) && hasMetadataExtension(f, extension),
     );
   }
   public saveAllFilesInFolder(beforeRename: boolean = false) {
@@ -607,11 +608,11 @@ export abstract class Folder {
           // non-HFS volume doesn't trigger a spurious "multiple project files"
           // warning (issue #68)
           !isMacOSMetadataFile(elm) &&
-          // about ^(?!~)
           //  opening a file in ms word creates a hidden file that starts with ~
           // the fact that it's open with Word is probably going to cause problems,
           // but this temp file is not a problem, don't want to give a misleading error message.
-          elm.match(new RegExp(`^(?!~).*(${this.metadataFileExtensionWithDot})$`, "ig")),
+          !elm.startsWith("~") &&
+          hasMetadataExtension(elm, this.metadataFileExtensionWithDot),
       );
       if (x.length > 1) {
         NotifyMultipleProjectFiles(

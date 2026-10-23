@@ -47,6 +47,8 @@ export default defineConfig({
       "crowdin-backup/",
       "ro-crate-validation/",
       "sample-data-generator/",
+      // sample projects hold media such as .mts videos that lint would read as TypeScript
+      "sample data/",
     ],
     options: {
       typeAware: true,
