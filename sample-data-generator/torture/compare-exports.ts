@@ -18,6 +18,7 @@ import * as path from "path";
 import { compareFolders, formatComparison, isEmpty, writeNormalizedCopy } from "./exportComparison";
 import { generateTortureProject, kDefaultTortureProjectOptions } from "./generate-torture-project";
 import { newestBetaOrRelease } from "./releaseTags";
+import { kMaxPortableRelativePath } from "./writer";
 
 const kHarness = "src/export/tortureProject.manual.spec.ts";
 const kThisLameta = path.resolve(__dirname, "../..");
@@ -162,6 +163,17 @@ function main(args: string[]) {
   const tag = args[0] ?? newestBetaOrRelease(git(["tag", "--list"]).split("\n"));
   if (!tag) fail("There is no beta or release tag to compare with.");
   const outDir = path.resolve(outOption ?? path.join(kThisLameta, "tmp", "compare-exports"));
+  // The exporters, and the old version's tools, are not all long-path aware on Windows, so
+  // the project's longest paths must stay under 260 characters there
+  const longestPath =
+    path.join(outDir, "before", "project", kProjectFolderName).length +
+    1 +
+    kMaxPortableRelativePath;
+  if (process.platform === "win32" && longestPath >= 260)
+    fail(
+      `Under ${outDir} the project's longest paths would be ${longestPath} characters, over ` +
+        `Windows' limit of 260. Give a shorter folder with --out, for example --out C:\\lameta-compare.`,
+    );
 
   const beforeLameta = path.join(outDir, `lameta-${tag}`);
   provideWorktree(tag, beforeLameta);
