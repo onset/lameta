@@ -39,14 +39,15 @@ export interface BulkPerson {
 
 function bulkPeople(count: number): BulkPerson[] {
   const max = theme.kFirstNames.length * theme.kLastNames.length;
-  if (count > max) throw new Error(`--bulk-people can be at most ${max}`);
   const people: BulkPerson[] = [];
   for (let i = 0; i < count; i++) {
     // step through the grid of names in an order that mixes first and last names
     const k = (i * 7919) % max;
     const first = theme.kFirstNames[k % theme.kFirstNames.length];
     const last = theme.kLastNames[Math.floor(k / theme.kFirstNames.length)];
-    const folder = `${first} ${last}`;
+    // past the grid of names, number the second and later artists of the same name
+    const round = Math.floor(i / max);
+    const folder = round ? `${first} ${last} ${round + 1}` : `${first} ${last}`;
     // every fifth artist goes by a code, which sessions then use
     const code =
       i % 5 === 0 ? `${first[0]}${last[0]}${String(i).padStart(3, "0")}`.normalize("NFC") : "";
