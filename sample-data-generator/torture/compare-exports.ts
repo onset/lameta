@@ -73,10 +73,9 @@ function runIn(lametaDir: string, command: string[], env: Record<string, string>
 }
 
 // A worktree left by an earlier comparison is used again, so its install is too
-function provideWorktree(tag: string, dir: string) {
-  const wanted = git(["rev-parse", `${tag}^{commit}`]);
+function provideWorktree(tag: string, tagCommit: string, dir: string) {
   if (fs.existsSync(dir)) {
-    if (git(["rev-parse", "HEAD"], dir) !== wanted)
+    if (git(["rev-parse", "HEAD"], dir) !== tagCommit)
       fail(`${dir} is not at ${tag}. Remove it with: git worktree remove --force "${dir}"`);
     return;
   }
@@ -186,14 +185,23 @@ function main(args: string[]) {
   if (args.length > 1 || args.some((a) => a.startsWith("--"))) usage();
   const tag = args[0] ?? newestBetaOrRelease(git(["tag", "--list"]).split("\n"));
   if (!tag) fail("There is no beta or release tag to compare with.");
+  const tagCommit = spawnSync("git", ["rev-parse", "--verify", "--quiet", `${tag}^{commit}`], {
+    cwd: kThisLameta,
+    encoding: "utf8",
+  }).stdout.trim();
+  if (!tagCommit) fail(`There is no tag ${tag} in this checkout. Try git fetch --tags.`);
   const outDir = path.resolve(outOption ?? path.join(kThisLameta, "tmp", "compare-exports"));
+  // the report describes the folders below, which this run replaces, so a run that fails must
+  // not leave the previous one's report behind
+  const reportPath = path.join(outDir, "differences.txt");
+  fs.rmSync(reportPath, { force: true });
   // the projects first, so that one with paths too long stops the run before the install
   const beforeDir = path.join(outDir, "before");
   const afterDir = path.join(outDir, "after");
   const beforeProject = generateProjectFor(beforeDir);
   const afterProject = generateProjectFor(afterDir);
   const beforeLameta = path.join(outDir, `lameta-${tag}`);
-  provideWorktree(tag, beforeLameta);
+  provideWorktree(tag, tagCommit, beforeLameta);
   provideInstall(beforeLameta);
   const before = exportWith(beforeLameta, beforeDir, beforeProject);
   const after = exportWith(kThisLameta, afterDir, afterProject);
@@ -210,7 +218,6 @@ function main(args: string[]) {
     `Output of each version: ${path.join(outDir, "before")} and ${path.join(outDir, "after")}\n\n` +
     (isEmpty(comparison) ? "No differences." : formatComparison(comparison)) +
     "\n";
-  const reportPath = path.join(outDir, "differences.txt");
   fs.writeFileSync(reportPath, report);
   console.log(`\n${report}\nWritten to ${reportPath}`);
 }
