@@ -25,7 +25,7 @@ Run it with Node (`tsx`), not Bun: Bun opens plain Windows paths through Win32 n
 pnpm run make-torture-project "D:/somewhere/Interviews with Abstract Artists ŋ"
 ```
 
-The `.sprj` takes the name of the folder. It writes the same bytes on every run, except that files made by ffmpeg can differ between ffmpeg versions. It refuses to write into a folder that is not empty unless it made that folder.
+The `.sprj` takes the name of the folder. It writes the same bytes on every run, except that files made by ffmpeg can differ between ffmpeg versions. It refuses to write into a folder that is not empty unless it made that folder; when it did, a new run deletes everything in it except `Sessions/BIG_media`, so keep nothing of your own there.
 
 | Option                                     | Adds                                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

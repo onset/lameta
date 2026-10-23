@@ -224,8 +224,8 @@ export function writeBlockingCases(ctx: Context) {
   session(
     ctx,
     "BLOCK_slash_multilingual",
-    "A multilingual field in the old slash form: lameta then asks for a migration and refuses IMDI and OPEX export of the whole project until it is done.",
-    "Project.checkAndSetMultilingualConversionPending, ExportDialog",
+    "A multilingual field in the old slash form. lameta looks for this form only in the first four sessions it loads, so this one does not make it ask for a migration.",
+    "Project.detectSlashSyntaxInSessions, Project.checkAndSetMultilingualConversionPending",
     { ...basic(""), title: "Fishing / Pesca / Pis", description: "Men fishing / Hombres pescando" },
   );
 }

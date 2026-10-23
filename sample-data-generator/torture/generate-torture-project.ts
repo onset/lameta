@@ -50,6 +50,10 @@ function parseArgs(argv: string[]) {
     else usage();
   }
   if (!opts.folder) usage();
+  const isCount = (n: number) => Number.isInteger(n) && n >= 0;
+  if (!isCount(opts.bulkSessions) || !isCount(opts.bulkPeople)) usage();
+  // every bulk session credits bulk people
+  if (opts.bulkSessions > 0 && opts.bulkPeople === 0) usage();
   return opts;
 }
 
