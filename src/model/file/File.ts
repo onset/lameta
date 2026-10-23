@@ -850,15 +850,17 @@ export /*babel doesn't like this: abstract*/ class File {
     const role = contributionFromXml.smxrole
       ? (contributionFromXml.smxrole === "unspecified" ? "" : contributionFromXml.smxrole)
       : contributionFromXml.role;
+    // a file from elsewhere (hand edits, other tools) may leave out any of these elements
+    const name = contributionFromXml.name ?? "";
     const n = new Contribution(
-      contributionFromXml.name,
-      role,
+      name,
+      role ?? "",
       //this.normalizeIncomingDateString(contributionFromXml.date),
-      contributionFromXml.comments,
+      contributionFromXml.comments ?? "",
     );
     this.contributions.push(n);
 
-    this.encounteredVocabularyRegistry.encountered("contributor", contributionFromXml.name);
+    this.encounteredVocabularyRegistry.encountered("contributor", name);
   }
   public removeContribution(index: number) {
     console.assert(index >= 0 && index < this.contributions.length);
