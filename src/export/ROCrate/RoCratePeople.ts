@@ -1,5 +1,6 @@
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
+import { findPersonToExport } from "../../model/Project/exportableFolders";
 import { Person } from "../../model/Project/Person/Person";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import { RoCrateLicense } from "./RoCrateLicenseManager";
@@ -149,7 +150,7 @@ export async function makeEntriesFromParticipant(
   }
 
   for (const name of Object.keys(uniqueContributors)) {
-    const person = project.findPerson(name);
+    const person = findPersonToExport(project, name);
 
     // Review: if the person is not found, currently we output what we can, which is their ID and their roles.
 

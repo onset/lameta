@@ -25,6 +25,7 @@ import {
   hasMultilingualVocabularyFields,
 } from "./VocabularyTranslationsTab";
 import { navigationState, ProjectTabId } from "../../navigation/NavigationState";
+import { describeUnreadableMetadata } from "../../model/file/FileStatus";
 
 interface IProps {
   project: Project;
@@ -43,6 +44,19 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   const showProjectTab = props.project.properties.values().some((p) => {
     return p.definition && p.definition.form === "project" && p.definition.visibility === "always";
   });
+
+  // When the .sprj could not be read, the tabs that edit its fields show why
+  // instead, because save() never writes over that file
+  const unreadable =
+    props.project.metadataFile && describeUnreadableMetadata(props.project.metadataFile);
+  const editsProjectFile = (form: React.ReactElement) =>
+    unreadable ? (
+      <p className="unreadableMetadata" data-testid="unreadable-metadata">
+        {unreadable}
+      </p>
+    ) : (
+      form
+    );
 
   // Only show  Translations tab if there are multilingual vocab fields
   const showTranslationsTab = hasMultilingualVocabularyFields();
@@ -168,54 +182,62 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           />
         </TabPanel> */}
         <TabPanel>
-          <ArchiveConfigurationForm
-            archiveConfigurationField={props.project.properties.getTextField(
-              "archiveConfigurationName",
-            )}
-            customChoicesField={props.project.properties.getTextField("customAccessChoices")}
-            authorityLists={props.authorityLists}
-            onChange={() => {
-              props.project.metadataFile!.wasChangeThatMobxDoesNotNotice();
-              props.project.saveFolderMetaData();
-              props.reload();
-            }}
-          />
+          {editsProjectFile(
+            <ArchiveConfigurationForm
+              archiveConfigurationField={props.project.properties.getTextField(
+                "archiveConfigurationName",
+              )}
+              customChoicesField={props.project.properties.getTextField("customAccessChoices")}
+              authorityLists={props.authorityLists}
+              onChange={() => {
+                props.project.metadataFile!.wasChangeThatMobxDoesNotNotice();
+                props.project.saveFolderMetaData();
+                props.reload();
+              }}
+            />,
+          )}
         </TabPanel>
         {showProjectTab && (
           <TabPanel>
+            {editsProjectFile(
+              <AutoForm
+                form="project"
+                formClass="project"
+                folder={props.project}
+                authorityLists={props.authorityLists}
+                languageFinder={props.project.languageFinder}
+                rowStyle={true}
+              />,
+            )}
+          </TabPanel>
+        )}
+        <TabPanel>
+          {editsProjectFile(
             <AutoForm
-              form="project"
+              form="fundingProject"
               formClass="project"
               folder={props.project}
               authorityLists={props.authorityLists}
               languageFinder={props.project.languageFinder}
               rowStyle={true}
-            />
-          </TabPanel>
-        )}
-        <TabPanel>
-          <AutoForm
-            form="fundingProject"
-            formClass="project"
-            folder={props.project}
-            authorityLists={props.authorityLists}
-            languageFinder={props.project.languageFinder}
-            rowStyle={true}
-          />
+            />,
+          )}
         </TabPanel>
         <TabPanel>
-          <AutoForm
-            form="languages"
-            formClass="project"
-            folder={props.project}
-            authorityLists={props.authorityLists}
-            languageFinder={props.project.languageFinder}
-            rowStyle={true}
-            insertAfterField={{
-              fieldKey: "metadataLanguages",
-              content: <MultilingualTextMigrationPanel project={props.project} />,
-            }}
-          />
+          {editsProjectFile(
+            <AutoForm
+              form="languages"
+              formClass="project"
+              folder={props.project}
+              authorityLists={props.authorityLists}
+              languageFinder={props.project.languageFinder}
+              rowStyle={true}
+              insertAfterField={{
+                fieldKey: "metadataLanguages",
+                content: <MultilingualTextMigrationPanel project={props.project} />,
+              }}
+            />,
+          )}
         </TabPanel>
         {showTranslationsTab && (
           <TabPanel>
@@ -223,14 +245,16 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           </TabPanel>
         )}{" "}
         <TabPanel>
-          <AutoForm
-            form="projectLocation"
-            formClass="project"
-            folder={props.project}
-            authorityLists={props.authorityLists}
-            languageFinder={props.project.languageFinder}
-            rowStyle={true}
-          />
+          {editsProjectFile(
+            <AutoForm
+              form="projectLocation"
+              formClass="project"
+              folder={props.project}
+              authorityLists={props.authorityLists}
+              languageFinder={props.project.languageFinder}
+              rowStyle={true}
+            />,
+          )}
         </TabPanel>
         <TabPanel>
           <FolderPane

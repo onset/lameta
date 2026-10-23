@@ -25,9 +25,14 @@ export function getStatusOfFile(f: File): {
     | "goodLink"
     | "copyInProgress"
     | "noMediaFolderConnection"
-    | "cloudOnly";
+    | "cloudOnly"
+    | "metadataUnreadable";
   info: string;
 } {
+  const unreadable = describeUnreadableMetadata(f);
+  if (unreadable) {
+    return { missing: false, status: "metadataUnreadable", info: unreadable };
+  }
   if (f.copyInProgress) {
     return {
       missing: false,
@@ -115,6 +120,15 @@ export function getStatusOfFile(f: File): {
   };
 }
 
+// What to tell the user when lameta could not read the file's metadata file, or
+// undefined when it could
+export function describeUnreadableMetadata(f: File): string | undefined {
+  const reason = f.metadataReadProblem;
+  if (reason === undefined) return undefined;
+  const fileName = Path.basename(f.metadataFilePath);
+  return t`lameta could not read ${fileName}: ${reason}`;
+}
+
 export function getLinkStatusIconPath(f: File): string {
   const { status } = getStatusOfFile(f);
   switch (status) {
@@ -125,6 +139,7 @@ export function getLinkStatusIconPath(f: File): string {
     case "noMediaFolderConnection":
       return "assets/noMediaFolder.png";
     case "fileNamingProblem":
+    case "metadataUnreadable":
       return "assets/error.png";
     // "cloudOnly" deliberately returns no path: cloud sync states are drawn
     // by <CloudStatusIcon>, which covers all five OneDrive states, not just
@@ -155,6 +170,7 @@ export const FileStatusBlock: React.FunctionComponent<{
 
   return (
     <div
+      data-testid={`file-status-${fileStatus.status}`}
       css={css`
         display: flex;
         flex-direction: column;
