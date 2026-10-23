@@ -2,7 +2,8 @@ import { describe, it, beforeAll, expect, afterAll } from "vite-plus/test";
 import * as temp from "temp";
 import { Project } from "../model/Project/Project";
 import ImdiBundler from "./ImdiBundler";
-import { IMDIMode } from "./ImdiGenerator";
+import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
+import { Session } from "../model/Project/Session/Session";
 import fs from "fs";
 import * as Path from "path";
 import { ExportSessionData } from "./ExportBundleTypes";
@@ -389,5 +390,43 @@ describe("names that clash only after sanitizing", () => {
     for (const link of links(consent.imdiXml, "ResourceLink").filter((l) => l)) {
       expect(destinations).toContain(Path.join(Path.dirname(consent.imdiPath), link));
     }
+  });
+});
+
+describe("what export writes to disk", () => {
+  // The lameta-source and lameta-translations comments lead a problem in the IMDI back
+  // to its field. The checks and the IMDI view need them; a deposit does not.
+  it.each([
+    ["IMDI", IMDIMode.RAW_IMDI],
+    ["OPEX", IMDIMode.OPEX],
+  ])("in %s mode, has no lameta-source or lameta-translations comments", async (_, mode) => {
+    const dir = Path.join(temp.mkdirSync("lameta deposit"), "Edolo sample");
+    fs.cpSync("sample data/Edolo sample", dir, { recursive: true });
+    const project = Project.fromDirectory(dir);
+    const target = temp.mkdirSync("lameta deposit output");
+    const generator = ImdiBundler.generateExportData(project, target, mode, false, () => true);
+    // write it as the app does
+    const writer = new MainProcessImdiExport(() => null);
+    let result = await generator.next();
+    while (!result.done) {
+      await writer.writeImdiSessionData(result.value as ExportSessionData);
+      result = await generator.next();
+    }
+    await writer.writeImdiCorpusData(result.value);
+
+    const written = (fs.readdirSync(target, { recursive: true }) as string[])
+      .filter((f) => /\.(imdi|opex)$/.test(f))
+      .map((f) => fs.readFileSync(Path.join(target, f), "utf8"));
+    expect(written.length).toBeGreaterThan(2);
+    for (const xml of written) {
+      expect(xml).not.toMatch(/lameta-source|lameta-translations/);
+    }
+    // the same project's IMDI for the checks has them
+    const forChecks = ImdiGenerator.generateSession(
+      IMDIMode.RAW_IMDI,
+      project.sessions.items[0] as Session,
+      project,
+    );
+    expect(forChecks).toMatch(/lameta-source/);
   });
 });
