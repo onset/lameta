@@ -403,6 +403,8 @@ export class Project extends Folder {
         equals: (a: Map<string, string>, b: Map<string, string>) =>
           a.size === b.size && [...a].every(([tag, code]) => b.get(tag) === code),
       }),
+      // kept while nothing observes it, so that an export does not build it for each lookup
+      personsByReferenceKey: computed({ keepAlive: true }),
     });
 
     if (this.properties.getTextStringOrEmpty("guid").length === 0) {
@@ -449,7 +451,7 @@ export class Project extends Folder {
             // Check if this contributor matches any person by name OR code
             // This handles the case where a contributor was added by full name
             // but the person record has a code (which becomes their displayName)
-            !this.persons.items.some((person: Person) => person.referenceIdMatches(c.label)),
+            this.findPerson(c.label) === undefined,
         );
       return peopleWithPersonRecords.concat(peopleWithJustAName);
     });
@@ -1293,7 +1295,19 @@ export class Project extends Folder {
   }
 
   public findPerson(name: string): Person | undefined {
-    return this.persons.items.find((p: Person) => p.referenceIdMatches(name)) as Person;
+    return this.personsByReferenceKey.get(personReferenceKey(name));
+  }
+
+  // Each person under every reference that names them (Person.referenceKeys). Where two
+  // people share a reference, the first in the list has it, as a search of the list would
+  // find. A MobX computed value: a check that looks up each contributor reads this map,
+  // not every person's name and code.
+  public get personsByReferenceKey(): Map<string, Person> {
+    const map = new Map<string, Person>();
+    for (const person of this.persons.items as Person[]) {
+      for (const key of person.referenceKeys()) if (!map.has(key)) map.set(key, person);
+    }
+    return map;
   }
 
   // called by Person when name or code changes

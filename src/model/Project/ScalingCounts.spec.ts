@@ -164,11 +164,12 @@ describe("work per action as the project grows", () => {
     expect(large).toBe(small);
   });
 
-  // finding 3: each contributor is looked up by a linear search over every person
-  it.fails("matching contributors to people grows no faster than the project (finding 3)", () => {
+  it("matching contributors to people grows no faster than the project", () => {
     const [small, large] = atBothSizes((n) => {
       const project = open(n);
-      return count(Person.prototype, "referenceIdMatches", () => checkProjectFolders(project));
+      return count(Person.prototype, "getIdToUseForReferences", () =>
+        checkProjectFolders(project),
+      );
     });
     expect(large).toBeLessThanOrEqual(small * (kLarge / kSmall) * 1.5);
   });
