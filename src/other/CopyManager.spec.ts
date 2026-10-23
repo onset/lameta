@@ -40,14 +40,17 @@ describe.runIf(process.platform === "win32")("safeAsyncCopyFileWithErrorNotifica
     expect(read(destination)).toBe("long");
   });
 
-  it("copies a file whose name ends in a dot", async () => {
-    const dir = temp.mkdirSync("dot copy");
-    const source = Path.join(dir, "ends in dot.");
-    make(source, "dot");
-    const destination = Path.join(dir, "out", "ends in dot.");
+  it.each(["ends in dot.", "ends in space.wav "])(
+    "copies a file whose name is %j",
+    async (name) => {
+      const dir = temp.mkdirSync("dot copy");
+      const source = Path.join(dir, name);
+      make(source, name);
+      const destination = Path.join(dir, "out", name);
 
-    await CopyManager.safeAsyncCopyFileWithErrorNotification(source, destination);
+      await CopyManager.safeAsyncCopyFileWithErrorNotification(source, destination);
 
-    expect(read(destination)).toBe("dot");
-  });
+      expect(read(destination)).toBe(name);
+    },
+  );
 });
