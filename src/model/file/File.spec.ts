@@ -44,7 +44,7 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
   // concrete. It would be an improvement to do it in some more generic way.
   const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
   fs.removeSync(filePath); // remove the old file, just to make sure
-  f.save(/*forceSave*/ true);
+  f.save(/*beforeRename*/ false, /*forceSave*/ true);
   try {
     setResultXml(fs.readFileSync(filePath, "utf8"));
     tests();
@@ -154,7 +154,7 @@ describe("file", () => {
       expect(f.getTextProperty("notes")).toBe("Original notes");
       expect(f.properties.getValueOrThrow("Validated_By").definition.isCustom).toBe(true);
 
-      f.save(/*forceSave*/ true);
+      f.save(/*beforeRename*/ false, /*forceSave*/ true);
       const reloaded = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
       expect(reloaded.getTextProperty("Validated_By")).toBe("Wilema Dimo");
       expect(reloaded.getTextProperty("transcription_date")).toBe("sometime in spring");
@@ -205,6 +205,24 @@ describe("file", () => {
     }
   });
 
+  it("reads a contributor that lacks a name, role or comments element as having empty ones", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
+      <Contributions>
+        <contributor><name>Ana</name></contributor>
+        <contributor><role>speaker</role></contributor>
+      </Contributions>
+    `);
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(f.contributions.map((c) => [c.personReference, c.role, c.comments])).toEqual([
+        ["Ana", "", ""],
+        ["", "speaker", ""],
+      ]);
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
   it("keeps a contributor whose name is blank but who has a role", () => {
     const { tmpFolder, sessionFolder } = writeSessionFile(`
       <Contributions>
@@ -216,10 +234,97 @@ describe("file", () => {
       expect(f.contributions.map((c) => c.role)).toEqual(["consultant"]);
       // the empty row that the contributors table keeps at the bottom
       f.contributions.push(new Contribution("", "", ""));
-      f.save(/*forceSave*/ true);
+      f.save(/*beforeRename*/ false, /*forceSave*/ true);
 
       const reloaded = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
       expect(reloaded.contributions.map((c) => c.role)).toEqual(["consultant"]);
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
+  it("keeps a custom field named like a known field when the known field has its own value", () => {
+    for (const contents of [
+      `<genre type="string">narrative</genre>
+       <CustomFields><Genre type="string">my own genre</Genre></CustomFields>`,
+      `<CustomFields><Genre type="string">my own genre</Genre></CustomFields>
+       <genre type="string">narrative</genre>`,
+    ]) {
+      const { tmpFolder, sessionFolder } = writeSessionFile(contents);
+      try {
+        const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+        expect(f.getTextProperty("genre")).toBe("narrative");
+        expect(f.getTextProperty("Genre")).toBe("my own genre");
+        expect(f.properties.getValueOrThrow("Genre").definition.isCustom).toBe(true);
+
+        f.save(/*beforeRename*/ false, /*forceSave*/ true);
+        const reloaded = new SessionMetadataFile(
+          sessionFolder,
+          new EncounteredVocabularyRegistry(),
+        );
+        expect(reloaded.getTextProperty("genre")).toBe("narrative");
+        expect(reloaded.getTextProperty("Genre")).toBe("my own genre");
+      } finally {
+        fs.removeSync(tmpFolder);
+      }
+    }
+  });
+
+  it("leaves the text of a custom field named Genre as the user typed it", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
+      <genre type="string">narrative</genre>
+      <CustomFields><Genre type="string">Procedural Discourse</Genre></CustomFields>
+    `);
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(f.getTextProperty("Genre")).toBe("Procedural Discourse");
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
+  it("keeps a custom field named like a known field that has its value among the AdditionalFields", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(`
+      <AdditionalFields><Location_Country type="string">Ghana</Location_Country></AdditionalFields>
+      <CustomFields><Location_Country type="string">my own country</Location_Country></CustomFields>
+    `);
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      const knownKey = f.properties.getKeyFromXmlTag("Location_Country");
+      expect(f.getTextProperty(knownKey)).toBe("Ghana");
+      expect(f.getTextProperty("Location_Country")).toBe("my own country");
+      expect(f.properties.getValueOrThrow("Location_Country").definition.isCustom).toBe(true);
+
+      f.save(/*beforeRename*/ false, /*forceSave*/ true);
+      const reloaded = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(reloaded.getTextProperty(knownKey)).toBe("Ghana");
+      expect(reloaded.getTextProperty("Location_Country")).toBe("my own country");
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
+  it("moves a known field back even when that field has a default value", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(
+      `<CustomFields><Status type="string">Finished</Status></CustomFields>`,
+    );
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(f.getTextProperty("status")).toBe("Finished");
+      expect(f.properties.containsKey("Status")).toBe(false);
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
+  it("moves a known field that SayMore Classic put among the custom fields back to the known field", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(
+      `<CustomFields><Genre type="string">narrative</Genre></CustomFields>`,
+    );
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(f.getTextProperty("genre")).toBe("narrative");
+      expect(f.properties.containsKey("Genre")).toBe(false);
     } finally {
       fs.removeSync(tmpFolder);
     }
