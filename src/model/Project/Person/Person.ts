@@ -168,9 +168,10 @@ export class Person extends Folder {
   // LAM-119: Fixed case-sensitive comparison bug. Previously, the name field was
   // compared case-sensitively while the code field was compared case-insensitively.
   // This allowed users to create duplicate persons like "Alice" and "alice".
-  // Both fields are compared through personReferenceKey, as referenceIdMatches compares
-  // them: two people whose ids match the same references would share every contribution.
+  // Now both fields are properly lowercased before comparison.
   // https://linear.app/lameta/issue/LAM-119
+  // Both fields go through personReferenceKey, as in referenceIdMatches: two people whose
+  // ids match the same references would share every contribution.
   public wouldCollideWithIdFields(value: string): boolean {
     const key = personReferenceKey(value);
     return (
