@@ -11,6 +11,7 @@ import { runInAction } from "mobx";
 import { i18n as appI18n } from "../../../other/localization";
 import { t } from "@lingui/core/macro";
 import { normalizeContinentValueForAmericasOnly } from "../ContinentMigration";
+import { loadOLACRoles } from "../AuthorityLists/AuthorityLists";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -116,18 +117,23 @@ export class Session extends Folder {
   // the roles of the participants are. All current versions still can read this in, and lameta (at least)
   // still emits it to the xml. But it has been superseded by a normal <contributions> element, just like
   // we had previously for individual files. This method checks the <participants> for any contributions that
-  // we might be missing in <contributions>.
+  // we might be missing in <contributions>. SayMore writes each participant as "name (role)".
   private handleLegacyParticipants() {
-    const legacyParticipantNames = this.properties
+    const roleIds = loadOLACRoles().map((r) => r.id);
+    const legacyParticipants = this.properties
       .getTextStringOrEmpty("participants")
       .split(";")
       .map((s) => s.trim())
-      .filter((s) => s);
-    legacyParticipantNames.forEach((name: string) => {
+      .filter((s) => s)
+      .map((s) => {
+        const nameAndRole = /^(.+?)\s*\(\s*([^()]+?)\s*\)$/.exec(s);
+        return nameAndRole && roleIds.includes(nameAndRole[2])
+          ? { name: nameAndRole[1], role: nameAndRole[2] }
+          : { name: s, role: "participant" };
+      });
+    legacyParticipants.forEach(({ name, role }) => {
       if (!this.metadataFile!.contributions.find((c) => c.personReference === name)) {
-        runInAction(() =>
-          this.metadataFile!.contributions.push(new Contribution(name, "participant", "")),
-        );
+        runInAction(() => this.metadataFile!.contributions.push(new Contribution(name, role, "")));
       }
     });
     // Now remove it. We don't use it in the UI. We will however reconstruct it when saving, so that it
