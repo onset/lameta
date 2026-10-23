@@ -119,7 +119,7 @@ export class Session extends Folder {
   // we had previously for individual files. This method checks the <participants> for any contributions that
   // we might be missing in <contributions>. SayMore writes each participant as "name (role)".
   private handleLegacyParticipants() {
-    const roleIds = loadOLACRoles().map((r) => r.id);
+    let roleIds: string[] | undefined;
     const legacyParticipants = this.properties
       .getTextStringOrEmpty("participants")
       .split(";")
@@ -127,13 +127,19 @@ export class Session extends Folder {
       .filter((s) => s)
       .map((s) => {
         const nameAndRole = /^(.+?)\s*\(\s*([^()]+?)\s*\)$/.exec(s);
-        return nameAndRole && roleIds.includes(nameAndRole[2])
+        roleIds ??= nameAndRole ? loadOLACRoles().map((r) => r.id) : undefined;
+        return nameAndRole && roleIds!.includes(nameAndRole[2])
           ? { name: nameAndRole[1], role: nameAndRole[2] }
-          : { name: s, role: "participant" };
+          : { name: s, role: undefined };
       });
     legacyParticipants.forEach(({ name, role }) => {
-      if (!this.metadataFile!.contributions.find((c) => c.personReference === name)) {
-        runInAction(() => this.metadataFile!.contributions.push(new Contribution(name, role, "")));
+      const alreadyContributes = this.metadataFile!.contributions.some(
+        (c) => c.personReference === name && (role === undefined || c.role === role),
+      );
+      if (!alreadyContributes) {
+        runInAction(() =>
+          this.metadataFile!.contributions.push(new Contribution(name, role ?? "participant", "")),
+        );
       }
     });
     // Now remove it. We don't use it in the UI. We will however reconstruct it when saving, so that it

@@ -29,6 +29,17 @@ describe("Session legacy participants", () => {
     ]);
   });
 
+  it("keeps every role that SayMore lists for one participant", () => {
+    const session = loadSessionWithParticipants(
+      "Pat (speaker);Pat (consultant);",
+      `<contributor><name>Pat</name><role>speaker</role></contributor>`,
+    );
+    expect(contributionsOf(session)).toEqual([
+      { name: "Pat", role: "speaker" },
+      { name: "Pat", role: "consultant" },
+    ]);
+  });
+
   it("keeps parentheses that hold no role as part of the name", () => {
     const session = loadSessionWithParticipants("Ann (Jr);", "");
     expect(contributionsOf(session)).toEqual([{ name: "Ann (Jr)", role: "participant" }]);
