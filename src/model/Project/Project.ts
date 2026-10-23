@@ -9,11 +9,13 @@ import { getIdValidationMessageOrUndefined, Session } from "./Session/Session";
 import { Folder, IFolderType } from "../Folder/Folder";
 import { FolderGroup } from "../Folder/FolderGroup";
 import { Person } from "./Person/Person";
+import { personReferenceKey } from "./Person/personReferenceKey";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
 import { asyncTrash, asyncTrashWithContext } from "../../other/crossPlatformUtilities";
 import { FolderMetadataFile } from "../file/FolderMetaDataFile";
+import { PatientFS } from "../../other/patientFile";
 import { languageSlotColors } from "../../containers/theme";
 import { EncounteredVocabularyRegistry } from "./EncounteredVocabularyRegistry";
 import { FieldDefinition } from "../field/FieldDefinition";
@@ -1308,12 +1310,12 @@ export class Project extends Folder {
   }
 
   public getContributionsMatchingPerson(id: string): Contribution[] {
-    const lowerCaseName = id.toLocaleLowerCase();
+    const key = personReferenceKey(id);
     const arraysOfMatchingContributions = this.sessions.items.map((session: Session) => {
       return session
         .getAllContributionsToAllFiles()
         .map((contribution) => {
-          if (contribution.personReference.toLowerCase() === lowerCaseName) {
+          if (personReferenceKey(contribution.personReference) === key) {
             // the session name isn't normally part of the contribution because it is owned
             // by the session. But we stick it in here for display purposes. Alternatively,
             // we could stick in the session itself; might be useful for linking back to it.
@@ -1533,7 +1535,13 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     }
 
     // read in the metadataPath xml file and then use a regex to extract the value of the AccessProtocol element.
-    const contents = fs.readFileSync(metadataPath, "utf8");
+    let contents: string;
+    try {
+      contents = PatientFS.readFileSyncNoNotify(metadataPath);
+    } catch {
+      // readMetadataFile records why the file could not be read
+      return "default";
+    }
 
     // Initially (up through v2), lameta only had an "Access Protocol", not the full set of configurations
     // that we have now (which include and access protocol).

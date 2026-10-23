@@ -29,18 +29,43 @@ The `.sprj` takes the name of the folder. It writes the same bytes on every run,
 
 | Option                                     | Adds                                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| (none)                                     | Only names that git can check out on Windows, macOS and Linux. This version is committed in `sample data/Interviews with Abstract Artists ŋ` (where lameta never saves).                                                                                                                                                                         |
-| `--hostile-names`                          | NFC and NFD spellings of one name, trailing dots and spaces, Windows device names (`CON`, `aux.txt`, `COM1`), paths over 260 characters. Never commit these; OneDrive and Explorer cannot handle some of them.                                                                                                                                   |
+| (none)                                     | Only names that Windows, macOS and Linux can all hold. The project is not committed; generate it where you need it, for example in `tmp/`, which git ignores.                                                                                                                                                                                    |
+| `--hostile-names`                          | NFC and NFD spellings of one name, trailing dots and spaces, Windows device names (`CON`, `aux.txt`, `COM1`), paths over 260 characters. OneDrive and Explorer cannot handle some of them.                                                                                                                                                       |
 | `--blocking`                               | Files that stop the whole project from loading (zero-byte, truncated or UTF-16 metadata, a newer `minimum_lameta_version_to_read`), custom fields whose names contain "date" (they stop every session from saving), and the old slash form of multilingual text (it blocks IMDI export). Each hides the other cases, so test them one at a time. |
 | `--large-media`                            | About 1.9 GB in `Sessions/BIG_media`: a playable 1 GB 1080p video, a 500 MB WAV, the first 300 MB of the video, 50 MB of random bytes named `.mp4`, and zero-byte files. Needs ffmpeg on the PATH or in `node_modules/ffmpeg-ffprobe-static`. Files already there at full size are kept on the next run.                                         |
 | `--archive-config <name>`                  | The archive configuration in the `.sprj` (default `ELAR`).                                                                                                                                                                                                                                                                                       |
 | `--bulk-sessions <n>`, `--bulk-people <n>` | The size of the ordinary part of the project (default 800 and 240).                                                                                                                                                                                                                                                                              |
+| `--size <n>`                               | `n` bulk sessions and people at 30% of that, so that the same project can be made at several sizes.                                                                                                                                                                                                                                              |
+| `--no-cases`                               | Leaves out the hand-made cases, so that the project holds only the bulk part.                                                                                                                                                                                                                                                                    |
 
 `src/export/tortureProject.manual.spec.ts` loads a generated project and runs every exporter over it, recording each exception and notification in a `report.json`, together with the values that saving each file would lose:
 
 ```bash
 LAMETA_TORTURE_DIR="<project folder>" LAMETA_TORTURE_OUT="<output folder>" vp test run src/export/tortureProject.manual.spec.ts
 ```
+
+### Measuring how lameta scales
+
+`src/model/Project/ScalingCounts.spec.ts` (in the normal suite) and `e2e/scalingCounts.e2e.ts` build the bulk project at two sizes and assert how many records each user action reads, writes, checks or renders. `src/model/Project/ScalingMeasure.manual.spec.ts` and `e2e/scalingMeasure.e2e.ts` time those actions on projects made with `--size <n> --no-cases`; `e2e/scalingProfile.e2e.ts` records a CPU profile of typing. To make the times look like those of an old laptop, run the model measurements with the CPU capped:
+
+```powershell
+pnpm exec tsx sample-data-generator/torture/generate-torture-project.ts D:\perf-projects\elar-1000 --size 1000 --no-cases
+.\scripts\measure-scaling-throttled.ps1 -Dirs "D:\perf-projects\elar-1000" -Out C:\temp\scaling-1000.json
+$env:LAMETA_SCALING_DIRS="D:\perf-projects\elar-1000"; pnpm exec playwright test e2e/scalingMeasure.e2e.ts --workers=1
+```
+
+### Comparing exports
+
+`torture/compare-exports.ts` shows what this checkout changes in lameta's exports compared with an earlier version: by default the newest beta or release tag (alphas are skipped), or a tag you name.
+
+```bash
+pnpm run compare-exports               # against the newest beta or release, e.g. v3.0.21-beta
+pnpm run compare-exports v3.0.20-beta  # against a tag you name
+```
+
+It makes a git worktree of the tag in `tmp/compare-exports/lameta-<tag>` and installs it the first time; later runs use that worktree again. A version from before pnpm is installed with yarn 1, and its harness runs under the Node version that its `package.json` names. A version too old to have the harness gets a copy of this one's. The script generates the torture project with this checkout's generator once for each version, because loading a project writes into it, and runs the harness in each.
+
+It writes the differences to `tmp/compare-exports/differences.txt` and prints them: each changed line, or for a CSV each changed cell, once, with the number of files it is in. Before comparing, it removes what changes from run to run (export dates, lameta's version, RO-Crate's `datePublished` and the file times it reads from disk, the time in a date-parse note, a random project guid, the paths of the run), and the `lameta-source` and `lameta-translations` comments that lameta writes into the IMDI that its checks read. The output of each version is in `tmp/compare-exports/before` and `after`. `--out <folder>` puts all of this somewhere else; on Windows the script stops, before running any exporter, if the generated project's longest path reaches 260 characters, and asks for a shorter folder.
 
 ## Requirements
 

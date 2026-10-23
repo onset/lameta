@@ -11,6 +11,8 @@ import { runInAction } from "mobx";
 import { i18n as appI18n } from "../../../other/localization";
 import { t } from "@lingui/core/macro";
 import { normalizeContinentValueForAmericasOnly } from "../ContinentMigration";
+import { loadOLACRoles } from "../AuthorityLists/AuthorityLists";
+import { personReferenceKey } from "../Person/personReferenceKey";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -116,17 +118,38 @@ export class Session extends Folder {
   // the roles of the participants are. All current versions still can read this in, and lameta (at least)
   // still emits it to the xml. But it has been superseded by a normal <contributions> element, just like
   // we had previously for individual files. This method checks the <participants> for any contributions that
-  // we might be missing in <contributions>.
+  // we might be missing in <contributions>. SayMore writes each participant as "name (role)".
   private handleLegacyParticipants() {
-    const legacyParticipantNames = this.properties
+    let roleIds: string[] | undefined;
+    const legacyParticipants = this.properties
       .getTextStringOrEmpty("participants")
       .split(";")
       .map((s) => s.trim())
-      .filter((s) => s);
-    legacyParticipantNames.forEach((name: string) => {
-      if (!this.metadataFile!.contributions.find((c) => c.personReference === name)) {
+      .filter((s) => s)
+      .map((s) => {
+        const nameAndRole = /^(.+?)\s*\(\s*([^()]+?)\s*\)$/.exec(s);
+        roleIds ??= nameAndRole ? loadOLACRoles().map((r) => r.id) : undefined;
+        return nameAndRole && roleIds!.includes(nameAndRole[2])
+          ? { name: nameAndRole[1], role: nameAndRole[2] }
+          : { name: s, role: undefined };
+      });
+    const keysListedWithRole = legacyParticipants
+      .filter((p) => p.role !== undefined)
+      .map((p) => personReferenceKey(p.name));
+    legacyParticipants.forEach(({ name, role }) => {
+      const key = personReferenceKey(name);
+      const alreadyContributes =
+        role === undefined
+          ? keysListedWithRole.includes(key) ||
+            this.metadataFile!.contributions.some(
+              (c) => personReferenceKey(c.personReference) === key,
+            )
+          : this.metadataFile!.contributions.some(
+              (c) => personReferenceKey(c.personReference) === key && c.role === role,
+            );
+      if (!alreadyContributes) {
         runInAction(() =>
-          this.metadataFile!.contributions.push(new Contribution(name, "participant", "")),
+          this.metadataFile!.contributions.push(new Contribution(name, role ?? "participant", "")),
         );
       }
     });
@@ -155,10 +178,10 @@ export class Session extends Folder {
   // in the "code" field, then that acts as the display name and id around
   // the whole system.
   public updateSessionReferencesToPersonWhenIdChanges(oldId: string, newId: string): void {
-    const oldNameNormalized = this.normalizeNameReference(oldId);
+    const oldNameNormalized = personReferenceKey(oldId);
     this.files.forEach((f) =>
       f.contributions
-        .filter((c) => this.normalizeNameReference(c.personReference) === oldNameNormalized)
+        .filter((c) => personReferenceKey(c.personReference) === oldNameNormalized)
         .forEach((c) => (c.personReference = newId)),
     );
 
@@ -167,14 +190,11 @@ export class Session extends Folder {
     // model that we inherited from SayMore classic.
 
     // const updatedArrayOfNames = this.getParticipantNames().map(p =>
-    //   this.normalizeNameReference(p) === oldNameNormalized ? newId : p
+    //   personReferenceKey(p) === oldNameNormalized ? newId : p
     // );
     // this.setParticipantNames(updatedArrayOfNames);
   }
 
-  private normalizeNameReference(name: string) {
-    return name.toLowerCase();
-  }
   // Note: some of these contributions are currently created on the fly,
   // so this is not the right way to make changes to them (e.g. name updates)
   public getAllContributionsToAllFiles(): Contribution[] {
@@ -191,8 +211,8 @@ export class Session extends Folder {
           if (
             !contributionsToList.some(
               (existingContribution) =>
-                existingContribution.personReference.toLowerCase() ===
-                  c.personReference.toLowerCase() && existingContribution.role === c.role,
+                personReferenceKey(existingContribution.personReference) ===
+                  personReferenceKey(c.personReference) && existingContribution.role === c.role,
             )
           ) {
             contributionsToList.push(c);
@@ -277,7 +297,7 @@ export class Session extends Folder {
       }
     });
     contributors.forEach((c) => {
-      if (!existingPersonIds.some((id) => id.toLowerCase() == c.toLowerCase())) {
+      if (!existingPersonIds.some((id) => personReferenceKey(id) === personReferenceKey(c))) {
         const roles = contributorRoles.get(c)!.join(", ");
         violations.push(`${c} (${roles})`);
       }

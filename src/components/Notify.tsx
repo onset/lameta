@@ -44,6 +44,7 @@ function notify(message: string, details?: string | React.ReactNode, options?: T
             css={css`
               font-size: 8pt;
               margin-top: 1em;
+              white-space: pre-line;
               overflow-wrap: anywhere;
               * {
                 overflow-wrap: anywhere;
@@ -105,13 +106,13 @@ export function NotifyNoBigDeal(message: string) {
 export function NotifyErrorWithClick(message: string, onClick: () => void) {
   notify(message, "", { ...errorToastProps, onClick: onClick });
 }
-export function NotifyWarning(message: string) {
+export function NotifyWarning(message: string, details?: string) {
   // Always mirror to console with a stack for diagnostics
   try {
     const stack = new Error("NotifyWarning stack").stack;
-    console.warn("[NotifyWarning]", message, { stack });
+    console.warn("[NotifyWarning]", message, details ?? "", { stack });
   } catch {}
-  notify(message, "", { type: "warning" });
+  notify(message, details, { type: "warning" });
 }
 export function NotifySuccess(message: string, onClick?: () => void) {
   notify(message, "", {

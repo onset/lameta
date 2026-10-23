@@ -8,6 +8,7 @@ import {
   runInAction,
 } from "mobx";
 import { Project } from "../model/Project/Project";
+import { exportableSessions } from "../model/Project/exportableFolders";
 import { Session } from "../model/Project/Session/Session";
 import ImdiGenerator, { IMDIMode } from "../export/ImdiGenerator";
 import { withWarningsDiscarded } from "../export/ExportWarningCollector";
@@ -52,6 +53,41 @@ function metadataLanguageTags(project: Project): string[] {
   ).map((slot) => slot.tag);
 }
 
+// The IMDI to check, or why lameta could not generate it
+type Generated = { xml: string } | { error: IRulesFileError };
+
+function generate(sessionId: string | undefined, makeXml: () => string): Generated {
+  try {
+    return { xml: withWarningsDiscarded(makeXml) };
+  } catch (e) {
+    return {
+      error: {
+        kind: "imdi",
+        message: `lameta could not generate the IMDI ${
+          sessionId ? `of session ${sessionId}` : "of the corpus"
+        }: ${e instanceof Error ? e.message : String(e)}`,
+        sessionId,
+      },
+    };
+  }
+}
+
+function generateSession(session: Session, project: Project): Generated {
+  return generate(session.id, () =>
+    ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project),
+  );
+}
+
+function generateCorpus(project: Project): Generated {
+  return generate(undefined, () =>
+    ImdiGenerator.generateCorpus(
+      IMDIMode.RAW_IMDI,
+      project,
+      exportableSessions(project).map((s) => `${s.id}.imdi`),
+    ),
+  );
+}
+
 // The problems that the archive's rules file finds in the IMDI that lameta would
 // export for the open project. The IMDI is generated in memory, one session at a
 // time, and a session is generated again only when something it reads changes.
@@ -86,21 +122,30 @@ export class RulesFileProblems {
     project: Project,
   ): Promise<Pick<IRulesSandboxOutput, "problems" | "errors">> {
     if (!GetOtherConfigurationSettings().archiveUsesImdi) return { problems: [], errors: [] };
-    const sessionItems = project.sessions.items as Session[];
-    const sessions = sessionItems.map((session) => ({
-      sessionId: session.id,
-      xml: withWarningsDiscarded(() =>
-        ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project),
-      ),
-    }));
-    const corpusXml = withWarningsDiscarded(() =>
-      ImdiGenerator.generateCorpus(
-        IMDIMode.RAW_IMDI,
-        project,
-        sessionItems.map((s) => `${s.id}.imdi`),
-      ),
+    const sessions = new Map(
+      exportableSessions(project).map((s) => [s, generateSession(s, project)]),
     );
-    return this.runRules(project, sessions, corpusXml);
+    return this.runRulesOnGenerated(project, sessions, generateCorpus(project));
+  }
+
+  // Runs the rules on the IMDI that could be generated, and adds what could not be
+  // generated to the rules file's errors
+  private async runRulesOnGenerated(
+    project: Project,
+    sessions: Map<Session, Generated>,
+    corpus: Generated | undefined,
+  ): Promise<IRulesSandboxOutput> {
+    const generationErrors = [...sessions.values(), ...(corpus ? [corpus] : [])].flatMap((g) =>
+      "error" in g ? [g.error] : [],
+    );
+    const output = await this.runRules(
+      project,
+      [...sessions.entries()].flatMap(([session, g]) =>
+        "xml" in g ? [{ sessionId: session.id, xml: g.xml }] : [],
+      ),
+      corpus && "xml" in corpus ? corpus.xml : undefined,
+    );
+    return { ...output, errors: [...generationErrors, ...output.errors] };
   }
 
   // Runs the project's rules file on the given IMDI
@@ -173,8 +218,8 @@ export class RulesFileProblems {
     let stopped = false;
     let runTimer: ReturnType<typeof setTimeout> | undefined;
     let runAgainWhenDone = false;
-    const xmlBySession = new Map<Session, string>();
-    let corpusXml: string | undefined;
+    const generatedBySession = new Map<Session, Generated>();
+    let corpus: Generated | undefined;
     // generations that are due; they run just before the rules do
     const dueGenerations = new Set<() => void>();
     let sessionsGenerated = 0;
@@ -194,12 +239,12 @@ export class RulesFileProblems {
     // runs again only when one of those values changes.
     const sessionWatchers = new Map<Session, IReactionDisposer>();
     const disposeSessionList = autorun(() => {
-      const sessions = [...(project.sessions.items as Session[])];
+      const sessions = exportableSessions(project);
       for (const [session, dispose] of sessionWatchers) {
         if (!sessions.includes(session)) {
           dispose();
           sessionWatchers.delete(session);
-          xmlBySession.delete(session);
+          generatedBySession.delete(session);
           scheduleRun(kRerunDelayMilliseconds);
         }
       }
@@ -209,12 +254,7 @@ export class RulesFileProblems {
           session,
           autorun(
             () => {
-              xmlBySession.set(
-                session,
-                withWarningsDiscarded(() =>
-                  ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project),
-                ),
-              );
+              generatedBySession.set(session, generateSession(session, project));
               sessionsGenerated++;
             },
             { scheduler: generateLater },
@@ -224,13 +264,7 @@ export class RulesFileProblems {
     });
     const disposeCorpus = autorun(
       () => {
-        corpusXml = withWarningsDiscarded(() =>
-          ImdiGenerator.generateCorpus(
-            IMDIMode.RAW_IMDI,
-            project,
-            (project.sessions.items as Session[]).map((s) => `${s.id}.imdi`),
-          ),
-        );
+        corpus = generateCorpus(project);
       },
       { scheduler: generateLater },
     );
@@ -263,11 +297,13 @@ export class RulesFileProblems {
         due.forEach((generate) => generate());
         const generateMilliseconds = performance.now() - generateStart;
 
-        const sessions = (project.sessions.items as Session[])
-          .filter((s) => xmlBySession.has(s))
-          .map((s) => ({ sessionId: s.id, xml: xmlBySession.get(s)! }));
+        const sessions = new Map(
+          exportableSessions(project)
+            .filter((s) => generatedBySession.has(s))
+            .map((s) => [s, generatedBySession.get(s)!]),
+        );
         const sandboxStart = performance.now();
-        const output = await this.runRules(project, sessions, corpusXml);
+        const output = await this.runRulesOnGenerated(project, sessions, corpus);
         const sandboxMilliseconds = performance.now() - sandboxStart;
         if (stopped) return;
         runInAction(() => {

@@ -82,7 +82,7 @@ export class CopyManager {
 
     const args =
       process.platform === "win32"
-        ? [`"${toWin32Path(sourcePath)}"`, `"${toWin32Path(destPath)}"`, "/z"] // cp
+        ? [`"${toExtendedLengthPath(sourcePath)}"`, `"${toExtendedLengthPath(destPath)}"`, "/z"] // cp
         : [`"${sourcePath}"`, `"${destPath}"`, "-t", "--progress"]; // rsync verbose, preserve time stamp
 
     return new Promise<string>((resolve, reject) => {
@@ -139,6 +139,11 @@ export class CopyManager {
 export function getExtension(path: string) {
   return Path.extname(path).toLowerCase().replace(/\./g, "");
 }
-function toWin32Path(path: string): string {
-  return path.replace(/\//gi, "\\");
+// The \\?\ form of a Windows path, which lets the copy command reach a path longer than
+// 260 characters, or a name that ends in a dot or a space, as Node does
+export function toExtendedLengthPath(path: string): string {
+  if (path.startsWith("\\\\?\\")) return path;
+  const p = Path.win32.resolve(path);
+  if (p.startsWith("\\\\")) return "\\\\?\\UNC\\" + p.slice(2);
+  return "\\\\?\\" + p;
 }

@@ -8,6 +8,7 @@ import { Session } from "../model/Project/Session/Session";
 import { Contribution } from "../model/file/File";
 import { makeLametaSourceReader } from "../export/lametaSourceComment";
 import { RulesFileProblems } from "./RulesFileProblems";
+import ImdiGenerator from "../export/ImdiGenerator";
 import { rulesSandboxMain } from "./rulesSandboxMain";
 
 mobx.configure({ enforceActions: "never" });
@@ -24,14 +25,17 @@ async function loadWithoutImport(source: string) {
   )();
 }
 
-function loadEdoloUnderElarWithTwoSessions(): Project {
+// `etr010Xml`: the contents of ETR010.session, if not a copy of ETR009's
+function loadEdoloUnderElarWithTwoSessions(etr010Xml?: string): Project {
   const dir = Path.join(temp.mkdirSync("rules runner"), "Edolo sample");
   fs.copySync("sample data/Edolo sample", dir);
   fs.mkdirSync(Path.join(dir, "Sessions", "ETR010"));
-  fs.copyFileSync(
-    Path.join(dir, "Sessions", "ETR009", "ETR009.session"),
-    Path.join(dir, "Sessions", "ETR010", "ETR010.session"),
-  );
+  const etr010 = Path.join(dir, "Sessions", "ETR010", "ETR010.session");
+  if (etr010Xml === undefined) {
+    fs.copyFileSync(Path.join(dir, "Sessions", "ETR009", "ETR009.session"), etr010);
+  } else {
+    fs.writeFileSync(etr010, etr010Xml);
+  }
   const sprj = Path.join(dir, "Edolo sample.sprj");
   fs.writeFileSync(
     sprj,
@@ -45,9 +49,26 @@ function loadEdoloUnderElarWithTwoSessions(): Project {
   return Project.fromDirectory(dir);
 }
 
+function makeRunnerThatReportsEachSession() {
+  const rulesPath = Path.join(temp.mkdirSync("rules"), "rules.js");
+  fs.writeFileSync(
+    rulesPath,
+    `export const interfaceVersion = 1;
+     export const format = "imdi";
+     export function checkSession(doc, report) { report({ id: "seen", message: "seen" }); }`,
+  );
+  return new RulesFileProblems(
+    async (input) => ({
+      value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
+    }),
+    () => rulesPath,
+  );
+}
+
 describe("RulesFileProblems", () => {
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it("checks generated IMDI and generates again only the session that changed", async () => {
@@ -183,6 +204,55 @@ describe("RulesFileProblems", () => {
     expect((await runner.checkNow(project)).errors.map((e) => e.kind)).toEqual(["load"]);
     stop();
   });
+  describe("a session whose .session lameta cannot read", () => {
+    it("is not checked, at export", async () => {
+      const project = loadEdoloUnderElarWithTwoSessions("");
+      const { problems, errors } = await makeRunnerThatReportsEachSession().checkNow(project);
+      expect(problems.map((p) => p.sessionId)).toEqual(["ETR009"]);
+      expect(errors).toEqual([]);
+    });
+
+    it("is not checked, in the background", async () => {
+      vi.useFakeTimers();
+      const project = loadEdoloUnderElarWithTwoSessions("");
+      const runner = makeRunnerThatReportsEachSession();
+      const stop = runner.watch(project);
+      await vi.advanceTimersByTimeAsync(10);
+      expect(runner.problems.map((p) => p.sessionId)).toEqual(["ETR009"]);
+      stop();
+    });
+  });
+
+  describe("when one session's IMDI cannot be generated", () => {
+    function failToGenerateEtr010() {
+      const generateSession = ImdiGenerator.generateSession;
+      vi.spyOn(ImdiGenerator, "generateSession").mockImplementation((mode, session, project) => {
+        if (session.id === "ETR010") throw new Error("cannot generate");
+        return generateSession(mode, session, project);
+      });
+    }
+
+    it("still checks the other sessions and names that one, at export", async () => {
+      const project = loadEdoloUnderElarWithTwoSessions();
+      failToGenerateEtr010();
+      const { problems, errors } = await makeRunnerThatReportsEachSession().checkNow(project);
+      expect(problems.map((p) => p.sessionId)).toEqual(["ETR009"]);
+      expect(errors.map((e) => [e.kind, e.sessionId])).toEqual([["imdi", "ETR010"]]);
+    });
+
+    it("still checks the other sessions and names that one, in the background", async () => {
+      vi.useFakeTimers();
+      const project = loadEdoloUnderElarWithTwoSessions();
+      failToGenerateEtr010();
+      const runner = makeRunnerThatReportsEachSession();
+      const stop = runner.watch(project);
+      await vi.advanceTimersByTimeAsync(10);
+      expect(runner.problems.map((p) => p.sessionId)).toEqual(["ETR009"]);
+      expect(runner.errors.map((e) => [e.kind, e.sessionId])).toEqual([["imdi", "ETR010"]]);
+      stop();
+    });
+  });
+
   // A finding goes where the IMDI element's nearest lameta-source comment says. An
   // element without one of its own takes its parent's, which is the session or the
   // file with no field, and a click then opens the wrong tab.
