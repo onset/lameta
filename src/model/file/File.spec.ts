@@ -274,6 +274,13 @@ describe("file", () => {
       const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
       const knownKey = f.properties.getKeyFromXmlTag("Location_Country");
       expect(f.getTextProperty(knownKey)).toBe("Ghana");
+      expect(f.getTextProperty("Location_Country")).toBe("my own country");
+      expect(f.properties.getValueOrThrow("Location_Country").definition.isCustom).toBe(true);
+
+      f.save(/*forceSave*/ true);
+      const reloaded = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(reloaded.getTextProperty(knownKey)).toBe("Ghana");
+      expect(reloaded.getTextProperty("Location_Country")).toBe("my own country");
     } finally {
       fs.removeSync(tmpFolder);
     }
