@@ -5,6 +5,7 @@ import * as temp from "temp";
 import { Project } from "../../../model/Project/Project";
 import { getRoCrate } from "../RoCrateExporter";
 import { startCollectingWarnings, stopCollectingWarnings } from "../../ExportWarningCollector";
+import { setMediaFolderOrEmptyForThisProjectAndMachine } from "../../../model/Project/MediaFolderAccess";
 
 // a listed file can be missing at export time: a link whose media folder is not on this
 // machine, or a file deleted (in Explorer, or remotely by a sync service) after lameta loaded it
@@ -19,6 +20,9 @@ async function exportEdoloAfterRemoving(
     fs.writeFileSync(Path.join(dir, p), contents),
   );
   const project = Project.fromDirectory(dir);
+  const mediaFolder = Path.join(tmpFolder, "media");
+  fs.outputFileSync(Path.join(mediaFolder, "recordings", "still here.wav"), "audio");
+  setMediaFolderOrEmptyForThisProjectAndMachine(mediaFolder);
   removeAfterLoading.forEach((p) => fs.removeSync(Path.join(dir, p)));
 
   startCollectingWarnings();
@@ -39,9 +43,11 @@ const decodedIds = (graph: any[]) =>
     .map(decodeURIComponent);
 
 describe("RO-Crate export of listed files that are not on disk", () => {
+  // a linked file is listed under the name of the file that it links to
   const missing = [
-    "Sessions/ETR009/far away.wav",
-    "Sessions/ETR009/gone link.wav",
+    "Sessions/ETR009/does-not-exist.wav",
+    "Sessions/ETR009/gone.wav",
+    "Sessions/ETR009/still here.wav",
     "Sessions/ETR009/ETR009_AText.txt",
     "DescriptionDocuments/pretend description.txt",
     "OtherDocuments/some other doc.txt",
@@ -57,9 +63,12 @@ describe("RO-Crate export of listed files that are not on disk", () => {
       {
         "Sessions/ETR009/far away.wav.link": "recordings/does-not-exist.wav",
         "Sessions/ETR009/gone link.wav.link": "recordings/gone.wav",
+        "Sessions/ETR009/removed link to a file that is there.wav.link":
+          "recordings/still here.wav",
       },
       [
         "Sessions/ETR009/gone link.wav.link",
+        "Sessions/ETR009/removed link to a file that is there.wav.link",
         "Sessions/ETR009/ETR009_AText.txt",
         "DescriptionDocuments/pretend description.txt",
         "OtherDocuments/some other doc.txt",
@@ -70,6 +79,7 @@ describe("RO-Crate export of listed files that are not on disk", () => {
   });
 
   afterAll(() => {
+    setMediaFolderOrEmptyForThisProjectAndMachine("");
     fs.removeSync(tmpFolder);
   });
 
@@ -96,6 +106,7 @@ describe("RO-Crate export of a session whose folder is gone", () => {
   });
 
   afterAll(() => {
+    setMediaFolderOrEmptyForThisProjectAndMachine("");
     fs.removeSync(tmpFolder);
   });
 

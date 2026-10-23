@@ -3,6 +3,7 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
+import { getStatusOfFile } from "./FileStatus";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
 import { describe, it, afterEach, vi } from "vite-plus/test";
@@ -91,15 +92,15 @@ describe("getActualFileExists", () => {
     }
   });
 
-  it("still knows where a link points after its .link file has been removed", () => {
+  it("reports a cloud-only link whose .link file has been removed as missing", () => {
     const folder = temp.mkdirSync("link removed");
     const linkPath = Path.join(folder, "far away.wav.link");
     fs.writeFileSync(linkPath, "recordings/far away.wav");
     try {
       const f = new OtherFile(linkPath, new EncounteredVocabularyRegistry());
-      const before = f.getActualFilePath();
+      f.cloudStatus = "cloudOnly";
       fs.removeSync(linkPath);
-      expect(f.getActualFilePath()).toBe(before);
+      expect(getStatusOfFile(f).missing).toBe(true);
     } finally {
       fs.removeSync(folder);
     }
