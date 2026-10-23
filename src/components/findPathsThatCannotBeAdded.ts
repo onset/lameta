@@ -8,9 +8,11 @@ export function findPathsThatCannotBeAdded(
   paths: string[],
 ): { path: string; reason: ReasonPathCannotBeAdded }[] {
   return paths.flatMap((path): { path: string; reason: ReasonPathCannotBeAdded }[] => {
+    // Block lameta internal file types by extension
     if (["session", "person", "meta"].includes(getExtension(path))) {
       return [{ path, reason: "lametaFileType" }];
     }
+    // Disallow folders
     if (fs.lstatSync(path).isDirectory()) {
       return [{ path, reason: "folder" }];
     }
