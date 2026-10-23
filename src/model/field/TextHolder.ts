@@ -3,6 +3,7 @@ import {
   parseSlashSyntax,
   assignLanguagesToSegments,
   parseCommaSeparatedSlashSyntax,
+  taggedAxis,
 } from "./TextHolderMigration";
 
 /**
@@ -262,7 +263,7 @@ export class TextHolder {
     for (const tag of orderedTags) {
       const text = assignments.get(tag) ?? "";
       if (text.length > 0) {
-        parts.push(`[[${tag}]]${text}`);
+        parts.push(taggedAxis(tag, text));
       }
     }
 
@@ -316,7 +317,7 @@ export class TextHolder {
 
     const serializedParts = nonEmptyAxes.map((language) => {
       const text = axes[language]; // can't trim because then you can't type a space !.trim();  Trim whitespace
-      return text.length > 0 ? `[[${language}]]${text}` : "";
+      return text.length > 0 ? taggedAxis(language, text) : "";
     });
 
     return serializedParts.join("");
