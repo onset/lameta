@@ -106,6 +106,11 @@ describe("the generated project", () => {
     expect(fieldText(sprj, "MetadataLanguages")).toBe(kMetadataLanguages);
   });
 
+  it("names the project after its folder, in plain text, as lameta saves it", () => {
+    const sprj = read("Interviews with Abstract Artists.sprj");
+    expect(fieldText(sprj, "ProjectName")).toBe("Interviews with Abstract Artists");
+  });
+
   it("has its title and description in all three languages", () => {
     const sprj = read("Interviews with Abstract Artists.sprj");
     for (const tag of ["Title", "ProjectDescription"]) {

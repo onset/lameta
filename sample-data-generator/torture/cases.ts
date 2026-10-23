@@ -117,6 +117,8 @@ export function writeProject(ctx: Context, projectName: string) {
       tag: "Project",
       attrs: { minimum_lameta_version_to_read: "0.0.0" },
       children: [
+        // lameta saves a name on first load; without one it would take the tagged title
+        { tag: "ProjectName", text: projectName },
         { tag: "Title", text: ml.multilingualText(ml.kProjectTitles) },
         {
           tag: "ProjectDescription",
