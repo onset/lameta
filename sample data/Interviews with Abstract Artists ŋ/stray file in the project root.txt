@@ -1,1 +1,0 @@
-lameta lists files in the project folder too.
