@@ -172,24 +172,14 @@ export class Project extends Folder {
 
   /**
    * Detect if sessions have slash-syntax content in multilingual fields.
-   * Checks up to the first 4 sessions; returns true if ANY has slash-syntax.
+   * Returns true if ANY session has slash-syntax.
    */
   public detectSlashSyntaxInSessions(): boolean {
-    const sessionsToCheck = this.sessions.items.slice(0, 4);
-    if (sessionsToCheck.length === 0) {
-      return false;
-    }
-
-    for (const session of sessionsToCheck) {
-      const fields = session.properties.values();
-      for (const field of fields) {
-        if (field.definition?.multilingual && field.looksLikeSlashSyntax?.()) {
-          return true; // Found at least one session with slash-syntax
-        }
-      }
-    }
-
-    return false;
+    return this.sessions.items.some((session) =>
+      session.properties
+        .values()
+        .some((field) => field.definition?.multilingual && field.looksLikeSlashSyntax?.()),
+    );
   }
 
   /**
