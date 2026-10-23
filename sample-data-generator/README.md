@@ -35,11 +35,23 @@ The `.sprj` takes the name of the folder. It writes the same bytes on every run,
 | `--large-media`                            | About 1.9 GB in `Sessions/BIG_media`: a playable 1 GB 1080p video, a 500 MB WAV, the first 300 MB of the video, 50 MB of random bytes named `.mp4`, and zero-byte files. Needs ffmpeg on the PATH or in `node_modules/ffmpeg-ffprobe-static`. Files already there at full size are kept on the next run.                                         |
 | `--archive-config <name>`                  | The archive configuration in the `.sprj` (default `ELAR`).                                                                                                                                                                                                                                                                                       |
 | `--bulk-sessions <n>`, `--bulk-people <n>` | The size of the ordinary part of the project (default 800 and 240).                                                                                                                                                                                                                                                                              |
+| `--size <n>`                               | `n` bulk sessions and people at 30% of that, so that the same project can be made at several sizes.                                                                                                                                                                                                                                              |
+| `--no-cases`                               | Leaves out the hand-made cases, so that the project holds only the bulk part.                                                                                                                                                                                                                                                                    |
 
 `src/export/tortureProject.manual.spec.ts` loads a generated project and runs every exporter over it, recording each exception and notification in a `report.json`, together with the values that saving each file would lose:
 
 ```bash
 LAMETA_TORTURE_DIR="<project folder>" LAMETA_TORTURE_OUT="<output folder>" vp test run src/export/tortureProject.manual.spec.ts
+```
+
+### Measuring how lameta scales
+
+`src/model/Project/ScalingCounts.spec.ts` (in the normal suite) and `e2e/scalingCounts.e2e.ts` build the bulk project at two sizes and assert how many records each user action reads, writes, checks or renders. `src/model/Project/ScalingMeasure.manual.spec.ts` and `e2e/scalingMeasure.e2e.ts` time those actions on projects made with `--size <n> --no-cases`; `e2e/scalingProfile.e2e.ts` records a CPU profile of typing. To make the times look like those of an old laptop, run the model measurements with the CPU capped:
+
+```powershell
+pnpm exec tsx sample-data-generator/torture/generate-torture-project.ts D:\perf-projects\elar-1000 --size 1000 --no-cases
+.\scripts\measure-scaling-throttled.ps1 -Dirs "D:\perf-projects\elar-1000" -Out C:\temp\scaling-1000.json
+$env:LAMETA_SCALING_DIRS="D:\perf-projects\elar-1000"; pnpm exec playwright test e2e/scalingMeasure.e2e.ts --workers=1
 ```
 
 ### Comparing exports

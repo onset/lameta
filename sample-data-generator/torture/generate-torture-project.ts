@@ -3,6 +3,11 @@
 //
 //   pnpm exec tsx sample-data-generator/torture/generate-torture-project.ts <projectFolder> [--hostile-names] [--blocking]
 //       [--large-media] [--archive-config ELAR] [--bulk-sessions 800] [--bulk-people 240]
+//       [--size <sessions>] [--no-cases]
+//
+// --size makes the bulk part at a given number of sessions, with people, files and problems
+// in proportion, so that one project can be measured at several sizes. --no-cases leaves out
+// the hand-made hard cases, so that the smallest sizes hold only the bulk.
 //
 // The .sprj takes the name of <projectFolder>. Without flags, the project holds only
 // names that git can check out on Windows, macOS and Linux; that is the version
@@ -22,7 +27,7 @@ const kCasesDocument = "OtherDocuments/torture-cases.md";
 
 function usage(): never {
   console.error(
-    "Usage: tsx generate-torture-project.ts <projectFolder> [--hostile-names] [--blocking] [--large-media] [--archive-config <name>] [--bulk-sessions <n>] [--bulk-people <n>]",
+    "Usage: tsx generate-torture-project.ts <projectFolder> [--hostile-names] [--blocking] [--large-media] [--archive-config <name>] [--bulk-sessions <n>] [--bulk-people <n>] [--size <n>] [--no-cases]",
   );
   process.exit(1);
 }
@@ -36,6 +41,7 @@ function parseArgs(argv: string[]) {
     archiveConfiguration: "ELAR",
     bulkSessions: 800,
     bulkPeople: 240,
+    cases: true,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -45,6 +51,10 @@ function parseArgs(argv: string[]) {
     else if (a === "--archive-config") opts.archiveConfiguration = argv[++i] ?? usage();
     else if (a === "--bulk-sessions") opts.bulkSessions = Number(argv[++i] ?? usage());
     else if (a === "--bulk-people") opts.bulkPeople = Number(argv[++i] ?? usage());
+    else if (a === "--size") {
+      opts.bulkSessions = Number(argv[++i] ?? usage());
+      opts.bulkPeople = Math.max(1, Math.round(opts.bulkSessions * 0.3));
+    } else if (a === "--no-cases") opts.cases = false;
     else if (a.startsWith("--")) usage();
     else if (!opts.folder) opts.folder = a;
     else usage();
@@ -110,8 +120,10 @@ function main() {
   const ctx: Context = { w, content, archiveConfiguration: opts.archiveConfiguration };
 
   writeProject(ctx, projectName);
-  writePeople(ctx);
-  writeSessions(ctx);
+  if (opts.cases) {
+    writePeople(ctx);
+    writeSessions(ctx);
+  }
   writeBulk(ctx, opts.bulkSessions, opts.bulkPeople);
 
   const notes: string[] = [];
