@@ -15,10 +15,15 @@
 import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { compareFolders, formatComparison, isEmpty, writeNormalizedCopy } from "./exportComparison";
+import {
+  compareFolders,
+  formatComparison,
+  isEmpty,
+  listFiles,
+  writeNormalizedCopy,
+} from "./exportComparison";
 import { generateTortureProject, kDefaultTortureProjectOptions } from "./generate-torture-project";
 import { newestBetaOrRelease } from "./releaseTags";
-import { kMaxPortableRelativePath } from "./writer";
 
 const kHarness = "src/export/tortureProject.manual.spec.ts";
 const kThisLameta = path.resolve(__dirname, "../..");
@@ -141,12 +146,31 @@ function runHarness(lametaDir: string, projectDir: string, rawDir: string) {
   runIn(lametaDir, command, { LAMETA_TORTURE_DIR: projectDir, LAMETA_TORTURE_OUT: rawDir });
 }
 
-// Generates the project, runs the version's exporters over it, and returns the folder of
-// the normalized output
-function exportWith(lametaDir: string, versionDir: string): string {
+// The exporters, and an old version's tools, are not all long-path aware on Windows, so a
+// project under a deep output folder would fail on its longest paths rather than show what
+// the exporters do
+function refusePathsTooLongForWindows(projectDir: string) {
+  if (process.platform !== "win32") return;
+  const longest = Math.max(...listFiles(projectDir).map((f) => path.join(projectDir, f).length));
+  if (longest >= 260)
+    fail(
+      `The project's longest path under ${projectDir} is ${longest} characters, over Windows' ` +
+        `limit of 260. Give a shorter folder with --out, for example --out C:\\lameta-compare.`,
+    );
+}
+
+// Generates a fresh project in the version's folder and returns where it is
+function generateProjectFor(versionDir: string): string {
   fs.rmSync(versionDir, { recursive: true, force: true });
   const projectDir = path.join(versionDir, "project", kProjectFolderName);
   generateTortureProject({ folder: projectDir, ...kDefaultTortureProjectOptions });
+  refusePathsTooLongForWindows(projectDir);
+  return projectDir;
+}
+
+// Runs the version's exporters over its project and returns the folder of the normalized
+// output
+function exportWith(lametaDir: string, versionDir: string, projectDir: string): string {
   const rawDir = path.join(versionDir, "raw");
   const normalizedDir = path.join(versionDir, "normalized");
   provideHarness(lametaDir);
@@ -163,23 +187,16 @@ function main(args: string[]) {
   const tag = args[0] ?? newestBetaOrRelease(git(["tag", "--list"]).split("\n"));
   if (!tag) fail("There is no beta or release tag to compare with.");
   const outDir = path.resolve(outOption ?? path.join(kThisLameta, "tmp", "compare-exports"));
-  // The exporters, and the old version's tools, are not all long-path aware on Windows, so
-  // the project's longest paths must stay under 260 characters there
-  const longestPath =
-    path.join(outDir, "before", "project", kProjectFolderName).length +
-    1 +
-    kMaxPortableRelativePath;
-  if (process.platform === "win32" && longestPath >= 260)
-    fail(
-      `Under ${outDir} the project's longest paths would be ${longestPath} characters, over ` +
-        `Windows' limit of 260. Give a shorter folder with --out, for example --out C:\\lameta-compare.`,
-    );
-
+  // the projects first, so that one with paths too long stops the run before the install
+  const beforeDir = path.join(outDir, "before");
+  const afterDir = path.join(outDir, "after");
+  const beforeProject = generateProjectFor(beforeDir);
+  const afterProject = generateProjectFor(afterDir);
   const beforeLameta = path.join(outDir, `lameta-${tag}`);
   provideWorktree(tag, beforeLameta);
   provideInstall(beforeLameta);
-  const before = exportWith(beforeLameta, path.join(outDir, "before"));
-  const after = exportWith(kThisLameta, path.join(outDir, "after"));
+  const before = exportWith(beforeLameta, beforeDir, beforeProject);
+  const after = exportWith(kThisLameta, afterDir, afterProject);
 
   // Versions that have the Problems checks write a lameta-source comment before most elements
   // of the IMDI that the IMDI view and the checks read (not of the IMDI that export writes).
