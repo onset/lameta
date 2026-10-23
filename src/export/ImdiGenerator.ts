@@ -16,6 +16,7 @@ import {
 } from "../model/file/FileTypeInfo";
 import { titleCase } from "title-case";
 import { sanitizeForExport } from "../other/sanitizeForArchive";
+import { fileExportNames, sessionFolderExportNames } from "./exportNames";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyWarning } from "../components/Notify";
@@ -120,6 +121,9 @@ export default class ImdiGenerator {
   // same for project, focus, etc. But child folders (e.g. sessions)
   // will include some data from the parent project (which is also a folder)
   private folderInFocus: Folder;
+  // the export names of folderInFocus, when it is a session, and of its files
+  private exportFolderName: string | undefined;
+  private exportFileNames: Map<File, string> | undefined;
 
   private project: Project;
   private mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
@@ -989,14 +993,21 @@ export default class ImdiGenerator {
     return !!g?.isMediaType;
   }
 
-  private sanitizedRelativePath(path: string): string {
+  private sanitizedRelativePath(f: File): string {
     // If the project has the right setting, then this path is probably already sanitized (though there may be corner
     // cases where it isn't, e.g. the setting was set after files were added.) But in the ImdiBundler, we sanitize
     // files as they get copied to the export, regardless of that setting. This is because this is a *requirement* of
     // IMDI archives. Anyhow, since the bundler would have (or will have) export the sanitized version, we need to do
-    // that to the file name we use for it in the xml.
-    const filename = sanitizeForExport(Path.basename(path));
-    const immediateParentDirectoryName = sanitizeForExport(Path.basename(Path.dirname(path)));
+    // that to the file name we use for it in the xml. The names come from exportNames, as the bundler's do, so
+    // that two names that sanitize to the same one still get places of their own.
+    const path = f.getRelativePathForExportingTheActualFile();
+    this.exportFileNames ??= fileExportNames(this.folderInFocus.files);
+    this.exportFolderName ??= this.project
+      ? sessionFolderExportNames(this.project).get(this.folderInFocus)
+      : undefined;
+    const filename = this.exportFileNames.get(f) ?? sanitizeForExport(Path.basename(path));
+    const immediateParentDirectoryName =
+      this.exportFolderName ?? sanitizeForExport(Path.basename(Path.dirname(path)));
 
     const relativePath = Path.join(immediateParentDirectoryName, filename)
       // get a path that works across platforms.
@@ -1011,10 +1022,7 @@ export default class ImdiGenerator {
     return this.group("MediaFile", () => {
       // ResourceLink, Type and Format all come from the file itself
       this.withSource(this.sourceOf(f), () => {
-        this.element(
-          "ResourceLink",
-          this.sanitizedRelativePath(f.getRelativePathForExportingTheActualFile()),
-        );
+        this.element("ResourceLink", this.sanitizedRelativePath(f));
         this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
         this.element(
@@ -1052,10 +1060,7 @@ export default class ImdiGenerator {
   public writtenResource(f: File): string | null {
     return this.group("WrittenResource", () => {
       this.withSource(this.sourceOf(f), () =>
-        this.element(
-          "ResourceLink",
-          this.sanitizedRelativePath(f.getRelativePathForExportingTheActualFile()),
-        ),
+        this.element("ResourceLink", this.sanitizedRelativePath(f)),
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 

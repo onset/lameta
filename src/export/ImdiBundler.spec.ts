@@ -7,6 +7,7 @@ import fs from "fs";
 import * as Path from "path";
 import { ExportSessionData } from "./ExportBundleTypes";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
+import { MainProcessImdiExport } from "../mainProcess/MainProcessImdiExport";
 
 let project: Project;
 const projectDir = temp.mkdirSync("lameta imdi bundler test");
@@ -200,7 +201,15 @@ describe("generateExportData async generator", () => {
 
 describe("names that Windows or the archive cannot take", () => {
   let hostileProject: Project;
-  const sessionFolders = ["COM1", "Trailing dot.", "Café".normalize("NFD"), "!!!"];
+  // "Tape 1" and "Tape_1" are different folders that sanitize to the same name
+  const sessionFolders = [
+    "COM1",
+    "Trailing dot.",
+    "Café".normalize("NFD"),
+    "!!!",
+    "Tape 1",
+    "Tape_1",
+  ];
 
   beforeAll(() => {
     const dir = Path.join(temp.mkdirSync("lameta hostile names"), "Hostile ŋ");
@@ -215,6 +224,9 @@ describe("names that Windows or the archive cannot take", () => {
       fs.mkdirSync(sessionDir, { recursive: true });
       fs.writeFileSync(Path.join(sessionDir, folder + ".session"), sessionXml);
       fs.writeFileSync(Path.join(sessionDir, "notes.txt"), "notes");
+      // two files that sanitize to the same name
+      fs.writeFileSync(Path.join(sessionDir, "a b.txt"), "a b in " + folder);
+      fs.writeFileSync(Path.join(sessionDir, "a_b.txt"), "a_b in " + folder);
     }
     hostileProject = Project.fromDirectory(dir);
     hostileProject.properties.setText("title", "Interviews: Abstract Painters / 2024");
@@ -275,6 +287,32 @@ describe("names that Windows or the archive cannot take", () => {
       const destinations = data.filesToCopy.map((f) => f.destination);
       for (const link of links(data.imdiXml, "ResourceLink").filter((l) => l)) {
         expect(destinations).toContain(Path.join(Path.dirname(data.imdiPath), link));
+      }
+    }
+  });
+
+  it.each([
+    ["IMDI", IMDIMode.RAW_IMDI],
+    ["OPEX", IMDIMode.OPEX],
+  ])("in %s mode, writes each session and each file to a place of its own", async (_, mode) => {
+    const { sessions, corpus } = await exportData(mode);
+    const writer = new MainProcessImdiExport(() => null);
+    for (const data of sessions) {
+      expect((await writer.writeImdiSessionData(data)).errors).toEqual([]);
+    }
+    await writer.writeImdiCorpusData(corpus);
+
+    const written = [
+      corpus.imdiPath,
+      ...sessions.flatMap((s) => [s.imdiPath, ...s.filesToCopy.map((f) => f.destination)]),
+    ];
+    expect(new Set(written.map((p) => p.toLowerCase())).size).toBe(written.length);
+    for (const path of written) expect(fs.existsSync(path), path).toBe(true);
+    for (const data of sessions) {
+      for (const copy of data.filesToCopy) {
+        expect(fs.readFileSync(copy.destination, "utf8")).toBe(
+          fs.readFileSync(copy.source, "utf8"),
+        );
       }
     }
   });

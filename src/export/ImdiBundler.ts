@@ -7,6 +7,7 @@ import * as fs from "fs-extra";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { sanitizeForExport } from "../other/sanitizeForArchive";
 import { taggedAxis } from "../model/field/TextHolderMigration";
+import { fileExportNames, sessionFolderExportNames } from "./exportNames";
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import { NotifyError } from "../components/Notify";
@@ -224,19 +225,20 @@ export default class ImdiBundler {
     }
 
     // --- Sessions ---
+    const sessionFolderNames = sessionFolderExportNames(project);
     const sessions = project.sessions.items.filter(folderFilter) as Session[];
     for (const session of sessions) {
+      const sessionDirName = sessionFolderNames.get(session)!;
       const sessionData = await this.generateSessionData(
         session,
         project,
         rootDirectory,
         secondLevel,
+        sessionDirName,
         imdiMode,
         copyInProjectFiles,
       );
-      childrenSubpaths.push(
-        secondLevel + "/" + sanitizeForExport(session.filePrefix + extensionWithDot),
-      );
+      childrenSubpaths.push(secondLevel + "/" + sessionDirName + extensionWithDot);
       yield sessionData;
     }
 
@@ -286,25 +288,26 @@ export default class ImdiBundler {
     project: Project,
     rootDirectory: string,
     secondLevel: string,
+    // the session's folder in the export, which also names its IMDI or OPEX file
+    sessionDirName: string,
     imdiMode: IMDIMode,
     copyInProjectFiles: boolean,
   ): Promise<ExportSessionData> {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
-    const imdiFileName = `${session.filePrefix}${extensionWithDot}`;
+    const imdiFileName = `${sessionDirName}${extensionWithDot}`;
 
     const sessionImdi = ImdiGenerator.generateSession(imdiMode, session, project);
     await validateImdiOrThrow(sessionImdi, session.displayName);
 
-    const sessionDirName = sanitizeForExport(Path.basename(session.directory));
     const directoriesToCreate: string[] = [];
     let imdiPath: string;
 
     if (imdiMode === IMDIMode.OPEX) {
       const sessionOutputDir = Path.join(rootDirectory, secondLevel, sessionDirName);
       directoriesToCreate.push(sessionOutputDir);
-      imdiPath = Path.join(sessionOutputDir, sanitizeForExport(imdiFileName));
+      imdiPath = Path.join(sessionOutputDir, imdiFileName);
     } else {
-      imdiPath = Path.join(rootDirectory, secondLevel, sanitizeForExport(imdiFileName));
+      imdiPath = Path.join(rootDirectory, secondLevel, imdiFileName);
     }
 
     const filesToCopy: FileCopyRequest[] = [];
@@ -312,14 +315,12 @@ export default class ImdiBundler {
       const targetDirectory = Path.join(rootDirectory, secondLevel, sessionDirName);
       directoriesToCreate.push(targetDirectory);
 
+      const fileNames = fileExportNames(session.files);
       session.files.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
             source: f.getActualFilePath(),
-            destination: Path.join(
-              targetDirectory,
-              sanitizeForExport(f.getNameToUseWhenExportingUsingTheActualFile()),
-            ),
+            destination: Path.join(targetDirectory, fileNames.get(f)!),
           });
         }
       });
@@ -382,14 +383,12 @@ export default class ImdiBundler {
     const filesToCopy: FileCopyRequest[] = [];
     if (copyInProjectFiles) {
       directoriesToCreate.push(destinationFolderPath);
+      const fileNames = fileExportNames(folder.files);
       folder.files.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
             source: f.getActualFilePath(),
-            destination: Path.join(
-              destinationFolderPath,
-              sanitizeForExport(f.getNameToUseWhenExportingUsingTheActualFile()),
-            ),
+            destination: Path.join(destinationFolderPath, fileNames.get(f)!),
           });
         }
       });
