@@ -9,6 +9,7 @@ import {
   csvEncode,
   makeGenericCsvZipFile,
 } from "./CsvExporter";
+import { Contribution } from "../model/file/File";
 
 // tslint:disable-next-line:no-submodule-imports
 const parseSync = require("csv-parse/lib/sync");
@@ -142,6 +143,24 @@ describe("sessions csv export", () => {
     expect(parsed.length).toBe(2);
     expect(descriptionColumn).toBeGreaterThan(-1);
     expect(parsed[1][descriptionColumn]).toBe(description);
+  });
+  it("should keep a contributor whose name holds a comma, quote or line break in one cell", () => {
+    const projectWithOddNames = Project.fromDirectory("sample data/Edolo sample");
+    const sessionWithOddNames = projectWithOddNames.sessions.items[0];
+    sessionWithOddNames.metadataFile!.contributions.push(
+      new Contribution("Smith, John", "speaker", ""),
+      new Contribution('Ana "the elder"\nLópez', "speaker", ""),
+    );
+
+    const csv = makeCsvForSessions(projectWithOddNames, () => true);
+    const parsed = parseSync(csv, { relax_column_count: false });
+    const contributionsColumn = parsed[0].indexOf("contributions");
+
+    expect(parsed.length).toBe(2);
+    expect(parsed[1].length).toBe(parsed[0].length);
+    expect(parsed[1][contributionsColumn].split("|")).toEqual(
+      expect.arrayContaining(["speaker:Smith, John", 'speaker:Ana "the elder"\nLópez']),
+    );
   });
   it("should contain id", () => {
     expect(session(1, "id")).toBe("ETR009");
