@@ -88,5 +88,6 @@ describe("runSanityCheck", () => {
     session.runSanityCheck();
 
     expect(multipleSpy).not.toHaveBeenCalled();
+    multipleSpy.mockRestore();
   });
 });
