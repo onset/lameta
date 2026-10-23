@@ -67,12 +67,7 @@ class ContributorsTable extends React.Component<IProps> {
   private ensureOneBlankRow(propToUse: IProps) {
     let i = propToUse.file.contributions.length;
     while (i--) {
-      const c = propToUse.file.contributions[i];
-      const isCompletelyEmpty =
-        (!c.personReference || c.personReference.length === 0) &&
-        (!c.role || c.role.length === 0) &&
-        (!c.comments || c.comments.length === 0);
-      if (isCompletelyEmpty) {
+      if (propToUse.file.contributions[i].isEmpty) {
         //console.log("removing blank contribution at " + i);
         propToUse.file.contributions.splice(i, 1);
       }
@@ -102,8 +97,8 @@ class ContributorsTable extends React.Component<IProps> {
   }
   private renderEditableText(cellInfo: any) {
     const contribution = this.props.file.contributions[cellInfo.index];
-    const fieldOfThisColumn: keyof Contribution = cellInfo.column.id;
-    const cellValue = (contribution[fieldOfThisColumn] as any) || "";
+    const fieldOfThisColumn: "role" | "comments" = cellInfo.column.id;
+    const cellValue = contribution[fieldOfThisColumn] || "";
 
     return (
       <CommentCell
