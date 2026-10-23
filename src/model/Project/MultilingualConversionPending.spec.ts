@@ -173,7 +173,7 @@ describe("MultilingualConversionPending Detection", () => {
   });
 
   describe("detectSlashSyntaxInSessions", () => {
-    it("should detect when ANY of first 4 sessions have slash-syntax", () => {
+    it("should detect when ANY session has slash-syntax", () => {
       createProjectFile("ELAR");
 
       // Only 1 of 4 has slash-syntax - should still detect
@@ -188,7 +188,7 @@ describe("MultilingualConversionPending Detection", () => {
       expect(project.multilingualConversionPending).toBe(true);
     });
 
-    it("should NOT detect when none of first 4 sessions have slash-syntax", () => {
+    it("should NOT detect when no session has slash-syntax", () => {
       createProjectFile("ELAR");
 
       // 0 of 4 have slash-syntax
@@ -200,6 +200,19 @@ describe("MultilingualConversionPending Detection", () => {
       const project = Project.fromDirectory(projectDirectory);
 
       expect(project.multilingualConversionPending).toBe(false);
+    });
+
+    it("should detect slash-syntax in a session loaded after the first few", () => {
+      createProjectFile("ELAR");
+
+      for (let i = 1; i <= 6; i++) {
+        createSession(`Session${i}`, "Plain text");
+      }
+      createSession("Session7", "Fishing / Pesca / Pis");
+
+      const project = Project.fromDirectory(projectDirectory);
+
+      expect(project.multilingualConversionPending).toBe(true);
     });
 
     it("should detect with just 1 session that has slash-syntax", () => {
@@ -302,24 +315,6 @@ describe("MultilingualConversionPending Detection", () => {
 
       // Any slash-syntax triggers detection
       expect(project.multilingualConversionPending).toBe(true);
-    });
-
-    it("should only check first 4 sessions (optimization)", () => {
-      createProjectFile("ELAR");
-
-      // Create 6 sessions, only last 2 have slash-syntax
-      // Detection only looks at first 4, so should NOT trigger
-      createSession("AAA_Session1", "Plain text");
-      createSession("BBB_Session2", "More plain");
-      createSession("CCC_Session3", "Still plain");
-      createSession("DDD_Session4", "Yet more plain");
-      createSession("EEE_Session5", "English / Español"); // Won't be checked
-      createSession("FFF_Session6", "One / Uno"); // Won't be checked
-
-      const project = Project.fromDirectory(projectDirectory);
-
-      // First 4 are plain, so no slash-syntax detected
-      expect(project.multilingualConversionPending).toBe(false);
     });
   });
 });
