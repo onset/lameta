@@ -644,6 +644,7 @@ export /*babel doesn't like this: abstract*/ class File {
     return false;
   }
   private loadPropertiesFromXml(propertiesFromXml: any) {
+    const customFieldsNamedLikeKnownFields: { xmlTag: string; value: any }[] = [];
     const tags = Object.keys(propertiesFromXml);
     for (const tag of tags) {
       if (this.specialLoadingOfField(tag, propertiesFromXml)) {
@@ -654,23 +655,18 @@ export /*babel doesn't like this: abstract*/ class File {
 
       // <CustomFields>
       else if (tag.toLowerCase() === "customfields") {
-        //        console.log(JSON.stringify(propertiesFromXml[key]));
         const customKeys = Object.keys(propertiesFromXml[tag]);
         for (const key of customKeys) {
           // first one is just $":{"type":"xml"}
           if (key !== "$") {
-            // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
-            // understand. It will move them to the set of "custom" fields. Notably, in Dec 2019
-            // this happened when we introduced "id" as a field (instead of just relying on the folder
-            // name).
-            // Here we can pull such fields back out of the custom list and up to the top level.
-            const isCustom = !isKnownFieldKey(key);
-            if (!isCustom) {
-              //   console.info(
-              //     `** Pulling ${key}:${propertiesFromXml[tag][key]._} back out of custom list, where presumably SayMore Classic put it.`
-              //   );
+            if (isKnownFieldKey(key)) {
+              customFieldsNamedLikeKnownFields.push({
+                xmlTag: key,
+                value: propertiesFromXml[tag][key],
+              });
+            } else {
+              this.loadOnePersistentProperty(key, propertiesFromXml[tag][key], true);
             }
-            this.loadOnePersistentProperty(key, propertiesFromXml[tag][key], isCustom);
           }
         }
       }
@@ -688,6 +684,17 @@ export /*babel doesn't like this: abstract*/ class File {
         // "Normal" fields
         this.loadOnePersistentProperty(tag, propertiesFromXml[tag], false);
       }
+    }
+    // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
+    // understand and move them to the set of "custom" fields. Notably, in Dec 2019
+    // this happened when we introduced "id" as a field (instead of just relying on the folder
+    // name). Here we pull such fields back out of the custom list and up to the top level,
+    // unless the file has its own value for that field, in which case the custom field is
+    // one the user made, and it stays custom.
+    for (const { xmlTag, value } of customFieldsNamedLikeKnownFields) {
+      const knownKey = this.properties.getKeyFromXmlTag(xmlTag);
+      const knownFieldIsEmpty = !this.properties.getValue(knownKey)?.text.trim();
+      this.loadOnePersistentProperty(xmlTag, value, !knownFieldIsEmpty);
     }
   }
 
@@ -777,6 +784,7 @@ export /*babel doesn't like this: abstract*/ class File {
     // styles for elements... ending up with all this code to work around that.
     let fixedKey = xmlTag;
     if (
+      !isCustom &&
       // if we know about this field, then we know how to roundtrip correctly
       // already.
       // Note the following would give a false positive if the key was

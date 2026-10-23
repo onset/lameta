@@ -225,6 +225,46 @@ describe("file", () => {
     }
   });
 
+  it("keeps a custom field named like a known field when the known field has its own value", () => {
+    for (const contents of [
+      `<genre type="string">narrative</genre>
+       <CustomFields><Genre type="string">my own genre</Genre></CustomFields>`,
+      `<CustomFields><Genre type="string">my own genre</Genre></CustomFields>
+       <genre type="string">narrative</genre>`,
+    ]) {
+      const { tmpFolder, sessionFolder } = writeSessionFile(contents);
+      try {
+        const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+        expect(f.getTextProperty("genre")).toBe("narrative");
+        expect(f.getTextProperty("Genre")).toBe("my own genre");
+        expect(f.properties.getValueOrThrow("Genre").definition.isCustom).toBe(true);
+
+        f.save(/*forceSave*/ true);
+        const reloaded = new SessionMetadataFile(
+          sessionFolder,
+          new EncounteredVocabularyRegistry(),
+        );
+        expect(reloaded.getTextProperty("genre")).toBe("narrative");
+        expect(reloaded.getTextProperty("Genre")).toBe("my own genre");
+      } finally {
+        fs.removeSync(tmpFolder);
+      }
+    }
+  });
+
+  it("moves a known field that SayMore Classic put among the custom fields back to the known field", () => {
+    const { tmpFolder, sessionFolder } = writeSessionFile(
+      `<CustomFields><Genre type="string">narrative</Genre></CustomFields>`,
+    );
+    try {
+      const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
+      expect(f.getTextProperty("genre")).toBe("narrative");
+      expect(f.properties.containsKey("Genre")).toBe(false);
+    } finally {
+      fs.removeSync(tmpFolder);
+    }
+  });
+
   // e.g., SayMore Windows Classic has more fields that we do; we need
   // to preserve those so that people don't lose their work
   // just because they tried out this version of SayMore
