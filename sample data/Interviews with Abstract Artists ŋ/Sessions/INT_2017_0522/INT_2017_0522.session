@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2017_0522</id>
+  <title type="string">Notes on the emotional weight of beige</title>
+  <description type="string">Oona Mbeki talks about an exhibition in total darkness. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</description>
+  <languages type="string">etr;tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">folktale</genre>
+  <location type="string">a lift between floors 3 and 4</location>
+  <access type="string">O</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2017-07-19</date>
+  <Contributions>
+    <contributor>
+      <name>Oona Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

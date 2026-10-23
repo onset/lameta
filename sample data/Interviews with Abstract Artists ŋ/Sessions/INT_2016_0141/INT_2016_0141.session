@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2016_0141</id>
+  <title type="string">Notes on silence, in three coats of varnish</title>
+  <description type="string">Ingrid Vasquez talks about a square that refuses to be a square. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</description>
+  <languages type="string">fr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">O</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2016-10-02</date>
+  <Contributions>
+    <contributor>
+      <name>Ingrid Vasquez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ömer Castellanos</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ömer (no record)</name>
+      <role>participant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

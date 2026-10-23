@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <name type="string">Quilla Dubois-Ngata</name>
+  <birthYear type="string">1941</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Conceptual artist; the best work is the absence of work</primaryOccupation>
+  <ethnicGroup type="string">The Wet Paint School</ethnicGroup>
+  <description type="string">Quilla Dubois-Ngata belongs to Post-Squarism and works in Gallery Huya. Asked about influences, Quilla Dubois-Ngata said only &quot;the long argument with the colour blue&quot;.</description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

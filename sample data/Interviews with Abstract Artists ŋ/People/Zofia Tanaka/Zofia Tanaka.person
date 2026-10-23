@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <name type="string">Zofia Tanaka</name>
+  <code type="string">ZT005</code>
+  <birthYear type="string">1968</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Sculptor of negative space</primaryOccupation>
+  <ethnicGroup type="string">The Wet Paint School</ethnicGroup>
+  <description type="string">Zofia Tanaka belongs to Lateral Minimalism and works in the rooftop. Asked about influences, Zofia Tanaka said only &quot;the moment before the first mark&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+    <language tag="eng" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

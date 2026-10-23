@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2024_0419</id>
+  <title type="string">Against the installation that was mistaken for scaffolding</title>
+  <description type="string">Zofia Nakamura talks about drawing with a ladder. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">S</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Accidental Constructivism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2024-12-28</date>
+  <Contributions>
+    <contributor>
+      <name>ZN035</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ếlodie O'Shaughnessy</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

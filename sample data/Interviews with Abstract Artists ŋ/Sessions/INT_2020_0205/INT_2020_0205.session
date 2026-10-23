@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2020_0205</id>
+  <title type="string">Towards how to hang a painting upside down on purpose</title>
+  <description type="string">Piotr Rautenbach talks about why the canvas must stay blank. The artist asked that the microphone face away from the painting, so as not to influence it.</description>
+  <languages type="string">fr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">U</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Post-Squarism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2020-02-10</date>
+  <Contributions>
+    <contributor>
+      <name>PR225</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ếlodie Vasquez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>KZ170</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

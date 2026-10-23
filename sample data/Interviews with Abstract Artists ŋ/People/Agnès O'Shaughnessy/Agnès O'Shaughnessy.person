@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <name type="string">Agnès O'Shaughnessy</name>
+  <code type="string">AO180</code>
+  <birthYear type="string">1967</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Installation artist, mainly scaffolding</primaryOccupation>
+  <ethnicGroup type="string">Hesitationism</ethnicGroup>
+  <description type="string">Agnès O'Shaughnessy belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Agnès O'Shaughnessy said only &quot;the third side of a line&quot;.</description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Neo-Beigeism</Movement>
+    <Studio type="string">a borrowed greenhouse</Studio>
+  </CustomFields>
+</Person>

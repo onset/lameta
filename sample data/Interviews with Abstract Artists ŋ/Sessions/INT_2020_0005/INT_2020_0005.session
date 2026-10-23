@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2020_0005</id>
+  <title type="string">Notes on silence, in three coats of varnish</title>
+  <description type="string">Agnès Blanc talks about the installation that was mistaken for scaffolding. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2020-06-06</date>
+  <Contributions>
+    <contributor>
+      <name>AB120</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Dmitri Pereira</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía Whitehorse</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Hiroshi Eriksdóttir</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

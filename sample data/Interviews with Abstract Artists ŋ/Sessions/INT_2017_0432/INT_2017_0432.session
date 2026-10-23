@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2017_0432</id>
+  <title type="string">Notes on silence, in three coats of varnish</title>
+  <description type="string">Nnamdi Tanaka talks about a square that refuses to be a square. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</description>
+  <languages type="string">fr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">formulaic_discourse</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">U</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Ladderism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2017-01-13</date>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Tanaka</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

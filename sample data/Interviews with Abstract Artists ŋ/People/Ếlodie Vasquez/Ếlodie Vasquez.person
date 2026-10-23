@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <name type="string">Ếlodie Vasquez</name>
+  <birthYear type="string">1940</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Former accountant, now draws only diagonals</primaryOccupation>
+  <ethnicGroup type="string">Hesitationism</ethnicGroup>
+  <description type="string">Ếlodie Vasquez belongs to Post-Squarism and works in Studio 4, the old soap factory. Asked about influences, Ếlodie Vasquez said only &quot;eleven shades of white and one impostor&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

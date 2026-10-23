@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <name type="string">Oona Mbeki</name>
+  <birthYear type="string">1960</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Sculptor of negative space</primaryOccupation>
+  <ethnicGroup type="string">Accidental Constructivism</ethnicGroup>
+  <description type="string">Oona Mbeki belongs to Greyscale Romanticism and works in the rooftop. Asked about influences, Oona Mbeki said only &quot;triangles as a form of apology&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+    <language tag="eng" primary="false" mother="false" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

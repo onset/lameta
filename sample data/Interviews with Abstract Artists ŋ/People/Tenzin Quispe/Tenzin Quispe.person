@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <name type="string">Tenzin Quispe</name>
+  <birthYear type="string">1982</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Gallery cleaner and, by accident, prize-winning artist</primaryOccupation>
+  <ethnicGroup type="string">Hesitationism</ethnicGroup>
+  <description type="string">Tenzin Quispe belongs to Post-Squarism and works in a lift between floors 3 and 4. Asked about influences, Tenzin Quispe said only &quot;the third side of a line&quot;.</description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="true"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

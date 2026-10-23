@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <name type="string">Yusuf Ikeda</name>
+  <birthYear type="string">1947</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Conceptual artist; the best work is the absence of work</primaryOccupation>
+  <ethnicGroup type="string">Greyscale Romanticism</ethnicGroup>
+  <description type="string">Yusuf Ikeda belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Yusuf Ikeda said only &quot;listening to grey&quot;.</description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="true"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Neo-Beigeism</Movement>
+    <Studio type="string">the rooftop</Studio>
+  </CustomFields>
+</Person>

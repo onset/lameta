@@ -45,6 +45,7 @@
     "strings:extract-json": "tsx ./archive-configurations/extractFromJSON.ts",
     "strings:extract": "pnpm run strings:extract-code && pnpm run strings:extract-json",
     "strings:sync": "crowdin upload sources -b V3 && crowdin download -b V3 && pnpm run strings:extract-code",
+    "make-torture-project": "tsx sample-data-generator/torture/generate-torture-project.ts",
     "make-langindex": "tsx src/languageFinder/make-langindex.ts && vp test run src/languageFinder/langindex.spec.ts src/languageFinder/LanguageFinder.spec.ts",
     "validate-rocrate-python": "./.venv/Scripts/python.exe ro-crate-validation/lameta_rocrate_validation.py ro-crate-validation/lameta-fishing",
     "validate-oni-fishing": "tsx ro-crate-validation/validate_oni_ocfl.ts ro-crate-validation/lameta-fishing",

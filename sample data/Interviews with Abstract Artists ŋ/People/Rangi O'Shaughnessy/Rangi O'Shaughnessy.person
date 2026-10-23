@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <name type="string">Rangi O'Shaughnessy</name>
+  <birthYear type="string">1947</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Paints with ladders</primaryOccupation>
+  <ethnicGroup type="string">Post-Squarism</ethnicGroup>
+  <description type="string">Rangi O'Shaughnessy belongs to Neo-Beigeism and works in the rooftop. Asked about influences, Rangi O'Shaughnessy said only &quot;the moment before the first mark&quot;.</description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <name type="string">Tenzin Whitehorse</name>
+  <birthYear type="string">1939</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Former accountant, now draws only diagonals</primaryOccupation>
+  <ethnicGroup type="string">Accidental Constructivism</ethnicGroup>
+  <description type="string">Tenzin Whitehorse belongs to Greyscale Romanticism and works in the artist's kitchen. Asked about influences, Tenzin Whitehorse said only &quot;the installation that was mistaken for scaffolding&quot;.</description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

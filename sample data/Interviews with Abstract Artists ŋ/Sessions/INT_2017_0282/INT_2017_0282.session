@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2017_0282</id>
+  <title type="string">On the shadow of a canvas that was never painted</title>
+  <description type="string">Xochitl Fontaine talks about the moment before the first mark. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">a borrowed greenhouse</location>
+  <access type="string">S</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Frameless Expressionism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2017-07-03</date>
+  <Contributions>
+    <contributor>
+      <name>Xochitl Fontaine</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Eriksdóttir</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ásdís Achterberg</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2019_0214</id>
+  <title type="string">Notes on triangles as a form of apology</title>
+  <description type="string">Zofia Ulloa talks about a sculpture made entirely of hesitation. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">the disused swimming pool</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2019-11-19</date>
+  <Contributions>
+    <contributor>
+      <name>ZU125</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>UI040</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>UO010</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

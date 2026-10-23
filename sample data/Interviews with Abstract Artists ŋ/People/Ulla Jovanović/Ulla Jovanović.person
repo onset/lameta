@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <name type="string">Ulla Jovanović</name>
+  <code type="string">UJ160</code>
+  <birthYear type="string">1964</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Sculptor of negative space</primaryOccupation>
+  <ethnicGroup type="string">Greyscale Romanticism</ethnicGroup>
+  <description type="string">Ulla Jovanović belongs to Ladderism and works in a lift between floors 3 and 4. Asked about influences, Ulla Jovanović said only &quot;how to hang a painting upside down on purpose&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

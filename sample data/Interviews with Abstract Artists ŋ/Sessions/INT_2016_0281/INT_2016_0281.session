@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2016_0281</id>
+  <title type="string">On why the frame is the real work</title>
+  <description type="string">Wanjiru Tanaka talks about painting the colour of a Tuesday. The interview stopped twice because the artist wanted to look at the corner of the room.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">S</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Frameless Expressionism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2016-06-02</date>
+  <Contributions>
+    <contributor>
+      <name>Wanjiru Tanaka</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Rautenbach</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Greta Zielińska</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

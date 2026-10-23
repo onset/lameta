@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2018_0763</id>
+  <title type="string">About painting the colour of a Tuesday</title>
+  <description type="string">Ếlodie Ulloa talks about a square that refuses to be a square. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">etr;tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">S</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">The Wet Paint School, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2018-08-08</date>
+  <Contributions>
+    <contributor>
+      <name>Ếlodie Ulloa</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Chiamaka Zielińska</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Yusuf Jovanović</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

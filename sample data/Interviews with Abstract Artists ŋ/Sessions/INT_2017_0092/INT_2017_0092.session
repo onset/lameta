@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2017_0092</id>
+  <title type="string">Towards a portrait of the wind, from behind</title>
+  <description type="string">Tenzin Whitehorse talks about listening to grey. The artist asked that the microphone face away from the painting, so as not to influence it.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">a lift between floors 3 and 4</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2017-09-09</date>
+  <Contributions>
+    <contributor>
+      <name>Tenzin Whitehorse</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ömer Ikeda</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>ZO155</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Jules Blanc</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

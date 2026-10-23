@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <name type="string">Tenzin Rautenbach</name>
+  <birthYear type="string">1941</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Colourist specialising in beige</primaryOccupation>
+  <ethnicGroup type="string">Post-Squarism</ethnicGroup>
+  <description type="string">Tenzin Rautenbach belongs to Neo-Beigeism and works in the back room of a frame shop. Asked about influences, Tenzin Rautenbach said only &quot;the brushstroke that got away&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

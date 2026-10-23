@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2017_0112</id>
+  <title type="string">Against eleven shades of white and one impostor</title>
+  <description type="string">Rangi Tanaka talks about the moment before the first mark. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">a borrowed greenhouse</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">The Wet Paint School, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2017-05-01</date>
+  <Contributions>
+    <contributor>
+      <name>Rangi Tanaka</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi Haddad</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Hiroshi Vasquez</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>
