@@ -183,10 +183,12 @@ function addContributionsIfSession(folder: Folder): string[] {
   }
   const session = folder as Session;
   return [
-    session
-      .getAllContributionsToAllFiles()
-      .map((c) => [c.role, c.personReference].join(":"))
-      .join("|"),
+    csvEncode(
+      session
+        .getAllContributionsToAllFiles()
+        .map((c) => [c.role, c.personReference].join(":"))
+        .join("|"),
+    ),
   ];
 }
 
