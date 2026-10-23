@@ -743,6 +743,9 @@ msgstr "Событие"
 msgid "Session {0}"
 msgstr ""
 
+msgid "Session {sessionId}"
+msgstr ""
+
 msgid "Sessions"
 msgstr "Элементы проекта"
 
@@ -1045,6 +1048,9 @@ msgid "lameta couldn't download 1 file from {providerName}. It may be offline or
 msgstr ""
 
 msgid "lameta couldn't download {count} files from {providerName}. It may be offline or busy right now."
+msgstr ""
+
+msgid "lameta did not add any of the files you chose."
 msgstr ""
 
 msgid "lameta does not recognize the Language name \"{trimmed}\""
