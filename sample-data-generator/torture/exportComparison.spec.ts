@@ -158,22 +158,25 @@ describe("compareCsv", () => {
     expect(compareCsv(before, after)).toEqual([
       "column removed: old",
       "column added: new",
-      "row removed: S3",
-      "row added: S4",
-      'title of S1: "One" -> "One!"',
+      'row removed: "S3"',
+      'row added: "S4"',
+      'title of "S1": "One" -> "One!"',
     ]);
   });
 
-  it("does not take a row named like a repeat for that repeat", () => {
+  it("keeps apart, and names apart, a row named like a repeat and that repeat", () => {
     const before = "name,job\nMaria,cleaner\nMaria,painter\nMaria (2),potter\n";
-    const after = "name,job\nMaria,cleaner\nMaria,sculptor\nMaria (2),potter\n";
-    expect(compareCsv(before, after)).toEqual(['job of Maria (2): "painter" -> "sculptor"']);
+    const after = "name,job\nMaria,cleaner\nMaria,sculptor\nMaria (2),weaver\n";
+    expect(compareCsv(before, after)).toEqual([
+      'job of "Maria" #2: "painter" -> "sculptor"',
+      'job of "Maria (2)": "potter" -> "weaver"',
+    ]);
   });
 
   it("tells apart rows that share a first cell by their order", () => {
     const before = "name,job\nMaria,cleaner\nMaria,painter\n";
     const after = "name,job\nMaria,cleaner\nMaria,sculptor\n";
-    expect(compareCsv(before, after)).toEqual(['job of Maria (2): "painter" -> "sculptor"']);
+    expect(compareCsv(before, after)).toEqual(['job of "Maria" #2: "painter" -> "sculptor"']);
   });
 });
 

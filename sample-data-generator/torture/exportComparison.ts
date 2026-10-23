@@ -200,22 +200,22 @@ export function compareCsv(before: string, after: string): string[] {
   const result: string[] = [];
   for (const h of headA) if (!headB.includes(h)) result.push(`column removed: ${h}`);
   for (const h of headB) if (!headA.includes(h)) result.push(`column added: ${h}`);
-  // The key is the first cell and which occurrence of it the row is, joined by a character
-  // that a CSV cell does not hold, so that a person really named "Maria (2)" is not taken for
-  // the second Maria. It is shown with the occurrence in parentheses.
+  // The key is the first cell and which occurrence of it the row is, so that a person really
+  // named "Maria (2)" is not taken for the second Maria. It is shown with the cell quoted and
+  // the occurrence outside the quotes ("Maria" #2), which no cell's own text can look like.
   const keyed = (rows: string[][]) => {
     const seen = new Map<string, number>();
     return new Map(
       rows.map((r) => {
         const n = (seen.get(r[0]) ?? 0) + 1;
         seen.set(r[0], n);
-        return [`${r[0]}\0${n}`, r];
+        return [JSON.stringify([r[0], n]), r];
       }),
     );
   };
   const shown = (key: string) => {
-    const [first, n] = key.split("\0");
-    return n === "1" ? first : `${first} (${n})`;
+    const [first, n] = JSON.parse(key) as [string, number];
+    return n === 1 ? JSON.stringify(first) : `${JSON.stringify(first)} #${n}`;
   };
   const a = keyed(rowsA);
   const b = keyed(rowsB);
