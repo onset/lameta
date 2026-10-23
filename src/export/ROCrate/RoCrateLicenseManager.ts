@@ -100,6 +100,12 @@ function sanitizeAccessValue(access?: string | null): string | null {
   return trimmed;
 }
 
+export function getFileAccessValue(file: File): string | null {
+  return sanitizeAccessValue(
+    file.getTextProperty?.("access", "") || file.properties?.getTextStringOrEmpty?.("access"),
+  );
+}
+
 // =============================================================================
 // Exported utility functions
 // =============================================================================
@@ -306,9 +312,7 @@ export class RoCrateLicense {
     if (!project) {
       return undefined;
     }
-    const accessValue = sanitizeAccessValue(
-      file.getTextProperty?.("access") || file.properties?.getTextStringOrEmpty?.("access"),
-    );
+    const accessValue = getFileAccessValue(file);
     if (!accessValue) {
       return undefined;
     }
