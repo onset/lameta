@@ -7,6 +7,7 @@ import { Folder } from "../model/Folder/Folder";
 import { FolderGroup } from "../model/Folder/FolderGroup";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
+import { statusIconPath } from "./statusIconPath";
 import "./FolderList.css";
 
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
@@ -168,7 +169,7 @@ class FolderList extends React.Component<IProps, any> {
           if (field.type === FieldType.Text) {
             switch (key) {
               case "status":
-                return <img title={field.text} src={this.getStatusIcon(field.text)} />;
+                return <img title={field.text} src={statusIconPath(field.text, field.choices)} />;
               case "title":
                 return highlightIfMatch(field.getTextForSimpleDisplay());
               default:
@@ -282,15 +283,6 @@ class FolderList extends React.Component<IProps, any> {
         />
       </div>
     );
-  }
-
-  private getStatusIcon(status: string) {
-    try {
-      return `assets/status-${status}.png`;
-    } catch {
-      // there is some status this version doesn't understand
-      return "assets/warning.png";
-    }
   }
 
   // folder label logic moved to ComponentTab
