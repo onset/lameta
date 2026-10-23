@@ -35,7 +35,7 @@ export interface IRulesFileProblem {
 }
 
 export interface IRulesFileError {
-  kind: "load" | "declaration" | "xml" | "check" | "timeout" | "limit";
+  kind: "load" | "declaration" | "xml" | "check" | "timeout" | "limit" | "imdi";
   message: string;
   // the function that threw, e.g. "checkSession"
   check?: string;

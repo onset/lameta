@@ -16,7 +16,15 @@ export interface IProjectCheck {
 // lametaChecks.ts, and the archive's rules file on freshly generated IMDI.
 export async function checkProject(project: Project): Promise<IProjectCheck> {
   const fieldProblems = [...checkProjectFields(project), ...checkProjectFolders(project)];
-  const rules = await rulesFileProblems.checkNow(project);
+  const rules = await rulesFileProblems.checkNow(project).catch((e) => ({
+    problems: [],
+    errors: [
+      {
+        kind: "load" as const,
+        message: `lameta could not check the project: ${e instanceof Error ? e.message : String(e)}`,
+      },
+    ],
+  }));
   return {
     problems: combineProblems(fieldProblems, rules.problems),
     rulesFileErrors: rules.errors,
