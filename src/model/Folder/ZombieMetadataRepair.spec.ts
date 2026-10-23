@@ -3,7 +3,8 @@ import Path from "path";
 import { Session } from "../Project/Session/Session";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import temp from "temp";
-import { describe, it, beforeEach, expect } from "vite-plus/test";
+import { describe, it, beforeEach, expect, vi } from "vite-plus/test";
+import * as NotifyModule from "../../components/Notify";
 
 temp.track();
 
@@ -56,5 +57,36 @@ describe("zombie metadata repair at save time", () => {
 
     const sessionFiles = fs.readdirSync(dir).filter((f) => f.endsWith(".session"));
     expect(sessionFiles).toEqual(["bar.session"]);
+  });
+
+  it("saveFolderMetaData() does not rename a file that only ends in the extension's letters", () => {
+    const dir = Path.join(rootDirectory, "baz");
+    fs.mkdirSync(dir);
+    fs.writeFileSync(Path.join(dir, "after-session"), "notes");
+    const session = Session.fromDirectory(dir, new EncounteredVocabularyRegistry());
+    session.properties.setText("id", "baz");
+    session.saveFolderMetaData();
+    fs.rmSync(Path.join(dir, "baz.session"));
+    session.saveFolderMetaData();
+
+    expect(fs.readFileSync(Path.join(dir, "after-session"), "utf8")).toBe("notes");
+    expect(fs.readFileSync(Path.join(dir, "baz.session"), "utf8")).toContain("<Session");
+  });
+});
+
+describe("runSanityCheck", () => {
+  it("does not count a file that only ends in the extension's letters as a second metadata file", () => {
+    const dir = Path.join(temp.mkdirSync("testSanityCheck"), "Chair Person");
+    fs.mkdirSync(dir);
+    const session = Session.fromDirectory(dir, new EncounteredVocabularyRegistry());
+    session.saveFolderMetaData();
+    fs.writeFileSync(Path.join(dir, "notes on the chairsession"), "notes");
+    const multipleSpy = vi
+      .spyOn(NotifyModule, "NotifyMultipleProjectFiles")
+      .mockImplementation(() => {});
+
+    session.runSanityCheck();
+
+    expect(multipleSpy).not.toHaveBeenCalled();
   });
 });
