@@ -90,6 +90,12 @@ export class Contribution {
   }
 }
 
+// xml2js gives a plain string for <tag>text</tag>, and an object with the text in "_" when the element has attributes
+function textOfXmlValue(value: any): string {
+  if (typeof value === "string") return value;
+  return typeof value?._ === "string" ? value._ : "";
+}
+
 export /*babel doesn't like this: abstract*/ class File {
   // can be changed to Session, Project, or Person in constructor
   //protected xmlRootName: string = "MetaData";
@@ -644,6 +650,14 @@ export /*babel doesn't like this: abstract*/ class File {
     return false;
   }
   private loadPropertiesFromXml(propertiesFromXml: any) {
+    const customFieldsNamedLikeKnownFields: { xmlTag: string; value: any }[] = [];
+    const keysWithAValueInTheFile = new Set<string>();
+    const loadOwnField = (xmlTag: string, value: any) => {
+      if (textOfXmlValue(value).trim().length > 0) {
+        keysWithAValueInTheFile.add(this.properties.getKeyFromXmlTag(xmlTag));
+      }
+      this.loadOnePersistentProperty(xmlTag, value, false);
+    };
     const tags = Object.keys(propertiesFromXml);
     for (const tag of tags) {
       if (this.specialLoadingOfField(tag, propertiesFromXml)) {
@@ -654,23 +668,18 @@ export /*babel doesn't like this: abstract*/ class File {
 
       // <CustomFields>
       else if (tag.toLowerCase() === "customfields") {
-        //        console.log(JSON.stringify(propertiesFromXml[key]));
         const customKeys = Object.keys(propertiesFromXml[tag]);
         for (const key of customKeys) {
           // first one is just $":{"type":"xml"}
           if (key !== "$") {
-            // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
-            // understand. It will move them to the set of "custom" fields. Notably, in Dec 2019
-            // this happened when we introduced "id" as a field (instead of just relying on the folder
-            // name).
-            // Here we can pull such fields back out of the custom list and up to the top level.
-            const isCustom = !isKnownFieldKey(key);
-            if (!isCustom) {
-              //   console.info(
-              //     `** Pulling ${key}:${propertiesFromXml[tag][key]._} back out of custom list, where presumably SayMore Classic put it.`
-              //   );
+            if (isKnownFieldKey(key)) {
+              customFieldsNamedLikeKnownFields.push({
+                xmlTag: key,
+                value: propertiesFromXml[tag][key],
+              });
+            } else {
+              this.loadOnePersistentProperty(key, propertiesFromXml[tag][key], true);
             }
-            this.loadOnePersistentProperty(key, propertiesFromXml[tag][key], isCustom);
           }
         }
       }
@@ -681,13 +690,25 @@ export /*babel doesn't like this: abstract*/ class File {
         for (const childTag of tagsInAdditionalFieldSection) {
           // first one is just $":{"type":"xml"}
           if (childTag !== "$") {
-            this.loadOnePersistentProperty(childTag, propertiesFromXml[tag][childTag], false);
+            loadOwnField(childTag, propertiesFromXml[tag][childTag]);
           }
         }
       } else {
         // "Normal" fields
-        this.loadOnePersistentProperty(tag, propertiesFromXml[tag], false);
+        loadOwnField(tag, propertiesFromXml[tag]);
       }
+    }
+    // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
+    // understand and move them to the set of "custom" fields. Notably, in Dec 2019
+    // this happened when we introduced "id" as a field (instead of just relying on the folder
+    // name). Here we pull such fields back out of the custom list and up to the top level,
+    // unless the file has its own value for that field, in which case the custom field is
+    // one the user made, and it stays custom.
+    for (const { xmlTag, value } of customFieldsNamedLikeKnownFields) {
+      const fileHasItsOwnValue = keysWithAValueInTheFile.has(
+        this.properties.getKeyFromXmlTag(xmlTag),
+      );
+      this.loadOnePersistentProperty(xmlTag, value, fileHasItsOwnValue);
     }
   }
 
@@ -777,6 +798,7 @@ export /*babel doesn't like this: abstract*/ class File {
     // styles for elements... ending up with all this code to work around that.
     let fixedKey = xmlTag;
     if (
+      !isCustom &&
       // if we know about this field, then we know how to roundtrip correctly
       // already.
       // Note the following would give a false positive if the key was
@@ -797,7 +819,7 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     // Apply genre normalization after fixedKey is determined
-    if (fixedKey.toLowerCase() === "genre") {
+    if (!isCustom && fixedKey.toLowerCase() === "genre") {
       const normalizedGenre = this.normalizeGenreValue(textValue);
       if (normalizedGenre !== textValue) {
         // Track that normalization occurred during reading
