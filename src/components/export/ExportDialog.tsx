@@ -44,7 +44,12 @@ import { mainProcessApi } from "../../mainProcess/MainProcessApiAccess";
 import { Session } from "../../model/Project/Session/Session";
 import { lameta_green, lameta_dark_green } from "../../containers/theme";
 import { GetOtherConfigurationSettings } from "../../model/Project/OtherConfigurationSettings";
-import { checkProject, IProjectCheck } from "../../problems/checkProject";
+import {
+  checkOfSessions,
+  checkProject,
+  IProjectCheck,
+  whyExportIsBlocked,
+} from "../../problems/checkProject";
 import { ExportProblemsList, ExportProblemsSummary, problemAsText } from "./ExportProblems";
 
 // Export-specific modules
@@ -198,16 +203,20 @@ export const ExportDialog: React.FunctionComponent<{
       .filter((f) => whichSessionsOption === "all" || f.marked)
       .map((f) => (f as unknown as Session).id),
   );
-  const exportedProblems = (projectCheck?.problems ?? []).filter(
-    (p) => !p.sessionId || exportedSessionIds.has(p.sessionId),
-  );
+  const exportedCheck = projectCheck && checkOfSessions(projectCheck, exportedSessionIds);
+  const exportedProblems = exportedCheck?.problems ?? [];
   const archiveName =
     props.projectHolder?.project?.properties.getTextStringOrEmpty("archiveConfigurationName") ?? "";
   // An archive can refuse some kinds of export while there are problems; warnings
   // are allowed.
-  const exportBlocked =
-    (GetOtherConfigurationSettings().exportFormatsBlockedByProblems ?? []).includes(exportFormat) &&
-    exportedProblems.some((p) => p.severity === "error");
+  const blockedBecause = exportedCheck
+    ? whyExportIsBlocked(
+        exportFormat,
+        GetOtherConfigurationSettings().exportFormatsBlockedByProblems ?? [],
+        exportedCheck,
+      )
+    : [];
+  const exportBlocked = blockedBecause.length > 0;
 
   React.useEffect(() => {
     // guess what they will want based on if they have checked anything
@@ -534,7 +543,7 @@ export const ExportDialog: React.FunctionComponent<{
         )}
         {/* at the right, above the export's progress and log once it starts */}
         {mode !== Mode.cancelled && mode !== Mode.choosing && (
-          <ExportProblemsSummary check={projectCheck} problems={exportedProblems} align="right" />
+          <ExportProblemsSummary check={exportedCheck} problems={exportedProblems} align="right" />
         )}
         <div
           css={css`
@@ -990,7 +999,7 @@ export const ExportDialog: React.FunctionComponent<{
                 `}
               >
                 <ExportProblemsSummary
-                  check={projectCheck}
+                  check={exportedCheck}
                   problems={exportedProblems}
                   align="left"
                 />
@@ -1001,9 +1010,16 @@ export const ExportDialog: React.FunctionComponent<{
                       color: #9b1c1c;
                     `}
                   >
-                    <Trans>
-                      Problems must be fixed before {archiveName} will accept this export.
-                    </Trans>
+                    {blockedBecause.includes("errors") ? (
+                      <Trans>
+                        Problems must be fixed before {archiveName} will accept this export.
+                      </Trans>
+                    ) : (
+                      <Trans>
+                        lameta must be able to check everything before {archiveName} will accept
+                        this export.
+                      </Trans>
+                    )}
                   </div>
                 )}
               </div>

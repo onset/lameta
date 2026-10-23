@@ -128,7 +128,11 @@ export const ExportProblemsSummary: React.FunctionComponent<{
         `}
       >
         {props.problems.length === 0 ? (
-          <Trans>lameta found no problems.</Trans>
+          props.check.rulesFileErrors.length > 0 ? (
+            <Trans>lameta found no problems in what it could check.</Trans>
+          ) : (
+            <Trans>lameta found no problems.</Trans>
+          )
         ) : (
           <>
             <span
