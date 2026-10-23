@@ -15,6 +15,33 @@ Sample data should showcase Lameta's full capabilities including:
 
 The generator creates playful but respectful fictional people groups with rich cultural contexts, avoiding real cultural appropriation while providing realistic examples.
 
+## Torture project
+
+`torture/generate-torture-project.ts` writes a different kind of project: one meant to turn up bugs. It is a documentation project of interviews with abstract artists (all invented), about 950 sessions and 260 people, and among them every case that has hurt lameta or plausibly could: non-ASCII, right-to-left and emoji names, names that collide once sanitized, long paths, private-use and deprecated language codes, every genre, role and access value of every archive configuration, people referenced by name and by code, missing people and consent, files of every type with and without `.meta`, misnamed metadata files, files from SayMore and old lameta versions, broken media, and values that ELAR's rules report. The project's `OtherDocuments/torture-cases.md` lists each case, why it is there, and the code it aims at.
+
+Run it with Node (`tsx`), not Bun: Bun opens plain Windows paths through Win32 name parsing, which sends a file named `nul` to the null device.
+
+```bash
+pnpm run make-torture-project "D:/somewhere/Interviews with Abstract Artists ŋ"
+```
+
+The `.sprj` takes the name of the folder. It writes the same bytes on every run, except that files made by ffmpeg can differ between ffmpeg versions. It refuses to write into a folder that is not empty unless it made that folder; when it did, a new run deletes everything in it except `Sessions/BIG_media`, so keep nothing of your own there.
+
+| Option                                     | Adds                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| (none)                                     | Only names that git can check out on Windows, macOS and Linux. This version is committed in `sample data/Interviews with Abstract Artists ŋ` (where lameta never saves).                                                                                                                                                                         |
+| `--hostile-names`                          | NFC and NFD spellings of one name, trailing dots and spaces, Windows device names (`CON`, `aux.txt`, `COM1`), paths over 260 characters. Never commit these; OneDrive and Explorer cannot handle some of them.                                                                                                                                   |
+| `--blocking`                               | Files that stop the whole project from loading (zero-byte, truncated or UTF-16 metadata, a newer `minimum_lameta_version_to_read`), custom fields whose names contain "date" (they stop every session from saving), and the old slash form of multilingual text (it blocks IMDI export). Each hides the other cases, so test them one at a time. |
+| `--large-media`                            | About 1.9 GB in `Sessions/BIG_media`: a playable 1 GB 1080p video, a 500 MB WAV, the first 300 MB of the video, 50 MB of random bytes named `.mp4`, and zero-byte files. Needs ffmpeg on the PATH or in `node_modules/ffmpeg-ffprobe-static`. Files already there at full size are kept on the next run.                                         |
+| `--archive-config <name>`                  | The archive configuration in the `.sprj` (default `ELAR`).                                                                                                                                                                                                                                                                                       |
+| `--bulk-sessions <n>`, `--bulk-people <n>` | The size of the ordinary part of the project (default 800 and 240).                                                                                                                                                                                                                                                                              |
+
+`src/export/tortureProject.manual.spec.ts` loads a generated project and runs every exporter over it, recording each exception and notification in a `report.json`, together with the values that saving each file would lose:
+
+```bash
+LAMETA_TORTURE_DIR="<project folder>" LAMETA_TORTURE_OUT="<output folder>" vp test run src/export/tortureProject.manual.spec.ts
+```
+
 ## Requirements
 
 - [Bun](https://bun.sh/) runtime (faster TypeScript execution)
