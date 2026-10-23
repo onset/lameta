@@ -14,6 +14,7 @@ import {
 } from "./PersonMigration";
 import xmlbuilder from "xmlbuilder";
 import { makeObservable, observable } from "mobx";
+import { personReferenceKey } from "./personReferenceKey";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -31,14 +32,14 @@ export class Person extends Folder {
   // which handles the common case where a contributor was added by name
   // before the person record was given a code.
   public referenceIdMatches(id: string): boolean {
-    const idLower = id.toLowerCase();
-    const name = this.properties.getTextStringOrEmpty("name").toLowerCase();
-    const code = this.properties.getTextStringOrEmpty("code").toLowerCase();
+    const key = personReferenceKey(id);
+    const name = personReferenceKey(this.properties.getTextStringOrEmpty("name"));
+    const code = personReferenceKey(this.properties.getTextStringOrEmpty("code"));
 
     return (
-      idLower === this.getIdToUseForReferences().toLowerCase() ||
-      idLower === name ||
-      (code.length > 0 && idLower === code)
+      key === personReferenceKey(this.getIdToUseForReferences()) ||
+      key === name ||
+      (code.length > 0 && key === code)
     );
   }
 
@@ -164,16 +165,13 @@ export class Person extends Folder {
   }
 
   // override
-  // LAM-119: Fixed case-sensitive comparison bug. Previously, the name field was
-  // compared case-sensitively while the code field was compared case-insensitively.
-  // This allowed users to create duplicate persons like "Alice" and "alice".
-  // Now both fields are properly lowercased before comparison.
-  // https://linear.app/lameta/issue/LAM-119
+  // Must agree with referenceIdMatches: two people whose ids match the same references would
+  // share every contribution.
   public wouldCollideWithIdFields(value: string): boolean {
-    const normalized = value.trim().toLowerCase();
+    const key = personReferenceKey(value);
     return (
-      normalized === this.textValueThatControlsFolderName().toLowerCase() ||
-      normalized === this.properties.getTextStringOrEmpty("code").toLowerCase()
+      key === personReferenceKey(this.textValueThatControlsFolderName()) ||
+      key === personReferenceKey(this.properties.getTextStringOrEmpty("code"))
     );
   }
 

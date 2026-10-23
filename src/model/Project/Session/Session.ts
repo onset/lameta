@@ -12,6 +12,7 @@ import { i18n as appI18n } from "../../../other/localization";
 import { t } from "@lingui/core/macro";
 import { normalizeContinentValueForAmericasOnly } from "../ContinentMigration";
 import { loadOLACRoles } from "../AuthorityLists/AuthorityLists";
+import { personReferenceKey } from "../Person/personReferenceKey";
 
 export class Session extends Folder {
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -132,16 +133,19 @@ export class Session extends Folder {
           ? { name: nameAndRole[1], role: nameAndRole[2] }
           : { name: s, role: undefined };
       });
-    const namesListedWithRole = legacyParticipants
+    const keysListedWithRole = legacyParticipants
       .filter((p) => p.role !== undefined)
-      .map((p) => p.name);
+      .map((p) => personReferenceKey(p.name));
     legacyParticipants.forEach(({ name, role }) => {
+      const key = personReferenceKey(name);
       const alreadyContributes =
         role === undefined
-          ? namesListedWithRole.includes(name) ||
-            this.metadataFile!.contributions.some((c) => c.personReference === name)
+          ? keysListedWithRole.includes(key) ||
+            this.metadataFile!.contributions.some(
+              (c) => personReferenceKey(c.personReference) === key,
+            )
           : this.metadataFile!.contributions.some(
-              (c) => c.personReference === name && c.role === role,
+              (c) => personReferenceKey(c.personReference) === key && c.role === role,
             );
       if (!alreadyContributes) {
         runInAction(() =>
@@ -174,10 +178,10 @@ export class Session extends Folder {
   // in the "code" field, then that acts as the display name and id around
   // the whole system.
   public updateSessionReferencesToPersonWhenIdChanges(oldId: string, newId: string): void {
-    const oldNameNormalized = this.normalizeNameReference(oldId);
+    const oldNameNormalized = personReferenceKey(oldId);
     this.files.forEach((f) =>
       f.contributions
-        .filter((c) => this.normalizeNameReference(c.personReference) === oldNameNormalized)
+        .filter((c) => personReferenceKey(c.personReference) === oldNameNormalized)
         .forEach((c) => (c.personReference = newId)),
     );
 
@@ -186,14 +190,11 @@ export class Session extends Folder {
     // model that we inherited from SayMore classic.
 
     // const updatedArrayOfNames = this.getParticipantNames().map(p =>
-    //   this.normalizeNameReference(p) === oldNameNormalized ? newId : p
+    //   personReferenceKey(p) === oldNameNormalized ? newId : p
     // );
     // this.setParticipantNames(updatedArrayOfNames);
   }
 
-  private normalizeNameReference(name: string) {
-    return name.toLowerCase();
-  }
   // Note: some of these contributions are currently created on the fly,
   // so this is not the right way to make changes to them (e.g. name updates)
   public getAllContributionsToAllFiles(): Contribution[] {
@@ -210,8 +211,8 @@ export class Session extends Folder {
           if (
             !contributionsToList.some(
               (existingContribution) =>
-                existingContribution.personReference.toLowerCase() ===
-                  c.personReference.toLowerCase() && existingContribution.role === c.role,
+                personReferenceKey(existingContribution.personReference) ===
+                  personReferenceKey(c.personReference) && existingContribution.role === c.role,
             )
           ) {
             contributionsToList.push(c);
