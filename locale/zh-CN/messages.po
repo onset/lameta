@@ -743,6 +743,9 @@ msgstr "场次"
 msgid "Session {0}"
 msgstr ""
 
+msgid "Session {sessionId}"
+msgstr ""
+
 msgid "Sessions"
 msgstr "场次"
 
@@ -1053,7 +1056,13 @@ msgstr ""
 msgid "lameta expected to find a .link file at {e}"
 msgstr "在{e}应有一个.link文件"
 
+msgid "lameta found no problems in what it could check."
+msgstr ""
+
 msgid "lameta found no problems."
+msgstr ""
+
+msgid "lameta must be able to check everything before {archiveName} will accept this export."
 msgstr ""
 
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."

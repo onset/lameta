@@ -4,7 +4,8 @@ import * as Path from "path";
 import temp from "temp";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
-import { checkProject } from "./checkProject";
+import { checkProject, IProjectCheck, whyExportIsBlocked } from "./checkProject";
+import { IProblem } from "./problems";
 import { checkProjectFields } from "./fieldRules";
 import { rulesFileProblems } from "./RulesFileProblems";
 
@@ -35,5 +36,30 @@ describe("checkProject", () => {
 
     expect(check.problems.length).toBeGreaterThanOrEqual(checkProjectFields(project).length);
     expect(check.rulesFileErrors.map((e) => e.kind)).toEqual(["load"]);
+  });
+});
+
+describe("whyExportIsBlocked", () => {
+  const error = { severity: "error" } as IProblem;
+  const warning = { severity: "warning" } as IProblem;
+  const complete: IProjectCheck = { problems: [], rulesFileErrors: [] };
+  const incomplete: IProjectCheck = {
+    problems: [],
+    rulesFileErrors: [{ kind: "imdi", message: "x", sessionId: "ETR009" }],
+  };
+
+  it("blocks a blocked format when there are errors", () => {
+    expect(whyExportIsBlocked("imdi", ["imdi"], complete, [warning, error])).toEqual(["errors"]);
+  });
+  it("blocks a blocked format when the check could not finish, even with no errors", () => {
+    expect(whyExportIsBlocked("imdi", ["imdi"], incomplete, [warning])).toEqual([
+      "incompleteCheck",
+    ]);
+  });
+  it("does not block a blocked format with only warnings and a complete check", () => {
+    expect(whyExportIsBlocked("imdi", ["imdi"], complete, [warning])).toEqual([]);
+  });
+  it("does not block other formats", () => {
+    expect(whyExportIsBlocked("csv", ["imdi"], incomplete, [error])).toEqual([]);
   });
 });

@@ -11,6 +11,22 @@ export interface IProjectCheck {
   rulesFileErrors: IRulesFileError[];
 }
 
+// Why an archive will not accept an export in the given format: errors among the
+// problems, or a check that could not finish, since then lameta cannot say that there
+// are no errors. Empty when nothing stops the export.
+export function whyExportIsBlocked(
+  format: string,
+  formatsBlockedByProblems: string[],
+  check: IProjectCheck,
+  problems: IProblem[],
+): ("errors" | "incompleteCheck")[] {
+  if (!formatsBlockedByProblems.includes(format)) return [];
+  return [
+    ...(problems.some((p) => p.severity === "error") ? (["errors"] as const) : []),
+    ...(check.rulesFileErrors.length > 0 ? (["incompleteCheck"] as const) : []),
+  ];
+}
+
 // Runs all of lameta's checks on the whole project now, without waiting for the
 // checks that run in the background after an edit: the field rules, the checks in
 // lametaChecks.ts, and the archive's rules file on freshly generated IMDI.
