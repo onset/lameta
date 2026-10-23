@@ -49,6 +49,7 @@ function getVocabularyData(vocabularyFile: string): VocabularyDefinition[] {
  * Sanitizes a string for use in an IRI (Internationalized Resource Identifier).
  * Per RFC 3987, IRIs allow Unicode characters directly, so we only encode
  * characters that are actually problematic:
+ * - Percent signs -> %25, so that the encoding is reversible
  * - Spaces -> %20 (percent-encoded, reversible via decodeURIComponent)
  * - Reserved delimiters that conflict with IRI structure: # ? /
  * - Parentheses (can cause issues in some contexts)
@@ -65,6 +66,7 @@ export function sanitizeForIri(input: string | undefined): string {
     return ""; // Return empty string for null, undefined, or empty input
   }
   return input
+    .replace(/%/g, "%25") // Percent first, so a literal "%20" in a name stays distinct from a space
     .replace(/ /g, "%20") // Spaces to %20 (reversible encoding)
     .replace(/#/g, "%23") // Hash would start a new fragment
     .replace(/\?/g, "%3F") // Question mark would start query string
