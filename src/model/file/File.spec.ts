@@ -3,6 +3,7 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
 import { SessionMetadataFile } from "../Project/Session/Session";
+import { getStatusOfFile } from "./FileStatus";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import { setResultXml, xexpect as expect } from "../../other/xmlUnitTestUtils";
 import { describe, it, afterEach, vi } from "vite-plus/test";
@@ -74,6 +75,35 @@ describe("FolderMetadataFile constructor", () => {
     expect(files.length).toBe(1);
     expect(files[0].indexOf(".session")).toBeGreaterThan(0);
     temp.cleanupSync();
+  });
+});
+
+describe("getActualFileExists", () => {
+  it("answers false for a link whose .link file has been removed", () => {
+    const folder = temp.mkdirSync("link removed");
+    const linkPath = Path.join(folder, "far away.wav.link");
+    fs.writeFileSync(linkPath, "recordings/far away.wav");
+    try {
+      const f = new OtherFile(linkPath, new EncounteredVocabularyRegistry());
+      fs.removeSync(linkPath);
+      expect(f.getActualFileExists()).toBe(false);
+    } finally {
+      fs.removeSync(folder);
+    }
+  });
+
+  it("reports a cloud-only link whose .link file has been removed as missing", () => {
+    const folder = temp.mkdirSync("link removed");
+    const linkPath = Path.join(folder, "far away.wav.link");
+    fs.writeFileSync(linkPath, "recordings/far away.wav");
+    try {
+      const f = new OtherFile(linkPath, new EncounteredVocabularyRegistry());
+      f.cloudStatus = "cloudOnly";
+      fs.removeSync(linkPath);
+      expect(getStatusOfFile(f).missing).toBe(true);
+    } finally {
+      fs.removeSync(folder);
+    }
   });
 });
 

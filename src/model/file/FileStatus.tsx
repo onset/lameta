@@ -41,6 +41,14 @@ export function getStatusOfFile(f: File): {
     };
   }
 
+  // before anything that follows the link, because following it reads the .link file
+  if (f.isLinkFile() && !fs.existsSync(f.pathInFolderToLinkFileOrLocalCopy))
+    return {
+      missing: true,
+      status: "missing",
+      info: t`lameta expected to find a .link file at ${{ e: f.pathInFolderToLinkFileOrLocalCopy }}`,
+    };
+
   if (!f.isLinkFile() && !f.getActualFileExists()) {
     return {
       missing: true,
@@ -100,14 +108,6 @@ export function getStatusOfFile(f: File): {
       info,
     };
   }
-
-  //review: what is this scenario??
-  if (!fs.existsSync(f.pathInFolderToLinkFileOrLocalCopy))
-    return {
-      missing: true,
-      status: "missing",
-      info: t`lameta expected to find a .link file at ${{ e: f.pathInFolderToLinkFileOrLocalCopy }}`,
-    };
 
   // we have the link file. We have the media folder. But we cannot find the file itself.
   const subpath = fs.readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf-8");
