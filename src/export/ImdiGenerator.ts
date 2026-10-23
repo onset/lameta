@@ -24,7 +24,7 @@ import { collectExportWarning } from "./ExportWarningCollector";
 import { getStatusOfFile } from "../model/file/FileStatus";
 import { capitalCase, sentenceCase, sentenceCaseUnlessAcronym } from "../other/case";
 import { Field } from "../model/field/Field";
-import { fieldElement } from "./Imdi-static-fns";
+import { fieldElement, textElement } from "./Imdi-static-fns";
 import { applyCapitalization } from "../model/field/capitalization";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { makeLametaSourceComment, makeLametaTranslationsComment } from "./lametaSourceComment";
@@ -819,7 +819,7 @@ export default class ImdiGenerator {
                 }
 
                 this.withSource(source, () => {
-                  this.tail = this.tail.element("Key", v);
+                  this.tail = textElement(this.tail, "Key", v);
                   this.mostRecentElement = this.tail;
                   this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
                   this.tail = this.tail.up();
@@ -832,7 +832,7 @@ export default class ImdiGenerator {
       if (moreKeys) {
         moreKeys.forEach((m) => {
           this.withSource(m.source, () => {
-            this.tail = this.tail.element("Key", m.text);
+            this.tail = textElement(this.tail, "Key", m.text);
             this.mostRecentElement = this.tail;
             this.attributeLiteral("Name", m.name);
             this.tail = this.tail.up();
@@ -872,7 +872,7 @@ export default class ImdiGenerator {
         const values = valuesByLanguage.get(lang)!;
         if (i < values.length && values[i].length > 0) {
           const v = values[i];
-          this.tail = this.tail.element("Key", v);
+          this.tail = textElement(this.tail, "Key", v);
           this.mostRecentElement = this.tail;
           this.attributeLiteral("Name", capitalCase(key));
 
@@ -1695,10 +1695,11 @@ export default class ImdiGenerator {
     vocabularyUrl?,
     vocabularyType?: VocabularyType,
   ) {
-    const newElement = this.tail.element(
+    const newElement = textElement(
+      this.tail,
       elementName,
       //https://trello.com/c/jRC5wpKp/67-imdi-unspecified-should-always-be-unspecified-with-upper-case-not-unspecified-with-lower-case
-      value === "unspecified" ? "Unspecified" : value,
+      value?.trim() === "unspecified" ? "Unspecified" : value,
     );
     if (isClosedVocabulary === true || isClosedVocabulary === false) {
       newElement.attribute("Link", vocabularyUrl);
@@ -1768,7 +1769,7 @@ export default class ImdiGenerator {
           : value;
     if (!englishValue || englishValue.trim().length === 0) {
       // Output empty element with attributes if value is empty
-      const newElement = this.tail.element(elementName, "");
+      const newElement = textElement(this.tail, elementName, "");
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;
@@ -1788,7 +1789,7 @@ export default class ImdiGenerator {
         englishValue,
         englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase(),
       );
-      const newElement = this.tail.element(elementName, outputValue);
+      const newElement = textElement(this.tail, elementName, outputValue);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;
@@ -1806,7 +1807,7 @@ export default class ImdiGenerator {
         // Normalize to sentence case for consistent IMDI output
         // (ELAR prefers "Careful speech speaker" not "Careful Speech Speaker")
         const normalizedTranslation = inCase(translation, true);
-        const newElement = this.tail.element(elementName, normalizedTranslation);
+        const newElement = textElement(this.tail, elementName, normalizedTranslation);
         // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
         const iso639_3 = this.iso639_3ForExport(slot.tag);
         newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
@@ -1825,7 +1826,7 @@ export default class ImdiGenerator {
         englishValue,
         englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase(),
       );
-      const newElement = this.tail.element(elementName, outputValue);
+      const newElement = textElement(this.tail, elementName, outputValue);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;
@@ -1849,7 +1850,7 @@ export default class ImdiGenerator {
   ) {
     if (!englishValue || englishValue.trim().length === 0) {
       // Output empty element if value is empty
-      const newElement = this.tail.element(elementName, "");
+      const newElement = textElement(this.tail, elementName, "");
       this.mostRecentElement = newElement;
       this.tail = newElement.up();
       return;
@@ -1861,7 +1862,7 @@ export default class ImdiGenerator {
 
     if (!supportsMultilingual) {
       // Standard IMDI 3.0: output single element without LanguageId
-      const newElement = this.tail.element(elementName, englishValue);
+      const newElement = textElement(this.tail, elementName, englishValue);
       this.mostRecentElement = newElement;
       this.tail = newElement.up();
       return;
@@ -1874,7 +1875,7 @@ export default class ImdiGenerator {
     for (const slot of metadataSlots) {
       const translation = translateFn(englishValue, slot.tag);
       if (translation) {
-        const newElement = this.tail.element(elementName, translation);
+        const newElement = textElement(this.tail, elementName, translation);
         // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
         const iso639_3 = this.iso639_3ForExport(slot.tag);
         newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
@@ -1886,7 +1887,7 @@ export default class ImdiGenerator {
 
     // If no translations were output, fall back to English
     if (outputCount === 0) {
-      const newElement = this.tail.element(elementName, englishValue);
+      const newElement = textElement(this.tail, elementName, englishValue);
       this.mostRecentElement = newElement;
       this.tail = newElement.up();
     }
