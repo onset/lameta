@@ -44,7 +44,7 @@ function runTestsOnMetadataFile(contents: string, tests: () => any) {
   // concrete. It would be an improvement to do it in some more generic way.
   const f = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
   fs.removeSync(filePath); // remove the old file, just to make sure
-  f.save(/*forceSave*/ true);
+  f.save(/*beforeRename*/ false, /*forceSave*/ true);
   try {
     setResultXml(fs.readFileSync(filePath, "utf8"));
     tests();
@@ -154,7 +154,7 @@ describe("file", () => {
       expect(f.getTextProperty("notes")).toBe("Original notes");
       expect(f.properties.getValueOrThrow("Validated_By").definition.isCustom).toBe(true);
 
-      f.save(/*forceSave*/ true);
+      f.save(/*beforeRename*/ false, /*forceSave*/ true);
       const reloaded = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
       expect(reloaded.getTextProperty("Validated_By")).toBe("Wilema Dimo");
       expect(reloaded.getTextProperty("transcription_date")).toBe("sometime in spring");
@@ -216,7 +216,7 @@ describe("file", () => {
       expect(f.contributions.map((c) => c.role)).toEqual(["consultant"]);
       // the empty row that the contributors table keeps at the bottom
       f.contributions.push(new Contribution("", "", ""));
-      f.save(/*forceSave*/ true);
+      f.save(/*beforeRename*/ false, /*forceSave*/ true);
 
       const reloaded = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
       expect(reloaded.contributions.map((c) => c.role)).toEqual(["consultant"]);
@@ -239,7 +239,7 @@ describe("file", () => {
         expect(f.getTextProperty("Genre")).toBe("my own genre");
         expect(f.properties.getValueOrThrow("Genre").definition.isCustom).toBe(true);
 
-        f.save(/*forceSave*/ true);
+        f.save(/*beforeRename*/ false, /*forceSave*/ true);
         const reloaded = new SessionMetadataFile(
           sessionFolder,
           new EncounteredVocabularyRegistry(),
@@ -277,7 +277,7 @@ describe("file", () => {
       expect(f.getTextProperty("Location_Country")).toBe("my own country");
       expect(f.properties.getValueOrThrow("Location_Country").definition.isCustom).toBe(true);
 
-      f.save(/*forceSave*/ true);
+      f.save(/*beforeRename*/ false, /*forceSave*/ true);
       const reloaded = new SessionMetadataFile(sessionFolder, new EncounteredVocabularyRegistry());
       expect(reloaded.getTextProperty(knownKey)).toBe("Ghana");
       expect(reloaded.getTextProperty("Location_Country")).toBe("my own country");
