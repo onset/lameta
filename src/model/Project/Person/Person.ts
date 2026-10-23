@@ -35,15 +35,16 @@ export class Person extends Folder {
   // which handles the common case where a contributor was added by name
   // before the person record was given a code.
   public referenceIdMatches(id: string): boolean {
-    const key = personReferenceKey(id);
+    return this.referenceKeys().includes(personReferenceKey(id));
+  }
+
+  // the personReferenceKey of every reference that names this person
+  public referenceKeys(): string[] {
     const name = personReferenceKey(this.properties.getTextStringOrEmpty("name"));
     const code = personReferenceKey(this.properties.getTextStringOrEmpty("code"));
-
-    return (
-      key === personReferenceKey(this.getIdToUseForReferences()) ||
-      key === name ||
-      (code.length > 0 && key === code)
-    );
+    const keys = [personReferenceKey(this.getIdToUseForReferences()), name];
+    if (code.length > 0) keys.push(code);
+    return keys;
   }
 
   public get /*override*/ metadataFileExtensionWithDot(): string {
