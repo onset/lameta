@@ -4,7 +4,7 @@ import * as Path from "path";
 import temp from "temp";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
-import { checkProject, IProjectCheck, whyExportIsBlocked } from "./checkProject";
+import { checkOfSessions, checkProject, IProjectCheck, whyExportIsBlocked } from "./checkProject";
 import { IProblem } from "./problems";
 import { checkProjectFields } from "./fieldRules";
 import { rulesFileProblems } from "./RulesFileProblems";
@@ -49,17 +49,38 @@ describe("whyExportIsBlocked", () => {
   };
 
   it("blocks a blocked format when there are errors", () => {
-    expect(whyExportIsBlocked("imdi", ["imdi"], complete, [warning, error])).toEqual(["errors"]);
+    expect(
+      whyExportIsBlocked("imdi", ["imdi"], { ...complete, problems: [warning, error] }),
+    ).toEqual(["errors"]);
   });
   it("blocks a blocked format when the check could not finish, even with no errors", () => {
-    expect(whyExportIsBlocked("imdi", ["imdi"], incomplete, [warning])).toEqual([
+    expect(whyExportIsBlocked("imdi", ["imdi"], { ...incomplete, problems: [warning] })).toEqual([
       "incompleteCheck",
     ]);
   });
   it("does not block a blocked format with only warnings and a complete check", () => {
-    expect(whyExportIsBlocked("imdi", ["imdi"], complete, [warning])).toEqual([]);
+    expect(whyExportIsBlocked("imdi", ["imdi"], { ...complete, problems: [warning] })).toEqual([]);
   });
   it("does not block other formats", () => {
-    expect(whyExportIsBlocked("csv", ["imdi"], incomplete, [error])).toEqual([]);
+    expect(whyExportIsBlocked("csv", ["imdi"], { ...incomplete, problems: [error] })).toEqual([]);
+  });
+  it("does not count what was found in a session that is not exported", () => {
+    const check: IProjectCheck = {
+      problems: [{ ...error, sessionId: "ETR010" }],
+      rulesFileErrors: [{ kind: "imdi", message: "x", sessionId: "ETR010" }],
+    };
+    expect(whyExportIsBlocked("imdi", ["imdi"], checkOfSessions(check, new Set()))).toEqual([]);
+    expect(
+      whyExportIsBlocked("imdi", ["imdi"], checkOfSessions(check, new Set(["ETR010"]))),
+    ).toEqual(["errors", "incompleteCheck"]);
+  });
+  it("still counts an error that belongs to no session", () => {
+    const check: IProjectCheck = {
+      problems: [],
+      rulesFileErrors: [{ kind: "timeout", message: "x" }],
+    };
+    expect(whyExportIsBlocked("imdi", ["imdi"], checkOfSessions(check, new Set()))).toEqual([
+      "incompleteCheck",
+    ]);
   });
 });
