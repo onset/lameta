@@ -6,6 +6,10 @@ import * as fs from "fs-extra";
 import { getMimeType, GetFileFormatInfoForExtension } from "../../model/file/FileTypeInfo";
 import { Project } from "../../model/Project/Project";
 import { Person } from "../../model/Project/Person/Person";
+import { File } from "../../model/file/File";
+import { getStatusOfFile } from "../../model/file/FileStatus";
+import { NotifyWarning } from "../../components/Notify";
+import { collectExportWarning } from "../ExportWarningCollector";
 import {
   resolvePublisher,
   resolveDepositor,
@@ -649,6 +653,8 @@ function addFileLicenseProperty(
 interface BuildFileEntryOptions {
   /** The file object from the folder */
   file: any;
+  /** The file's stats, from filesToExport */
+  stats: fs.Stats;
   /** The @id to use for this file entity */
   fileId: string;
   /** The RoCrateLicense manager for license handling */
@@ -662,13 +668,43 @@ interface BuildFileEntryOptions {
 }
 
 /**
- * Result from building a file entry.
+ * A file that belongs in the crate, with the stats read when it was chosen.
  */
-interface BuildFileEntryResult {
-  /** The built file entry object for the RO-Crate graph */
-  fileEntry: any;
-  /** File stats (birthtime, mtime) for optional further processing */
+interface FileToExport {
+  file: File;
   stats: fs.Stats;
+}
+
+/**
+ * The files of a folder that belong in the crate. RO-Crate metadata files are left out to avoid
+ * circular references, and so is a listed file that is not on disk (a link whose media folder is
+ * not on this machine, or a file removed after lameta loaded it), with the warning that IMDI
+ * export gives for it.
+ */
+function filesToExport(folder: Folder): FileToExport[] {
+  const result: FileToExport[] = [];
+  folder.files.forEach((file) => {
+    const path = file.getActualFilePath();
+    if (Path.basename(path).startsWith("ro-crate")) {
+      return;
+    }
+    let stats: fs.Stats;
+    try {
+      stats = fs.statSync(path);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+        throw error;
+      }
+      const message =
+        file.getNameToUseWhenExportingUsingTheActualFile() + ": " + getStatusOfFile(file).info;
+      if (!collectExportWarning(message)) {
+        NotifyWarning(message);
+      }
+      return;
+    }
+    result.push({ file, stats });
+  });
+  return result;
 }
 
 /**
@@ -676,10 +712,10 @@ interface BuildFileEntryResult {
  * duplicate logic between session exports and project document exports.
  *
  * @param options - Configuration for building the file entry
- * @returns The built file entry and file stats
+ * @returns The built file entry
  */
-function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
-  const { file, fileId, rocrateLicense, folder, parentEntry, project } = options;
+function buildFileEntry(options: BuildFileEntryOptions): any {
+  const { file, stats, fileId, rocrateLicense, folder, parentEntry, project } = options;
   const path = file.getActualFilePath();
   const fileName = Path.basename(path);
   const fileExt = Path.extname(fileName).toLowerCase();
@@ -709,7 +745,6 @@ function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
 
   const normalizedFileType = fileTypes.length === 1 ? fileTypes[0] : fileTypes;
 
-  const stats = fs.statSync(path);
   const fileEntry: any = {
     "@id": fileId,
     "@type": normalizedFileType,
@@ -723,7 +758,7 @@ function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
   // Add license information - per LDAC spec, files must have license properties
   addFileLicenseProperty(fileEntry, path, rocrateLicense, folder, parentEntry, project, file);
 
-  return { fileEntry, stats };
+  return fileEntry;
 }
 
 export function addChildFileEntries(
@@ -770,21 +805,16 @@ export function addChildFileEntries(
     return [current, reference];
   };
 
-  folder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    const fileName = Path.basename(path);
-
-    // Skip RO-Crate metadata files to avoid circular references
-    if (fileName.startsWith("ro-crate")) {
-      return;
-    }
+  filesToExport(folder).forEach(({ file, stats }) => {
+    const fileName = Path.basename(file.getActualFilePath());
 
     // Use centralized file ID generation to ensure consistency
     const fileId = createFileId(folder, fileName);
 
     // Use the shared helper so file metadata, licenses, and @type logic stay consistent
-    const { fileEntry } = buildFileEntry({
+    const fileEntry = buildFileEntry({
       file,
+      stats,
       fileId,
       rocrateLicense,
       folder,
@@ -835,14 +865,8 @@ export function addProjectDocumentFolderEntries(
   const attachToRootHasPart = options?.attachToRootHasPart !== false;
   const parentId = options?.parentId || "./";
 
-  folder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    const fileName = Path.basename(path);
-
-    // Skip RO-Crate metadata files to avoid circular references
-    if (fileName.startsWith("ro-crate")) {
-      return;
-    }
+  filesToExport(folder).forEach(({ file, stats }) => {
+    const fileName = Path.basename(file.getActualFilePath());
 
     // Create file ID using folder type
     const fileId = `${folderType}/${sanitizeForIri(fileName)}`;
@@ -850,8 +874,9 @@ export function addProjectDocumentFolderEntries(
     // Use the shared helper to build the file entry. Description and other project documents should
     // not declare ldac:materialType because these files describe the collection rather than serving
     // as LDAC annotations.
-    const { fileEntry, stats } = buildFileEntry({
+    const fileEntry = buildFileEntry({
       file,
+      stats,
       fileId,
       rocrateLicense,
       folder: undefined, // No folder for project documents - license inheritance differs
@@ -1022,7 +1047,8 @@ function createDescriptionDocumentsDataset(
   projectEntry: any,
   project?: Project,
 ): RoCrateEntity | undefined {
-  if (!descriptionFolder || descriptionFolder.files.length === 0) {
+  const files = descriptionFolder ? filesToExport(descriptionFolder) : [];
+  if (files.length === 0) {
     return undefined;
   }
 
@@ -1030,20 +1056,15 @@ function createDescriptionDocumentsDataset(
   const fileIds: string[] = [];
 
   // Process each file in the DescriptionDocuments folder
-  descriptionFolder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    const fileName = Path.basename(path);
-
-    // Skip RO-Crate metadata files to avoid circular references
-    if (fileName.startsWith("ro-crate")) {
-      return;
-    }
+  files.forEach(({ file, stats }) => {
+    const fileName = Path.basename(file.getActualFilePath());
 
     const fileId = `DescriptionDocuments/${sanitizeForIri(fileName)}`;
 
     // Build the file entry using shared helper
-    const { fileEntry } = buildFileEntry({
+    const fileEntry = buildFileEntry({
       file,
+      stats,
       fileId,
       rocrateLicense,
       folder: undefined, // No folder for project documents
@@ -1094,7 +1115,8 @@ function createOtherDocumentsDataset(
   projectEntry: any,
   project?: Project,
 ): RoCrateEntity | undefined {
-  if (!otherDocsFolder || otherDocsFolder.files.length === 0) {
+  const files = otherDocsFolder ? filesToExport(otherDocsFolder) : [];
+  if (files.length === 0) {
     return undefined;
   }
 
@@ -1102,20 +1124,15 @@ function createOtherDocumentsDataset(
   const fileIds: string[] = [];
 
   // Process each file in the OtherDocuments folder
-  otherDocsFolder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    const fileName = Path.basename(path);
-
-    // Skip RO-Crate metadata files to avoid circular references
-    if (fileName.startsWith("ro-crate")) {
-      return;
-    }
+  files.forEach(({ file, stats }) => {
+    const fileName = Path.basename(file.getActualFilePath());
 
     const fileId = `OtherDocuments/${sanitizeForIri(fileName)}`;
 
     // Build the file entry using shared helper
-    const { fileEntry } = buildFileEntry({
+    const fileEntry = buildFileEntry({
       file,
+      stats,
       fileId,
       rocrateLicense,
       folder: undefined, // No folder for project documents
