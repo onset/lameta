@@ -850,11 +850,12 @@ export /*babel doesn't like this: abstract*/ class File {
     const role = contributionFromXml.smxrole
       ? (contributionFromXml.smxrole === "unspecified" ? "" : contributionFromXml.smxrole)
       : contributionFromXml.role;
+    // a file from elsewhere (hand edits, other tools) may leave out any of these elements
     const n = new Contribution(
-      contributionFromXml.name,
-      role,
+      contributionFromXml.name ?? "",
+      role ?? "",
       //this.normalizeIncomingDateString(contributionFromXml.date),
-      contributionFromXml.comments,
+      contributionFromXml.comments ?? "",
     );
     this.contributions.push(n);
 
