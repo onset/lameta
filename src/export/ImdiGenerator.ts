@@ -130,6 +130,9 @@ export default class ImdiGenerator {
 
   //We enable this when we want to keep unit test xpaths simple
   private omitNamespaces: boolean;
+  // Whether to put lameta-source and lameta-translations comments in the IMDI. The
+  // checks and the IMDI view need them; what export writes to disk leaves them out.
+  public writeLametaComments = true;
 
   private keysThatHaveBeenOutput = new Set<string>();
   private mode: IMDIMode;
@@ -193,11 +196,13 @@ export default class ImdiGenerator {
     childrenSubPaths: string[],
 
     omitNamespaces?: boolean,
+    writeLametaComments: boolean = true,
   ): string {
     const generator = new ImdiGenerator(mode, project, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
+    generator.writeLametaComments = writeLametaComments;
     return generator.corpus(childrenSubPaths);
   }
   public static generateProject(mode: IMDIMode, project: Project): string {
@@ -210,11 +215,13 @@ export default class ImdiGenerator {
     project: Project,
 
     omitNamespaces?: boolean,
+    writeLametaComments: boolean = true,
   ): string {
     const generator = new ImdiGenerator(mode, session, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
+    generator.writeLametaComments = writeLametaComments;
     sentryBreadCrumb(`Generating IMDI for session ${session.metadataFile?.metadataFilePath}`);
     return generator.session();
   }
@@ -1604,7 +1611,8 @@ export default class ImdiGenerator {
     if (v && v.length > 0) {
       this.mostRecentElement.attribute(attributeName, v);
       const source = this.sourceOf(f, fieldName);
-      if (source) (this.mostRecentElement as any).commentBefore(makeLametaSourceComment(source));
+      if (source && this.writeLametaComments)
+        (this.mostRecentElement as any).commentBefore(makeLametaSourceComment(source));
     }
   }
   private attributeLiteral(attributeName: string, value: string) {
@@ -1658,7 +1666,7 @@ export default class ImdiGenerator {
     makeComment: (target: NavigationTarget) => string = makeLametaSourceComment,
   ) {
     const parent = this.tail as any;
-    if (!source || !parent) {
+    if (!source || !parent || !this.writeLametaComments) {
       write();
       return;
     }
@@ -1671,7 +1679,8 @@ export default class ImdiGenerator {
       .forEach((element: any) => element.commentBefore(comment));
   }
   private commentBeforeCurrentGroup(source: NavigationTarget | undefined) {
-    if (source) (this.tail as any).commentBefore(makeLametaSourceComment(source));
+    if (source && this.writeLametaComments)
+      (this.tail as any).commentBefore(makeLametaSourceComment(source));
   }
   private startGroup(elementName: string) {
     this.tail = this.tail.element(elementName);
