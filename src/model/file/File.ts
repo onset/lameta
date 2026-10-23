@@ -83,6 +83,11 @@ export class Contribution {
     this.role = role;
     this.comments = comments;
   }
+
+  // A row with only a role or comments is kept; the person may not be known yet.
+  public get isEmpty(): boolean {
+    return !this.personReference?.trim() && !this.role?.trim() && !this.comments?.trim();
+  }
 }
 
 export /*babel doesn't like this: abstract*/ class File {

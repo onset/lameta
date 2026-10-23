@@ -168,11 +168,9 @@ function writeElementGroup(
 function writeContributions(root: xmlbuilder.XMLElementOrXMLNode, contributions: Contribution[]) {
   const contributionsElement = root.element("Contributions");
   contributions.forEach((contribution) => {
-    if (contribution.personReference && contribution.personReference.trim().length > 0) {
+    if (!contribution.isEmpty) {
       let tail = contributionsElement.element("contributor");
-      if (contribution.personReference) {
-        tail = tail.element("name", contribution.personReference).up();
-      }
+      tail = tail.element("name", contribution.personReference ?? "").up();
       // SayMore classic will crash if there is no role. It is limited to the
       // roles in olac, so it does not accept
       // something like "unspecified". To allow smx to have unspecified,
