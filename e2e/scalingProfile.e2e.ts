@@ -33,7 +33,8 @@ const actions: Record<string, (page: Page) => Promise<void>> = {
       (n) => document.querySelectorAll(".folderList .rt-tbody .rt-tr").length > n,
       before,
     );
-    await page.waitForTimeout(300);
+    // past the 1.5 s after which the rules check generates the IMDI that is due
+    await page.waitForTimeout(2000);
   },
 };
 
