@@ -16,10 +16,11 @@ temp.track();
 // `addToEtr009`: the name of a file to put in ETR009's folder first. lameta renames a
 // file that the user adds, so a name that breaks the rules can only come from a
 // file that was there already.
-function loadEdolo(addToEtr009?: string): Project {
+function loadEdolo(addToEtr009?: string, change?: (dir: string) => void): Project {
   const dir = Path.join(temp.mkdirSync("lameta checks"), "Edolo sample");
   fs.copySync("sample data/Edolo sample", dir);
   if (addToEtr009) fs.writeFileSync(Path.join(dir, "Sessions", "ETR009", addToEtr009), "x");
+  change?.(dir);
   return Project.fromDirectory(dir);
 }
 // the sample's own problem: Hatton, a contributor that no person record matches
@@ -103,5 +104,43 @@ describe("checkProjectFolders", () => {
       sessionId: session.id,
     };
     expect(combineProblems(problems, [fromRules]).map((p) => p.checkId)).toEqual(["fileName"]);
+  });
+
+  describe("metadata files that lameta could not read", () => {
+    const unreadable = (project: Project) =>
+      checkProjectFolders(project)
+        .filter((p) => p.checkId === "metadataUnreadable")
+        .map((p) => [p.severity, p.subject, p.target]);
+
+    it("reports a session whose .session could not be read", () => {
+      const project = loadEdolo(undefined, (dir) =>
+        fs.writeFileSync(Path.join(dir, "Sessions", "ETR009", "ETR009.session"), ""),
+      );
+      expect(unreadable(project)).toEqual([
+        ["error", "ETR009.session", { folderType: "session", folderId: "ETR009" }],
+      ]);
+    });
+
+    it("reports a person whose .person could not be read", () => {
+      const project = loadEdolo(undefined, (dir) =>
+        fs.writeFileSync(Path.join(dir, "People", "Awi_Heole", "Awi_Heole.person"), "<Person>"),
+      );
+      expect(unreadable(project)).toEqual([
+        ["error", "Awi_Heole.person", { folderType: "person", folderId: "Awi_Heole" }],
+      ]);
+    });
+
+    it("reports a file whose .meta could not be read", () => {
+      const project = loadEdolo(undefined, (dir) =>
+        fs.writeFileSync(Path.join(dir, "Sessions", "ETR009", "SceneHouse.JPG.meta"), "<Meta"),
+      );
+      expect(unreadable(project)).toEqual([
+        [
+          "error",
+          "SceneHouse.JPG.meta",
+          { folderType: "session", folderId: "ETR009", fileName: "SceneHouse.JPG" },
+        ],
+      ]);
+    });
   });
 });

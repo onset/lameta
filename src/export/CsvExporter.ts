@@ -1,4 +1,5 @@
 import { Project } from "../model/Project/Project";
+import { exportablePersons, exportableSessions } from "../model/Project/exportableFolders";
 import { Folder } from "../model/Folder/Folder";
 import * as nodeArchiver from "archiver";
 import fs from "fs";
@@ -252,9 +253,9 @@ export function makeCsvForProject(project: Project): string {
   return getGenericCsv([project]);
 }
 export function makeCsvForPeople(project: Project): string {
-  return getGenericCsv(project.persons.items);
+  return getGenericCsv(exportablePersons(project));
 }
 
 export function makeCsvForSessions(project: Project, folderFilter: (f: Folder) => boolean): string {
-  return getGenericCsv(project.sessions.items.filter(folderFilter));
+  return getGenericCsv(exportableSessions(project).filter(folderFilter));
 }

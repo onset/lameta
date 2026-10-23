@@ -457,6 +457,9 @@ msgstr ""
 msgid "Interface Language"
 msgstr ""
 
+msgid "It is from a later version of lameta and needs lameta {minimumVersion} or later."
+msgstr ""
+
 msgid "Items"
 msgstr ""
 
@@ -743,6 +746,9 @@ msgstr "Событие"
 msgid "Session {0}"
 msgstr ""
 
+msgid "Session {sessionId}"
+msgstr ""
+
 msgid "Sessions"
 msgstr "Элементы проекта"
 
@@ -834,6 +840,9 @@ msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
 msgid "The file \"{originalName}\" was changed outside of lameta, perhaps by a file-synchronization service such as OneDrive or Dropbox, or on another computer. To avoid losing that change, lameta kept it next to the original with the name \"{keptName}\"."
+msgstr ""
+
+msgid "The file is empty."
 msgstr ""
 
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
@@ -997,6 +1006,18 @@ msgstr ""
 msgid "choose..."
 msgstr ""
 
+#. Follows a file name, as in "Awi.person could not be read…"
+msgid "could not be read, so export leaves this person out."
+msgstr ""
+
+#. Follows a file name, as in "ETR009.session could not be read…"
+msgid "could not be read, so export leaves this session out."
+msgstr ""
+
+#. Follows a file name, as in "song.wav.meta could not be read."
+msgid "could not be read."
+msgstr ""
+
 #. Follows "File name", as in "File name has characters…"
 msgid "has characters that the archive doesn't allow."
 msgstr ""
@@ -1036,6 +1057,9 @@ msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settin
 msgstr ""
 
 msgid "lameta could not find a matching Person for the following contributors:"
+msgstr ""
+
+msgid "lameta could not read {fileName}: {reason}"
 msgstr ""
 
 msgid "lameta could not rename the directory."

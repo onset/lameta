@@ -38,3 +38,24 @@ describe("getStatusOfFile / getLinkStatusIconPath for cloud-only files", () => {
     expect(getLinkStatusIconPath(f)).toBe("");
   });
 });
+
+describe("getStatusOfFile / getLinkStatusIconPath for a file whose .meta could not be read", () => {
+  function getFileWithUnreadableMeta(): OtherFile {
+    const path = temp.path({ suffix: ".mp3" }) as string;
+    fs.writeFileSync(path, "pretend contents");
+    fs.writeFileSync(path + ".meta", "<Meta");
+    return new OtherFile(path, new EncounteredVocabularyRegistry());
+  }
+
+  it("reports metadataUnreadable, and not missing, naming the .meta", () => {
+    const f = getFileWithUnreadableMeta();
+    const status = getStatusOfFile(f);
+    expect(status.missing).toBe(false);
+    expect(status.status).toBe("metadataUnreadable");
+    expect(status.info).toContain(".mp3.meta");
+  });
+
+  it("shows the error icon", () => {
+    expect(getLinkStatusIconPath(getFileWithUnreadableMeta())).toBe("assets/error.png");
+  });
+});

@@ -1,5 +1,6 @@
 import { Session } from "../../model/Project/Session/Session";
 import { Project } from "../../model/Project/Project";
+import { findPersonToExport } from "../../model/Project/exportableFolders";
 import {
   createSessionLicense,
   getSessionLicenseId,
@@ -193,7 +194,7 @@ export function addParticipantProperties(
       roleGroups[role] = [];
     }
 
-    const person = project.findPerson(personName);
+    const person = findPersonToExport(project, personName);
     const personId = person ? createPersonId(person) : createUnresolvedContributorId(personName);
 
     // Avoid duplicates

@@ -3,6 +3,7 @@ import assert from "assert";
 import { Session } from "../model/Project/Session/Session";
 import * as XmlBuilder from "xmlbuilder";
 import { Project } from "../model/Project/Project";
+import { findPersonToExport } from "../model/Project/exportableFolders";
 import { Folder } from "../model/Folder/Folder";
 import moment from "moment";
 import { File, kMediaStatsCacheKey } from "../model/file/File";
@@ -407,7 +408,7 @@ export default class ImdiGenerator {
       if (trimmedName.length === 0) {
         return;
       }
-      const person = this.project.findPerson(trimmedName);
+      const person = findPersonToExport(this.project, trimmedName);
       // the session's own file or one of its media files
       const contributionSource = this.sourceOf(
         session.files.find((f) => f.contributions.includes(contribution)) ?? session,

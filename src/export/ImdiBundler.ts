@@ -1,5 +1,6 @@
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
+import { exportableSessions, findPersonToExport } from "../model/Project/exportableFolders";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import * as Path from "path";
@@ -223,7 +224,7 @@ export default class ImdiBundler {
     }
 
     // --- Sessions ---
-    const sessions = project.sessions.items.filter(folderFilter) as Session[];
+    const sessions = exportableSessions(project).filter(folderFilter);
     for (const session of sessions) {
       const sessionData = await this.generateSessionData(
         session,
@@ -261,7 +262,7 @@ export default class ImdiBundler {
     rootDirectory: string,
     folderFilter: (f: Folder) => boolean,
   ): ExportJobInfo {
-    const sessions = project.sessions.items.filter(folderFilter);
+    const sessions = exportableSessions(project).filter(folderFilter);
     // +3 for OtherDocs, DescriptionDocs, ConsentBundle (even if some might be empty)
     const totalSessions = sessions.length + 3;
 
@@ -634,35 +635,37 @@ export default class ImdiBundler {
       false,
     );
     const originalConsentFiles: File[] = [];
-    project.sessions.items.filter(sessionFilter).forEach((session: Session) => {
-      session.getAllContributionsToAllFiles().forEach((contribution) => {
-        const p = project.findPerson(contribution.personReference);
-        if (p) {
-          const consentFiles = p.files.filter((f) => f.isLabeledAsConsent());
-          // only add if it has at least one consent file
-          if (consentFiles && consentFiles.length > 0) {
-            // only add each person once (or once for each unique role?)
-            if (
-              !dummyFileForActors.contributions.find(
-                (c) => c.personReference === contribution.personReference,
-              )
-            ) {
-              // add the contribution, so that the <Actors> section gets what it needs
-              dummyFileForActors.contributions.push(contribution);
+    exportableSessions(project)
+      .filter(sessionFilter)
+      .forEach((session: Session) => {
+        session.getAllContributionsToAllFiles().forEach((contribution) => {
+          const p = findPersonToExport(project, contribution.personReference);
+          if (p) {
+            const consentFiles = p.files.filter((f) => f.isLabeledAsConsent());
+            // only add if it has at least one consent file
+            if (consentFiles && consentFiles.length > 0) {
+              // only add each person once (or once for each unique role?)
+              if (
+                !dummyFileForActors.contributions.find(
+                  (c) => c.personReference === contribution.personReference,
+                )
+              ) {
+                // add the contribution, so that the <Actors> section gets what it needs
+                dummyFileForActors.contributions.push(contribution);
 
-              // copy over the actual consent files
-              consentFiles.forEach((file) => {
-                // note, it should be rare, but someone might place a consent file with the name in more than one place in the project
-                // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
-                dummySession.copyInOneProjectFileIfNotThereAlready(file, outputFolder);
-                // Track the original file for later copying
-                originalConsentFiles.push(file);
-              });
+                // copy over the actual consent files
+                consentFiles.forEach((file) => {
+                  // note, it should be rare, but someone might place a consent file with the name in more than one place in the project
+                  // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
+                  dummySession.copyInOneProjectFileIfNotThereAlready(file, outputFolder);
+                  // Track the original file for later copying
+                  originalConsentFiles.push(file);
+                });
+              }
             }
           }
-        }
+        });
       });
-    });
     dummySession.files.push(dummyFileForActors);
     return originalConsentFiles;
   }

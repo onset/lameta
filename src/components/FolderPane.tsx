@@ -27,7 +27,7 @@ import { ParadisecView } from "./ParadisecView";
 import { NotifyError } from "./Notify";
 import userSettings from "../other/UserSettings";
 import * as URL from "url";
-import { FileStatusBlock } from "../model/file/FileStatus";
+import { describeUnreadableMetadata, FileStatusBlock } from "../model/file/FileStatus";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useLingui } from "@lingui/react";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
@@ -107,14 +107,21 @@ export const FolderPane: React.FunctionComponent<IProps & React.HTMLAttributes<H
                   file={props.folder.selectedFile}
                   fileName={props.folder.selectedFile.getTextProperty("filename")}
                 />
-                <ErrorBoundary
-                  // If rendering the detail for one file ever throws, selecting a
-                  // different file must recover the pane instead of leaving it
-                  // wedged on the error notice until the app is restarted.
-                  resetKeys={[props.folder.selectedFile.pathInFolderToLinkFileOrLocalCopy]}
-                >
-                  <FileTabs {...props} />
-                </ErrorBoundary>
+                {/* A session or person whose own metadata file could not be read
+                has nothing to show but the FileStatusBlock's message */}
+                {!(
+                  props.folder.selectedFile === props.folder.metadataFile &&
+                  props.folder.selectedFile.metadataReadProblem !== undefined
+                ) && (
+                  <ErrorBoundary
+                    // If rendering the detail for one file ever throws, selecting a
+                    // different file must recover the pane instead of leaving it
+                    // wedged on the error notice until the app is restarted.
+                    resetKeys={[props.folder.selectedFile.pathInFolderToLinkFileOrLocalCopy]}
+                  >
+                    <FileTabs {...props} />
+                  </ErrorBoundary>
+                )}
               </>
             )}
           </div>
@@ -185,7 +192,17 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
     // CloudFilePanel instead until the user explicitly fetches it.
     const previewBlocked = file.isCloudFileNotPresent;
 
-    const notesPanel = directoryObject.properties.getValue("notes") ? (
+    // A file whose .meta could not be read shows why, in place of anything that
+    // would edit its metadata
+    const unreadableMetadata = describeUnreadableMetadata(file);
+    const unreadableMetadataNotice = (
+      <p className="unreadableMetadata" data-testid="unreadable-metadata">
+        {unreadableMetadata}
+      </p>
+    );
+    const notesPanel = unreadableMetadata ? (
+      <TabPanel>{unreadableMetadataNotice}</TabPanel>
+    ) : directoryObject.properties.getValue("notes") ? (
       <TabPanel>
         {/* <Notes text={directoryObject.properties.getTextField("notes")} /> */}
         <Notes field={notesField} />
@@ -193,10 +210,16 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
     ) : null;
     const propertiesPanel = (
       <TabPanel>
-        <PropertyPanel file={file} authorityLists={props.authorityLists} />
+        {unreadableMetadata ? (
+          unreadableMetadataNotice
+        ) : (
+          <PropertyPanel file={file} authorityLists={props.authorityLists} />
+        )}
       </TabPanel>
     );
-    const contributorsPanel = (
+    const contributorsPanel = unreadableMetadata ? (
+      <TabPanel>{unreadableMetadataNotice}</TabPanel>
+    ) : (
       <TabPanel>
         <ContributorsTable
           // contributions={file.contributions}
@@ -315,7 +338,9 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
       </>
     ) : null;
 
-    const projectDocsPanels = showDocumentAccess ? (
+    const projectDocsPanels = !showDocumentAccess ? null : unreadableMetadata ? (
+      <TabPanel>{unreadableMetadataNotice}</TabPanel>
+    ) : (
       <>
         <TabPanel>
           <div className="document-access-panel">
@@ -332,7 +357,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
           </div>
         </TabPanel>
       </>
-    ) : null;
+    );
 
     // by preventing re-use of the Tabs element, it causes us to reset to the first tab when the file changes
     const tabsKey = props.folder.selectedFile!.getTextProperty("filename");

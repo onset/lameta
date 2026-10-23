@@ -30,12 +30,17 @@ export class FolderMetadataFile extends File {
     // name that differs only in case. A file that the cloud provider evicted
     // (only an iCloud ".<name>.icloud" sibling is left) does exist;
     // readMetadataFile requests it instead.
-    const files = fs.readdirSync(directory);
-    if (!files.includes(expectedName) && !isMissingCloudPlaceholder(metadataPath)) {
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+    if (!entries.some((e) => e.name === expectedName) && !isMissingCloudPlaceholder(metadataPath)) {
       // does a file exist here with the right extension but the wrong name?
-      const possibleFiles = files.filter(
-        (f) => hasMetadataExtension(f, fileExtensionForMetadata) && !isMacOSMetadataFile(f),
-      );
+      const possibleFiles = entries
+        .filter(
+          (e) =>
+            e.isFile() &&
+            hasMetadataExtension(e.name, fileExtensionForMetadata) &&
+            !isMacOSMetadataFile(e.name),
+        )
+        .map((e) => e.name);
       if (possibleFiles.length > 0) {
         // prefer the one that differs only in case, else use the first one.
         // The next save will try to sort out the names
