@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2016_0671</id>
+  <title type="string">Towards how to hang a painting upside down on purpose</title>
+  <description type="string">Agnès Ikeda talks about why the canvas must stay blank. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the back room of a frame shop</location>
+  <access type="string">O</access>
+  <accessDescription type="string">The artist asks that this stay closed until the paint is dry.</accessDescription>
+  <status type="string">Incoming</status>
+  <keyword type="string">Frameless Expressionism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2016-12-28</date>
+  <Contributions>
+    <contributor>
+      <name>AI210</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Nnamdi Blanc</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

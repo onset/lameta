@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Greta Søndergaard</name>
+  <birthYear type="string">1952</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Conceptual artist; the best work is the absence of work</primaryOccupation>
+  <ethnicGroup type="string">The Wet Paint School</ethnicGroup>
+  <description type="string">Greta Søndergaard belongs to Lateral Minimalism and works in a borrowed greenhouse. Asked about influences, Greta Søndergaard said only &quot;an exhibition in total darkness&quot;.</description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Post-Squarism</Movement>
+    <Studio type="string">the rooftop</Studio>
+  </CustomFields>
+</Person>

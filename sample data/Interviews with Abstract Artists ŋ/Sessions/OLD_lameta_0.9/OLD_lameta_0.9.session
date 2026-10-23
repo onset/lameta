@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session>
+  <title type="string">Early works, as an old lameta saved them</title>
+  <date type="date">2019-03-21</date>
+  <genre type="string">Procedural Discourse</genre>
+  <languages type="string">etr: Edolo</languages>
+  <access type="string">Open</access>
+  <participants>Nɔkɔ Ɛsi</participants>
+  <contributions type="xml">
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>2019-03-21</date>
+    </contributor>
+  </contributions>
+  <AdditionalFields type="xml">
+    <locationRegion type="string">Southern Highlands</locationRegion>
+    <planningType type="string">planned</planningType>
+  </AdditionalFields>
+  <CustomFields type="xml">
+    <topic type="string">early works</topic>
+  </CustomFields>
+  <unknownNested type="xml">
+    <inner>dropped on read</inner>
+  </unknownNested>
+</Session>

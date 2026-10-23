@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2023_0098</id>
+  <title type="string">Beyond a square that refuses to be a square</title>
+  <description type="string">Malak Pereira talks about painting the colour of a Tuesday. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2023-03-15</date>
+  <Contributions>
+    <contributor>
+      <name>Malak Pereira</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Saoirse Zielińska</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

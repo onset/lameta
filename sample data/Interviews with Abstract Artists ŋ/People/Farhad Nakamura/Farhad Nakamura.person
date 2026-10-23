@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Farhad Nakamura</name>
+  <code type="string">FN205</code>
+  <birthYear type="string">1982</birthYear>
+  <gender type="string">Female</gender>
+  <primaryOccupation type="string">Painter of one grey square, repeatedly</primaryOccupation>
+  <ethnicGroup type="string">Accidental Constructivism</ethnicGroup>
+  <description type="string">Farhad Nakamura belongs to Greyscale Romanticism and works in Gallery Huya. Asked about influences, Farhad Nakamura said only &quot;the politics of the colour orange&quot;.</description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="etr" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

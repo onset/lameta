@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <name type="string">Quilla Castellanos</name>
+  <birthYear type="string">1984</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Paints with ladders</primaryOccupation>
+  <ethnicGroup type="string">Hesitationism</ethnicGroup>
+  <description type="string">Quilla Castellanos belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Quilla Castellanos said only &quot;the third side of a line&quot;.</description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

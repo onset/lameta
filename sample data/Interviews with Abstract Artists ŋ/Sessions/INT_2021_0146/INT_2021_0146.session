@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2021_0146</id>
+  <title type="string">Against the politics of the colour orange</title>
+  <description type="string">Bartholomew Fontaine talks about a dot, considered at length. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">O</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2021-03-07</date>
+  <Contributions>
+    <contributor>
+      <name>Bartholomew Fontaine</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

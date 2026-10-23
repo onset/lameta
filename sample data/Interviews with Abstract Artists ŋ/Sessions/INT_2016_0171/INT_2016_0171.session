@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2016_0171</id>
+  <title type="string">Against what the gallery cleaner threw away</title>
+  <description type="string">Dmitri Vasquez talks about the emotional weight of beige. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">language_play</genre>
+  <location type="string">the artist's kitchen</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2016-04-04</date>
+  <Contributions>
+    <contributor>
+      <name>Dmitri Vasquez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Vũ Tanaka</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Rautenbach</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Quilla Jovanović</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

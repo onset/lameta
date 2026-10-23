@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2019_0334</id>
+  <title type="string">Beyond a square that refuses to be a square</title>
+  <description type="string">Greta Lindqvist talks about silence, in three coats of varnish. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">S</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">line</topic>
+  <date>2019-11-27</date>
+  <Contributions>
+    <contributor>
+      <name>Greta Lindqvist</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>KY050</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Hiroshi Jovanović</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

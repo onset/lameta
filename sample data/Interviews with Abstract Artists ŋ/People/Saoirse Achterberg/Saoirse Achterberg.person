@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <name type="string">Saoirse Achterberg</name>
+  <birthYear type="string">1939</birthYear>
+  <gender type="string">Other</gender>
+  <primaryOccupation type="string">Gallery cleaner and, by accident, prize-winning artist</primaryOccupation>
+  <ethnicGroup type="string">Accidental Constructivism</ethnicGroup>
+  <description type="string">Saoirse Achterberg belongs to The Wet Paint School and works in the back room of a frame shop. Asked about influences, Saoirse Achterberg said only &quot;the emotional weight of beige&quot;.</description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Hesitationism</Movement>
+    <Studio type="string">Gallery Huya</Studio>
+  </CustomFields>
+</Person>

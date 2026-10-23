@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2016_0331</id>
+  <title type="string">Against eleven shades of white and one impostor</title>
+  <description type="string">Oona Rautenbach talks about the moment before the first mark. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">a borrowed greenhouse</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">The Wet Paint School, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2016-08-24</date>
+  <Contributions>
+    <contributor>
+      <name>Oona Rautenbach</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ingrid Blanc</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ásdís Tanaka</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

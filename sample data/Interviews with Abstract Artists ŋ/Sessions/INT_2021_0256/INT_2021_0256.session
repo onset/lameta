@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2021_0256</id>
+  <title type="string">Against what the gallery cleaner threw away</title>
+  <description type="string">Greta Rautenbach talks about a portrait of the wind, from behind. The interview stopped twice because the artist wanted to look at the corner of the room.</description>
+  <languages type="string">qaa-x-kurbin;etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the artist's kitchen</location>
+  <access type="string">O</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Post-Squarism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2021-05-05</date>
+  <Contributions>
+    <contributor>
+      <name>Greta Rautenbach</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>PW075</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>FT175</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi Gómez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2019_0194</id>
+  <title type="string">Beyond a square that refuses to be a square</title>
+  <description type="string">Nnamdi Blanc talks about silence, in three coats of varnish. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">U</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2019-03-27</date>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Blanc</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>PJ015</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Xochitl Eriksdóttir</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2024_0229</id>
+  <title type="string">Notes on triangles as a form of apology</title>
+  <description type="string">Farhad Haddad talks about a sculpture made entirely of hesitation. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">the disused swimming pool</location>
+  <access type="string">S</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2024-02-06</date>
+  <Contributions>
+    <contributor>
+      <name>FH235</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>ZH065</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Hiroshi Pereira</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

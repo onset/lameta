@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <name type="string">Lucía Eriksdóttir</name>
+  <birthYear type="string">1986</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Former accountant, now draws only diagonals</primaryOccupation>
+  <ethnicGroup type="string">Frameless Expressionism</ethnicGroup>
+  <description type="string">Lucía Eriksdóttir belongs to Neo-Beigeism and works in Gallery Huya. Asked about influences, Lucía Eriksdóttir said only &quot;the politics of the colour orange&quot;.</description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+</Person>

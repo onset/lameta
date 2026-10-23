@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2019_0554</id>
+  <title type="string">On why the frame is the real work</title>
+  <description type="string">Malak Vasquez talks about drawing with a ladder. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">O</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Greyscale Romanticism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2019-03-23</date>
+  <Contributions>
+    <contributor>
+      <name>Malak Vasquez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

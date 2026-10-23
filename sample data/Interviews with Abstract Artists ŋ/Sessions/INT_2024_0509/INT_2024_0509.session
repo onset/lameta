@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2024_0509</id>
+  <title type="string">Beyond the long argument with the colour blue</title>
+  <description type="string">Lucía Eriksdóttir talks about a dot, considered at length. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">dialog</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Hesitationism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2024-06-06</date>
+  <Contributions>
+    <contributor>
+      <name>Lucía Eriksdóttir</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Hiroshi Dubois-Ngata</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Malak Pereira</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Þóra Pereira</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

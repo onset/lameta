@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2017_0572</id>
+  <title type="string">On why the canvas must stay blank</title>
+  <description type="string">Ásdís Mbeki talks about the third side of a line. The artist insists the recording itself is the artwork and that we are now co-authors.</description>
+  <languages type="string">etr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">Studio 4, the old soap factory</location>
+  <access type="string">O</access>
+  <accessDescription type="string">The artist asks that this stay closed until the paint is dry.</accessDescription>
+  <status type="string">Finished</status>
+  <keyword type="string">Greyscale Romanticism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2017-09-13</date>
+  <Contributions>
+    <contributor>
+      <name>Ásdís Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi Haddad</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Tenzin Eriksdóttir</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

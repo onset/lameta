@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2017_0152</id>
+  <title type="string">Beyond a square that refuses to be a square</title>
+  <description type="string">Þóra Pereira talks about painting the colour of a Tuesday. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">fr</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">S</access>
+  <status type="string">Skipped</status>
+  <keyword type="string">Greyscale Romanticism, studio visit</keyword>
+  <topic type="string">colour</topic>
+  <date>2017-09-13</date>
+  <Contributions>
+    <contributor>
+      <name>Þóra Pereira</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>AB120</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Þóra Whitehorse</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

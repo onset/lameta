@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2023_0658</id>
+  <title type="string">Against what the gallery cleaner threw away</title>
+  <description type="string">Yusuf Vasquez talks about the emotional weight of beige. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</description>
+  <languages type="string">qaa-x-kurbin;tpi;eng</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the artist's kitchen</location>
+  <access type="string">S</access>
+  <status type="string">Incoming</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2023-11-15</date>
+  <Contributions>
+    <contributor>
+      <name>Yusuf Vasquez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

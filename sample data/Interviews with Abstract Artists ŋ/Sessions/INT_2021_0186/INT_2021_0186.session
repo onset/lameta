@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2021_0186</id>
+  <title type="string">Against what the gallery cleaner threw away</title>
+  <description type="string">Bartholomew Achterberg talks about a portrait of the wind, from behind. Recorded while the artist repainted the studio wall the same white, four times.</description>
+  <languages type="string">es;qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">personal_narrative</genre>
+  <location type="string">the artist's kitchen</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Lateral Minimalism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2021-07-19</date>
+  <Contributions>
+    <contributor>
+      <name>Bartholomew Achterberg</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

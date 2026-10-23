@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2022_0667</id>
+  <title type="string">Notes on triangles as a form of apology</title>
+  <description type="string">Greta Yılmaz talks about the shadow of a canvas that was never painted. The artist asked that the microphone face away from the painting, so as not to influence it.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">the disused swimming pool</location>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Post-Squarism, studio visit</keyword>
+  <topic type="string">space</topic>
+  <date>2022-08-24</date>
+  <Contributions>
+    <contributor>
+      <name>Greta Yılmaz</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Chiamaka Quispe</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Quispe</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Dmitri Kowalczyk</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

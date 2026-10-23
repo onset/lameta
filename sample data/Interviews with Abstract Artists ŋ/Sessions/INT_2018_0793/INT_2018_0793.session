@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2018_0793</id>
+  <title type="string">Beyond an exhibition in total darkness</title>
+  <description type="string">Dmitri Whitehorse talks about the emotional weight of beige. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">oral_history</genre>
+  <location type="string">the artist's kitchen</location>
+  <access type="string">O</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">The Wet Paint School, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2018-02-10</date>
+  <Contributions>
+    <contributor>
+      <name>Dmitri Whitehorse</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>FT175</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>FM085</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

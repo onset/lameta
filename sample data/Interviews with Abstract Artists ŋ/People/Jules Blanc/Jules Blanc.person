@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <name type="string">Jules Blanc</name>
+  <birthYear type="string">1977</birthYear>
+  <gender type="string">Male</gender>
+  <primaryOccupation type="string">Paints with ladders</primaryOccupation>
+  <ethnicGroup type="string">Post-Squarism</ethnicGroup>
+  <description type="string">Jules Blanc belongs to Neo-Beigeism and works in a lift between floors 3 and 4. Asked about influences, Jules Blanc said only &quot;a dot, considered at length&quot;.</description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="true"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="false"></language>
+  </languages>
+  <contributions type="xml"></contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Greyscale Romanticism</Movement>
+    <Studio type="string">a borrowed greenhouse</Studio>
+  </CustomFields>
+</Person>

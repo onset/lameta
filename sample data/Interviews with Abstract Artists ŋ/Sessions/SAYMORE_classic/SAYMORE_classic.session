@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Session>
+  <title type="string">The Unconquered Rectangle</title>
+  <languages type="string">etr</languages>
+  <genre type="string">Procedural Discourse</genre>
+  <access type="string">S</access>
+  <status type="string">Finished</status>
+  <date type="string">2018-02-23</date>
+  <participants type="string">Nɔkɔ Ɛsi (consultant);Wilema Dimo (consultant);</participants>
+  <stage_consent type="string">NotComplete</stage_consent>
+  <setting type="string">On the gallery steps</setting>
+  <situation type="string">Walking back from the opening</situation>
+  <contributions type="xml">
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+      <notes>
+      </notes>
+    </contributor>
+    <contributor>
+      <name>Wilema Dimo</name>
+      <role>consultant</role>
+      <date>2018-02-23</date>
+      <notes>
+      </notes>
+    </contributor>
+  </contributions>
+  <CustomFields type="xml">
+    <topic type="string">rectangles, conquest</topic>
+    <keyword type="string">edges</keyword>
+  </CustomFields>
+</Session>

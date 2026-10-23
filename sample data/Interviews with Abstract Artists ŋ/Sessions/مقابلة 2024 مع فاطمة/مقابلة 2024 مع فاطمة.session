@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">مقابلة 2024 مع فاطمة</id>
+  <title type="string">About the moment before the first mark</title>
+  <description type="string">The artist talks about eleven shades of white and one impostor. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <genre type="string">narrative</genre>
+  <access type="string">O</access>
+  <date>2024-05-01</date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

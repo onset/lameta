@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2023_0718</id>
+  <title type="string">About painting the colour of a Tuesday</title>
+  <description type="string">Vũ Blanc talks about a square that refuses to be a square. There is a long passage about a single brush, which the artist calls &quot;the elder&quot;.</description>
+  <languages type="string">tpi</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">the rooftop</location>
+  <access type="string">O</access>
+  <status type="string">Finished</status>
+  <keyword type="string">Accidental Constructivism, studio visit</keyword>
+  <topic type="string">silence</topic>
+  <date>2023-11-19</date>
+  <Contributions>
+    <contributor>
+      <name>Vũ Blanc</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Quilla Ikeda</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

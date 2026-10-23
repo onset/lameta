@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2018_0773</id>
+  <title type="string">Beyond a square that refuses to be a square</title>
+  <description type="string">Vũ Achterberg talks about silence, in three coats of varnish. The artist answered every question with a question, and then with a long pause, which the transcript renders as &quot;…&quot;.</description>
+  <languages type="string">qaa-x-kurbin</languages>
+  <workingLanguages type="string">eng</workingLanguages>
+  <genre type="string">interview</genre>
+  <location type="string">Gallery Huya</location>
+  <access type="string">U</access>
+  <status type="string">In_Progress</status>
+  <keyword type="string">Neo-Beigeism, studio visit</keyword>
+  <topic type="string">frames</topic>
+  <date>2018-06-18</date>
+  <Contributions>
+    <contributor>
+      <name>Vũ Achterberg</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Tenzin Eriksdóttir</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Eriksdóttir</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>
