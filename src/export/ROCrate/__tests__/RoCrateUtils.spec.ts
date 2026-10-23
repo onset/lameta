@@ -90,6 +90,12 @@ describe("RoCrateUtils - IRI Sanitization", () => {
     expect(sanitizeForIri("Multiple  Spaces")).toBe("Multiple%20%20Spaces");
   });
 
+  it("should keep names that hold a percent sign distinct and recoverable", () => {
+    expect(sanitizeForIri("a%20b.wav")).not.toBe(sanitizeForIri("a b.wav"));
+    expect(decodeURIComponent(sanitizeForIri("Percent %20 name"))).toBe("Percent %20 name");
+    expect(decodeURIComponent(sanitizeForIri("100% done"))).toBe("100% done");
+  });
+
   it("should encode parentheses", () => {
     expect(sanitizeForIri("BAKALA Michel (@Mfouati)")).toBe("BAKALA%20Michel%20%28@Mfouati%29");
     // Exclamation marks are allowed in IRIs
@@ -201,11 +207,6 @@ describe("RoCrateUtils - IRI Sanitization", () => {
     it("should preserve comma and pipe", () => {
       expect(sanitizeForIri("a,b")).toBe("a,b");
       expect(sanitizeForIri("a|b")).toBe("a|b");
-    });
-
-    it("should preserve percent signs", () => {
-      expect(sanitizeForIri("100%")).toBe("100%");
-      expect(sanitizeForIri("a%20b")).toBe("a%20b");
     });
 
     it("should preserve plus and dollar signs", () => {
