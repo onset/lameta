@@ -3,6 +3,7 @@ import {
   parseSlashSyntax,
   assignLanguagesToSegments,
   parseCommaSeparatedSlashSyntax,
+  taggedAxis,
 } from "./TextHolderMigration";
 
 /**
@@ -14,8 +15,9 @@ import {
  * When there is more than one language, the strings are stored in tagged format:
  *   [[en]]This is the English text[[es]]Este es el texto en español[[fr]]C'est le texte en français
  *
- * The implementation uses a simple split/join approach for clarity. Performance could be improved
- * with regex if needed, but the current approach keeps the serialization format transparent.
+ * The implementation reads that format with one regular expression for a [[tag]]text pair,
+ * which keeps the serialization format transparent. The format cannot hold "[[" or "]]"
+ * inside a text, so text that is not entirely such pairs is read as plain text.
  *
  * Slash syntax migration:
  *   Text like "casa/house/maison" can be virtually interpreted as multilingual
@@ -265,7 +267,7 @@ export class TextHolder {
     for (const tag of orderedTags) {
       const text = assignments.get(tag) ?? "";
       if (text.length > 0) {
-        parts.push(`[[${tag}]]${text}`);
+        parts.push(taggedAxis(tag, text));
       }
     }
 
@@ -280,39 +282,24 @@ export class TextHolder {
     // [[en]]This is the Enlish text[[es]]Este es el texto en español[[fr]]C'est le texte en français
     // We want to divide this into an array of {tag, text} pairs
 
-    // if there are no language tags, return a dictionary with "en" set to the string
-    if (!this._text.includes("[[")) {
+    // Text that is not entirely a run of well-formed [[tag]]text pairs is plain text,
+    // so that the user can see it and correct it
+    if (!TextHolder.taggedTextPattern.test(this._text)) {
       return { en: this._text };
     }
 
-    // Check if this looks like multilingual format (starts with [[)
-    // If not, treat as plain text even if it contains [[ somewhere
-    if (!this._text.startsWith("[[")) {
-      return { en: this._text };
-    }
-
-    // first divide the text into an array of axis/text pairs
-    const axisTextPairsWithExtra = this._text.split("[[");
-
-    if (axisTextPairsWithExtra[0] !== "")
-      throw new Error(
-        `Cannot have text before the first langauge tag. Found when deserializing: ${this._text}`,
-      );
-    // remove the first element, which is the text before the first tag, which is not valid
-    axisTextPairsWithExtra.shift();
-    // now split each pair into tag and text
-    const axisTextPairsArrayOfArrays = axisTextPairsWithExtra.map((s) => s.split("]]"));
-
+    // add each axis/text pair to the result
     const result: MultiAxisText = {};
-    // add each pair to result
-    axisTextPairsArrayOfArrays.forEach((pair) => {
-      if (pair.length != 2) {
-        throw new Error(`Invalid axis/text pair when deserializing: ${this._text}`);
-      }
-      result[pair[0]] = pair[1];
-    });
+    for (const [, tag, text] of this._text.matchAll(TextHolder.axisTextPairPattern)) {
+      result[tag] = text;
+    }
     return result;
   }
+  // a language tag in [[ ]], then its text, which holds neither [[ nor ]]
+  private static readonly axisTextPair = String.raw`\[\[([^\[\]]+)\]\]((?:(?!\[\[|\]\]).)*)`;
+  private static readonly taggedTextPattern = new RegExp(`^(?:${TextHolder.axisTextPair})+$`, "s");
+  private static readonly axisTextPairPattern = new RegExp(TextHolder.axisTextPair, "gs");
+
   public getAllNonEmptyTextAxes(): string[] {
     return TextHolder.getNonEmptyLanguageAxesStatic(this.deserializeMultiAxisText());
   }
@@ -336,7 +323,7 @@ export class TextHolder {
 
     const serializedParts = nonEmptyAxes.map((language) => {
       const text = axes[language]; // can't trim because then you can't type a space !.trim();  Trim whitespace
-      return text.length > 0 ? `[[${language}]]${text}` : "";
+      return text.length > 0 ? taggedAxis(language, text) : "";
     });
 
     return serializedParts.join("");

@@ -294,6 +294,50 @@ describe("TextHolder migration: multilingual ↔ monolingual", () => {
       expect(textHolder.getTextAxis("en")).toBe(textWithBrackets);
     });
 
+    it.each(["[[en]]a]]b", "[[en]Fish", "[[]]Fish", "[[en]]Fish[[es"])(
+      "should read malformed tagged text %s as plain text",
+      (malformed) => {
+        const textHolder = new TextHolder();
+        textHolder.monoLingualText = malformed;
+
+        expect(textHolder.getTextAxis("en")).toBe(malformed);
+        expect(textHolder.getAllNonEmptyTextAxes()).toEqual(["en"]);
+        expect(textHolder.getEffectiveSlotTags(["en", "es"])).toEqual(["en"]);
+        expect(textHolder.getFirstNonEmptyText(["en"])).toBe(malformed);
+      },
+    );
+
+    it("should keep a translation added to malformed tagged text", () => {
+      const textHolder = new TextHolder();
+      textHolder.monoLingualText = "[[en]]a]]b";
+      textHolder.setTextAxis("es", "x");
+      expect(textHolder.getTextAxis("es")).toBe("x");
+      expect(textHolder.getTextAxis("en")).toBe("[en]a]b");
+      textHolder.setTextAxis("fr", "y");
+      expect(textHolder.getTextAxis("en")).toBe("[en]a]b");
+    });
+
+    it("should write [[ and ]] in a value unchanged when there is only English", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", "[[Draft]] notes");
+      expect(textHolder.getSerialized()).toBe("[[Draft]] notes");
+    });
+
+    it("should keep each language's text when a value holds [[ or ]]", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", "a [[b]] c");
+      textHolder.setTextAxis("es", "x]]y");
+      expect(textHolder.getTextAxis("en")).toBe("a [b] c");
+      expect(textHolder.getTextAxis("es")).toBe("x]y");
+    });
+
+    it("should let the user correct malformed tagged text", () => {
+      const textHolder = new TextHolder();
+      textHolder.monoLingualText = "[[en]]a]]b";
+      textHolder.setTextAxis("en", "ab");
+      expect(textHolder.getSerialized()).toBe("ab");
+    });
+
     it("should handle multilingual text without English", () => {
       const textHolder = new TextHolder();
       textHolder.setTextAxis("es", "solo español");
