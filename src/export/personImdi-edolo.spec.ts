@@ -193,6 +193,12 @@ describe("actor imdi export", () => {
     expect("Actor/BirthDate").toMatch("Unspecified");
     expect("Actor/Age").toMatch("Unspecified");
   });
+  it("should not write a negative age for a birth year after the session date", () => {
+    person.properties.setText("birthYear", "2031");
+    const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
+    setResultXml(gen.actor(person, "pretend-role", pretendSessionDate) as string);
+    expect("Actor/Age").toMatch("Unspecified");
+  });
   it("should convert approximate birth years like ~1964 to range format", () => {
     // Values like "~1964" (approximate dates) are converted to YYYY-1/YYYY+1 range format
     person.properties.setText("birthYear", "~1964");

@@ -23,8 +23,11 @@ export class Person extends Folder {
   protected updateExternalReferencesToThisPerson: idChangeHandler;
   protected previousId: string;
 
+  // The person's age in years on the date, or "" when it cannot be known, as when the
+  // birth year is after the date
   public ageOn(referenceDate: Date): string {
-    return this.properties.getDateField("birthYear").yearsSince(referenceDate);
+    const years = this.properties.getDateField("birthYear").yearsSince(referenceDate);
+    return Number(years) < 0 ? "" : years;
   }
 
   // checks either the name or the code
