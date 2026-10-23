@@ -132,7 +132,11 @@ export class Session extends Folder {
           ? { name: nameAndRole[1], role: nameAndRole[2] }
           : { name: s, role: undefined };
       });
-    legacyParticipants.forEach(({ name, role }) => {
+    const withRoleFirst = [
+      ...legacyParticipants.filter((p) => p.role !== undefined),
+      ...legacyParticipants.filter((p) => p.role === undefined),
+    ];
+    withRoleFirst.forEach(({ name, role }) => {
       const alreadyContributes = this.metadataFile!.contributions.some(
         (c) => c.personReference === name && (role === undefined || c.role === role),
       );
