@@ -28,7 +28,7 @@ export function fieldElement(
   const needToUseDefaultValue = xmlElementIsRequired && fieldIsBlank && !text;
 
   if (needToUseDefaultValue) {
-    lastElementWeAdded = tail.element(elementName, defaultValue);
+    lastElementWeAdded = textElement(tail, elementName, defaultValue);
     addExtraAttributes(lastElementWeAdded, extraAttributes);
   } else if (text) {
     lastElementWeAdded = addElementWithMonolingualStringContentIfNotEmpty(
@@ -53,6 +53,15 @@ export function fieldElement(
   return { tail, mostRecentElement: tail }; // review is lastElementWeAdded what mostRecentElement should be?
 }
 
+// Every element with text content goes through here, so that no IMDI value keeps the spaces around it.
+export function textElement(
+  parent: XmlBuilder.XMLElementOrXMLNode,
+  elementName: string,
+  text: string | undefined,
+): XmlBuilder.XMLElementOrXMLNode {
+  return parent.element(elementName, text?.trim() ?? "");
+}
+
 function addExtraAttributes(
   element: XmlBuilder.XMLElementOrXMLNode,
   extraAttributes?: Record<string, string>,
@@ -71,7 +80,7 @@ function addElementWithMonolingualStringContentIfNotEmpty(
   extraAttributes?: Record<string, string>,
 ) {
   if (text && text.length > 0) {
-    const element = tail.element(elementName, text);
+    const element = textElement(tail, elementName, text);
     addExtraAttributes(element, extraAttributes);
     return element;
   } else return tail;
@@ -88,7 +97,7 @@ function addElementsFromFieldContent(
   let element;
   if (field.definition?.imdiRange) {
     // wer're assuming at this point that we don't have mulilingual vocabularies
-    element = tail.element(elementName, field.text.trim());
+    element = textElement(tail, elementName, field.text);
     element.attribute("Link", field.definition.imdiRange);
     const type = field.definition.imdiIsClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
     element.attribute("Type", type);
@@ -112,21 +121,21 @@ function addElementsFromFieldContent(
         shouldUseVirtualMultilingual
           ? field.getTextAxisVirtual(language, metadataSlotTags)
           : field.getTextAxis(language),
-      ).trim();
+      );
 
     // If IMDI doesn't support multiple elements with LanguageId (e.g., String_Type),
     // just use the first language's value
     if (axes.length === 0) {
-      element = tail.element(elementName, applyCapitalization(field.definition, field.text).trim());
+      element = textElement(tail, elementName, applyCapitalization(field.definition, field.text));
       addExtraAttributes(element, extraAttributes);
     } else if (!imdiSupportsMultipleElements || axes.length === 1) {
       const firstLanguage = axes[0];
-      element = tail.element(elementName, getTextForLanguage(firstLanguage));
+      element = textElement(tail, elementName, getTextForLanguage(firstLanguage));
       addExtraAttributes(element, extraAttributes);
     } else {
       // Multiple languages and IMDI supports LanguageId attributes
       axes.forEach((language) => {
-        element = tail.element(elementName, getTextForLanguage(language));
+        element = textElement(tail, elementName, getTextForLanguage(language));
         // Always use ISO639-3 (3-letter) codes for IMDI export
         // Archives require 3-letter codes, they can't handle 2-letter ISO639-1 codes
         const iso639_3 = staticLanguageFinder

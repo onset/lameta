@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vite-plus/test";
 import { printResultXml, setResultXml } from "../other/xmlUnitTestUtils";
 import * as XmlBuilder from "xmlbuilder";
-import { fieldElement } from "./Imdi-static-fns";
+import { fieldElement, textElement } from "./Imdi-static-fns";
 import { Field, FieldType } from "../model/field/Field";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { getImdiConformantBirthDate, isTildeBirthYear } from "./ImdiGenerator";
@@ -37,6 +37,14 @@ describe("imdi monolingual field export", () => {
     });
     expect("//Name").toHaveText("Ana López");
     expect("//FullName").toHaveText("Ana López");
+  });
+  it("writes an element's text without the spaces around it", () => {
+    run((builder) => {
+      textElement(builder, "Title", "  Documentos de consentimiento ");
+      textElement(builder, "Description", undefined);
+    });
+    expect("//Title").toHaveText("Documentos de consentimiento");
+    expect("//Description").toHaveText("");
   });
   it("exports the default for a required value that is only spaces", () => {
     run((builder) => {
