@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Person minimum_lameta_version_to_read="0.0.0">
-  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
-  <FullName type="string">Smith, John</FullName>
-  <PrimaryOccupation type="string">Painter of one grey square, repeatedly</PrimaryOccupation>
-  <Description type="string">Smith, John belongs to Ladderism and works in Studio 4, the old soap factory. Asked about influences, Smith, John said only "eleven shades of white and one impostor".</Description>
-  <languages type="xml"></languages>
-  <Contributions></Contributions>
-</Person>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Person minimum_lameta_version_to_read="0.0.0">
-  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
-  <FullName type="string">Huya</FullName>
-  <PrimaryOccupation type="string">Installation artist, mainly scaffolding</PrimaryOccupation>
-  <Description type="string">Huya belongs to Accidental Constructivism and works in the rooftop. Asked about influences, Huya said only "negative space and its landlord".</Description>
-  <languages type="xml"></languages>
-  <Contributions></Contributions>
-</Person>

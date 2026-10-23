@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Session minimum_lameta_version_to_read="0.0.0">
-  <id type="string">ལོ་རྒྱུས་མེ་ལོང་། སྔོན་གླེང་།</id>
-  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
-  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
-  <Genre type="string">&lt;Unknown&gt;</Genre>
-  <Status type="string">Incoming</Status>
-  <Contributions></Contributions>
-</Session>
