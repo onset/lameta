@@ -403,23 +403,22 @@ describe("what export writes to disk", () => {
     const dir = Path.join(temp.mkdirSync("lameta deposit"), "Edolo sample");
     fs.cpSync("sample data/Edolo sample", dir, { recursive: true });
     const project = Project.fromDirectory(dir);
-    const generator = ImdiBundler.generateExportData(
-      project,
-      temp.mkdirSync("lameta deposit output"),
-      mode,
-      false,
-      () => true,
-    );
-    const xmls: string[] = [];
+    const target = temp.mkdirSync("lameta deposit output");
+    const generator = ImdiBundler.generateExportData(project, target, mode, false, () => true);
+    // write it as the app does
+    const writer = new MainProcessImdiExport(() => null);
     let result = await generator.next();
     while (!result.done) {
-      xmls.push((result.value as ExportSessionData).imdiXml);
+      await writer.writeImdiSessionData(result.value as ExportSessionData);
       result = await generator.next();
     }
-    xmls.push(result.value.imdiXml);
+    await writer.writeImdiCorpusData(result.value);
 
-    expect(xmls.length).toBeGreaterThan(2);
-    for (const xml of xmls) {
+    const written = (fs.readdirSync(target, { recursive: true }) as string[])
+      .filter((f) => /\.(imdi|opex)$/.test(f))
+      .map((f) => fs.readFileSync(Path.join(target, f), "utf8"));
+    expect(written.length).toBeGreaterThan(2);
+    for (const xml of written) {
       expect(xml).not.toMatch(/lameta-source|lameta-translations/);
     }
     // the same project's IMDI for the checks has them
