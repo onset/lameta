@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">Quilla Castellanos</FullName>
+  <BirthYear type="string">1984</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Hesitationism</EthnicGroup>
+  <PrimaryOccupation type="string">Paints with ladders</PrimaryOccupation>
+  <Description type="string">Quilla Castellanos belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Quilla Castellanos said only "the third side of a line".</Description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</mothersLanguage>
+  <Contributions></Contributions>
+</Person>

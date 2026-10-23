@@ -1,0 +1,255 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond a sculpture made entirely of hesitation",
+      "description": "Ingrid Pereira talks about triangles as a form of apology. The artist insists the recording itself is the artwork and that we are now co-authors.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2015_0280/INT_2015_0280.session"
+        },
+        {
+          "@id": "Sessions/INT_2015_0280/INT_2015_0280_20150501.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2015_0280/INT_2015_0280_20150501.wav"
+        },
+        {
+          "@id": "Sessions/INT_2015_0280/INT_2015_0280_Artwork.png"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2015-05-01",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Ingrid%20Pereira"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20Pereira/Ingrid%20Pereira.person",
+      "@type": "File",
+      "contentSize": 867,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ingrid Pereira.person",
+      "about": {
+        "@id": "#Ingrid%20Pereira"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20Pereira/Ingrid%20Pereira_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ingrid Pereira_Consent.pdf",
+      "about": {
+        "@id": "#Ingrid%20Pereira"
+      }
+    },
+    {
+      "@id": "#Ingrid%20Pereira",
+      "@type": "Person",
+      "name": "Ingrid Pereira",
+      "ldac:age": "18",
+      "gender": "Other",
+      "description": "Ingrid Pereira belongs to Accidental Constructivism and works in the back room of a frame shop. Asked about influences, Ingrid Pereira said only \"a portrait of the wind, from behind\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Ingrid%20Pereira/Ingrid%20Pereira.person"
+        },
+        {
+          "@id": "People/Ingrid%20Pereira/Ingrid%20Pereira_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2015_0280/INT_2015_0280.session",
+      "@type": "File",
+      "contentSize": 1109,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2015_0280.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0280/INT_2015_0280_20150501.eaf",
+      "@type": "File",
+      "contentSize": 852,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2015_0280_20150501.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0280/INT_2015_0280_20150501.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2015_0280_20150501.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0280/INT_2015_0280_Artwork.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 456,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "INT_2015_0280_Artwork.png",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

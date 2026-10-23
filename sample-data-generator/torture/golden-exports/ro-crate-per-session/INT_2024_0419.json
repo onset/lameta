@@ -1,0 +1,254 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the installation that was mistaken for scaffolding",
+      "description": "Zofia Nakamura talks about drawing with a ladder. The artist insists the recording itself is the artwork and that we are now co-authors.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2024_0419/INT_2024_0419.session"
+        },
+        {
+          "@id": "Sessions/INT_2024_0419/INT_2024_0419_20241228.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2024-12-28",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Zofia%20Nakamura"
+        },
+        {
+          "@id": "#Ếlodie%20O'Shaughnessy"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura.person",
+      "@type": "File",
+      "contentSize": 905,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Nakamura.person",
+      "about": {
+        "@id": "#Zofia%20Nakamura"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia Nakamura_Consent.png",
+      "about": {
+        "@id": "#Zofia%20Nakamura"
+      }
+    },
+    {
+      "@id": "#Zofia%20Nakamura",
+      "@type": "Person",
+      "name": "Zofia Nakamura",
+      "ldac:age": "78",
+      "gender": "Female",
+      "description": "Zofia Nakamura belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Zofia Nakamura said only \"painting the colour of a Tuesday\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20O'Shaughnessy/Ếlodie%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 881,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie O'Shaughnessy.person",
+      "about": {
+        "@id": "#Ếlodie%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20O'Shaughnessy/Ếlodie%20O'Shaughnessy_Consent.pdf",
+      "@type": "File",
+      "contentSize": 602,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie O'Shaughnessy_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Ếlodie O'Shaughnessy",
+      "ldac:age": "24",
+      "gender": "Male",
+      "description": "Ếlodie O'Shaughnessy belongs to The Wet Paint School and works in the rooftop. Asked about influences, Ếlodie O'Shaughnessy said only \"negative space and its landlord\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20O'Shaughnessy/Ếlodie%20O'Shaughnessy.person"
+        },
+        {
+          "@id": "People/Ếlodie%20O'Shaughnessy/Ếlodie%20O'Shaughnessy_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2024_0419/INT_2024_0419.session",
+      "@type": "File",
+      "contentSize": 1205,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2024_0419.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2024_0419/INT_2024_0419_20241228.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2024_0419_20241228.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

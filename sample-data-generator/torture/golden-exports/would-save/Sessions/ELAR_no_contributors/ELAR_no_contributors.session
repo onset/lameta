@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">ELAR_no_contributors</id>
+  <Title type="string">The anonymous retrospective</Title>
+  <synopsis type="string">The artist talks about negative space and its landlord. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</synopsis>
+  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">narrative</Genre>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2024-10-03</Date>
+  <Contributions></Contributions>
+</Session>

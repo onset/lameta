@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2022_0357</id>
+  <Title type="string">Notes on silence, in three coats of varnish</Title>
+  <synopsis type="string">Lucía Whitehorse talks about a square that refuses to be a square. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</synopsis>
+  <languages type="languageChoices">fr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">the rooftop</Location>
+  <Access type="string">S</Access>
+  <Status type="string">Finished</Status>
+  <Date>2022-10-22</Date>
+  <Keywords type="string">The Wet Paint School, studio visit</Keywords>
+  <Topic type="string">space</Topic>
+  <Contributions>
+    <contributor>
+      <name>Lucía Whitehorse</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

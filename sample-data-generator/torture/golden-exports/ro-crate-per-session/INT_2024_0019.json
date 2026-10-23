@@ -1,0 +1,317 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On the shadow of a canvas that was never painted",
+      "description": "Dmitri Castellanos talks about triangles as a form of apology. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2024_0019/INT_2024_0019.session"
+        },
+        {
+          "@id": "Sessions/INT_2024_0019/INT_2024_0019_20240820.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2024-08-20",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Dmitri%20Castellanos"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Ingrid%20Vasquez"
+        },
+        {
+          "@id": "#Agnès%20Achterberg"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Castellanos/Dmitri%20Castellanos.person",
+      "@type": "File",
+      "contentSize": 1076,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Dmitri Castellanos.person",
+      "about": {
+        "@id": "#Dmitri%20Castellanos"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Castellanos/Dmitri%20Castellanos_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Dmitri Castellanos_Consent.png",
+      "about": {
+        "@id": "#Dmitri%20Castellanos"
+      }
+    },
+    {
+      "@id": "#Dmitri%20Castellanos",
+      "@type": "Person",
+      "name": "Dmitri Castellanos",
+      "ldac:age": "42",
+      "gender": "Other",
+      "description": "Dmitri Castellanos belongs to The Wet Paint School and works in Studio 4, the old soap factory. Asked about influences, Dmitri Castellanos said only \"the shadow of a canvas that was never painted\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Dmitri%20Castellanos/Dmitri%20Castellanos.person"
+      },
+      "image": {
+        "@id": "People/Dmitri%20Castellanos/Dmitri%20Castellanos_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20Vasquez/Ingrid%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 905,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ingrid Vasquez.person",
+      "about": {
+        "@id": "#Ingrid%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20Vasquez/Ingrid%20Vasquez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ingrid Vasquez_Consent.pdf",
+      "about": {
+        "@id": "#Ingrid%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Ingrid%20Vasquez",
+      "@type": "Person",
+      "name": "Ingrid Vasquez",
+      "ldac:age": "64",
+      "gender": "Other",
+      "description": "Ingrid Vasquez belongs to The Wet Paint School and works in Studio 4, the old soap factory. Asked about influences, Ingrid Vasquez said only \"eleven shades of white and one impostor\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": [
+        {
+          "@id": "People/Ingrid%20Vasquez/Ingrid%20Vasquez.person"
+        },
+        {
+          "@id": "People/Ingrid%20Vasquez/Ingrid%20Vasquez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Agnès%20Achterberg/Agnès%20Achterberg.person",
+      "@type": "File",
+      "contentSize": 1081,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Agnès Achterberg.person",
+      "about": {
+        "@id": "#Agnès%20Achterberg"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Achterberg/Agnès%20Achterberg_Consent.pdf",
+      "@type": "File",
+      "contentSize": 598,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Agnès Achterberg_Consent.pdf",
+      "about": {
+        "@id": "#Agnès%20Achterberg"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Achterberg/Agnès%20Achterberg_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Agnès Achterberg_Photo.png",
+      "about": {
+        "@id": "#Agnès%20Achterberg"
+      }
+    },
+    {
+      "@id": "#Agnès%20Achterberg",
+      "@type": "Person",
+      "name": "Agnès Achterberg",
+      "ldac:age": "27",
+      "gender": "Female",
+      "description": "Agnès Achterberg belongs to Frameless Expressionism and works in Studio 4, the old soap factory. Asked about influences, Agnès Achterberg said only \"a sculpture made entirely of hesitation\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Agnès%20Achterberg/Agnès%20Achterberg.person"
+        },
+        {
+          "@id": "People/Agnès%20Achterberg/Agnès%20Achterberg_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Agnès%20Achterberg/Agnès%20Achterberg_Photo.png"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2024_0019/INT_2024_0019.session",
+      "@type": "File",
+      "contentSize": 1319,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2024_0019.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2024_0019/INT_2024_0019_20240820.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2024_0019_20240820.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

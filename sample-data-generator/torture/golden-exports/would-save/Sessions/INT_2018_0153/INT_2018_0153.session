@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2018_0153</id>
+  <Title type="string">Against the installation that was mistaken for scaffolding</Title>
+  <synopsis type="string">Chiamaka Fontaine talks about silence, in three coats of varnish. The interview stopped twice because the artist wanted to look at the corner of the room.</synopsis>
+  <languages type="languageChoices">es;qaa-x-kurbin</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">proverb</Genre>
+  <Location type="string">Gallery Huya</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Skipped</Status>
+  <Date>2018-10-14</Date>
+  <Keywords type="string">Accidental Constructivism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Chiamaka Fontaine</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

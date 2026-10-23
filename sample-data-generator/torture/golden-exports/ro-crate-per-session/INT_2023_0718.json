@@ -1,0 +1,238 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About painting the colour of a Tuesday",
+      "description": "Vũ Blanc talks about a square that refuses to be a square. There is a long passage about a single brush, which the artist calls \"the elder\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2023_0718/INT_2023_0718.session"
+        },
+        {
+          "@id": "Sessions/INT_2023_0718/INT_2023_0718_20231119.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2023-11-19",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Vũ%20Blanc"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Quilla%20Ikeda"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Blanc/Vũ%20Blanc.person",
+      "@type": "File",
+      "contentSize": 1100,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Vũ Blanc.person",
+      "about": {
+        "@id": "#Vũ%20Blanc"
+      }
+    },
+    {
+      "@id": "#Vũ%20Blanc",
+      "@type": "Person",
+      "name": "Vũ Blanc",
+      "ldac:age": "56",
+      "gender": "Male",
+      "description": "Vũ Blanc belongs to The Wet Paint School and works in a lift between floors 3 and 4. Asked about influences, Vũ Blanc said only \"how to hang a painting upside down on purpose\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Vũ%20Blanc/Vũ%20Blanc.person"
+      }
+    },
+    {
+      "@id": "People/Quilla%20Ikeda/Quilla%20Ikeda.person",
+      "@type": "File",
+      "contentSize": 957,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Quilla Ikeda.person",
+      "about": {
+        "@id": "#Quilla%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Quilla%20Ikeda/Quilla%20Ikeda_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Quilla Ikeda_Consent.pdf",
+      "about": {
+        "@id": "#Quilla%20Ikeda"
+      }
+    },
+    {
+      "@id": "#Quilla%20Ikeda",
+      "@type": "Person",
+      "name": "Quilla Ikeda",
+      "ldac:age": "74",
+      "gender": "Male",
+      "description": "Quilla Ikeda belongs to Greyscale Romanticism and works in Studio 4, the old soap factory. Asked about influences, Quilla Ikeda said only \"eleven shades of white and one impostor\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Quilla%20Ikeda/Quilla%20Ikeda.person"
+        },
+        {
+          "@id": "People/Quilla%20Ikeda/Quilla%20Ikeda_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2023_0718/INT_2023_0718.session",
+      "@type": "File",
+      "contentSize": 1199,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2023_0718.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2023_0718/INT_2023_0718_20231119.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2023_0718_20231119.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

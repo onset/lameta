@@ -1,0 +1,313 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against an exhibition in total darkness",
+      "description": "Ulla O'Shaughnessy talks about the emotional weight of beige. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2016_0751/INT_2016_0751.session"
+        },
+        {
+          "@id": "Sessions/INT_2016_0751/INT_2016_0751_20160824.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the artist's kitchen"
+      },
+      "dateCreated": "2016-08-24",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Ulla%20O'Shaughnessy"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Oona%20Søndergaard"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Chiamaka%20Lindqvist"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Zofia%20Nakamura"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Ulla%20O'Shaughnessy/Ulla%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 925,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ulla O'Shaughnessy.person",
+      "about": {
+        "@id": "#Ulla%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Ulla%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Ulla O'Shaughnessy",
+      "ldac:age": "57",
+      "gender": "Female",
+      "description": "Ulla O'Shaughnessy belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Ulla O'Shaughnessy said only \"a square that refuses to be a square\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Ulla%20O'Shaughnessy/Ulla%20O'Shaughnessy.person"
+      }
+    },
+    {
+      "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 873,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Søndergaard.person",
+      "about": {
+        "@id": "#Oona%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 598,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Oona%20Søndergaard",
+      "@type": "Person",
+      "name": "Oona Søndergaard",
+      "ldac:age": "37",
+      "gender": "Male",
+      "description": "Oona Søndergaard belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Oona Søndergaard said only \"a square that refuses to be a square\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Chiamaka%20Lindqvist/Chiamaka%20Lindqvist.person",
+      "@type": "File",
+      "contentSize": 880,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Lindqvist.person",
+      "about": {
+        "@id": "#Chiamaka%20Lindqvist"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Lindqvist",
+      "@type": "Person",
+      "name": "Chiamaka Lindqvist",
+      "ldac:age": "46",
+      "gender": "Female",
+      "description": "Chiamaka Lindqvist belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Chiamaka Lindqvist said only \"drawing with a ladder\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Chiamaka%20Lindqvist/Chiamaka%20Lindqvist.person"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura.person",
+      "@type": "File",
+      "contentSize": 905,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Nakamura.person",
+      "about": {
+        "@id": "#Zofia%20Nakamura"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia Nakamura_Consent.png",
+      "about": {
+        "@id": "#Zofia%20Nakamura"
+      }
+    },
+    {
+      "@id": "#Zofia%20Nakamura",
+      "@type": "Person",
+      "name": "Zofia Nakamura",
+      "ldac:age": "70",
+      "gender": "Female",
+      "description": "Zofia Nakamura belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Zofia Nakamura said only \"painting the colour of a Tuesday\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the artist's kitchen",
+      "@type": "Place",
+      "name": "the artist's kitchen"
+    },
+    {
+      "@id": "Sessions/INT_2016_0751/INT_2016_0751.session",
+      "@type": "File",
+      "contentSize": 1427,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2016_0751.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2016_0751/INT_2016_0751_20160824.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2016_0751_20160824.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

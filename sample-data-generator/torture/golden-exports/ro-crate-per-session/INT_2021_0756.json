@@ -1,0 +1,272 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards drawing with a ladder",
+      "description": "Þóra Vasquez talks about why the frame is the real work. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0756/INT_2021_0756.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0756/INT_2021_0756_20210101.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2021_0756/INT_2021_0756_20210101.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Formulaic"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2021-01-01",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Þóra%20Vasquez"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Saoirse%20Gómez"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Vasquez/Þóra%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 971,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Þóra Vasquez.person",
+      "about": {
+        "@id": "#Þóra%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Vasquez/Þóra%20Vasquez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Þóra Vasquez_Consent.pdf",
+      "about": {
+        "@id": "#Þóra%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Þóra%20Vasquez",
+      "@type": "Person",
+      "name": "Þóra Vasquez",
+      "ldac:age": "46",
+      "gender": "Other",
+      "description": "Þóra Vasquez belongs to The Wet Paint School and works in the rooftop. Asked about influences, Þóra Vasquez said only \"negative space and its landlord\". Primary Occupation: Gallery cleaner and, by accident, prize-winning artist.",
+      "subjectOf": [
+        {
+          "@id": "People/Þóra%20Vasquez/Þóra%20Vasquez.person"
+        },
+        {
+          "@id": "People/Þóra%20Vasquez/Þóra%20Vasquez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez.person",
+      "@type": "File",
+      "contentSize": 1118,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Saoirse Gómez.person",
+      "about": {
+        "@id": "#Saoirse%20Gómez"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Saoirse Gómez_Photo.png",
+      "about": {
+        "@id": "#Saoirse%20Gómez"
+      }
+    },
+    {
+      "@id": "#Saoirse%20Gómez",
+      "@type": "Person",
+      "name": "Saoirse Gómez",
+      "ldac:age": "59",
+      "gender": "Other",
+      "description": "Saoirse Gómez belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Saoirse Gómez said only \"why the canvas must stay blank\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez.person"
+      },
+      "image": {
+        "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez_Photo.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Formulaic",
+      "@type": "DefinedTerm",
+      "name": "Formulaic discourse",
+      "description": "A ritually or conventionally structured discourse.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2021_0756/INT_2021_0756.session",
+      "@type": "File",
+      "contentSize": 1184,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0756.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0756/INT_2021_0756_20210101.eaf",
+      "@type": "File",
+      "contentSize": 835,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2021_0756_20210101.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0756/INT_2021_0756_20210101.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0756_20210101.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

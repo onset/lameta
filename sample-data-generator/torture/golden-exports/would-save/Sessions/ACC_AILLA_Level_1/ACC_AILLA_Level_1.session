@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">ACC_AILLA_Level_1</id>
+  <Title type="string">Towards a portrait of the wind, from behind (AILLA access 1: Public Access)</Title>
+  <synopsis type="string">The artist talks about what the gallery cleaner threw away. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</synopsis>
+  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">narrative</Genre>
+  <Access type="string">Level 1</Access>
+  <AccessExplanation type="string">[[en]]Access 1: Public Access[[es]]Acceso 1: Public Access</AccessExplanation>
+  <Status type="string">Incoming</Status>
+  <Date>2024-04-01</Date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

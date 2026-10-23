@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Ingrid Castellanos</FullName>
+  <BirthYear type="string">2001</BirthYear>
+  <Gender type="string">Other</Gender>
+  <EthnicGroup type="string">Neo-Beigeism</EthnicGroup>
+  <PrimaryOccupation type="string">Performance artist who performs mostly in the car park</PrimaryOccupation>
+  <Description type="string">Ingrid Castellanos belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Ingrid Castellanos said only "why the frame is the real work".</Description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</mothersLanguage>
+  <Contributions></Contributions>
+</Person>

@@ -1,0 +1,212 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the installation that was mistaken for scaffolding",
+      "description": "Hiroshi Eriksdóttir talks about silence, in three coats of varnish. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0126/INT_2021_0126.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0126/INT_2021_0126_20210715.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Oratory"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2021-07-15",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Hiroshi%20Eriksdóttir"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 883,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Eriksdóttir.person",
+      "about": {
+        "@id": "#Hiroshi%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Hiroshi Eriksdóttir_Consent.png",
+      "about": {
+        "@id": "#Hiroshi%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Hiroshi Eriksdóttir",
+      "ldac:age": "66",
+      "gender": "Female",
+      "description": "Hiroshi Eriksdóttir belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Hiroshi Eriksdóttir said only \"listening to grey\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir.person"
+      },
+      "image": {
+        "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Oratory",
+      "@type": "DefinedTerm",
+      "name": "Oratory",
+      "description": "Public speaking, or speaking eloquently according to rules or conventions.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2021_0126/INT_2021_0126.session",
+      "@type": "File",
+      "contentSize": 1082,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0126.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0126/INT_2021_0126_20210715.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0126_20210715.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

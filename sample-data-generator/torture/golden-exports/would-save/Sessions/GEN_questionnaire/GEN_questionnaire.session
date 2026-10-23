@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">GEN_questionnaire</id>
+  <Title type="string">Notes on silence, in three coats of varnish (Questionnaire)</Title>
+  <synopsis type="string">The artist talks about the installation that was mistaken for scaffolding. There is a long passage about a single brush, which the artist calls "the elder".</synopsis>
+  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">questionnaire</Genre>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2024-02-01</Date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

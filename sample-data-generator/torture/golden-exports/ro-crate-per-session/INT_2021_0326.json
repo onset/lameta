@@ -1,0 +1,257 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the politics of the colour orange",
+      "description": "Tenzin Yılmaz talks about a dot, considered at length. The artist insists the recording itself is the artwork and that we are now co-authors.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0326/INT_2021_0326.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0326/INT_2021_0326_20210319.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2021-03-19",
+      "keywords": "Frameless Expressionism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Tenzin%20Yılmaz"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Zofia%20Blanc"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Yılmaz/Tenzin%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 947,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Yılmaz.person",
+      "about": {
+        "@id": "#Tenzin%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Yılmaz/Tenzin%20Yılmaz_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Tenzin Yılmaz_Consent.png",
+      "about": {
+        "@id": "#Tenzin%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Yılmaz",
+      "@type": "Person",
+      "name": "Tenzin Yılmaz",
+      "ldac:age": "21",
+      "gender": "Male",
+      "description": "Tenzin Yılmaz belongs to Accidental Constructivism and works in the artist's kitchen. Asked about influences, Tenzin Yılmaz said only \"a square that refuses to be a square\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Yılmaz/Tenzin%20Yılmaz.person"
+      },
+      "image": {
+        "@id": "People/Tenzin%20Yılmaz/Tenzin%20Yılmaz_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Blanc/Zofia%20Blanc.person",
+      "@type": "File",
+      "contentSize": 956,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Blanc.person",
+      "about": {
+        "@id": "#Zofia%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Blanc/Zofia%20Blanc_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia Blanc_Consent.png",
+      "about": {
+        "@id": "#Zofia%20Blanc"
+      }
+    },
+    {
+      "@id": "#Zofia%20Blanc",
+      "@type": "Person",
+      "name": "Zofia Blanc",
+      "ldac:age": "43",
+      "gender": "Female",
+      "description": "Zofia Blanc belongs to Neo-Beigeism and works in the disused swimming pool. Asked about influences, Zofia Blanc said only \"painting the colour of a Tuesday\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Blanc/Zofia%20Blanc.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20Blanc/Zofia%20Blanc_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2021_0326/INT_2021_0326.session",
+      "@type": "File",
+      "contentSize": 1217,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0326.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0326/INT_2021_0326_20210319.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0326_20210319.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

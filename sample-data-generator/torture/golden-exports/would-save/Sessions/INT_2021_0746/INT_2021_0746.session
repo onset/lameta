@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2021_0746</id>
+  <Title type="string">Against eleven shades of white and one impostor</Title>
+  <synopsis type="string">Bartholomew Gómez talks about the moment before the first mark. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</synopsis>
+  <languages type="languageChoices">tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">oral_history</Genre>
+  <Location type="string">a borrowed greenhouse</Location>
+  <Access type="string">U</Access>
+  <Status type="string">Finished</Status>
+  <Date>2021-03-19</Date>
+  <Keywords type="string">Post-Squarism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>Bartholomew Gómez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

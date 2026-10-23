@@ -1,0 +1,346 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards how to hang a painting upside down on purpose",
+      "description": "Ếlodie Haddad talks about the long argument with the colour blue. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2022_0337/INT_2022_0337.session"
+        },
+        {
+          "@id": "Sessions/INT_2022_0337/INT_2022_0337_20220202.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the back room of a frame shop"
+      },
+      "dateCreated": "2022-02-02",
+      "keywords": "Post-Squarism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Ếlodie%20Haddad"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Lucía%20Dubois-Ngata"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Yusuf%20Whitehorse"
+        },
+        {
+          "@id": "#Hiroshi%20Whitehorse"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Haddad/Ếlodie%20Haddad.person",
+      "@type": "File",
+      "contentSize": 859,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie Haddad.person",
+      "about": {
+        "@id": "#Ếlodie%20Haddad"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Haddad/Ếlodie%20Haddad_Consent.pdf",
+      "@type": "File",
+      "contentSize": 595,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie Haddad_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20Haddad"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20Haddad",
+      "@type": "Person",
+      "name": "Ếlodie Haddad",
+      "ldac:age": "20",
+      "gender": "Male",
+      "description": "Ếlodie Haddad belongs to Greyscale Romanticism and works in the disused swimming pool. Asked about influences, Ếlodie Haddad said only \"silence, in three coats of varnish\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20Haddad/Ếlodie%20Haddad.person"
+        },
+        {
+          "@id": "People/Ếlodie%20Haddad/Ếlodie%20Haddad_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Lucía%20Dubois-Ngata/Lucía%20Dubois-Ngata.person",
+      "@type": "File",
+      "contentSize": 972,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Lucía Dubois-Ngata.person",
+      "about": {
+        "@id": "#Lucía%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Dubois-Ngata/Lucía%20Dubois-Ngata_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Lucía Dubois-Ngata_Consent.png",
+      "about": {
+        "@id": "#Lucía%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "#Lucía%20Dubois-Ngata",
+      "@type": "Person",
+      "name": "Lucía Dubois-Ngata",
+      "ldac:age": "48",
+      "gender": "Male",
+      "description": "Lucía Dubois-Ngata belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Lucía Dubois-Ngata said only \"an exhibition in total darkness\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Lucía%20Dubois-Ngata/Lucía%20Dubois-Ngata.person"
+      },
+      "image": {
+        "@id": "People/Lucía%20Dubois-Ngata/Lucía%20Dubois-Ngata_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 1101,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Yusuf Whitehorse.person",
+      "about": {
+        "@id": "#Yusuf%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse_Consent.pdf",
+      "@type": "File",
+      "contentSize": 598,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Yusuf Whitehorse_Consent.pdf",
+      "about": {
+        "@id": "#Yusuf%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Yusuf Whitehorse_Photo.png",
+      "about": {
+        "@id": "#Yusuf%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Yusuf%20Whitehorse",
+      "@type": "Person",
+      "name": "Yusuf Whitehorse",
+      "ldac:age": "71",
+      "gender": "Male",
+      "description": "Yusuf Whitehorse belongs to Lateral Minimalism and works in Gallery Huya. Asked about influences, Yusuf Whitehorse said only \"the long argument with the colour blue\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse.person"
+        },
+        {
+          "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Whitehorse/Hiroshi%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 885,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Whitehorse.person",
+      "about": {
+        "@id": "#Hiroshi%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Whitehorse",
+      "@type": "Person",
+      "name": "Hiroshi Whitehorse",
+      "ldac:age": "33",
+      "gender": "Female",
+      "description": "Hiroshi Whitehorse belongs to The Wet Paint School and works in the artist's kitchen. Asked about influences, Hiroshi Whitehorse said only \"why the frame is the real work\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Whitehorse/Hiroshi%20Whitehorse.person"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the back room of a frame shop",
+      "@type": "Place",
+      "name": "the back room of a frame shop"
+    },
+    {
+      "@id": "Sessions/INT_2022_0337/INT_2022_0337.session",
+      "@type": "File",
+      "contentSize": 1537,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2022_0337.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2022_0337/INT_2022_0337_20220202.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2022_0337_20220202.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

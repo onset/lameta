@@ -1,0 +1,328 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards a portrait of the wind, from behind",
+      "description": "Kalani Fontaine talks about what the gallery cleaner threw away. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2022_0517/INT_2022_0517.session"
+        },
+        {
+          "@id": "Sessions/INT_2022_0517/INT_2022_0517_20220214.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a lift between floors 3 and 4"
+      },
+      "accessDescription": "The artist asks that this stay closed until the paint is dry.",
+      "dateCreated": "2022-02-14",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Kalani%20Fontaine"
+        },
+        {
+          "@id": "#Oona%20Mbeki"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Chiamaka%20Zielińska"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Oona%20Zielińska"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Fontaine/Kalani%20Fontaine.person",
+      "@type": "File",
+      "contentSize": 1075,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Kalani Fontaine.person",
+      "about": {
+        "@id": "#Kalani%20Fontaine"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Fontaine/Kalani%20Fontaine_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Kalani Fontaine_Consent.pdf",
+      "about": {
+        "@id": "#Kalani%20Fontaine"
+      }
+    },
+    {
+      "@id": "#Kalani%20Fontaine",
+      "@type": "Person",
+      "name": "Kalani Fontaine",
+      "ldac:age": "40",
+      "gender": "Female",
+      "description": "Kalani Fontaine belongs to Neo-Beigeism and works in Gallery Huya. Asked about influences, Kalani Fontaine said only \"the long argument with the colour blue\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Kalani%20Fontaine/Kalani%20Fontaine.person"
+        },
+        {
+          "@id": "People/Kalani%20Fontaine/Kalani%20Fontaine_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Oona%20Mbeki/Oona%20Mbeki.person",
+      "@type": "File",
+      "contentSize": 998,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Mbeki.person",
+      "about": {
+        "@id": "#Oona%20Mbeki"
+      }
+    },
+    {
+      "@id": "People/Oona%20Mbeki/Oona%20Mbeki_Consent.pdf",
+      "@type": "File",
+      "contentSize": 592,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Mbeki_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Mbeki"
+      }
+    },
+    {
+      "@id": "#Oona%20Mbeki",
+      "@type": "Person",
+      "name": "Oona Mbeki",
+      "ldac:age": "62",
+      "gender": "Male",
+      "description": "Oona Mbeki belongs to Greyscale Romanticism and works in the rooftop. Asked about influences, Oona Mbeki said only \"triangles as a form of apology\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Mbeki/Oona%20Mbeki.person"
+        },
+        {
+          "@id": "People/Oona%20Mbeki/Oona%20Mbeki_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Chiamaka%20Zielińska/Chiamaka%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 859,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Zielińska.person",
+      "about": {
+        "@id": "#Chiamaka%20Zielińska"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Zielińska/Chiamaka%20Zielińska_Consent.pdf",
+      "@type": "File",
+      "contentSize": 600,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Chiamaka Zielińska_Consent.pdf",
+      "about": {
+        "@id": "#Chiamaka%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Zielińska",
+      "@type": "Person",
+      "name": "Chiamaka Zielińska",
+      "ldac:age": "33",
+      "gender": "Female",
+      "description": "Chiamaka Zielińska belongs to Post-Squarism and works in the disused swimming pool. Asked about influences, Chiamaka Zielińska said only \"drawing with a ladder\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Chiamaka%20Zielińska/Chiamaka%20Zielińska.person"
+        },
+        {
+          "@id": "People/Chiamaka%20Zielińska/Chiamaka%20Zielińska_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Oona%20Zielińska/Oona%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 863,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Zielińska.person",
+      "about": {
+        "@id": "#Oona%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Oona%20Zielińska",
+      "@type": "Person",
+      "name": "Oona Zielińska",
+      "ldac:age": "59",
+      "gender": "Male",
+      "description": "Oona Zielińska belongs to Neo-Beigeism and works in the disused swimming pool. Asked about influences, Oona Zielińska said only \"silence, in three coats of varnish\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Oona%20Zielińska/Oona%20Zielińska.person"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a lift between floors 3 and 4",
+      "@type": "Place",
+      "name": "a lift between floors 3 and 4"
+    },
+    {
+      "@id": "Sessions/INT_2022_0517/INT_2022_0517.session",
+      "@type": "File",
+      "contentSize": 1581,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2022_0517.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2022_0517/INT_2022_0517_20220214.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2022_0517_20220214.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On why the frame is the real work",
+      "description": "Nnamdi Ulloa talks about painting the colour of a Tuesday. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2015_0330/INT_2015_0330.session"
+        },
+        {
+          "@id": "Sessions/INT_2015_0330/INT_2015_0330_20150723.wav"
+        },
+        {
+          "@id": "Sessions/INT_2015_0330/INT_2015_0330_Artwork.png"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "accessDescription": "The artist asks that this stay closed until the paint is dry.",
+      "dateCreated": "2015-07-23",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Nnamdi%20Ulloa"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Ŋozi%20Eriksdóttir"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Vũ%20Achterberg"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Ulloa/Nnamdi%20Ulloa.person",
+      "@type": "File",
+      "contentSize": 861,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nnamdi Ulloa.person",
+      "about": {
+        "@id": "#Nnamdi%20Ulloa"
+      }
+    },
+    {
+      "@id": "#Nnamdi%20Ulloa",
+      "@type": "Person",
+      "name": "Nnamdi Ulloa",
+      "ldac:age": "25",
+      "gender": "Other",
+      "description": "Nnamdi Ulloa belongs to Greyscale Romanticism and works in Gallery Huya. Asked about influences, Nnamdi Ulloa said only \"the long argument with the colour blue\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Nnamdi%20Ulloa/Nnamdi%20Ulloa.person"
+      }
+    },
+    {
+      "@id": "People/Ŋozi%20Eriksdóttir/Ŋozi%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 1147,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ŋozi Eriksdóttir.person",
+      "about": {
+        "@id": "#Ŋozi%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "People/Ŋozi%20Eriksdóttir/Ŋozi%20Eriksdóttir_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Ŋozi Eriksdóttir_Consent.png",
+      "about": {
+        "@id": "#Ŋozi%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Ŋozi%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Ŋozi Eriksdóttir",
+      "ldac:age": "46",
+      "gender": "Female",
+      "description": "Ŋozi Eriksdóttir belongs to Greyscale Romanticism and works in Studio 4, the old soap factory. Asked about influences, Ŋozi Eriksdóttir said only \"a sculpture made entirely of hesitation\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Ŋozi%20Eriksdóttir/Ŋozi%20Eriksdóttir.person"
+      },
+      "image": {
+        "@id": "People/Ŋozi%20Eriksdóttir/Ŋozi%20Eriksdóttir_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Achterberg/Vũ%20Achterberg.person",
+      "@type": "File",
+      "contentSize": 1137,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Vũ Achterberg.person",
+      "about": {
+        "@id": "#Vũ%20Achterberg"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Achterberg/Vũ%20Achterberg_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Vũ Achterberg_Consent.png",
+      "about": {
+        "@id": "#Vũ%20Achterberg"
+      }
+    },
+    {
+      "@id": "#Vũ%20Achterberg",
+      "@type": "Person",
+      "name": "Vũ Achterberg",
+      "ldac:age": "29",
+      "gender": "Male",
+      "description": "Vũ Achterberg belongs to Ladderism and works in the artist's kitchen. Asked about influences, Vũ Achterberg said only \"the installation that was mistaken for scaffolding\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Vũ%20Achterberg/Vũ%20Achterberg.person"
+      },
+      "image": {
+        "@id": "People/Vũ%20Achterberg/Vũ%20Achterberg_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2015_0330/INT_2015_0330.session",
+      "@type": "File",
+      "contentSize": 1459,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2015_0330.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0330/INT_2015_0330_20150723.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2015_0330_20150723.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0330/INT_2015_0330_Artwork.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 456,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "INT_2015_0330_Artwork.png",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

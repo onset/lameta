@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <FullName type="string">Kofi / Kwame: "K"</FullName>
+  <PrimaryOccupation type="string">Curator of empty frames</PrimaryOccupation>
+  <Description type="string">Kofi Kwame belongs to Neo-Beigeism and works in Studio 4, the old soap factory. Asked about influences, Kofi Kwame said only "a sculpture made entirely of hesitation".</Description>
+  <languages type="xml"></languages>
+  <Contributions></Contributions>
+</Person>

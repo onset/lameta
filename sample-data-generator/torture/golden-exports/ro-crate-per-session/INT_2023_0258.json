@@ -1,0 +1,256 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond the long argument with the colour blue",
+      "description": "Oona Gómez talks about how to hang a painting upside down on purpose. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2023_0258/INT_2023_0258.session"
+        },
+        {
+          "@id": "Sessions/INT_2023_0258/INT_2023_0258_20230707.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2023-07-07",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Oona%20Gómez"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Ásdís%20Søndergaard"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Oona%20Gómez/Oona%20Gómez.person",
+      "@type": "File",
+      "contentSize": 926,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Gómez.person",
+      "about": {
+        "@id": "#Oona%20Gómez"
+      }
+    },
+    {
+      "@id": "People/Oona%20Gómez/Oona%20Gómez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 592,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Gómez_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Gómez"
+      }
+    },
+    {
+      "@id": "#Oona%20Gómez",
+      "@type": "Person",
+      "name": "Oona Gómez",
+      "ldac:age": "48",
+      "gender": "Male",
+      "description": "Oona Gómez belongs to Accidental Constructivism and works in the rooftop. Asked about influences, Oona Gómez said only \"negative space and its landlord\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Gómez/Oona%20Gómez.person"
+        },
+        {
+          "@id": "People/Oona%20Gómez/Oona%20Gómez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Ásdís%20Søndergaard/Ásdís%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 856,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ásdís Søndergaard.person",
+      "about": {
+        "@id": "#Ásdís%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Søndergaard/Ásdís%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ásdís Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Ásdís%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Ásdís%20Søndergaard",
+      "@type": "Person",
+      "name": "Ásdís Søndergaard",
+      "ldac:age": "37",
+      "gender": "Male",
+      "description": "Ásdís Søndergaard belongs to Lateral Minimalism and works in the disused swimming pool. Asked about influences, Ásdís Søndergaard said only \"painting the colour of a Tuesday\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Ásdís%20Søndergaard/Ásdís%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Ásdís%20Søndergaard/Ásdís%20Søndergaard_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2023_0258/INT_2023_0258.session",
+      "@type": "File",
+      "contentSize": 1246,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2023_0258.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2023_0258/INT_2023_0258_20230707.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2023_0258_20230707.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

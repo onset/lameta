@@ -1,0 +1,299 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Notes on the third side of a line",
+      "description": "Agnès O'Shaughnessy talks about why the canvas must stay blank. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2019_0304/INT_2019_0304.session"
+        },
+        {
+          "@id": "Sessions/INT_2019_0304/INT_2019_0304_20190525.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2019_0304/INT_2019_0304_20190525.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the back room of a frame shop"
+      },
+      "dateCreated": "2019-05-25",
+      "keywords": "Post-Squarism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Agnès%20O'Shaughnessy"
+        },
+        {
+          "@id": "#Vũ%20Ulloa"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 1078,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Agnès O'Shaughnessy.person",
+      "about": {
+        "@id": "#Agnès%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy_Consent.pdf",
+      "@type": "File",
+      "contentSize": 601,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Agnès O'Shaughnessy_Consent.pdf",
+      "about": {
+        "@id": "#Agnès%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Agnès O'Shaughnessy_Photo.png",
+      "about": {
+        "@id": "#Agnès%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Agnès%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Agnès O'Shaughnessy",
+      "ldac:age": "52",
+      "gender": "Female",
+      "description": "Agnès O'Shaughnessy belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Agnès O'Shaughnessy said only \"the third side of a line\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy.person"
+        },
+        {
+          "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Ulloa/Vũ%20Ulloa.person",
+      "@type": "File",
+      "contentSize": 1148,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Vũ Ulloa.person",
+      "about": {
+        "@id": "#Vũ%20Ulloa"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Ulloa/Vũ%20Ulloa_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Vũ Ulloa_Consent.png",
+      "about": {
+        "@id": "#Vũ%20Ulloa"
+      }
+    },
+    {
+      "@id": "#Vũ%20Ulloa",
+      "@type": "Person",
+      "name": "Vũ Ulloa",
+      "ldac:age": "29",
+      "gender": "Male",
+      "description": "Vũ Ulloa belongs to Post-Squarism and works in a borrowed greenhouse. Asked about influences, Vũ Ulloa said only \"what the gallery cleaner threw away\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Vũ%20Ulloa/Vũ%20Ulloa.person"
+      },
+      "image": {
+        "@id": "People/Vũ%20Ulloa/Vũ%20Ulloa_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the back room of a frame shop",
+      "@type": "Place",
+      "name": "the back room of a frame shop"
+    },
+    {
+      "@id": "Sessions/INT_2019_0304/INT_2019_0304.session",
+      "@type": "File",
+      "contentSize": 1235,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2019_0304.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0304/INT_2019_0304_20190525.eaf",
+      "@type": "File",
+      "contentSize": 839,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2019_0304_20190525.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0304/INT_2019_0304_20190525.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2019_0304_20190525.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

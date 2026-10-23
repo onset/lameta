@@ -1,0 +1,363 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against what the gallery cleaner threw away",
+      "description": "Tenzin Dubois-Ngata talks about a portrait of the wind, from behind. The artist insists the recording itself is the artwork and that we are now co-authors.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2015_0440/INT_2015_0440.session"
+        },
+        {
+          "@id": "Sessions/INT_2015_0440/INT_2015_0440_20150921.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2015_0440/INT_2015_0440_20150921.wav"
+        },
+        {
+          "@id": "Sessions/INT_2015_0440/INT_2015_0440_Artwork.png"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the artist's kitchen"
+      },
+      "accessDescription": "The artist asks that this stay closed until the paint is dry.",
+      "dateCreated": "2015-09-21",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Tenzin%20Dubois-Ngata"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Greta%20Eriksdóttir"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Lucía%20Quispe"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Dubois-Ngata/Tenzin%20Dubois-Ngata.person",
+      "@type": "File",
+      "contentSize": 1020,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Dubois-Ngata.person",
+      "about": {
+        "@id": "#Tenzin%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Dubois-Ngata/Tenzin%20Dubois-Ngata_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Tenzin Dubois-Ngata_Consent.png",
+      "about": {
+        "@id": "#Tenzin%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Dubois-Ngata",
+      "@type": "Person",
+      "name": "Tenzin Dubois-Ngata",
+      "ldac:age": "32",
+      "gender": "Male",
+      "description": "Tenzin Dubois-Ngata belongs to The Wet Paint School and works in Gallery Huya. Asked about influences, Tenzin Dubois-Ngata said only \"why the canvas must stay blank\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Dubois-Ngata/Tenzin%20Dubois-Ngata.person"
+      },
+      "image": {
+        "@id": "People/Tenzin%20Dubois-Ngata/Tenzin%20Dubois-Ngata_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Greta%20Eriksdóttir/Greta%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 1051,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Greta Eriksdóttir.person",
+      "about": {
+        "@id": "#Greta%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "People/Greta%20Eriksdóttir/Greta%20Eriksdóttir_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Greta Eriksdóttir_Consent.pdf",
+      "about": {
+        "@id": "#Greta%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "People/Greta%20Eriksdóttir/Greta%20Eriksdóttir_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Greta Eriksdóttir_Photo.png",
+      "about": {
+        "@id": "#Greta%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Greta%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Greta Eriksdóttir",
+      "ldac:age": "72",
+      "gender": "Male",
+      "description": "Greta Eriksdóttir belongs to The Wet Paint School and works in a lift between floors 3 and 4. Asked about influences, Greta Eriksdóttir said only \"how to hang a painting upside down on purpose\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Greta%20Eriksdóttir/Greta%20Eriksdóttir.person"
+        },
+        {
+          "@id": "People/Greta%20Eriksdóttir/Greta%20Eriksdóttir_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Greta%20Eriksdóttir/Greta%20Eriksdóttir_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Quispe/Lucía%20Quispe.person",
+      "@type": "File",
+      "contentSize": 849,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Lucía Quispe.person",
+      "about": {
+        "@id": "#Lucía%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Quispe/Lucía%20Quispe_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Lucía Quispe_Consent.png",
+      "about": {
+        "@id": "#Lucía%20Quispe"
+      }
+    },
+    {
+      "@id": "#Lucía%20Quispe",
+      "@type": "Person",
+      "name": "Lucía Quispe",
+      "ldac:age": "52",
+      "gender": "Male",
+      "description": "Lucía Quispe belongs to The Wet Paint School and works in the back room of a frame shop. Asked about influences, Lucía Quispe said only \"the emotional weight of beige\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Lucía%20Quispe/Lucía%20Quispe.person"
+      },
+      "image": {
+        "@id": "People/Lucía%20Quispe/Lucía%20Quispe_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the artist's kitchen",
+      "@type": "Place",
+      "name": "the artist's kitchen"
+    },
+    {
+      "@id": "Sessions/INT_2015_0440/INT_2015_0440.session",
+      "@type": "File",
+      "contentSize": 1491,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2015_0440.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0440/INT_2015_0440_20150921.eaf",
+      "@type": "File",
+      "contentSize": 849,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2015_0440_20150921.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0440/INT_2015_0440_20150921.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2015_0440_20150921.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0440/INT_2015_0440_Artwork.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 456,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "INT_2015_0440_Artwork.png",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

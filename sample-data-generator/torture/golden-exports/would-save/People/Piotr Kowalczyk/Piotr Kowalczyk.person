@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <FullName type="string">Piotr Kowalczyk</FullName>
+  <Code type="string">PK135</Code>
+  <BirthYear type="string">1982</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Hesitationism</EthnicGroup>
+  <PrimaryOccupation type="string">Installation artist, mainly scaffolding</PrimaryOccupation>
+  <Description type="string">Piotr Kowalczyk belongs to Post-Squarism and works in the back room of a frame shop. Asked about influences, Piotr Kowalczyk said only "the emotional weight of beige".</Description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</mothersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Post-Squarism</Movement>
+    <Studio type="string">Gallery Huya</Studio>
+  </CustomFields>
+</Person>

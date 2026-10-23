@@ -1,0 +1,372 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against eleven shades of white and one impostor",
+      "description": "Wanjiru Lindqvist talks about negative space and its landlord. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2019_0064/INT_2019_0064.session"
+        },
+        {
+          "@id": "Sessions/INT_2019_0064/INT_2019_0064_20190509.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2019_0064/INT_2019_0064_20190509.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2019-05-09",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Wanjiru%20Lindqvist"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Nnamdi%20Blanc"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Oona%20Rautenbach"
+        },
+        {
+          "@id": "#Quilla%20O'Shaughnessy"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Wanjiru%20Lindqvist/Wanjiru%20Lindqvist.person",
+      "@type": "File",
+      "contentSize": 971,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Wanjiru Lindqvist.person",
+      "about": {
+        "@id": "#Wanjiru%20Lindqvist"
+      }
+    },
+    {
+      "@id": "People/Wanjiru%20Lindqvist/Wanjiru%20Lindqvist_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Wanjiru Lindqvist_Consent.pdf",
+      "about": {
+        "@id": "#Wanjiru%20Lindqvist"
+      }
+    },
+    {
+      "@id": "#Wanjiru%20Lindqvist",
+      "@type": "Person",
+      "name": "Wanjiru Lindqvist",
+      "ldac:age": "69",
+      "gender": "Female",
+      "description": "Wanjiru Lindqvist belongs to Greyscale Romanticism and works in Gallery Huya. Asked about influences, Wanjiru Lindqvist said only \"the politics of the colour orange\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": [
+        {
+          "@id": "People/Wanjiru%20Lindqvist/Wanjiru%20Lindqvist.person"
+        },
+        {
+          "@id": "People/Wanjiru%20Lindqvist/Wanjiru%20Lindqvist_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Nnamdi%20Blanc/Nnamdi%20Blanc.person",
+      "@type": "File",
+      "contentSize": 919,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nnamdi Blanc.person",
+      "about": {
+        "@id": "#Nnamdi%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Blanc/Nnamdi%20Blanc_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Nnamdi Blanc_Consent.png",
+      "about": {
+        "@id": "#Nnamdi%20Blanc"
+      }
+    },
+    {
+      "@id": "#Nnamdi%20Blanc",
+      "@type": "Person",
+      "name": "Nnamdi Blanc",
+      "ldac:age": "78",
+      "gender": "Other",
+      "description": "Nnamdi Blanc belongs to Hesitationism and works in the back room of a frame shop. Asked about influences, Nnamdi Blanc said only \"the brushstroke that got away\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Nnamdi%20Blanc/Nnamdi%20Blanc.person"
+      },
+      "image": {
+        "@id": "People/Nnamdi%20Blanc/Nnamdi%20Blanc_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Rautenbach/Oona%20Rautenbach.person",
+      "@type": "File",
+      "contentSize": 856,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Rautenbach.person",
+      "about": {
+        "@id": "#Oona%20Rautenbach"
+      }
+    },
+    {
+      "@id": "People/Oona%20Rautenbach/Oona%20Rautenbach_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Rautenbach_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Rautenbach"
+      }
+    },
+    {
+      "@id": "#Oona%20Rautenbach",
+      "@type": "Person",
+      "name": "Oona Rautenbach",
+      "ldac:age": "56",
+      "gender": "Male",
+      "description": "Oona Rautenbach belongs to Post-Squarism and works in Gallery Huya. Asked about influences, Oona Rautenbach said only \"the politics of the colour orange\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Rautenbach/Oona%20Rautenbach.person"
+        },
+        {
+          "@id": "People/Oona%20Rautenbach/Oona%20Rautenbach_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Quilla%20O'Shaughnessy/Quilla%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 847,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Quilla O'Shaughnessy.person",
+      "about": {
+        "@id": "#Quilla%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Quilla%20O'Shaughnessy/Quilla%20O'Shaughnessy_Consent.pdf",
+      "@type": "File",
+      "contentSize": 602,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Quilla O'Shaughnessy_Consent.pdf",
+      "about": {
+        "@id": "#Quilla%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Quilla%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Quilla O'Shaughnessy",
+      "ldac:age": "57",
+      "gender": "Male",
+      "description": "Quilla O'Shaughnessy belongs to Ladderism and works in a borrowed greenhouse. Asked about influences, Quilla O'Shaughnessy said only \"listening to grey\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Quilla%20O'Shaughnessy/Quilla%20O'Shaughnessy.person"
+        },
+        {
+          "@id": "People/Quilla%20O'Shaughnessy/Quilla%20O'Shaughnessy_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2019_0064/INT_2019_0064.session",
+      "@type": "File",
+      "contentSize": 1484,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2019_0064.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0064/INT_2019_0064_20190509.eaf",
+      "@type": "File",
+      "contentSize": 853,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2019_0064_20190509.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0064/INT_2019_0064_20190509.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2019_0064_20190509.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

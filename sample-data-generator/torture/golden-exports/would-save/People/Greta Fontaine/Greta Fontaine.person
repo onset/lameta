@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">Greta Fontaine</FullName>
+  <BirthYear type="string">1975</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">The Wet Paint School</EthnicGroup>
+  <PrimaryOccupation type="string">Gallery cleaner and, by accident, prize-winning artist</PrimaryOccupation>
+  <Description type="string">Greta Fontaine belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Greta Fontaine said only "a dot, considered at length".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">The Wet Paint School</Movement>
+    <Studio type="string">a borrowed greenhouse</Studio>
+  </CustomFields>
+</Person>

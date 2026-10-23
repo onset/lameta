@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2016_0781</id>
+  <Title type="string">Notes on the third side of a line</Title>
+  <synopsis type="string">Saoirse Zielińska talks about the politics of the colour orange. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">the back room of a frame shop</Location>
+  <Access type="string">S</Access>
+  <AccessExplanation type="string">The artist asks that this stay closed until the paint is dry.</AccessExplanation>
+  <Status type="string">Finished</Status>
+  <Date>2016-02-26</Date>
+  <Keywords type="string">Accidental Constructivism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>Saoirse Zielińska</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

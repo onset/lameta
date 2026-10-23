@@ -1,0 +1,355 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the installation that was mistaken for scaffolding",
+      "description": "Bartholomew Zielińska talks about drawing with a ladder. The artist answered every question with a question, and then with a long pause, which the transcript renders as \"…\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2019_0464/INT_2019_0464.session"
+        },
+        {
+          "@id": "Sessions/INT_2019_0464/INT_2019_0464_20190917.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2019_0464/INT_2019_0464_20190917.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2019-09-17",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Bartholomew%20Zielińska"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Ömer%20Blanc"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Piotr%20Kowalczyk"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Jules%20Haddad"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Bartholomew%20Zielińska/Bartholomew%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 938,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Bartholomew Zielińska.person",
+      "about": {
+        "@id": "#Bartholomew%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Bartholomew%20Zielińska",
+      "@type": "Person",
+      "name": "Bartholomew Zielińska",
+      "ldac:age": "34",
+      "gender": "Male",
+      "description": "Bartholomew Zielińska belongs to Lateral Minimalism and works in a borrowed greenhouse. Asked about influences, Bartholomew Zielińska said only \"listening to grey\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Bartholomew%20Zielińska/Bartholomew%20Zielińska.person"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Blanc/Ömer%20Blanc.person",
+      "@type": "File",
+      "contentSize": 950,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ömer Blanc.person",
+      "about": {
+        "@id": "#Ömer%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Blanc/Ömer%20Blanc_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Ömer Blanc_Consent.png",
+      "about": {
+        "@id": "#Ömer%20Blanc"
+      }
+    },
+    {
+      "@id": "#Ömer%20Blanc",
+      "@type": "Person",
+      "name": "Ömer Blanc",
+      "ldac:age": "27",
+      "gender": "Male",
+      "description": "Ömer Blanc belongs to Neo-Beigeism and works in the artist's kitchen. Asked about influences, Ömer Blanc said only \"the installation that was mistaken for scaffolding\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Ömer%20Blanc/Ömer%20Blanc.person"
+      },
+      "image": {
+        "@id": "People/Ömer%20Blanc/Ömer%20Blanc_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Kowalczyk/Piotr%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 1037,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Piotr Kowalczyk.person",
+      "about": {
+        "@id": "#Piotr%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Kowalczyk/Piotr%20Kowalczyk_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Piotr Kowalczyk_Consent.png",
+      "about": {
+        "@id": "#Piotr%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Piotr%20Kowalczyk",
+      "@type": "Person",
+      "name": "Piotr Kowalczyk",
+      "ldac:age": "37",
+      "gender": "Female",
+      "description": "Piotr Kowalczyk belongs to Post-Squarism and works in the back room of a frame shop. Asked about influences, Piotr Kowalczyk said only \"the emotional weight of beige\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Piotr%20Kowalczyk/Piotr%20Kowalczyk.person"
+      },
+      "image": {
+        "@id": "People/Piotr%20Kowalczyk/Piotr%20Kowalczyk_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Jules%20Haddad/Jules%20Haddad.person",
+      "@type": "File",
+      "contentSize": 1094,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Jules Haddad.person",
+      "about": {
+        "@id": "#Jules%20Haddad"
+      }
+    },
+    {
+      "@id": "People/Jules%20Haddad/Jules%20Haddad_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Jules Haddad_Consent.png",
+      "about": {
+        "@id": "#Jules%20Haddad"
+      }
+    },
+    {
+      "@id": "#Jules%20Haddad",
+      "@type": "Person",
+      "name": "Jules Haddad",
+      "ldac:age": "37",
+      "gender": "Male",
+      "description": "Jules Haddad belongs to The Wet Paint School and works in a lift between floors 3 and 4. Asked about influences, Jules Haddad said only \"the third side of a line\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Jules%20Haddad/Jules%20Haddad.person"
+      },
+      "image": {
+        "@id": "People/Jules%20Haddad/Jules%20Haddad_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2019_0464/INT_2019_0464.session",
+      "@type": "File",
+      "contentSize": 1511,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2019_0464.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0464/INT_2019_0464_20190917.eaf",
+      "@type": "File",
+      "contentSize": 864,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2019_0464_20190917.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0464/INT_2019_0464_20190917.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2019_0464_20190917.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

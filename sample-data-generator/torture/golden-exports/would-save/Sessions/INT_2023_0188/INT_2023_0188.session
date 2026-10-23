@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2023_0188</id>
+  <Title type="string">Against what the gallery cleaner threw away</Title>
+  <synopsis type="string">Jules Tanaka talks about a portrait of the wind, from behind. The artist insists the recording itself is the artwork and that we are now co-authors.</synopsis>
+  <languages type="languageChoices">fr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">the artist's kitchen</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2023-09-21</Date>
+  <Keywords type="string">The Wet Paint School, studio visit</Keywords>
+  <Topic type="string">space</Topic>
+  <Contributions>
+    <contributor>
+      <name>Jules Tanaka</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

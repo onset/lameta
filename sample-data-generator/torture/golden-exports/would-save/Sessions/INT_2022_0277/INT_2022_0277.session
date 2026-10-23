@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2022_0277</id>
+  <Title type="string">Against the installation that was mistaken for scaffolding</Title>
+  <synopsis type="string">Jules Haddad talks about silence, in three coats of varnish. The artist answered every question with a question, and then with a long pause, which the transcript renders as "…".</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">Gallery Huya</Location>
+  <Access type="string">U</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2022-02-26</Date>
+  <Keywords type="string">Accidental Constructivism, studio visit</Keywords>
+  <Topic type="string">space</Topic>
+  <Contributions>
+    <contributor>
+      <name>Jules Haddad</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ingrid Blanc</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

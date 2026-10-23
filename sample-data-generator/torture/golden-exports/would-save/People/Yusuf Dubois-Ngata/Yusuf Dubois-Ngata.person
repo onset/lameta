@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Yusuf Dubois-Ngata</FullName>
+  <BirthYear type="string">2002</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Post-Squarism</EthnicGroup>
+  <PrimaryOccupation type="string">Performance artist who performs mostly in the car park</PrimaryOccupation>
+  <Description type="string">Yusuf Dubois-Ngata belongs to Hesitationism and works in the artist's kitchen. Asked about influences, Yusuf Dubois-Ngata said only "a square that refuses to be a square".</Description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="true"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</otherLanguage0>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Lateral Minimalism</Movement>
+    <Studio type="string">a lift between floors 3 and 4</Studio>
+  </CustomFields>
+</Person>

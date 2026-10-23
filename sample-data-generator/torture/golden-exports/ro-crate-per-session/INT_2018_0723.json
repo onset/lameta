@@ -1,0 +1,303 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards negative space and its landlord",
+      "description": "Lucía Yılmaz talks about a sculpture made entirely of hesitation. The artist asked that the microphone face away from the painting, so as not to influence it.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2018_0723/INT_2018_0723.session"
+        },
+        {
+          "@id": "Sessions/INT_2018_0723/INT_2018_0723_20180424.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the disused swimming pool"
+      },
+      "dateCreated": "2018-04-24",
+      "keywords": "Post-Squarism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Lucía%20Yılmaz"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Ŋozi%20Fontaine"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Dmitri%20Vasquez"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 877,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Lucía Yılmaz.person",
+      "about": {
+        "@id": "#Lucía%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Lucía Yılmaz_Consent.png",
+      "about": {
+        "@id": "#Lucía%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Lucía%20Yılmaz",
+      "@type": "Person",
+      "name": "Lucía Yılmaz",
+      "ldac:age": "76",
+      "gender": "Male",
+      "description": "Lucía Yılmaz belongs to Neo-Beigeism and works in Studio 4, the old soap factory. Asked about influences, Lucía Yılmaz said only \"a sculpture made entirely of hesitation\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz.person"
+      },
+      "image": {
+        "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ŋozi%20Fontaine/Ŋozi%20Fontaine.person",
+      "@type": "File",
+      "contentSize": 1031,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ŋozi Fontaine.person",
+      "about": {
+        "@id": "#Ŋozi%20Fontaine"
+      }
+    },
+    {
+      "@id": "People/Ŋozi%20Fontaine/Ŋozi%20Fontaine_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Ŋozi Fontaine_Consent.png",
+      "about": {
+        "@id": "#Ŋozi%20Fontaine"
+      }
+    },
+    {
+      "@id": "#Ŋozi%20Fontaine",
+      "@type": "Person",
+      "name": "Ŋozi Fontaine",
+      "ldac:age": "74",
+      "gender": "Female",
+      "description": "Ŋozi Fontaine belongs to Lateral Minimalism and works in Gallery Huya. Asked about influences, Ŋozi Fontaine said only \"the long argument with the colour blue\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Ŋozi%20Fontaine/Ŋozi%20Fontaine.person"
+      },
+      "image": {
+        "@id": "People/Ŋozi%20Fontaine/Ŋozi%20Fontaine_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Vasquez/Dmitri%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 1066,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Dmitri Vasquez.person",
+      "about": {
+        "@id": "#Dmitri%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Vasquez/Dmitri%20Vasquez_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Dmitri Vasquez_Consent.png",
+      "about": {
+        "@id": "#Dmitri%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Dmitri%20Vasquez",
+      "@type": "Person",
+      "name": "Dmitri Vasquez",
+      "ldac:age": "40",
+      "gender": "Other",
+      "description": "Dmitri Vasquez belongs to Neo-Beigeism and works in the artist's kitchen. Asked about influences, Dmitri Vasquez said only \"the installation that was mistaken for scaffolding\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Dmitri%20Vasquez/Dmitri%20Vasquez.person"
+      },
+      "image": {
+        "@id": "People/Dmitri%20Vasquez/Dmitri%20Vasquez_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the disused swimming pool",
+      "@type": "Place",
+      "name": "the disused swimming pool"
+    },
+    {
+      "@id": "Sessions/INT_2018_0723/INT_2018_0723.session",
+      "@type": "File",
+      "contentSize": 1344,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2018_0723.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2018_0723/INT_2018_0723_20180424.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2018_0723_20180424.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

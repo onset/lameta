@@ -1,0 +1,268 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Notes on the emotional weight of beige",
+      "description": "Hiroshi Quispe talks about an exhibition in total darkness. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2019_0054/INT_2019_0054.session"
+        },
+        {
+          "@id": "Sessions/INT_2019_0054/INT_2019_0054_20190727.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a lift between floors 3 and 4"
+      },
+      "dateCreated": "2019-07-27",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Hiroshi%20Quispe"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Wanjiru%20Søndergaard"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Quispe/Hiroshi%20Quispe.person",
+      "@type": "File",
+      "contentSize": 847,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Quispe.person",
+      "about": {
+        "@id": "#Hiroshi%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Quispe/Hiroshi%20Quispe_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Hiroshi Quispe_Consent.png",
+      "about": {
+        "@id": "#Hiroshi%20Quispe"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Quispe",
+      "@type": "Person",
+      "name": "Hiroshi Quispe",
+      "ldac:age": "55",
+      "gender": "Female",
+      "description": "Hiroshi Quispe belongs to Neo-Beigeism and works in a lift between floors 3 and 4. Asked about influences, Hiroshi Quispe said only \"a dot, considered at length\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Quispe/Hiroshi%20Quispe.person"
+      },
+      "image": {
+        "@id": "People/Hiroshi%20Quispe/Hiroshi%20Quispe_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Wanjiru%20Søndergaard/Wanjiru%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 908,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Wanjiru Søndergaard.person",
+      "about": {
+        "@id": "#Wanjiru%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Wanjiru%20Søndergaard/Wanjiru%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 601,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Wanjiru Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Wanjiru%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Wanjiru%20Søndergaard",
+      "@type": "Person",
+      "name": "Wanjiru Søndergaard",
+      "ldac:age": "68",
+      "gender": "Female",
+      "description": "Wanjiru Søndergaard belongs to Neo-Beigeism and works in the back room of a frame shop. Asked about influences, Wanjiru Søndergaard said only \"the emotional weight of beige\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Wanjiru%20Søndergaard/Wanjiru%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Wanjiru%20Søndergaard/Wanjiru%20Søndergaard_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Mythology",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a lift between floors 3 and 4",
+      "@type": "Place",
+      "name": "a lift between floors 3 and 4"
+    },
+    {
+      "@id": "Sessions/INT_2019_0054/INT_2019_0054.session",
+      "@type": "File",
+      "contentSize": 1241,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2019_0054.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0054/INT_2019_0054_20190727.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2019_0054_20190727.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

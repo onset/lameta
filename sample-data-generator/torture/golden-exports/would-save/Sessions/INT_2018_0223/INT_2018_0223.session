@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2018_0223</id>
+  <Title type="string">On why the canvas must stay blank</Title>
+  <synopsis type="string">Ásdís Fontaine talks about the third side of a line. The artist answered every question with a question, and then with a long pause, which the transcript renders as "…".</synopsis>
+  <languages type="languageChoices">fr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">Studio 4, the old soap factory</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2018-08-28</Date>
+  <Keywords type="string">Neo-Beigeism, studio visit</Keywords>
+  <Topic type="string">space</Topic>
+  <Contributions>
+    <contributor>
+      <name>Ásdís Fontaine</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía Kowalczyk</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

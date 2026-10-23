@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2016_0241</id>
+  <Title type="string">Beyond a sculpture made entirely of hesitation</Title>
+  <synopsis type="string">Rangi Nakamura talks about triangles as a form of apology. Recorded while the artist repainted the studio wall the same white, four times.</synopsis>
+  <languages type="languageChoices">tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">a borrowed greenhouse</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2016-02-18</Date>
+  <Keywords type="string">Hesitationism, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>Rangi Nakamura</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>PQ105</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Oona Yılmaz</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

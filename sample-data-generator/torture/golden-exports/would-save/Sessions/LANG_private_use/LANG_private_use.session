@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">LANG_private_use</id>
+  <Title type="string">Towards how to hang a painting upside down on purpose</Title>
+  <synopsis type="string">The artist talks about the long argument with the colour blue. The artist asked that the microphone face away from the painting, so as not to influence it.</synopsis>
+  <languages type="languageChoices">qaa;qtz;qaa-x-kurbin: Kürbinian;qaa-x-tolo: Tolo</languages>
+  <WorkingLanguages type="languageChoices">qab-x-other</WorkingLanguages>
+  <Genre type="string">narrative</Genre>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2024-06-01</Date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <FullName type="string">Empty Person Folder</FullName>
+  <languages type="xml"></languages>
+  <Contributions></Contributions>
+</Person>

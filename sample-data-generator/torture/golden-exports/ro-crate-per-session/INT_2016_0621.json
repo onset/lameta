@@ -1,0 +1,319 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond an exhibition in total darkness",
+      "description": "Piotr Rautenbach talks about the emotional weight of beige. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2016_0621/INT_2016_0621.session"
+        },
+        {
+          "@id": "Sessions/INT_2016_0621/INT_2016_0621_20161006.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Informational"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the artist's kitchen"
+      },
+      "dateCreated": "2016-10-06",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Piotr%20Rautenbach"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Yusuf%20Whitehorse"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Oona%20Yılmaz"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Rautenbach/Piotr%20Rautenbach.person",
+      "@type": "File",
+      "contentSize": 1061,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Piotr Rautenbach.person",
+      "about": {
+        "@id": "#Piotr%20Rautenbach"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Rautenbach/Piotr%20Rautenbach_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Piotr Rautenbach_Consent.png",
+      "about": {
+        "@id": "#Piotr%20Rautenbach"
+      }
+    },
+    {
+      "@id": "#Piotr%20Rautenbach",
+      "@type": "Person",
+      "name": "Piotr Rautenbach",
+      "ldac:age": "27",
+      "gender": "Female",
+      "description": "Piotr Rautenbach belongs to Frameless Expressionism and works in a lift between floors 3 and 4. Asked about influences, Piotr Rautenbach said only \"how to hang a painting upside down on purpose\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Piotr%20Rautenbach/Piotr%20Rautenbach.person"
+      },
+      "image": {
+        "@id": "People/Piotr%20Rautenbach/Piotr%20Rautenbach_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 1101,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Yusuf Whitehorse.person",
+      "about": {
+        "@id": "#Yusuf%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse_Consent.pdf",
+      "@type": "File",
+      "contentSize": 598,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Yusuf Whitehorse_Consent.pdf",
+      "about": {
+        "@id": "#Yusuf%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Yusuf Whitehorse_Photo.png",
+      "about": {
+        "@id": "#Yusuf%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Yusuf%20Whitehorse",
+      "@type": "Person",
+      "name": "Yusuf Whitehorse",
+      "ldac:age": "65",
+      "gender": "Male",
+      "description": "Yusuf Whitehorse belongs to Lateral Minimalism and works in Gallery Huya. Asked about influences, Yusuf Whitehorse said only \"the long argument with the colour blue\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse.person"
+        },
+        {
+          "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Yusuf%20Whitehorse/Yusuf%20Whitehorse_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Yılmaz/Oona%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 862,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Yılmaz.person",
+      "about": {
+        "@id": "#Oona%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Oona%20Yılmaz/Oona%20Yılmaz_Consent.pdf",
+      "@type": "File",
+      "contentSize": 593,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Yılmaz_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Oona%20Yılmaz",
+      "@type": "Person",
+      "name": "Oona Yılmaz",
+      "ldac:age": "17",
+      "gender": "Male",
+      "description": "Oona Yılmaz belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Oona Yılmaz said only \"painting the colour of a Tuesday\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Yılmaz/Oona%20Yılmaz.person"
+        },
+        {
+          "@id": "People/Oona%20Yılmaz/Oona%20Yılmaz_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Informational",
+      "@type": "DefinedTerm",
+      "name": "Description",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the artist's kitchen",
+      "@type": "Place",
+      "name": "the artist's kitchen"
+    },
+    {
+      "@id": "Sessions/INT_2016_0621/INT_2016_0621.session",
+      "@type": "File",
+      "contentSize": 1342,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2016_0621.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2016_0621/INT_2016_0621_20161006.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2016_0621_20161006.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2017_0612</id>
+  <Title type="string">Towards negative space and its landlord</Title>
+  <synopsis type="string">Bartholomew Søndergaard talks about eleven shades of white and one impostor. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</synopsis>
+  <languages type="languageChoices">etr;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">photograph</Genre>
+  <Location type="string">the disused swimming pool</Location>
+  <Access type="string">U</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2017-01-25</Date>
+  <Keywords type="string">Post-Squarism, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>Bartholomew Søndergaard</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

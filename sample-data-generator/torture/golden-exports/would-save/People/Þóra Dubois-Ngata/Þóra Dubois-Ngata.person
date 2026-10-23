@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <FullName type="string">Þóra Dubois-Ngata</FullName>
+  <BirthYear type="string">1972</BirthYear>
+  <Gender type="string">Other</Gender>
+  <EthnicGroup type="string">Hesitationism</EthnicGroup>
+  <PrimaryOccupation type="string">Former accountant, now draws only diagonals</PrimaryOccupation>
+  <Description type="string">Þóra Dubois-Ngata belongs to Post-Squarism and works in Studio 4, the old soap factory. Asked about influences, Þóra Dubois-Ngata said only "eleven shades of white and one impostor".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="etr" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</otherLanguage0>
+  <Contributions></Contributions>
+</Person>

@@ -1,0 +1,226 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the politics of the colour orange",
+      "description": "Hiroshi Kowalczyk talks about a dot, considered at length. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0296/INT_2021_0296.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0296/INT_2021_0296_20210917.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2021_0296/INT_2021_0296_20210917.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2021-09-17",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Hiroshi%20Kowalczyk"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Kowalczyk/Hiroshi%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 965,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Kowalczyk.person",
+      "about": {
+        "@id": "#Hiroshi%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Kowalczyk/Hiroshi%20Kowalczyk_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Hiroshi Kowalczyk_Consent.png",
+      "about": {
+        "@id": "#Hiroshi%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Kowalczyk",
+      "@type": "Person",
+      "name": "Hiroshi Kowalczyk",
+      "ldac:age": "59",
+      "gender": "Female",
+      "description": "Hiroshi Kowalczyk belongs to Greyscale Romanticism and works in a lift between floors 3 and 4. Asked about influences, Hiroshi Kowalczyk said only \"the third side of a line\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Kowalczyk/Hiroshi%20Kowalczyk.person"
+      },
+      "image": {
+        "@id": "People/Hiroshi%20Kowalczyk/Hiroshi%20Kowalczyk_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2021_0296/INT_2021_0296.session",
+      "@type": "File",
+      "contentSize": 1088,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0296.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0296/INT_2021_0296_20210917.eaf",
+      "@type": "File",
+      "contentSize": 847,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2021_0296_20210917.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0296/INT_2021_0296_20210917.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0296_20210917.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

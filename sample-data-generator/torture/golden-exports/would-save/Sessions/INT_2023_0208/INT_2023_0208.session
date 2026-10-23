@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2023_0208</id>
+  <Title type="string">Notes on the third side of a line</Title>
+  <synopsis type="string">Wanjiru Søndergaard talks about the politics of the colour orange. There is a long passage about a single brush, which the artist calls "the elder".</synopsis>
+  <languages type="languageChoices">fr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">oral_history</Genre>
+  <Location type="string">the back room of a frame shop</Location>
+  <Access type="string">U</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2023-05-13</Date>
+  <Keywords type="string">Frameless Expressionism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Wanjiru Søndergaard</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Malak Blanc</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

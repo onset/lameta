@@ -1,0 +1,252 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About painting the colour of a Tuesday",
+      "description": "Saoirse Søndergaard talks about a square that refuses to be a square. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2017_0212/INT_2017_0212.session"
+        },
+        {
+          "@id": "Sessions/INT_2017_0212/INT_2017_0212_20170917.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2017_0212/INT_2017_0212_20170917.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_es"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2017-09-17",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Saoirse%20Søndergaard"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Søndergaard/Saoirse%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 1029,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Saoirse Søndergaard.person",
+      "about": {
+        "@id": "#Saoirse%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Søndergaard/Saoirse%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 601,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Saoirse Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Saoirse%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Søndergaard/Saoirse%20Søndergaard_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Saoirse Søndergaard_Photo.png",
+      "about": {
+        "@id": "#Saoirse%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Saoirse%20Søndergaard",
+      "@type": "Person",
+      "name": "Saoirse Søndergaard",
+      "ldac:age": "59",
+      "gender": "Other",
+      "description": "Saoirse Søndergaard belongs to Accidental Constructivism and works in the back room of a frame shop. Asked about influences, Saoirse Søndergaard said only \"the brushstroke that got away\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Saoirse%20Søndergaard/Saoirse%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Saoirse%20Søndergaard/Saoirse%20Søndergaard_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Saoirse%20Søndergaard/Saoirse%20Søndergaard_Photo.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2017_0212/INT_2017_0212.session",
+      "@type": "File",
+      "contentSize": 1097,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2017_0212.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0212/INT_2017_0212_20170917.eaf",
+      "@type": "File",
+      "contentSize": 844,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2017_0212_20170917.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0212/INT_2017_0212_20170917.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2017_0212_20170917.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

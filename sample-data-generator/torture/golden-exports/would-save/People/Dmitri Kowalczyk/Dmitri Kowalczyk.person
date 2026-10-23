@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Dmitri Kowalczyk</FullName>
+  <BirthYear type="string">1998</BirthYear>
+  <Gender type="string">Other</Gender>
+  <EthnicGroup type="string">Neo-Beigeism</EthnicGroup>
+  <PrimaryOccupation type="string">Former accountant, now draws only diagonals</PrimaryOccupation>
+  <Description type="string">Dmitri Kowalczyk belongs to Frameless Expressionism and works in Studio 4, the old soap factory. Asked about influences, Dmitri Kowalczyk said only "the shadow of a canvas that was never painted".</Description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="false"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</otherLanguage0>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</fathersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Post-Squarism</Movement>
+    <Studio type="string">the back room of a frame shop</Studio>
+  </CustomFields>
+</Person>

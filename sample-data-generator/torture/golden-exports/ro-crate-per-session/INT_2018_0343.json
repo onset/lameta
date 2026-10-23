@@ -1,0 +1,377 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Notes on the third side of a line",
+      "description": "Greta Fontaine talks about why the canvas must stay blank. There is a long passage about a single brush, which the artist calls \"the elder\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2018_0343/INT_2018_0343.session"
+        },
+        {
+          "@id": "Sessions/INT_2018_0343/INT_2018_0343_20180808.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the back room of a frame shop"
+      },
+      "dateCreated": "2018-08-08",
+      "keywords": "Lateral Minimalism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Greta%20Fontaine"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Lucía%20Yılmaz"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Kalani%20Eriksdóttir"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Quilla%20Castellanos"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Greta%20Fontaine/Greta%20Fontaine.person",
+      "@type": "File",
+      "contentSize": 1066,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Greta Fontaine.person",
+      "about": {
+        "@id": "#Greta%20Fontaine"
+      }
+    },
+    {
+      "@id": "People/Greta%20Fontaine/Greta%20Fontaine_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Greta Fontaine_Consent.pdf",
+      "about": {
+        "@id": "#Greta%20Fontaine"
+      }
+    },
+    {
+      "@id": "People/Greta%20Fontaine/Greta%20Fontaine_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Greta Fontaine_Photo.png",
+      "about": {
+        "@id": "#Greta%20Fontaine"
+      }
+    },
+    {
+      "@id": "#Greta%20Fontaine",
+      "@type": "Person",
+      "name": "Greta Fontaine",
+      "ldac:age": "43",
+      "gender": "Male",
+      "description": "Greta Fontaine belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Greta Fontaine said only \"a dot, considered at length\". Primary Occupation: Gallery cleaner and, by accident, prize-winning artist.",
+      "subjectOf": [
+        {
+          "@id": "People/Greta%20Fontaine/Greta%20Fontaine.person"
+        },
+        {
+          "@id": "People/Greta%20Fontaine/Greta%20Fontaine_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Greta%20Fontaine/Greta%20Fontaine_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 877,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Lucía Yılmaz.person",
+      "about": {
+        "@id": "#Lucía%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Lucía Yılmaz_Consent.png",
+      "about": {
+        "@id": "#Lucía%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Lucía%20Yılmaz",
+      "@type": "Person",
+      "name": "Lucía Yılmaz",
+      "ldac:age": "76",
+      "gender": "Male",
+      "description": "Lucía Yılmaz belongs to Neo-Beigeism and works in Studio 4, the old soap factory. Asked about influences, Lucía Yılmaz said only \"a sculpture made entirely of hesitation\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz.person"
+      },
+      "image": {
+        "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Eriksdóttir/Kalani%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 1052,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Kalani Eriksdóttir.person",
+      "about": {
+        "@id": "#Kalani%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Eriksdóttir/Kalani%20Eriksdóttir_Consent.pdf",
+      "@type": "File",
+      "contentSize": 600,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Kalani Eriksdóttir_Consent.pdf",
+      "about": {
+        "@id": "#Kalani%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Kalani%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Kalani Eriksdóttir",
+      "ldac:age": "72",
+      "gender": "Female",
+      "description": "Kalani Eriksdóttir belongs to Accidental Constructivism and works in Studio 4, the old soap factory. Asked about influences, Kalani Eriksdóttir said only \"the shadow of a canvas that was never painted\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Kalani%20Eriksdóttir/Kalani%20Eriksdóttir.person"
+        },
+        {
+          "@id": "People/Kalani%20Eriksdóttir/Kalani%20Eriksdóttir_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Quilla%20Castellanos/Quilla%20Castellanos.person",
+      "@type": "File",
+      "contentSize": 861,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Quilla Castellanos.person",
+      "about": {
+        "@id": "#Quilla%20Castellanos"
+      }
+    },
+    {
+      "@id": "People/Quilla%20Castellanos/Quilla%20Castellanos_Consent.pdf",
+      "@type": "File",
+      "contentSize": 600,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Quilla Castellanos_Consent.pdf",
+      "about": {
+        "@id": "#Quilla%20Castellanos"
+      }
+    },
+    {
+      "@id": "#Quilla%20Castellanos",
+      "@type": "Person",
+      "name": "Quilla Castellanos",
+      "ldac:age": "34",
+      "gender": "Male",
+      "description": "Quilla Castellanos belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Quilla Castellanos said only \"the third side of a line\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Quilla%20Castellanos/Quilla%20Castellanos.person"
+        },
+        {
+          "@id": "People/Quilla%20Castellanos/Quilla%20Castellanos_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the back room of a frame shop",
+      "@type": "Place",
+      "name": "the back room of a frame shop"
+    },
+    {
+      "@id": "Sessions/INT_2018_0343/INT_2018_0343.session",
+      "@type": "File",
+      "contentSize": 1477,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2018_0343.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2018_0343/INT_2018_0343_20180808.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2018_0343_20180808.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

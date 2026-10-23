@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <FullName type="string">Oona Gómez</FullName>
+  <BirthYear type="string">1975</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Greyscale Romanticism</EthnicGroup>
+  <PrimaryOccupation type="string">Colourist specialising in beige</PrimaryOccupation>
+  <Description type="string">Oona Gómez belongs to Accidental Constructivism and works in the rooftop. Asked about influences, Oona Gómez said only "negative space and its landlord".</Description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="false"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</otherLanguage0>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</fathersLanguage>
+  <Contributions></Contributions>
+</Person>

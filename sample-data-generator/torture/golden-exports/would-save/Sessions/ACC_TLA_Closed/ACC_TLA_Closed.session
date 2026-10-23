@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">ACC_TLA_Closed</id>
+  <Title type="string">Notes on silence, in three coats of varnish (TLA access Closed)</Title>
+  <synopsis type="string">The artist talks about the installation that was mistaken for scaffolding. The artist asked that the microphone face away from the painting, so as not to influence it.</synopsis>
+  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">narrative</Genre>
+  <Access type="string">Closed</Access>
+  <AccessExplanation type="string">[[en]]Access Closed[[es]]Acceso Closed</AccessExplanation>
+  <Status type="string">Incoming</Status>
+  <Date>2024-04-01</Date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

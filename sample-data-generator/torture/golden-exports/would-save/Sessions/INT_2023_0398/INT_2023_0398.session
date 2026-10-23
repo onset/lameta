@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2023_0398</id>
+  <Title type="string">About the moment before the first mark</Title>
+  <synopsis type="string">Kalani Fontaine talks about eleven shades of white and one impostor. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</synopsis>
+  <languages type="languageChoices">etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">the disused swimming pool</Location>
+  <Access type="string">O</Access>
+  <Status type="string">In_Progress</Status>
+  <Date>2023-03-07</Date>
+  <Keywords type="string">Post-Squarism, studio visit</Keywords>
+  <Topic type="string">space</Topic>
+  <Contributions>
+    <contributor>
+      <name>KF140</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

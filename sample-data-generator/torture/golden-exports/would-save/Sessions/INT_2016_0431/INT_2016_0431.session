@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2016_0431</id>
+  <Title type="string">Towards drawing with a ladder</Title>
+  <synopsis type="string">Jules Nakamura talks about why the frame is the real work. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</synopsis>
+  <languages type="languageChoices">etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">the rooftop</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2016-12-12</Date>
+  <Keywords type="string">Post-Squarism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>Jules Nakamura</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Rangi Nakamura</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

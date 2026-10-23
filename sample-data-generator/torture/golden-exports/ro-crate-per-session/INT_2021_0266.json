@@ -1,0 +1,308 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About the moment before the first mark",
+      "description": "Xochitl Quispe talks about the shadow of a canvas that was never painted. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0266/INT_2021_0266.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0266/INT_2021_0266_20210315.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_es"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the disused swimming pool"
+      },
+      "dateCreated": "2021-03-15",
+      "keywords": "Post-Squarism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Xochitl%20Quispe"
+        },
+        {
+          "@id": "#Ếlodie%20Blanc"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Kalani%20Zielińska"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Quispe/Xochitl%20Quispe.person",
+      "@type": "File",
+      "contentSize": 859,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Xochitl Quispe.person",
+      "about": {
+        "@id": "#Xochitl%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Quispe/Xochitl%20Quispe_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Xochitl Quispe_Consent.png",
+      "about": {
+        "@id": "#Xochitl%20Quispe"
+      }
+    },
+    {
+      "@id": "#Xochitl%20Quispe",
+      "@type": "Person",
+      "name": "Xochitl Quispe",
+      "ldac:age": "29",
+      "gender": "Other",
+      "description": "Xochitl Quispe belongs to The Wet Paint School and works in a borrowed greenhouse. Asked about influences, Xochitl Quispe said only \"listening to grey\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Xochitl%20Quispe/Xochitl%20Quispe.person"
+      },
+      "image": {
+        "@id": "People/Xochitl%20Quispe/Xochitl%20Quispe_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Zielińska/Kalani%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 923,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Kalani Zielińska.person",
+      "about": {
+        "@id": "#Kalani%20Zielińska"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Zielińska/Kalani%20Zielińska_Consent.pdf",
+      "@type": "File",
+      "contentSize": 598,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Kalani Zielińska_Consent.pdf",
+      "about": {
+        "@id": "#Kalani%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Kalani%20Zielińska",
+      "@type": "Person",
+      "name": "Kalani Zielińska",
+      "ldac:age": "55",
+      "gender": "Female",
+      "description": "Kalani Zielińska belongs to Accidental Constructivism and works in the artist's kitchen. Asked about influences, Kalani Zielińska said only \"why the frame is the real work\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Kalani%20Zielińska/Kalani%20Zielińska.person"
+        },
+        {
+          "@id": "People/Kalani%20Zielińska/Kalani%20Zielińska_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Ếlodie%20Blanc/Ếlodie%20Blanc.person",
+      "@type": "File",
+      "contentSize": 863,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie Blanc.person",
+      "about": {
+        "@id": "#Ếlodie%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Blanc/Ếlodie%20Blanc_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie Blanc_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20Blanc"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20Blanc",
+      "@type": "Person",
+      "name": "Ếlodie Blanc",
+      "ldac:age": "67",
+      "gender": "Male",
+      "description": "Ếlodie Blanc belongs to Frameless Expressionism and works in the disused swimming pool. Asked about influences, Ếlodie Blanc said only \"painting the colour of a Tuesday\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20Blanc/Ếlodie%20Blanc.person"
+        },
+        {
+          "@id": "People/Ếlodie%20Blanc/Ếlodie%20Blanc_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the disused swimming pool",
+      "@type": "Place",
+      "name": "the disused swimming pool"
+    },
+    {
+      "@id": "Sessions/INT_2021_0266/INT_2021_0266.session",
+      "@type": "File",
+      "contentSize": 1382,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0266.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0266/INT_2021_0266_20210315.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0266_20210315.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

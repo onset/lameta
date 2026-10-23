@@ -1,0 +1,344 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the politics of the colour orange",
+      "description": "Farhad Søndergaard talks about the third side of a line. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2016_0791/INT_2016_0791.session"
+        },
+        {
+          "@id": "Sessions/INT_2016_0791/INT_2016_0791_20161208.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2016-12-08",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Farhad%20Søndergaard"
+        },
+        {
+          "@id": "#Ếlodie%20Vasquez"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Chiamaka%20Zielińska"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Quilla%20Ulloa"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Søndergaard/Farhad%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 962,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Farhad Søndergaard.person",
+      "about": {
+        "@id": "#Farhad%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Søndergaard/Farhad%20Søndergaard_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Farhad Søndergaard_Consent.png",
+      "about": {
+        "@id": "#Farhad%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Farhad%20Søndergaard",
+      "@type": "Person",
+      "name": "Farhad Søndergaard",
+      "ldac:age": "55",
+      "gender": "Female",
+      "description": "Farhad Søndergaard belongs to Hesitationism and works in the rooftop. Asked about influences, Farhad Søndergaard said only \"negative space and its landlord\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Farhad%20Søndergaard/Farhad%20Søndergaard.person"
+      },
+      "image": {
+        "@id": "People/Farhad%20Søndergaard/Farhad%20Søndergaard_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Vasquez/Ếlodie%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 889,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie Vasquez.person",
+      "about": {
+        "@id": "#Ếlodie%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Vasquez/Ếlodie%20Vasquez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie Vasquez_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20Vasquez",
+      "@type": "Person",
+      "name": "Ếlodie Vasquez",
+      "ldac:age": "76",
+      "gender": "Male",
+      "description": "Ếlodie Vasquez belongs to Post-Squarism and works in Studio 4, the old soap factory. Asked about influences, Ếlodie Vasquez said only \"eleven shades of white and one impostor\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20Vasquez/Ếlodie%20Vasquez.person"
+        },
+        {
+          "@id": "People/Ếlodie%20Vasquez/Ếlodie%20Vasquez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Chiamaka%20Zielińska/Chiamaka%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 859,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Zielińska.person",
+      "about": {
+        "@id": "#Chiamaka%20Zielińska"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Zielińska/Chiamaka%20Zielińska_Consent.pdf",
+      "@type": "File",
+      "contentSize": 600,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Chiamaka Zielińska_Consent.pdf",
+      "about": {
+        "@id": "#Chiamaka%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Zielińska",
+      "@type": "Person",
+      "name": "Chiamaka Zielińska",
+      "ldac:age": "27",
+      "gender": "Female",
+      "description": "Chiamaka Zielińska belongs to Post-Squarism and works in the disused swimming pool. Asked about influences, Chiamaka Zielińska said only \"drawing with a ladder\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Chiamaka%20Zielińska/Chiamaka%20Zielińska.person"
+        },
+        {
+          "@id": "People/Chiamaka%20Zielińska/Chiamaka%20Zielińska_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Quilla%20Ulloa/Quilla%20Ulloa.person",
+      "@type": "File",
+      "contentSize": 1015,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Quilla Ulloa.person",
+      "about": {
+        "@id": "#Quilla%20Ulloa"
+      }
+    },
+    {
+      "@id": "People/Quilla%20Ulloa/Quilla%20Ulloa_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Quilla Ulloa_Consent.pdf",
+      "about": {
+        "@id": "#Quilla%20Ulloa"
+      }
+    },
+    {
+      "@id": "#Quilla%20Ulloa",
+      "@type": "Person",
+      "name": "Quilla Ulloa",
+      "ldac:age": "61",
+      "gender": "Male",
+      "description": "Quilla Ulloa belongs to Hesitationism and works in a lift between floors 3 and 4. Asked about influences, Quilla Ulloa said only \"how to hang a painting upside down on purpose\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Quilla%20Ulloa/Quilla%20Ulloa.person"
+        },
+        {
+          "@id": "People/Quilla%20Ulloa/Quilla%20Ulloa_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2016_0791/INT_2016_0791.session",
+      "@type": "File",
+      "contentSize": 1499,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2016_0791.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2016_0791/INT_2016_0791_20161208.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2016_0791_20161208.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

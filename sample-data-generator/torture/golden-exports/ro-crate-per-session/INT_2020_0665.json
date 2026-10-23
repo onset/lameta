@@ -1,0 +1,383 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Notes on triangles as a form of apology",
+      "description": "Yusuf Ikeda talks about a sculpture made entirely of hesitation. There is a long passage about a single brush, which the artist calls \"the elder\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2020_0665/INT_2020_0665.session"
+        },
+        {
+          "@id": "Sessions/INT_2020_0665/INT_2020_0665_20200622.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the disused swimming pool"
+      },
+      "dateCreated": "2020-06-22",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Yusuf%20Ikeda"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Agnès%20O'Shaughnessy"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Nnamdi%20Tanaka"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Oona%20Søndergaard"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Ikeda/Yusuf%20Ikeda.person",
+      "@type": "File",
+      "contentSize": 1100,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Yusuf Ikeda.person",
+      "about": {
+        "@id": "#Yusuf%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Ikeda/Yusuf%20Ikeda_Consent.pdf",
+      "@type": "File",
+      "contentSize": 593,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Yusuf Ikeda_Consent.pdf",
+      "about": {
+        "@id": "#Yusuf%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Yusuf%20Ikeda/Yusuf%20Ikeda_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Yusuf Ikeda_Photo.png",
+      "about": {
+        "@id": "#Yusuf%20Ikeda"
+      }
+    },
+    {
+      "@id": "#Yusuf%20Ikeda",
+      "@type": "Person",
+      "name": "Yusuf Ikeda",
+      "ldac:age": "73",
+      "gender": "Male",
+      "description": "Yusuf Ikeda belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Yusuf Ikeda said only \"listening to grey\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Yusuf%20Ikeda/Yusuf%20Ikeda.person"
+        },
+        {
+          "@id": "People/Yusuf%20Ikeda/Yusuf%20Ikeda_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Yusuf%20Ikeda/Yusuf%20Ikeda_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 1078,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Agnès O'Shaughnessy.person",
+      "about": {
+        "@id": "#Agnès%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy_Consent.pdf",
+      "@type": "File",
+      "contentSize": 601,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Agnès O'Shaughnessy_Consent.pdf",
+      "about": {
+        "@id": "#Agnès%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Agnès O'Shaughnessy_Photo.png",
+      "about": {
+        "@id": "#Agnès%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Agnès%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Agnès O'Shaughnessy",
+      "ldac:age": "53",
+      "gender": "Female",
+      "description": "Agnès O'Shaughnessy belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Agnès O'Shaughnessy said only \"the third side of a line\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy.person"
+        },
+        {
+          "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Agnès%20O'Shaughnessy/Agnès%20O'Shaughnessy_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Tanaka/Nnamdi%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 944,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nnamdi Tanaka.person",
+      "about": {
+        "@id": "#Nnamdi%20Tanaka"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Tanaka/Nnamdi%20Tanaka_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Nnamdi Tanaka_Consent.png",
+      "about": {
+        "@id": "#Nnamdi%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Nnamdi%20Tanaka",
+      "@type": "Person",
+      "name": "Nnamdi Tanaka",
+      "ldac:age": "44",
+      "gender": "Other",
+      "description": "Nnamdi Tanaka belongs to Greyscale Romanticism and works in a lift between floors 3 and 4. Asked about influences, Nnamdi Tanaka said only \"the third side of a line\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Nnamdi%20Tanaka/Nnamdi%20Tanaka.person"
+      },
+      "image": {
+        "@id": "People/Nnamdi%20Tanaka/Nnamdi%20Tanaka_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 873,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Søndergaard.person",
+      "about": {
+        "@id": "#Oona%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 598,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Oona%20Søndergaard",
+      "@type": "Person",
+      "name": "Oona Søndergaard",
+      "ldac:age": "41",
+      "gender": "Male",
+      "description": "Oona Søndergaard belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Oona Søndergaard said only \"a square that refuses to be a square\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the disused swimming pool",
+      "@type": "Place",
+      "name": "the disused swimming pool"
+    },
+    {
+      "@id": "Sessions/INT_2020_0665/INT_2020_0665.session",
+      "@type": "File",
+      "contentSize": 1465,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2020_0665.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2020_0665/INT_2020_0665_20200622.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2020_0665_20200622.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <FullName type="string">Tenzin Dubois-Ngata</FullName>
+  <BirthYear type="string">1983</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Lateral Minimalism</EthnicGroup>
+  <PrimaryOccupation type="string">Curator of empty frames</PrimaryOccupation>
+  <Description type="string">Tenzin Dubois-Ngata belongs to The Wet Paint School and works in Gallery Huya. Asked about influences, Tenzin Dubois-Ngata said only "why the canvas must stay blank".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+    <language tag="eng" primary="false" mother="false" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <otherLanguage1 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">English</otherLanguage1>
+  <Contributions></Contributions>
+</Person>

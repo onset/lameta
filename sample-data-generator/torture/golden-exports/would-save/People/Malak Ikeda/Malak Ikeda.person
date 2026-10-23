@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <FullName type="string">Malak Ikeda</FullName>
+  <BirthYear type="string">1938</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Accidental Constructivism</EthnicGroup>
+  <PrimaryOccupation type="string">Performance artist who performs mostly in the car park</PrimaryOccupation>
+  <Description type="string">Malak Ikeda belongs to Greyscale Romanticism and works in Studio 4, the old soap factory. Asked about influences, Malak Ikeda said only "eleven shades of white and one impostor".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+    <language tag="etr" primary="false" mother="false" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</otherLanguage0>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Lateral Minimalism</Movement>
+    <Studio type="string">the back room of a frame shop</Studio>
+  </CustomFields>
+</Person>

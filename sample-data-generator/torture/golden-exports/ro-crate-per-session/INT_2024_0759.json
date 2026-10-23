@@ -1,0 +1,237 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About painting the colour of a Tuesday",
+      "description": "Wanjiru Fontaine talks about a square that refuses to be a square. There is a long passage about a single brush, which the artist calls \"the elder\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2024_0759/INT_2024_0759.session"
+        },
+        {
+          "@id": "Sessions/INT_2024_0759/INT_2024_0759_20240404.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "accessDescription": "The artist asks that this stay closed until the paint is dry.",
+      "dateCreated": "2024-04-04",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Wanjiru%20Fontaine"
+        },
+        {
+          "@id": "#Þóra%20Whitehorse"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Wanjiru%20Fontaine/Wanjiru%20Fontaine.person",
+      "@type": "File",
+      "contentSize": 900,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Wanjiru Fontaine.person",
+      "about": {
+        "@id": "#Wanjiru%20Fontaine"
+      }
+    },
+    {
+      "@id": "#Wanjiru%20Fontaine",
+      "@type": "Person",
+      "name": "Wanjiru Fontaine",
+      "ldac:age": "38",
+      "gender": "Female",
+      "description": "Wanjiru Fontaine belongs to Accidental Constructivism and works in the artist's kitchen. Asked about influences, Wanjiru Fontaine said only \"why the frame is the real work\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Wanjiru%20Fontaine/Wanjiru%20Fontaine.person"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Whitehorse/Þóra%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 881,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Þóra Whitehorse.person",
+      "about": {
+        "@id": "#Þóra%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Whitehorse/Þóra%20Whitehorse_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Þóra Whitehorse_Consent.pdf",
+      "about": {
+        "@id": "#Þóra%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Þóra%20Whitehorse",
+      "@type": "Person",
+      "name": "Þóra Whitehorse",
+      "ldac:age": "51",
+      "gender": "Other",
+      "description": "Þóra Whitehorse belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Þóra Whitehorse said only \"an exhibition in total darkness\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Þóra%20Whitehorse/Þóra%20Whitehorse.person"
+        },
+        {
+          "@id": "People/Þóra%20Whitehorse/Þóra%20Whitehorse_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2024_0759/INT_2024_0759.session",
+      "@type": "File",
+      "contentSize": 1325,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2024_0759.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2024_0759/INT_2024_0759_20240404.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2024_0759_20240404.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

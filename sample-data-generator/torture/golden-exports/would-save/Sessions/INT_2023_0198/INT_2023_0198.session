@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2023_0198</id>
+  <Title type="string">About a dot, considered at length</Title>
+  <synopsis type="string">Saoirse Mbeki talks about the politics of the colour orange. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</synopsis>
+  <languages type="languageChoices">etr;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">procedural_discourse</Genre>
+  <Location type="string">the back room of a frame shop</Location>
+  <Access type="string">O</Access>
+  <AccessExplanation type="string">The artist asks that this stay closed until the paint is dry.</AccessExplanation>
+  <Status type="string">In_Progress</Status>
+  <Date>2023-07-03</Date>
+  <Keywords type="string">Lateral Minimalism, studio visit</Keywords>
+  <Topic type="string">frames</Topic>
+  <Contributions>
+    <contributor>
+      <name>Saoirse Mbeki</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2020_0465</id>
+  <Title type="string">Towards a portrait of the wind, from behind</Title>
+  <synopsis type="string">Ếlodie Vasquez talks about what the gallery cleaner threw away. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</synopsis>
+  <languages type="languageChoices">etr;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">a lift between floors 3 and 4</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2020-10-18</Date>
+  <Keywords type="string">Post-Squarism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Ếlodie Vasquez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ömer Blanc</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Yusuf Whitehorse</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Vũ O'Shaughnessy</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <FullName type="string">Vũ Achterberg</FullName>
+  <BirthYear type="string">1986</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Frameless Expressionism</EthnicGroup>
+  <PrimaryOccupation type="string">Painter of one grey square, repeatedly</PrimaryOccupation>
+  <Description type="string">Vũ Achterberg belongs to Ladderism and works in the artist's kitchen. Asked about influences, Vũ Achterberg said only "the installation that was mistaken for scaffolding".</Description>
+  <languages type="xml">
+    <language tag="es" primary="true" mother="true" father="true"></language>
+    <language tag="qaa-x-kurbin" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Spanish</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</otherLanguage0>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Greyscale Romanticism</Movement>
+    <Studio type="string">a lift between floors 3 and 4</Studio>
+  </CustomFields>
+</Person>

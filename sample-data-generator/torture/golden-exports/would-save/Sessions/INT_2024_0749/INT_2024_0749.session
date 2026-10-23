@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2024_0749</id>
+  <Title type="string">Against eleven shades of white and one impostor</Title>
+  <synopsis type="string">Nnamdi Achterberg talks about the moment before the first mark. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</synopsis>
+  <languages type="languageChoices">tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">oral_history</Genre>
+  <Location type="string">a borrowed greenhouse</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2024-06-22</Date>
+  <Keywords type="string">The Wet Paint School, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Achterberg</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

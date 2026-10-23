@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Greta Rautenbach</FullName>
+  <BirthYear type="string">1938</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Ladderism</EthnicGroup>
+  <PrimaryOccupation type="string">Painter of one grey square, repeatedly</PrimaryOccupation>
+  <Description type="string">Greta Rautenbach belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Greta Rautenbach said only "a square that refuses to be a square".</Description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</mothersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Greyscale Romanticism</Movement>
+    <Studio type="string">a lift between floors 3 and 4</Studio>
+  </CustomFields>
+</Person>

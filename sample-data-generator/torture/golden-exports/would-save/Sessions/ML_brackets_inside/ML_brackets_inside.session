@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">ML_brackets_inside</id>
+  <Title type="string">[[Draft]] notes for the next visit</Title>
+  <synopsis type="string">The artist talks about the long argument with the colour blue. There is a long passage about a single brush, which the artist calls "the elder".</synopsis>
+  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">narrative</Genre>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2024-06-01</Date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

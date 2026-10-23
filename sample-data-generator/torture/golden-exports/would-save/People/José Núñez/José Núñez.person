@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">José Núñez</FullName>
+  <BirthYear type="string">c. 1950</BirthYear>
+  <Gender type="string">Male</Gender>
+  <PrimaryOccupation type="string">Installation artist, mainly scaffolding</PrimaryOccupation>
+  <Description type="string">José Núñez belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, José Núñez said only "the third side of a line".</Description>
+  <languages type="xml"></languages>
+  <Contributions></Contributions>
+</Person>

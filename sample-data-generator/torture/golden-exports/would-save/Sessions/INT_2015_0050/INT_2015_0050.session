@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2015_0050</id>
+  <Title type="string">Notes on the emotional weight of beige</Title>
+  <synopsis type="string">Agnès Nakamura talks about what the gallery cleaner threw away. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;tpi;eng</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">a lift between floors 3 and 4</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2015-03-23</Date>
+  <Keywords type="string">Neo-Beigeism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>AN060</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ingrid Ulloa</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2023_0118</id>
+  <Title type="string">Towards how to hang a painting upside down on purpose</Title>
+  <synopsis type="string">Greta Fontaine talks about why the canvas must stay blank. The artist asked that the microphone face away from the painting, so as not to influence it.</synopsis>
+  <languages type="languageChoices">etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">the back room of a frame shop</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2023-11-07</Date>
+  <Keywords type="string">Lateral Minimalism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>Greta Fontaine</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Wanjiru Fontaine</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

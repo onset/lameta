@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Notes from SayMore: prefers to be interviewed facing a wall</notes>
+  <FullName type="string">Tolo Kesi</FullName>
+  <Code type="string">TK</Code>
+  <primaryLanguageLearnedIn type="string" deprecated="true">the art school canteen</primaryLanguageLearnedIn>
+  <BirthYear type="string">1977</BirthYear>
+  <Gender type="string">Male</Gender>
+  <Description type="string">Tuwari learned in the art school canteen.</Description>
+  <nickName type="string">Tolo</nickName>
+  <languages type="xml">
+    <language tag="tww" primary="true" mother="false" father="false"></language>
+    <language tag="tpi" primary="false" mother="true" father="false"></language>
+    <language tag="eng" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tuwari</primaryLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</mothersLanguage>
+  <otherLanguage1 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">English</otherLanguage1>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">English</fathersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Signature_Colour type="string">ochre</Signature_Colour>
+    <Rechecked type="string">in 2019; still ochre</Rechecked>
+  </CustomFields>
+</Person>

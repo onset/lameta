@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2015_0720</id>
+  <Title type="string">About the moment before the first mark</Title>
+  <synopsis type="string">Oona Gómez talks about the shadow of a canvas that was never painted. There is a long passage about a single brush, which the artist calls "the elder".</synopsis>
+  <languages type="languageChoices">tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">grammar</Genre>
+  <Location type="string">the disused swimming pool</Location>
+  <Access type="string">O</Access>
+  <Status type="string">In_Progress</Status>
+  <Date>2015-01-21</Date>
+  <Keywords type="string">Lateral Minimalism, studio visit</Keywords>
+  <Topic type="string">frames</Topic>
+  <Contributions>
+    <contributor>
+      <name>Oona Gómez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Yusuf Vasquez</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Þóra Dubois-Ngata</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

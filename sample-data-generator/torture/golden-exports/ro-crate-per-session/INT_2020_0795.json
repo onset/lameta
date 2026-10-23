@@ -1,0 +1,247 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards negative space and its landlord",
+      "description": "Þóra Jovanović talks about eleven shades of white and one impostor. The artist asked that the microphone face away from the painting, so as not to influence it.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2020_0795/INT_2020_0795.session"
+        },
+        {
+          "@id": "Sessions/INT_2020_0795/INT_2020_0795_20200412.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the disused swimming pool"
+      },
+      "dateCreated": "2020-04-12",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Þóra%20Jovanović"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Ulla%20Whitehorse"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Jovanović/Þóra%20Jovanović.person",
+      "@type": "File",
+      "contentSize": 1048,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Þóra Jovanović.person",
+      "about": {
+        "@id": "#Þóra%20Jovanović"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Jovanović/Þóra%20Jovanović_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Þóra Jovanović_Consent.pdf",
+      "about": {
+        "@id": "#Þóra%20Jovanović"
+      }
+    },
+    {
+      "@id": "#Þóra%20Jovanović",
+      "@type": "Person",
+      "name": "Þóra Jovanović",
+      "ldac:age": "71",
+      "gender": "Other",
+      "description": "Þóra Jovanović belongs to Accidental Constructivism and works in the back room of a frame shop. Asked about influences, Þóra Jovanović said only \"the brushstroke that got away\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Þóra%20Jovanović/Þóra%20Jovanović.person"
+        },
+        {
+          "@id": "People/Þóra%20Jovanović/Þóra%20Jovanović_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Ulla%20Whitehorse/Ulla%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 962,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ulla Whitehorse.person",
+      "about": {
+        "@id": "#Ulla%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Ulla%20Whitehorse",
+      "@type": "Person",
+      "name": "Ulla Whitehorse",
+      "ldac:age": "78",
+      "gender": "Female",
+      "description": "Ulla Whitehorse belongs to Neo-Beigeism and works in Gallery Huya. Asked about influences, Ulla Whitehorse said only \"the long argument with the colour blue\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Ulla%20Whitehorse/Ulla%20Whitehorse.person"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the disused swimming pool",
+      "@type": "Place",
+      "name": "the disused swimming pool"
+    },
+    {
+      "@id": "Sessions/INT_2020_0795/INT_2020_0795.session",
+      "@type": "File",
+      "contentSize": 1220,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2020_0795.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2020_0795/INT_2020_0795_20200412.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2020_0795_20200412.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

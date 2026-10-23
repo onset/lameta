@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2019_0724</id>
+  <Title type="string">Towards negative space and its landlord</Title>
+  <synopsis type="string">Xochitl Quispe talks about eleven shades of white and one impostor. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">the disused swimming pool</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2019-05-25</Date>
+  <Keywords type="string">Post-Squarism, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>Xochitl Quispe</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

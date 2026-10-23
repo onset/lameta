@@ -1,0 +1,337 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About painting the colour of a Tuesday",
+      "description": "Farhad Tanaka talks about a square that refuses to be a square. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2015_0760/INT_2015_0760.session"
+        },
+        {
+          "@id": "Sessions/INT_2015_0760/INT_2015_0760_20150505.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2015_0760/INT_2015_0760_20150505.wav"
+        },
+        {
+          "@id": "Sessions/INT_2015_0760/INT_2015_0760_Artwork.png"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2015-05-05",
+      "keywords": "Post-Squarism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Farhad%20Tanaka"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Hiroshi%20Pereira"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Xochitl%20Kowalczyk"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Tanaka/Farhad%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 977,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Farhad Tanaka.person",
+      "about": {
+        "@id": "#Farhad%20Tanaka"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Tanaka/Farhad%20Tanaka_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Farhad Tanaka_Consent.png",
+      "about": {
+        "@id": "#Farhad%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Farhad%20Tanaka",
+      "@type": "Person",
+      "name": "Farhad Tanaka",
+      "ldac:age": "71",
+      "gender": "Female",
+      "description": "Farhad Tanaka belongs to Neo-Beigeism and works in a borrowed greenhouse. Asked about influences, Farhad Tanaka said only \"an exhibition in total darkness\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Farhad%20Tanaka/Farhad%20Tanaka.person"
+      },
+      "image": {
+        "@id": "People/Farhad%20Tanaka/Farhad%20Tanaka_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Pereira/Hiroshi%20Pereira.person",
+      "@type": "File",
+      "contentSize": 965,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Pereira.person",
+      "about": {
+        "@id": "#Hiroshi%20Pereira"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Pereira/Hiroshi%20Pereira_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Hiroshi Pereira_Consent.png",
+      "about": {
+        "@id": "#Hiroshi%20Pereira"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Pereira",
+      "@type": "Person",
+      "name": "Hiroshi Pereira",
+      "ldac:age": "45",
+      "gender": "Female",
+      "description": "Hiroshi Pereira belongs to Greyscale Romanticism and works in the artist's kitchen. Asked about influences, Hiroshi Pereira said only \"the installation that was mistaken for scaffolding\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Pereira/Hiroshi%20Pereira.person"
+      },
+      "image": {
+        "@id": "People/Hiroshi%20Pereira/Hiroshi%20Pereira_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Kowalczyk/Xochitl%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 896,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Xochitl Kowalczyk.person",
+      "about": {
+        "@id": "#Xochitl%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Kowalczyk/Xochitl%20Kowalczyk_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Xochitl Kowalczyk_Consent.png",
+      "about": {
+        "@id": "#Xochitl%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Xochitl%20Kowalczyk",
+      "@type": "Person",
+      "name": "Xochitl Kowalczyk",
+      "ldac:age": "16",
+      "gender": "Other",
+      "description": "Xochitl Kowalczyk belongs to Ladderism and works in the artist's kitchen. Asked about influences, Xochitl Kowalczyk said only \"a square that refuses to be a square\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Xochitl%20Kowalczyk/Xochitl%20Kowalczyk.person"
+      },
+      "image": {
+        "@id": "People/Xochitl%20Kowalczyk/Xochitl%20Kowalczyk_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2015_0760/INT_2015_0760.session",
+      "@type": "File",
+      "contentSize": 1321,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2015_0760.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0760/INT_2015_0760_20150505.eaf",
+      "@type": "File",
+      "contentSize": 844,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2015_0760_20150505.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0760/INT_2015_0760_20150505.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2015_0760_20150505.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0760/INT_2015_0760_Artwork.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 456,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "INT_2015_0760_Artwork.png",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

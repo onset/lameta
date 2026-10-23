@@ -1,0 +1,219 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the installation that was mistaken for scaffolding",
+      "description": "Chiamaka Fontaine talks about silence, in three coats of varnish. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2018_0153/INT_2018_0153.session"
+        },
+        {
+          "@id": "Sessions/INT_2018_0153/INT_2018_0153_20181014.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_es"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Formulaic"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2018-10-14",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Chiamaka%20Fontaine"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Fontaine/Chiamaka%20Fontaine.person",
+      "@type": "File",
+      "contentSize": 856,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Fontaine.person",
+      "about": {
+        "@id": "#Chiamaka%20Fontaine"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Fontaine/Chiamaka%20Fontaine_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Chiamaka Fontaine_Consent.pdf",
+      "about": {
+        "@id": "#Chiamaka%20Fontaine"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Fontaine",
+      "@type": "Person",
+      "name": "Chiamaka Fontaine",
+      "ldac:age": "34",
+      "gender": "Female",
+      "description": "Chiamaka Fontaine belongs to Lateral Minimalism and works in the disused swimming pool. Asked about influences, Chiamaka Fontaine said only \"painting the colour of a Tuesday\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Chiamaka%20Fontaine/Chiamaka%20Fontaine.person"
+        },
+        {
+          "@id": "People/Chiamaka%20Fontaine/Chiamaka%20Fontaine_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Formulaic",
+      "@type": "DefinedTerm",
+      "name": "Proverb",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2018_0153/INT_2018_0153.session",
+      "@type": "File",
+      "contentSize": 1099,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2018_0153.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2018_0153/INT_2018_0153_20181014.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2018_0153_20181014.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

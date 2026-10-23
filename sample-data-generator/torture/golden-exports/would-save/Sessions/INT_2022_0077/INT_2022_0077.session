@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2022_0077</id>
+  <Title type="string">Against what the gallery cleaner threw away</Title>
+  <synopsis type="string">Yusuf Castellanos talks about a portrait of the wind, from behind. The interview stopped twice because the artist wanted to look at the corner of the room.</synopsis>
+  <languages type="languageChoices">etr;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">the artist's kitchen</Location>
+  <Access type="string">O</Access>
+  <AccessExplanation type="string">The artist asks that this stay closed until the paint is dry.</AccessExplanation>
+  <Status type="string">Finished</Status>
+  <Date>2022-06-22</Date>
+  <Keywords type="string">Hesitationism, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>Yusuf Castellanos</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Bartholomew Mbeki</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Vũ Achterberg</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

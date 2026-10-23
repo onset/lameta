@@ -1,0 +1,317 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About a dot, considered at length",
+      "description": "Zofia Nakamura talks about the politics of the colour orange. There is a long passage about a single brush, which the artist calls \"the elder\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2019_0744/INT_2019_0744.session"
+        },
+        {
+          "@id": "Sessions/INT_2019_0744/INT_2019_0744_20190117.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2019_0744/INT_2019_0744_20190117.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the back room of a frame shop"
+      },
+      "dateCreated": "2019-01-17",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Zofia%20Nakamura"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Greta%20Søndergaard"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Oona%20Søndergaard"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura.person",
+      "@type": "File",
+      "contentSize": 905,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Nakamura.person",
+      "about": {
+        "@id": "#Zofia%20Nakamura"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia Nakamura_Consent.png",
+      "about": {
+        "@id": "#Zofia%20Nakamura"
+      }
+    },
+    {
+      "@id": "#Zofia%20Nakamura",
+      "@type": "Person",
+      "name": "Zofia Nakamura",
+      "ldac:age": "73",
+      "gender": "Female",
+      "description": "Zofia Nakamura belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Zofia Nakamura said only \"painting the colour of a Tuesday\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20Nakamura/Zofia%20Nakamura_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Greta%20Søndergaard/Greta%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 1036,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Greta Søndergaard.person",
+      "about": {
+        "@id": "#Greta%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Greta%20Søndergaard/Greta%20Søndergaard_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Greta Søndergaard_Photo.png",
+      "about": {
+        "@id": "#Greta%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Greta%20Søndergaard",
+      "@type": "Person",
+      "name": "Greta Søndergaard",
+      "ldac:age": "67",
+      "gender": "Male",
+      "description": "Greta Søndergaard belongs to Lateral Minimalism and works in a borrowed greenhouse. Asked about influences, Greta Søndergaard said only \"an exhibition in total darkness\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Greta%20Søndergaard/Greta%20Søndergaard.person"
+      },
+      "image": {
+        "@id": "People/Greta%20Søndergaard/Greta%20Søndergaard_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 873,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Søndergaard.person",
+      "about": {
+        "@id": "#Oona%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 598,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Oona%20Søndergaard",
+      "@type": "Person",
+      "name": "Oona Søndergaard",
+      "ldac:age": "40",
+      "gender": "Male",
+      "description": "Oona Søndergaard belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Oona Søndergaard said only \"a square that refuses to be a square\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Oona%20Søndergaard/Oona%20Søndergaard_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the back room of a frame shop",
+      "@type": "Place",
+      "name": "the back room of a frame shop"
+    },
+    {
+      "@id": "Sessions/INT_2019_0744/INT_2019_0744.session",
+      "@type": "File",
+      "contentSize": 1337,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2019_0744.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0744/INT_2019_0744_20190117.eaf",
+      "@type": "File",
+      "contentSize": 839,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2019_0744_20190117.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0744/INT_2019_0744_20190117.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2019_0744_20190117.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

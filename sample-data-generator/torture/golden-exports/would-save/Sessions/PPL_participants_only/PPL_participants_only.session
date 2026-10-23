@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">PPL_participants_only</id>
+  <Title type="string">A group show with no credits</Title>
+  <synopsis type="string">The artist talks about listening to grey. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</synopsis>
+  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2024-07-02</Date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>participant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Wilema Dimo</name>
+      <role>participant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Nobody Here</name>
+      <role>participant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

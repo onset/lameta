@@ -1,0 +1,370 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against what the gallery cleaner threw away",
+      "description": "Dmitri Whitehorse talks about the emotional weight of beige. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2017_0712/INT_2017_0712.session"
+        },
+        {
+          "@id": "Sessions/INT_2017_0712/INT_2017_0712_20170513.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2017_0712/INT_2017_0712_20170513.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_es"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the artist's kitchen"
+      },
+      "dateCreated": "2017-05-13",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Dmitri%20Whitehorse"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Dmitri%20Jovanović"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Ulla%20O'Shaughnessy"
+        },
+        {
+          "@id": "#Malak%20O'Shaughnessy"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Whitehorse/Dmitri%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 1191,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Dmitri Whitehorse.person",
+      "about": {
+        "@id": "#Dmitri%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Whitehorse/Dmitri%20Whitehorse_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Dmitri Whitehorse_Consent.png",
+      "about": {
+        "@id": "#Dmitri%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Dmitri%20Whitehorse",
+      "@type": "Person",
+      "name": "Dmitri Whitehorse",
+      "ldac:age": "24",
+      "gender": "Other",
+      "description": "Dmitri Whitehorse belongs to Ladderism and works in the rooftop. Asked about influences, Dmitri Whitehorse said only \"negative space and its landlord\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Dmitri%20Whitehorse/Dmitri%20Whitehorse.person"
+      },
+      "image": {
+        "@id": "People/Dmitri%20Whitehorse/Dmitri%20Whitehorse_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Jovanović/Dmitri%20Jovanović.person",
+      "@type": "File",
+      "contentSize": 1039,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Dmitri Jovanović.person",
+      "about": {
+        "@id": "#Dmitri%20Jovanović"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Jovanović/Dmitri%20Jovanović_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Dmitri Jovanović_Consent.png",
+      "about": {
+        "@id": "#Dmitri%20Jovanović"
+      }
+    },
+    {
+      "@id": "#Dmitri%20Jovanović",
+      "@type": "Person",
+      "name": "Dmitri Jovanović",
+      "ldac:age": "66",
+      "gender": "Other",
+      "description": "Dmitri Jovanović belongs to Lateral Minimalism and works in Gallery Huya. Asked about influences, Dmitri Jovanović said only \"the politics of the colour orange\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Dmitri%20Jovanović/Dmitri%20Jovanović.person"
+      },
+      "image": {
+        "@id": "People/Dmitri%20Jovanović/Dmitri%20Jovanović_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ulla%20O'Shaughnessy/Ulla%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 925,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ulla O'Shaughnessy.person",
+      "about": {
+        "@id": "#Ulla%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Ulla%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Ulla O'Shaughnessy",
+      "ldac:age": "58",
+      "gender": "Female",
+      "description": "Ulla O'Shaughnessy belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Ulla O'Shaughnessy said only \"a square that refuses to be a square\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Ulla%20O'Shaughnessy/Ulla%20O'Shaughnessy.person"
+      }
+    },
+    {
+      "@id": "People/Malak%20O'Shaughnessy/Malak%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 1136,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak O'Shaughnessy.person",
+      "about": {
+        "@id": "#Malak%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Malak%20O'Shaughnessy/Malak%20O'Shaughnessy_Consent.pdf",
+      "@type": "File",
+      "contentSize": 601,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Malak O'Shaughnessy_Consent.pdf",
+      "about": {
+        "@id": "#Malak%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Malak%20O'Shaughnessy/Malak%20O'Shaughnessy_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak O'Shaughnessy_Photo.png",
+      "about": {
+        "@id": "#Malak%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Malak%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Malak O'Shaughnessy",
+      "ldac:age": "60",
+      "gender": "Female",
+      "description": "Malak O'Shaughnessy belongs to Greyscale Romanticism and works in a borrowed greenhouse. Asked about influences, Malak O'Shaughnessy said only \"what the gallery cleaner threw away\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Malak%20O'Shaughnessy/Malak%20O'Shaughnessy.person"
+        },
+        {
+          "@id": "People/Malak%20O'Shaughnessy/Malak%20O'Shaughnessy_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Malak%20O'Shaughnessy/Malak%20O'Shaughnessy_Photo.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the artist's kitchen",
+      "@type": "Place",
+      "name": "the artist's kitchen"
+    },
+    {
+      "@id": "Sessions/INT_2017_0712/INT_2017_0712.session",
+      "@type": "File",
+      "contentSize": 1490,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2017_0712.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0712/INT_2017_0712_20170513.eaf",
+      "@type": "File",
+      "contentSize": 849,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2017_0712_20170513.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0712/INT_2017_0712_20170513.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2017_0712_20170513.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

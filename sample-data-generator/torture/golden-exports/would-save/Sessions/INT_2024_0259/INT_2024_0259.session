@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2024_0259</id>
+  <Title type="string">Against what the gallery cleaner threw away</Title>
+  <synopsis type="string">Ulla Castellanos talks about the emotional weight of beige. Recorded while the artist repainted the studio wall the same white, four times.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">the artist's kitchen</Location>
+  <Access type="string">U</Access>
+  <Status type="string">Finished</Status>
+  <Date>2024-08-08</Date>
+  <Keywords type="string">Greyscale Romanticism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>UC070</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ömer Haddad</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ömer Ulloa</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Oona Zielińska</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

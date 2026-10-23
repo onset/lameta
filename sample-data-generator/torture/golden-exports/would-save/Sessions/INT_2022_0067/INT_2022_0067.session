@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2022_0067</id>
+  <Title type="string">Towards how to hang a painting upside down on purpose</Title>
+  <synopsis type="string">Zofia Haddad talks about the long argument with the colour blue. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</synopsis>
+  <languages type="languageChoices">fr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">the back room of a frame shop</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2022-08-12</Date>
+  <Keywords type="string">Frameless Expressionism, studio visit</Keywords>
+  <Topic type="string">frames</Topic>
+  <Contributions>
+    <contributor>
+      <name>ZH065</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Þóra Vasquez</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía Eriksdóttir</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,280 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About painting the colour of a Tuesday",
+      "description": "Ulla Dubois-Ngata talks about why the frame is the real work. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2017_0652/INT_2017_0652.session"
+        },
+        {
+          "@id": "Sessions/INT_2017_0652/INT_2017_0652_20170509.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2017_0652/INT_2017_0652_20170509.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2017-05-09",
+      "keywords": "Lateral Minimalism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Ulla%20Dubois-Ngata"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Chiamaka%20Yılmaz"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Ulla%20Dubois-Ngata/Ulla%20Dubois-Ngata.person",
+      "@type": "File",
+      "contentSize": 885,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ulla Dubois-Ngata.person",
+      "about": {
+        "@id": "#Ulla%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "People/Ulla%20Dubois-Ngata/Ulla%20Dubois-Ngata_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ulla Dubois-Ngata_Consent.pdf",
+      "about": {
+        "@id": "#Ulla%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "#Ulla%20Dubois-Ngata",
+      "@type": "Person",
+      "name": "Ulla Dubois-Ngata",
+      "ldac:age": "67",
+      "gender": "Female",
+      "description": "Ulla Dubois-Ngata belongs to Ladderism and works in the artist's kitchen. Asked about influences, Ulla Dubois-Ngata said only \"why the frame is the real work\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Ulla%20Dubois-Ngata/Ulla%20Dubois-Ngata.person"
+        },
+        {
+          "@id": "People/Ulla%20Dubois-Ngata/Ulla%20Dubois-Ngata_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Chiamaka%20Yılmaz/Chiamaka%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 843,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Yılmaz.person",
+      "about": {
+        "@id": "#Chiamaka%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Yılmaz/Chiamaka%20Yılmaz_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Chiamaka Yılmaz_Consent.pdf",
+      "about": {
+        "@id": "#Chiamaka%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Yılmaz",
+      "@type": "Person",
+      "name": "Chiamaka Yılmaz",
+      "ldac:age": "22",
+      "gender": "Female",
+      "description": "Chiamaka Yılmaz belongs to Frameless Expressionism and works in the disused swimming pool. Asked about influences, Chiamaka Yılmaz said only \"painting the colour of a Tuesday\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Chiamaka%20Yılmaz/Chiamaka%20Yılmaz.person"
+        },
+        {
+          "@id": "People/Chiamaka%20Yılmaz/Chiamaka%20Yılmaz_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2017_0652/INT_2017_0652.session",
+      "@type": "File",
+      "contentSize": 1191,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2017_0652.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0652/INT_2017_0652_20170509.eaf",
+      "@type": "File",
+      "contentSize": 844,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2017_0652_20170509.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0652/INT_2017_0652_20170509.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2017_0652_20170509.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

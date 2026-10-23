@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2018_0463</id>
+  <Title type="string">On why the frame is the real work</Title>
+  <synopsis type="string">Saoirse Achterberg talks about painting the colour of a Tuesday. The interview stopped twice because the artist wanted to look at the corner of the room.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">Gallery Huya</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2018-08-16</Date>
+  <Keywords type="string">Neo-Beigeism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Saoirse Achterberg</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Vũ Tanaka</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía Dubois-Ngata</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Chiamaka Zielińska</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

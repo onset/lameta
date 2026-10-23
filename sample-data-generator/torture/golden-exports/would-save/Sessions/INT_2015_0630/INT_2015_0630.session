@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2015_0630</id>
+  <Title type="string">Towards how to hang a painting upside down on purpose</Title>
+  <synopsis type="string">Tenzin Quispe talks about the long argument with the colour blue. The artist asked that the microphone face away from the painting, so as not to influence it.</synopsis>
+  <languages type="languageChoices">etr;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">the back room of a frame shop</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2015-07-15</Date>
+  <Keywords type="string">Ladderism, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>Tenzin Quispe</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Nnamdi Blanc</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Wanjiru Zielińska</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Quilla Pereira</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

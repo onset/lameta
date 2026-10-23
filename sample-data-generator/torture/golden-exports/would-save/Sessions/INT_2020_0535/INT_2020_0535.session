@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2020_0535</id>
+  <Title type="string">About the moment before the first mark</Title>
+  <synopsis type="string">Ếlodie Ulloa talks about eleven shades of white and one impostor. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">the disused swimming pool</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2020-08-04</Date>
+  <Keywords type="string">Lateral Minimalism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>Ếlodie Ulloa</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Malak Pereira</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>AH090</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Saoirse Lindqvist</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,310 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond an exhibition in total darkness",
+      "description": "Rangi Gómez talks about the emotional weight of beige. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2017_0532/INT_2017_0532.session"
+        },
+        {
+          "@id": "Sessions/INT_2017_0532/INT_2017_0532_20170501.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2017_0532/INT_2017_0532_20170501.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the artist's kitchen"
+      },
+      "dateCreated": "2017-05-01",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Rangi%20Gómez"
+        },
+        {
+          "@id": "#Lucía%20Quispe"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Piotr%20Dubois-Ngata"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Rangi%20Gómez/Rangi%20Gómez.person",
+      "@type": "File",
+      "contentSize": 919,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Rangi Gómez.person",
+      "about": {
+        "@id": "#Rangi%20Gómez"
+      }
+    },
+    {
+      "@id": "People/Rangi%20Gómez/Rangi%20Gómez_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Rangi Gómez_Consent.png",
+      "about": {
+        "@id": "#Rangi%20Gómez"
+      }
+    },
+    {
+      "@id": "#Rangi%20Gómez",
+      "@type": "Person",
+      "name": "Rangi Gómez",
+      "ldac:age": "19",
+      "gender": "Female",
+      "description": "Rangi Gómez belongs to Frameless Expressionism and works in the disused swimming pool. Asked about influences, Rangi Gómez said only \"drawing with a ladder\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Rangi%20Gómez/Rangi%20Gómez.person"
+      },
+      "image": {
+        "@id": "People/Rangi%20Gómez/Rangi%20Gómez_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Quispe/Lucía%20Quispe.person",
+      "@type": "File",
+      "contentSize": 849,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Lucía Quispe.person",
+      "about": {
+        "@id": "#Lucía%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Quispe/Lucía%20Quispe_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Lucía Quispe_Consent.png",
+      "about": {
+        "@id": "#Lucía%20Quispe"
+      }
+    },
+    {
+      "@id": "#Lucía%20Quispe",
+      "@type": "Person",
+      "name": "Lucía Quispe",
+      "ldac:age": "54",
+      "gender": "Male",
+      "description": "Lucía Quispe belongs to The Wet Paint School and works in the back room of a frame shop. Asked about influences, Lucía Quispe said only \"the emotional weight of beige\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Lucía%20Quispe/Lucía%20Quispe.person"
+      },
+      "image": {
+        "@id": "People/Lucía%20Quispe/Lucía%20Quispe_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Dubois-Ngata/Piotr%20Dubois-Ngata.person",
+      "@type": "File",
+      "contentSize": 1066,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Piotr Dubois-Ngata.person",
+      "about": {
+        "@id": "#Piotr%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "#Piotr%20Dubois-Ngata",
+      "@type": "Person",
+      "name": "Piotr Dubois-Ngata",
+      "ldac:age": "56",
+      "gender": "Female",
+      "description": "Piotr Dubois-Ngata belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Piotr Dubois-Ngata said only \"listening to grey\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Piotr%20Dubois-Ngata/Piotr%20Dubois-Ngata.person"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the artist's kitchen",
+      "@type": "Place",
+      "name": "the artist's kitchen"
+    },
+    {
+      "@id": "Sessions/INT_2017_0532/INT_2017_0532.session",
+      "@type": "File",
+      "contentSize": 1326,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2017_0532.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0532/INT_2017_0532_20170501.eaf",
+      "@type": "File",
+      "contentSize": 844,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2017_0532_20170501.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0532/INT_2017_0532_20170501.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2017_0532_20170501.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

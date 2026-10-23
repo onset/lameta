@@ -1,0 +1,364 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "The Unconquered Rectangle",
+      "description": "Situation: Walking back from the opening Setting: On the gallery steps",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/SAYMORE_classic/SAYMORE_classic.session"
+        },
+        {
+          "@id": "Sessions/SAYMORE_classic/SAYMORE_classic_Source.wav"
+        },
+        {
+          "@id": "Sessions/SAYMORE_classic/SAYMORE_classic_Source.wav.annotations.eaf"
+        },
+        {
+          "@id": "Sessions/SAYMORE_classic/SAYMORE_classic_Source.wav.oralAnnotations.wav"
+        },
+        {
+          "@id": "Sessions/SAYMORE_classic/SAYMORE_classic_Source_StandardAudio.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Procedural"
+        }
+      ],
+      "dateCreated": "2018-02-23",
+      "keywords": "edges",
+      "ldac:consultant": [
+        {
+          "@id": "#Nɔkɔ%20Ɛsi"
+        },
+        {
+          "@id": "#Wilema%20Dimo"
+        }
+      ],
+      "ldac:participant": [
+        {
+          "@id": "#Nɔkɔ%20Ɛsi%20%28consultant%29"
+        },
+        {
+          "@id": "#Wilema%20Dimo%20%28consultant%29"
+        }
+      ],
+      "ldac:speaker": [
+        {
+          "@id": "#Nɔkɔ%20Ɛsi"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi.person",
+      "@type": "File",
+      "contentSize": 1135,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nɔkɔ Ɛsi.person",
+      "about": {
+        "@id": "#Nɔkɔ%20Ɛsi"
+      }
+    },
+    {
+      "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi_Consent.mp4",
+      "@type": [
+        "File",
+        "VideoObject"
+      ],
+      "contentSize": 16436,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "video/mp4",
+      "name": "Nɔkɔ Ɛsi_Consent.mp4",
+      "about": {
+        "@id": "#Nɔkɔ%20Ɛsi"
+      }
+    },
+    {
+      "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi_Photo.jpg",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 1962,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/jpeg",
+      "name": "Nɔkɔ Ɛsi_Photo.jpg",
+      "about": {
+        "@id": "#Nɔkɔ%20Ɛsi"
+      }
+    },
+    {
+      "@id": "#Nɔkɔ%20Ɛsi",
+      "@type": "Person",
+      "name": "Nɔkɔ Ɛsi",
+      "ldac:age": "46",
+      "gender": "Female",
+      "description": "[[en]]Has painted the same grey square since 1994 and considers it unfinished.[[es]]Pinta el mismo cuadrado gris desde 1994 y lo considera inacabado. Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi.person"
+        },
+        {
+          "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi_Consent.mp4"
+        }
+      ],
+      "image": {
+        "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi_Photo.jpg"
+      }
+    },
+    {
+      "@id": "People/Wilema%20Dimo/Wilema%20Dimo.person",
+      "@type": "File",
+      "contentSize": 838,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Wilema Dimo.person",
+      "about": {
+        "@id": "#Wilema%20Dimo"
+      }
+    },
+    {
+      "@id": "People/Wilema%20Dimo/Wilema%20Dimo_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Wilema Dimo_Consent.pdf",
+      "about": {
+        "@id": "#Wilema%20Dimo"
+      }
+    },
+    {
+      "@id": "People/Wilema%20Dimo/Wilema%20Dimo_Consent_2.jpg",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 1962,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/jpeg",
+      "name": "Wilema Dimo_Consent_2.jpg",
+      "about": {
+        "@id": "#Wilema%20Dimo"
+      }
+    },
+    {
+      "@id": "#Wilema%20Dimo",
+      "@type": "Person",
+      "name": "Wilema Dimo",
+      "gender": "Male",
+      "description": "Wilema Dimo belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Wilema Dimo said only \"why the canvas must stay blank\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Wilema%20Dimo/Wilema%20Dimo.person"
+        },
+        {
+          "@id": "People/Wilema%20Dimo/Wilema%20Dimo_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Wilema%20Dimo/Wilema%20Dimo_Consent_2.jpg"
+      }
+    },
+    {
+      "@id": "#Nɔkɔ%20Ɛsi%20%28consultant%29",
+      "@type": "Person",
+      "name": "Nɔkɔ Ɛsi (consultant)"
+    },
+    {
+      "@id": "#Wilema%20Dimo%20%28consultant%29",
+      "@type": "Person",
+      "name": "Wilema Dimo (consultant)"
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Procedural",
+      "@type": "DefinedTerm",
+      "name": "Procedural discourse",
+      "description": "An explanation or description of a method, process, or situation having ordered steps.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "Sessions/SAYMORE_classic/SAYMORE_classic.session",
+      "@type": "File",
+      "contentSize": 1116,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "SAYMORE_classic.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/SAYMORE_classic/SAYMORE_classic_Source.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 16044,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "SAYMORE_classic_Source.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/SAYMORE_classic/SAYMORE_classic_Source.wav.annotations.eaf",
+      "@type": "File",
+      "contentSize": 819,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "SAYMORE_classic_Source.wav.annotations.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/SAYMORE_classic/SAYMORE_classic_Source.wav.oralAnnotations.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 4844,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "SAYMORE_classic_Source.wav.oralAnnotations.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/SAYMORE_classic/SAYMORE_classic_Source_StandardAudio.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 4844,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "SAYMORE_classic_Source_StandardAudio.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    }
+  ]
+}

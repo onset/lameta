@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta minimum_lameta_version_to_read="0.0.0">
+  <Recording_Quality>Good</Recording_Quality>
+  <Microphone>Zoom H4n</Microphone>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Meta>

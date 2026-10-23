@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2023_0608</id>
+  <Title type="string">Towards a portrait of the wind, from behind</Title>
+  <synopsis type="string">Ulla Dubois-Ngata talks about what the gallery cleaner threw away. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</synopsis>
+  <languages type="languageChoices">fr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">a lift between floors 3 and 4</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2023-09-21</Date>
+  <Keywords type="string">Lateral Minimalism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>UD190</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>UO010</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

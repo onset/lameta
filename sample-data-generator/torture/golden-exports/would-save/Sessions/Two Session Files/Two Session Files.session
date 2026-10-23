@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <id type="string">Two Session Files</id>
+  <Title type="string">The original</Title>
+  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Status type="string">Incoming</Status>
+  <Contributions></Contributions>
+</Session>

@@ -1,0 +1,311 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On the shadow of a canvas that was never painted",
+      "description": "Ulla Castellanos talks about triangles as a form of apology. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2022_0417/INT_2022_0417.session"
+        },
+        {
+          "@id": "Sessions/INT_2022_0417/INT_2022_0417_20221026.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2022-10-26",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Ulla%20Castellanos"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Ömer%20Nakamura"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Bartholomew%20Mbeki"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Ulla%20Castellanos/Ulla%20Castellanos.person",
+      "@type": "File",
+      "contentSize": 985,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ulla Castellanos.person",
+      "about": {
+        "@id": "#Ulla%20Castellanos"
+      }
+    },
+    {
+      "@id": "People/Ulla%20Castellanos/Ulla%20Castellanos_Consent.pdf",
+      "@type": "File",
+      "contentSize": 598,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ulla Castellanos_Consent.pdf",
+      "about": {
+        "@id": "#Ulla%20Castellanos"
+      }
+    },
+    {
+      "@id": "#Ulla%20Castellanos",
+      "@type": "Person",
+      "name": "Ulla Castellanos",
+      "ldac:age": "67",
+      "gender": "Female",
+      "description": "Ulla Castellanos belongs to Lateral Minimalism and works in the disused swimming pool. Asked about influences, Ulla Castellanos said only \"painting the colour of a Tuesday\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Ulla%20Castellanos/Ulla%20Castellanos.person"
+        },
+        {
+          "@id": "People/Ulla%20Castellanos/Ulla%20Castellanos_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Ömer%20Nakamura/Ömer%20Nakamura.person",
+      "@type": "File",
+      "contentSize": 875,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ömer Nakamura.person",
+      "about": {
+        "@id": "#Ömer%20Nakamura"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Nakamura/Ömer%20Nakamura_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Ömer Nakamura_Consent.png",
+      "about": {
+        "@id": "#Ömer%20Nakamura"
+      }
+    },
+    {
+      "@id": "#Ömer%20Nakamura",
+      "@type": "Person",
+      "name": "Ömer Nakamura",
+      "ldac:age": "56",
+      "gender": "Male",
+      "description": "Ömer Nakamura belongs to Greyscale Romanticism and works in a borrowed greenhouse. Asked about influences, Ömer Nakamura said only \"what the gallery cleaner threw away\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Ömer%20Nakamura/Ömer%20Nakamura.person"
+      },
+      "image": {
+        "@id": "People/Ömer%20Nakamura/Ömer%20Nakamura_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Bartholomew%20Mbeki/Bartholomew%20Mbeki.person",
+      "@type": "File",
+      "contentSize": 974,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Bartholomew Mbeki.person",
+      "about": {
+        "@id": "#Bartholomew%20Mbeki"
+      }
+    },
+    {
+      "@id": "People/Bartholomew%20Mbeki/Bartholomew%20Mbeki_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Bartholomew Mbeki_Consent.png",
+      "about": {
+        "@id": "#Bartholomew%20Mbeki"
+      }
+    },
+    {
+      "@id": "#Bartholomew%20Mbeki",
+      "@type": "Person",
+      "name": "Bartholomew Mbeki",
+      "ldac:age": "67",
+      "gender": "Male",
+      "description": "Bartholomew Mbeki belongs to The Wet Paint School and works in Gallery Huya. Asked about influences, Bartholomew Mbeki said only \"the politics of the colour orange\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Bartholomew%20Mbeki/Bartholomew%20Mbeki.person"
+      },
+      "image": {
+        "@id": "People/Bartholomew%20Mbeki/Bartholomew%20Mbeki_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2022_0417/INT_2022_0417.session",
+      "@type": "File",
+      "contentSize": 1369,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2022_0417.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2022_0417/INT_2022_0417_20221026.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2022_0417_20221026.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

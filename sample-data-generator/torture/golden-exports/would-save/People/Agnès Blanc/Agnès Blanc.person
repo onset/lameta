@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <FullName type="string">Agnès Blanc</FullName>
+  <Code type="string">AB120</Code>
+  <BirthYear type="string">1943</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Accidental Constructivism</EthnicGroup>
+  <PrimaryOccupation type="string">Colourist specialising in beige</PrimaryOccupation>
+  <Description type="string">Agnès Blanc belongs to The Wet Paint School and works in the back room of a frame shop. Asked about influences, Agnès Blanc said only "the emotional weight of beige".</Description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Ladderism</Movement>
+    <Studio type="string">Gallery Huya</Studio>
+  </CustomFields>
+</Person>

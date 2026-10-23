@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2024_0499</id>
+  <Title type="string">Against the installation that was mistaken for scaffolding</Title>
+  <synopsis type="string">Oona Søndergaard talks about drawing with a ladder. The interview stopped twice because the artist wanted to look at the corner of the room.</synopsis>
+  <languages type="languageChoices">fr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">Gallery Huya</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2024-08-24</Date>
+  <Keywords type="string">Accidental Constructivism, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>Oona Søndergaard</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Ulla Whitehorse</FullName>
+  <Code type="string">UW220</Code>
+  <BirthYear type="string">1942</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Post-Squarism</EthnicGroup>
+  <PrimaryOccupation type="string">Curator of empty frames</PrimaryOccupation>
+  <Description type="string">Ulla Whitehorse belongs to Neo-Beigeism and works in Gallery Huya. Asked about influences, Ulla Whitehorse said only "the long argument with the colour blue".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="etr" primary="false" mother="false" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</otherLanguage0>
+  <Contributions></Contributions>
+</Person>

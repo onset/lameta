@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <id type="string">OLD_lameta_0.9</id>
+  <Title type="string">Early works, as an old lameta saved them</Title>
+  <languages type="languageChoices">etr: Edolo</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">procedural_discourse</Genre>
+  <Access type="string">Open</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2019-03-21</Date>
+  <Topic type="string">early works</Topic>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+  <AdditionalFields type="xml">
+    <Location_Region type="string">Southern Highlands</Location_Region>
+    <Planning_Type type="string">planned</Planning_Type>
+  </AdditionalFields>
+</Session>

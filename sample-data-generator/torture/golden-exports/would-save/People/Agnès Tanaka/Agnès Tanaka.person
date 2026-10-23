@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">Agnès Tanaka</FullName>
+  <Code type="string">AT030</Code>
+  <BirthYear type="string">1974</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Post-Squarism</EthnicGroup>
+  <PrimaryOccupation type="string">Paints with ladders</PrimaryOccupation>
+  <Description type="string">Agnès Tanaka belongs to Neo-Beigeism and works in a lift between floors 3 and 4. Asked about influences, Agnès Tanaka said only "a dot, considered at length".</Description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</mothersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Accidental Constructivism</Movement>
+    <Studio type="string">a borrowed greenhouse</Studio>
+  </CustomFields>
+</Person>
