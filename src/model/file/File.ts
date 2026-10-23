@@ -513,10 +513,13 @@ export /*babel doesn't like this: abstract*/ class File {
       : this.describedFileOrLinkFilePath;
     return Path.basename(filename);
   }
+  // lameta never rewrites a .link file, and reads it when it loads the file, so reading it
+  // once also keeps a link usable after the .link file has been removed
+  private linkSubpath: string | undefined;
   public getActualFilePath(): string {
     if (this.isLinkFile()) {
-      const subpath = fs.readFileSync(this.describedFileOrLinkFilePath, "utf-8");
-      return Path.join(getMediaFolderOrEmptyForThisProjectAndMachine(), subpath);
+      this.linkSubpath ??= fs.readFileSync(this.describedFileOrLinkFilePath, "utf-8");
+      return Path.join(getMediaFolderOrEmptyForThisProjectAndMachine(), this.linkSubpath);
     } else {
       return this.describedFileOrLinkFilePath;
     }

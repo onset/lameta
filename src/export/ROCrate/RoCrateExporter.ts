@@ -685,13 +685,12 @@ interface FileToExport {
 function filesToExport(folder: Folder): FileToExport[] {
   const result: FileToExport[] = [];
   folder.files.forEach((file) => {
+    const path = file.getActualFilePath();
+    if (Path.basename(path).startsWith("ro-crate")) {
+      return;
+    }
     let stats: fs.Stats;
     try {
-      // for a link, getActualFilePath reads the .link file, which can be missing too
-      const path = file.getActualFilePath();
-      if (Path.basename(path).startsWith("ro-crate")) {
-        return;
-      }
       stats = fs.statSync(path);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {

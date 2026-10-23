@@ -90,6 +90,20 @@ describe("getActualFileExists", () => {
       fs.removeSync(folder);
     }
   });
+
+  it("still knows where a link points after its .link file has been removed", () => {
+    const folder = temp.mkdirSync("link removed");
+    const linkPath = Path.join(folder, "far away.wav.link");
+    fs.writeFileSync(linkPath, "recordings/far away.wav");
+    try {
+      const f = new OtherFile(linkPath, new EncounteredVocabularyRegistry());
+      const before = f.getActualFilePath();
+      fs.removeSync(linkPath);
+      expect(f.getActualFilePath()).toBe(before);
+    } finally {
+      fs.removeSync(folder);
+    }
+  });
 });
 
 describe("file", () => {
