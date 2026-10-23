@@ -170,7 +170,7 @@ export default class ImdiBundler {
     omitNamespaces?: boolean,
   ): AsyncGenerator<ExportSessionData, ExportCorpusData, void> {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
-    const secondLevel = Path.basename(project.directory);
+    const secondLevel = sanitizeForArchive(Path.basename(project.directory), "ASCII");
     const childrenSubpaths: string[] = [];
 
     // --- Project Documents ---
@@ -234,7 +234,9 @@ export default class ImdiBundler {
         imdiMode,
         copyInProjectFiles,
       );
-      childrenSubpaths.push(secondLevel + "/" + session.filePrefix + extensionWithDot);
+      childrenSubpaths.push(
+        secondLevel + "/" + sanitizeForArchive(session.filePrefix + extensionWithDot, "ASCII"),
+      );
       yield sessionData;
     }
 
@@ -249,7 +251,10 @@ export default class ImdiBundler {
 
     return {
       imdiXml: corpusImdi,
-      imdiPath: Path.join(targetDirForProjectFile, `${project.displayName}${extensionWithDot}`),
+      imdiPath: Path.join(
+        targetDirForProjectFile,
+        sanitizeForArchive(`${project.displayName}${extensionWithDot}`, "ASCII"),
+      ),
       displayName: project.displayName,
     };
   }
@@ -269,7 +274,7 @@ export default class ImdiBundler {
     return {
       totalSessions,
       rootDirectory,
-      secondLevelDirectory: Path.basename(project.directory),
+      secondLevelDirectory: sanitizeForArchive(Path.basename(project.directory), "ASCII"),
     };
   }
 
@@ -290,7 +295,7 @@ export default class ImdiBundler {
     const sessionImdi = ImdiGenerator.generateSession(imdiMode, session, project);
     await validateImdiOrThrow(sessionImdi, session.displayName);
 
-    const sessionDirName = Path.basename(session.directory);
+    const sessionDirName = sanitizeForArchive(Path.basename(session.directory), "ASCII");
     const directoriesToCreate: string[] = [];
     let imdiPath: string;
 

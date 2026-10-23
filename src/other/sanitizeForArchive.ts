@@ -1,4 +1,7 @@
-import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
+import {
+  GetOtherConfigurationSettings,
+  OtherConfigurationSettings,
+} from "../model/Project/OtherConfigurationSettings";
 
 const sanitizeFilename = require("sanitize-filename");
 const ASCIIFolder = require("fold-to-ascii");
@@ -7,8 +10,12 @@ let _archiveLimitsToPortableChars: () => boolean = () => false;
 export function initializeSanitizeForArchive(fn: () => boolean) {
   _archiveLimitsToPortableChars = fn;
 }
-export function sanitizeForArchive(name: string, forceRules?: "ASCII"): string {
-  let n = name;
+export function sanitizeForArchive(
+  name: string,
+  forceRules?: OtherConfigurationSettings["fileNameRules"],
+): string {
+  // a name copied from a Mac is often in NFD, where an accent is a separate character
+  let n = name.normalize("NFC");
   switch (forceRules || GetOtherConfigurationSettings().fileNameRules) {
     case "ASCII": {
       // first, get to ascii only
@@ -27,12 +34,15 @@ export function sanitizeForArchive(name: string, forceRules?: "ASCII"): string {
       throw new Error("Unknown fileNameRules: " + GetOtherConfigurationSettings().fileNameRules);
   }
 
-  // regardless of limitations by the archive, make sure it is safe for filesystems
-  n = sanitizeFilename(n);
-  //console.log(`sanitizeForArchive(${name}) --> ${n}`);
+  // remove leading and trailing underscores
+  n = n.replace(/^_+/, "").replace(/_+$/, "");
 
-  // remove leading underscores
-  n = n.replace(/^_+/, "");
-  // remove trailing underscores
-  return n.replace(/_+$/, "");
+  // regardless of limitations by the archive, make sure it is safe for filesystems
+  return sanitizeFilename(withoutWindowsDeviceName(n));
+}
+
+// Windows cannot make a file named like a device, such as "COM1" or "aux.txt", and
+// sanitize-filename would remove the whole name, so add an underscore: "aux_.txt"
+function withoutWindowsDeviceName(name: string): string {
+  return name.replace(/^(con|prn|aux|nul|com\d|lpt\d)(?=\.|$)/i, "$1_");
 }

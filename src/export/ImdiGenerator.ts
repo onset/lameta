@@ -996,7 +996,10 @@ export default class ImdiGenerator {
     // IMDI archives. Anyhow, since the bundler would have (or will have) export the sanitized version, we need to do
     // that to the file name we use for it in the xml.
     const filename = sanitizeForArchive(Path.basename(path), "ASCII");
-    const immediateParentDirectoryName = Path.basename(Path.dirname(path));
+    const immediateParentDirectoryName = sanitizeForArchive(
+      Path.basename(Path.dirname(path)),
+      "ASCII",
+    );
 
     const relativePath = Path.join(immediateParentDirectoryName, filename)
       // get a path that works across platforms.
