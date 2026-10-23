@@ -1,0 +1,356 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards negative space and its landlord",
+      "description": "Piotr Quispe talks about a sculpture made entirely of hesitation. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2022_0047/INT_2022_0047.session"
+        },
+        {
+          "@id": "Sessions/INT_2022_0047/INT_2022_0047_20221220.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the disused swimming pool"
+      },
+      "dateCreated": "2022-12-20",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Piotr%20Quispe"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Ömer%20Ikeda"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Ingrid%20O'Shaughnessy"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Ingrid%20Ulloa"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Quispe/Piotr%20Quispe.person",
+      "@type": "File",
+      "contentSize": 1051,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Piotr Quispe.person",
+      "about": {
+        "@id": "#Piotr%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Quispe/Piotr%20Quispe_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Piotr Quispe_Consent.png",
+      "about": {
+        "@id": "#Piotr%20Quispe"
+      }
+    },
+    {
+      "@id": "#Piotr%20Quispe",
+      "@type": "Person",
+      "name": "Piotr Quispe",
+      "ldac:age": "73",
+      "gender": "Female",
+      "description": "Piotr Quispe belongs to Accidental Constructivism and works in the back room of a frame shop. Asked about influences, Piotr Quispe said only \"the brushstroke that got away\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Piotr%20Quispe/Piotr%20Quispe.person"
+      },
+      "image": {
+        "@id": "People/Piotr%20Quispe/Piotr%20Quispe_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Ikeda/Ömer%20Ikeda.person",
+      "@type": "File",
+      "contentSize": 866,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ömer Ikeda.person",
+      "about": {
+        "@id": "#Ömer%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Ikeda/Ömer%20Ikeda_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Ömer Ikeda_Consent.png",
+      "about": {
+        "@id": "#Ömer%20Ikeda"
+      }
+    },
+    {
+      "@id": "#Ömer%20Ikeda",
+      "@type": "Person",
+      "name": "Ömer Ikeda",
+      "ldac:age": "49",
+      "gender": "Male",
+      "description": "Ömer Ikeda belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Ömer Ikeda said only \"listening to grey\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Ömer%20Ikeda/Ömer%20Ikeda.person"
+      },
+      "image": {
+        "@id": "People/Ömer%20Ikeda/Ömer%20Ikeda_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20O'Shaughnessy/Ingrid%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 943,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ingrid O'Shaughnessy.person",
+      "about": {
+        "@id": "#Ingrid%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20O'Shaughnessy/Ingrid%20O'Shaughnessy_Consent.pdf",
+      "@type": "File",
+      "contentSize": 602,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ingrid O'Shaughnessy_Consent.pdf",
+      "about": {
+        "@id": "#Ingrid%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Ingrid%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Ingrid O'Shaughnessy",
+      "ldac:age": "48",
+      "gender": "Other",
+      "description": "Ingrid O'Shaughnessy belongs to Frameless Expressionism and works in the rooftop. Asked about influences, Ingrid O'Shaughnessy said only \"triangles as a form of apology\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Ingrid%20O'Shaughnessy/Ingrid%20O'Shaughnessy.person"
+        },
+        {
+          "@id": "People/Ingrid%20O'Shaughnessy/Ingrid%20O'Shaughnessy_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Ingrid%20Ulloa/Ingrid%20Ulloa.person",
+      "@type": "File",
+      "contentSize": 936,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ingrid Ulloa.person",
+      "about": {
+        "@id": "#Ingrid%20Ulloa"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20Ulloa/Ingrid%20Ulloa_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ingrid Ulloa_Consent.pdf",
+      "about": {
+        "@id": "#Ingrid%20Ulloa"
+      }
+    },
+    {
+      "@id": "#Ingrid%20Ulloa",
+      "@type": "Person",
+      "name": "Ingrid Ulloa",
+      "ldac:age": "52",
+      "gender": "Other",
+      "description": "Ingrid Ulloa belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Ingrid Ulloa said only \"a square that refuses to be a square\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Ingrid%20Ulloa/Ingrid%20Ulloa.person"
+        },
+        {
+          "@id": "People/Ingrid%20Ulloa/Ingrid%20Ulloa_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the disused swimming pool",
+      "@type": "Place",
+      "name": "the disused swimming pool"
+    },
+    {
+      "@id": "Sessions/INT_2022_0047/INT_2022_0047.session",
+      "@type": "File",
+      "contentSize": 1494,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2022_0047.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2022_0047/INT_2022_0047_20221220.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2022_0047_20221220.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

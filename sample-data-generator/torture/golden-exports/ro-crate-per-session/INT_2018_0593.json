@@ -1,0 +1,295 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond a square that refuses to be a square",
+      "description": "Nnamdi Mbeki talks about painting the colour of a Tuesday. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2018_0593/INT_2018_0593.session"
+        },
+        {
+          "@id": "Sessions/INT_2018_0593/INT_2018_0593_20180606.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2018-06-06",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Nnamdi%20Mbeki"
+        },
+        {
+          "@id": "#Xochitl%20Quispe"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Tenzin%20Whitehorse"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Mbeki/Nnamdi%20Mbeki.person",
+      "@type": "File",
+      "contentSize": 861,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nnamdi Mbeki.person",
+      "about": {
+        "@id": "#Nnamdi%20Mbeki"
+      }
+    },
+    {
+      "@id": "#Nnamdi%20Mbeki",
+      "@type": "Person",
+      "name": "Nnamdi Mbeki",
+      "ldac:age": "28",
+      "gender": "Other",
+      "description": "Nnamdi Mbeki belongs to Accidental Constructivism and works in a lift between floors 3 and 4. Asked about influences, Nnamdi Mbeki said only \"a dot, considered at length\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Nnamdi%20Mbeki/Nnamdi%20Mbeki.person"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 897,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Whitehorse.person",
+      "about": {
+        "@id": "#Tenzin%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Tenzin Whitehorse_Consent.png",
+      "about": {
+        "@id": "#Tenzin%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Whitehorse",
+      "@type": "Person",
+      "name": "Tenzin Whitehorse",
+      "ldac:age": "79",
+      "gender": "Male",
+      "description": "Tenzin Whitehorse belongs to Greyscale Romanticism and works in the artist's kitchen. Asked about influences, Tenzin Whitehorse said only \"the installation that was mistaken for scaffolding\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse.person"
+      },
+      "image": {
+        "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Quispe/Xochitl%20Quispe.person",
+      "@type": "File",
+      "contentSize": 859,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Xochitl Quispe.person",
+      "about": {
+        "@id": "#Xochitl%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Quispe/Xochitl%20Quispe_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Xochitl Quispe_Consent.png",
+      "about": {
+        "@id": "#Xochitl%20Quispe"
+      }
+    },
+    {
+      "@id": "#Xochitl%20Quispe",
+      "@type": "Person",
+      "name": "Xochitl Quispe",
+      "ldac:age": "26",
+      "gender": "Other",
+      "description": "Xochitl Quispe belongs to The Wet Paint School and works in a borrowed greenhouse. Asked about influences, Xochitl Quispe said only \"listening to grey\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Xochitl%20Quispe/Xochitl%20Quispe.person"
+      },
+      "image": {
+        "@id": "People/Xochitl%20Quispe/Xochitl%20Quispe_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2018_0593/INT_2018_0593.session",
+      "@type": "File",
+      "contentSize": 1324,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2018_0593.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2018_0593/INT_2018_0593_20180606.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2018_0593_20180606.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

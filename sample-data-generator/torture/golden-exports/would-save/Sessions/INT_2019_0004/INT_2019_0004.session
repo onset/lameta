@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2019_0004</id>
+  <Title type="string">Beyond an exhibition in total darkness</Title>
+  <synopsis type="string">Agnès Haddad talks about the brushstroke that got away. The artist answered every question with a question, and then with a long pause, which the transcript renders as "…".</synopsis>
+  <languages type="languageChoices">tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">the artist's kitchen</Location>
+  <Access type="string">O</Access>
+  <Status type="string">In_Progress</Status>
+  <Date>2019-05-05</Date>
+  <Keywords type="string">Ladderism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>AH090</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2018_0363</id>
+  <Title type="string">About the moment before the first mark</Title>
+  <synopsis type="string">Kalani Yılmaz talks about the shadow of a canvas that was never painted. The artist asked that the microphone face away from the painting, so as not to influence it.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">the disused swimming pool</Location>
+  <Access type="string">O</Access>
+  <AccessExplanation type="string">The artist asks that this stay closed until the paint is dry.</AccessExplanation>
+  <Status type="string">In_Progress</Status>
+  <Date>2018-04-28</Date>
+  <Keywords type="string">Lateral Minimalism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>KY050</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Vũ Tanaka</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

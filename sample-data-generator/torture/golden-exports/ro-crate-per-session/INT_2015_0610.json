@@ -1,0 +1,315 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About painting the colour of a Tuesday",
+      "description": "Malak Ikeda talks about why the frame is the real work. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2015_0610/INT_2015_0610.session"
+        },
+        {
+          "@id": "Sessions/INT_2015_0610/INT_2015_0610_20151123.wav"
+        },
+        {
+          "@id": "Sessions/INT_2015_0610/INT_2015_0610_Artwork.png"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2015-11-23",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Malak%20Ikeda"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Greta%20Kowalczyk"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Chiamaka%20Lindqvist"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Malak%20Ikeda/Malak%20Ikeda.person",
+      "@type": "File",
+      "contentSize": 1152,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak Ikeda.person",
+      "about": {
+        "@id": "#Malak%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Malak%20Ikeda/Malak%20Ikeda_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak Ikeda_Photo.png",
+      "about": {
+        "@id": "#Malak%20Ikeda"
+      }
+    },
+    {
+      "@id": "#Malak%20Ikeda",
+      "@type": "Person",
+      "name": "Malak Ikeda",
+      "ldac:age": "77",
+      "gender": "Female",
+      "description": "Malak Ikeda belongs to Greyscale Romanticism and works in Studio 4, the old soap factory. Asked about influences, Malak Ikeda said only \"eleven shades of white and one impostor\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Malak%20Ikeda/Malak%20Ikeda.person"
+      },
+      "image": {
+        "@id": "People/Malak%20Ikeda/Malak%20Ikeda_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 1069,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Greta Kowalczyk.person",
+      "about": {
+        "@id": "#Greta%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Greta Kowalczyk_Photo.png",
+      "about": {
+        "@id": "#Greta%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Greta%20Kowalczyk",
+      "@type": "Person",
+      "name": "Greta Kowalczyk",
+      "ldac:age": "28",
+      "gender": "Male",
+      "description": "Greta Kowalczyk belongs to Post-Squarism and works in a borrowed greenhouse. Asked about influences, Greta Kowalczyk said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk.person"
+      },
+      "image": {
+        "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Lindqvist/Chiamaka%20Lindqvist.person",
+      "@type": "File",
+      "contentSize": 880,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Lindqvist.person",
+      "about": {
+        "@id": "#Chiamaka%20Lindqvist"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Lindqvist",
+      "@type": "Person",
+      "name": "Chiamaka Lindqvist",
+      "ldac:age": "45",
+      "gender": "Female",
+      "description": "Chiamaka Lindqvist belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Chiamaka Lindqvist said only \"drawing with a ladder\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Chiamaka%20Lindqvist/Chiamaka%20Lindqvist.person"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2015_0610/INT_2015_0610.session",
+      "@type": "File",
+      "contentSize": 1345,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2015_0610.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0610/INT_2015_0610_20151123.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2015_0610_20151123.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0610/INT_2015_0610_Artwork.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 456,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "INT_2015_0610_Artwork.png",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

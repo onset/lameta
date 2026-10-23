@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2015_0360</id>
+  <Title type="string">About the moment before the first mark</Title>
+  <synopsis type="string">Zofia O'Shaughnessy talks about eleven shades of white and one impostor. The artist asked that the microphone face away from the painting, so as not to influence it.</synopsis>
+  <languages type="languageChoices">etr;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">the disused swimming pool</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2015-01-25</Date>
+  <Keywords type="string">Hesitationism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>ZO155</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Dmitri Castellanos</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Quilla Pereira</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Lucía (no record)</name>
+      <role>participant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

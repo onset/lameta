@@ -1,0 +1,288 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the installation that was mistaken for scaffolding",
+      "description": "Ásdís Tanaka talks about silence, in three coats of varnish. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2017_0732/INT_2017_0732.session"
+        },
+        {
+          "@id": "Sessions/INT_2017_0732/INT_2017_0732_20170105.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2017_0732/INT_2017_0732_20170105.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2017-01-05",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Ásdís%20Tanaka"
+        },
+        {
+          "@id": "#Chiamaka%20Lindqvist"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Rangi%20Tanaka"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 854,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ásdís Tanaka.person",
+      "about": {
+        "@id": "#Ásdís%20Tanaka"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ásdís Tanaka_Consent.pdf",
+      "about": {
+        "@id": "#Ásdís%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Ásdís%20Tanaka",
+      "@type": "Person",
+      "name": "Ásdís Tanaka",
+      "ldac:age": "70",
+      "gender": "Male",
+      "description": "Ásdís Tanaka belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Ásdís Tanaka said only \"the long argument with the colour blue\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka.person"
+        },
+        {
+          "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Chiamaka%20Lindqvist/Chiamaka%20Lindqvist.person",
+      "@type": "File",
+      "contentSize": 880,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Lindqvist.person",
+      "about": {
+        "@id": "#Chiamaka%20Lindqvist"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Lindqvist",
+      "@type": "Person",
+      "name": "Chiamaka Lindqvist",
+      "ldac:age": "47",
+      "gender": "Female",
+      "description": "Chiamaka Lindqvist belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Chiamaka Lindqvist said only \"drawing with a ladder\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Chiamaka%20Lindqvist/Chiamaka%20Lindqvist.person"
+      }
+    },
+    {
+      "@id": "People/Rangi%20Tanaka/Rangi%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 849,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Rangi Tanaka.person",
+      "about": {
+        "@id": "#Rangi%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Rangi%20Tanaka",
+      "@type": "Person",
+      "name": "Rangi Tanaka",
+      "ldac:age": "67",
+      "gender": "Female",
+      "description": "Rangi Tanaka belongs to Post-Squarism and works in the rooftop. Asked about influences, Rangi Tanaka said only \"triangles as a form of apology\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Rangi%20Tanaka/Rangi%20Tanaka.person"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2017_0732/INT_2017_0732.session",
+      "@type": "File",
+      "contentSize": 1342,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2017_0732.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0732/INT_2017_0732_20170105.eaf",
+      "@type": "File",
+      "contentSize": 864,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2017_0732_20170105.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0732/INT_2017_0732_20170105.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2017_0732_20170105.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

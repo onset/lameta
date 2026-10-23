@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <FullName type="string">Rangi O'Shaughnessy</FullName>
+  <BirthYear type="string">1947</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Post-Squarism</EthnicGroup>
+  <PrimaryOccupation type="string">Paints with ladders</PrimaryOccupation>
+  <Description type="string">Rangi O'Shaughnessy belongs to Neo-Beigeism and works in the rooftop. Asked about influences, Rangi O'Shaughnessy said only "the moment before the first mark".</Description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</mothersLanguage>
+  <Contributions></Contributions>
+</Person>

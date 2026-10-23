@@ -1,0 +1,274 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On the shadow of a canvas that was never painted",
+      "description": "Ásdís Søndergaard talks about triangles as a form of apology. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2024_0569/INT_2024_0569.session"
+        },
+        {
+          "@id": "Sessions/INT_2024_0569/INT_2024_0569_20240610.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2024-06-10",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Ásdís%20Søndergaard"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Malak%20Blanc"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Søndergaard/Ásdís%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 856,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ásdís Søndergaard.person",
+      "about": {
+        "@id": "#Ásdís%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Søndergaard/Ásdís%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ásdís Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Ásdís%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Ásdís%20Søndergaard",
+      "@type": "Person",
+      "name": "Ásdís Søndergaard",
+      "ldac:age": "38",
+      "gender": "Male",
+      "description": "Ásdís Søndergaard belongs to Lateral Minimalism and works in the disused swimming pool. Asked about influences, Ásdís Søndergaard said only \"painting the colour of a Tuesday\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Ásdís%20Søndergaard/Ásdís%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Ásdís%20Søndergaard/Ásdís%20Søndergaard_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc.person",
+      "@type": "File",
+      "contentSize": 1155,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak Blanc.person",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc_Consent.pdf",
+      "@type": "File",
+      "contentSize": 593,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Malak Blanc_Consent.pdf",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak Blanc_Photo.png",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "#Malak%20Blanc",
+      "@type": "Person",
+      "name": "Malak Blanc",
+      "ldac:age": "28",
+      "gender": "Female",
+      "description": "Malak Blanc belongs to Ladderism and works in a borrowed greenhouse. Asked about influences, Malak Blanc said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Malak%20Blanc/Malak%20Blanc.person"
+        },
+        {
+          "@id": "People/Malak%20Blanc/Malak%20Blanc_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Malak%20Blanc/Malak%20Blanc_Photo.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2024_0569/INT_2024_0569.session",
+      "@type": "File",
+      "contentSize": 1224,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2024_0569.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2024_0569/INT_2024_0569_20240610.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2024_0569_20240610.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

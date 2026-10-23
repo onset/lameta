@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Greta Søndergaard</FullName>
+  <BirthYear type="string">1952</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">The Wet Paint School</EthnicGroup>
+  <PrimaryOccupation type="string">Conceptual artist; the best work is the absence of work</PrimaryOccupation>
+  <Description type="string">Greta Søndergaard belongs to Lateral Minimalism and works in a borrowed greenhouse. Asked about influences, Greta Søndergaard said only "an exhibition in total darkness".</Description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</mothersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Post-Squarism</Movement>
+    <Studio type="string">the rooftop</Studio>
+  </CustomFields>
+</Person>

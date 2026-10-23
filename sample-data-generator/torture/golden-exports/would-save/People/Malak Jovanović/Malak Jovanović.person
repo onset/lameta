@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <FullName type="string">Malak Jovanović</FullName>
+  <BirthYear type="string">1974</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Post-Squarism</EthnicGroup>
+  <PrimaryOccupation type="string">Sculptor of negative space</PrimaryOccupation>
+  <Description type="string">Malak Jovanović belongs to Hesitationism and works in the rooftop. Asked about influences, Malak Jovanović said only "the moment before the first mark".</Description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</mothersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Accidental Constructivism</Movement>
+    <Studio type="string">Studio 4, the old soap factory</Studio>
+  </CustomFields>
+</Person>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">INT_2015_0030</id>
+  <Title type="string">Notes on silence, in three coats of varnish</Title>
+  <synopsis type="string">Agnès Nakamura talks about the installation that was mistaken for scaffolding. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</synopsis>
+  <languages type="languageChoices">etr;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">the rooftop</Location>
+  <Access type="string">S</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2015-07-03</Date>
+  <Keywords type="string">Frameless Expressionism, studio visit</Keywords>
+  <Topic type="string">space</Topic>
+  <Contributions>
+    <contributor>
+      <name>AN060</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Xochitl Lindqvist</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

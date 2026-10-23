@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2019_0324</id>
+  <Title type="string">About painting the colour of a Tuesday</Title>
+  <synopsis type="string">Tenzin Rautenbach talks about a square that refuses to be a square. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;tpi;eng</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">song</Genre>
+  <Location type="string">the rooftop</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2019-01-17</Date>
+  <Keywords type="string">Lateral Minimalism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Tenzin Rautenbach</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Zielińska</name>
+      <role>translator</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

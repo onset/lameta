@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2021_0126</id>
+  <Title type="string">Against the installation that was mistaken for scaffolding</Title>
+  <synopsis type="string">Hiroshi Eriksdóttir talks about silence, in three coats of varnish. Recorded while the artist repainted the studio wall the same white, four times.</synopsis>
+  <languages type="languageChoices">tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">oratory</Genre>
+  <Location type="string">Gallery Huya</Location>
+  <Access type="string">U</Access>
+  <Status type="string">Skipped</Status>
+  <Date>2021-07-15</Date>
+  <Keywords type="string">Greyscale Romanticism, studio visit</Keywords>
+  <Topic type="string">colour</Topic>
+  <Contributions>
+    <contributor>
+      <name>Hiroshi Eriksdóttir</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

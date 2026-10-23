@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">ACC_AILCA_RC</id>
+  <Title type="string">Notes on triangles as a form of apology (AILCA access RC: Registered Users and Community members)</Title>
+  <synopsis type="string">The artist talks about a sculpture made entirely of hesitation. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.</synopsis>
+  <languages type="languageChoices">etr: Edolo;qaa-x-kurbin: Kürbinian;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">narrative</Genre>
+  <Access type="string">RC</Access>
+  <AccessExplanation type="string">[[en]]Access RC: Registered Users and Community members[[es]]Acceso RC: Registered Users and Community members</AccessExplanation>
+  <Status type="string">Incoming</Status>
+  <Date>2024-04-01</Date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

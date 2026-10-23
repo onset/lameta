@@ -1,0 +1,294 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About the moment before the first mark",
+      "description": "The artist talks about eleven shades of white and one impostor. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/PPL_by_code/PPL_by_code.session"
+        },
+        {
+          "@id": "Sessions/PPL_by_code/PPL_by_code_20240701.wav"
+        },
+        {
+          "@id": "Sessions/PPL_by_code/PPL_by_code_interview.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "dateCreated": "2024-07-01",
+      "ldac:speaker": [
+        {
+          "@id": "#Wilema%20Dimo"
+        }
+      ],
+      "ldac:participant": [
+        {
+          "@id": "#Wilema%20Dimo"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Tolo%20Kesi"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Wilema%20Dimo/Wilema%20Dimo.person",
+      "@type": "File",
+      "contentSize": 838,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Wilema Dimo.person",
+      "about": {
+        "@id": "#Wilema%20Dimo"
+      }
+    },
+    {
+      "@id": "People/Wilema%20Dimo/Wilema%20Dimo_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Wilema Dimo_Consent.pdf",
+      "about": {
+        "@id": "#Wilema%20Dimo"
+      }
+    },
+    {
+      "@id": "People/Wilema%20Dimo/Wilema%20Dimo_Consent_2.jpg",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 1962,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/jpeg",
+      "name": "Wilema Dimo_Consent_2.jpg",
+      "about": {
+        "@id": "#Wilema%20Dimo"
+      }
+    },
+    {
+      "@id": "#Wilema%20Dimo",
+      "@type": "Person",
+      "name": "Wilema Dimo",
+      "gender": "Male",
+      "description": "Wilema Dimo belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Wilema Dimo said only \"why the canvas must stay blank\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Wilema%20Dimo/Wilema%20Dimo.person"
+        },
+        {
+          "@id": "People/Wilema%20Dimo/Wilema%20Dimo_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Wilema%20Dimo/Wilema%20Dimo_Consent_2.jpg"
+      }
+    },
+    {
+      "@id": "People/Tolo%20Kesi/Tolo%20Kesi.person",
+      "@type": "File",
+      "contentSize": 930,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tolo Kesi.person",
+      "about": {
+        "@id": "#Tolo%20Kesi"
+      }
+    },
+    {
+      "@id": "#Tolo%20Kesi",
+      "@type": "Person",
+      "name": "Tolo Kesi",
+      "ldac:age": "47",
+      "gender": "Male",
+      "description": "Tuwari learned in the art school canteen.",
+      "subjectOf": {
+        "@id": "People/Tolo%20Kesi/Tolo%20Kesi.person"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "Sessions/PPL_by_code/PPL_by_code.session",
+      "@type": "File",
+      "contentSize": 773,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "PPL_by_code.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/PPL_by_code/PPL_by_code_20240701.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "PPL_by_code_20240701.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/PPL_by_code/PPL_by_code_interview.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 3244,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "PPL_by_code_interview.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    }
+  ]
+}

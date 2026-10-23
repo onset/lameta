@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2018_0373</id>
+  <Title type="string">Beyond a sculpture made entirely of hesitation</Title>
+  <synopsis type="string">Þóra Jovanović talks about triangles as a form of apology. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;tpi;eng</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">a borrowed greenhouse</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Skipped</Status>
+  <Date>2018-02-10</Date>
+  <Keywords type="string">The Wet Paint School, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Þóra Jovanović</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Greta Lindqvist</name>
+      <role>performer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Yılmaz</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2021_0656</id>
+  <Title type="string">Against the politics of the colour orange</Title>
+  <synopsis type="string">Chiamaka Quispe talks about a dot, considered at length. The artist insists the recording itself is the artwork and that we are now co-authors.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;tpi;eng</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">Studio 4, the old soap factory</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2021-09-13</Date>
+  <Keywords type="string">The Wet Paint School, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>Chiamaka Quispe</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>KY050</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

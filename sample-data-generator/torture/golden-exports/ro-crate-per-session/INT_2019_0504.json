@@ -1,0 +1,329 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards negative space and its landlord",
+      "description": "Rangi Ulloa talks about a sculpture made entirely of hesitation. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2019_0504/INT_2019_0504.session"
+        },
+        {
+          "@id": "Sessions/INT_2019_0504/INT_2019_0504_20190101.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2019_0504/INT_2019_0504_20190101.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Formulaic"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the disused swimming pool"
+      },
+      "dateCreated": "2019-01-01",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Rangi%20Ulloa"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Xochitl%20Whitehorse"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Kalani%20Eriksdóttir"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Rangi%20Ulloa/Rangi%20Ulloa.person",
+      "@type": "File",
+      "contentSize": 885,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Rangi Ulloa.person",
+      "about": {
+        "@id": "#Rangi%20Ulloa"
+      }
+    },
+    {
+      "@id": "People/Rangi%20Ulloa/Rangi%20Ulloa_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Rangi Ulloa_Consent.png",
+      "about": {
+        "@id": "#Rangi%20Ulloa"
+      }
+    },
+    {
+      "@id": "#Rangi%20Ulloa",
+      "@type": "Person",
+      "name": "Rangi Ulloa",
+      "ldac:age": "77",
+      "gender": "Female",
+      "description": "Rangi Ulloa belongs to Accidental Constructivism and works in the artist's kitchen. Asked about influences, Rangi Ulloa said only \"why the frame is the real work\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Rangi%20Ulloa/Rangi%20Ulloa.person"
+      },
+      "image": {
+        "@id": "People/Rangi%20Ulloa/Rangi%20Ulloa_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Whitehorse/Xochitl%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 980,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Xochitl Whitehorse.person",
+      "about": {
+        "@id": "#Xochitl%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Whitehorse/Xochitl%20Whitehorse_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Xochitl Whitehorse_Consent.png",
+      "about": {
+        "@id": "#Xochitl%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Xochitl%20Whitehorse",
+      "@type": "Person",
+      "name": "Xochitl Whitehorse",
+      "ldac:age": "20",
+      "gender": "Other",
+      "description": "Xochitl Whitehorse belongs to Ladderism and works in the disused swimming pool. Asked about influences, Xochitl Whitehorse said only \"silence, in three coats of varnish\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Xochitl%20Whitehorse/Xochitl%20Whitehorse.person"
+      },
+      "image": {
+        "@id": "People/Xochitl%20Whitehorse/Xochitl%20Whitehorse_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Eriksdóttir/Kalani%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 1052,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Kalani Eriksdóttir.person",
+      "about": {
+        "@id": "#Kalani%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Eriksdóttir/Kalani%20Eriksdóttir_Consent.pdf",
+      "@type": "File",
+      "contentSize": 600,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Kalani Eriksdóttir_Consent.pdf",
+      "about": {
+        "@id": "#Kalani%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Kalani%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Kalani Eriksdóttir",
+      "ldac:age": "73",
+      "gender": "Female",
+      "description": "Kalani Eriksdóttir belongs to Accidental Constructivism and works in Studio 4, the old soap factory. Asked about influences, Kalani Eriksdóttir said only \"the shadow of a canvas that was never painted\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Kalani%20Eriksdóttir/Kalani%20Eriksdóttir.person"
+        },
+        {
+          "@id": "People/Kalani%20Eriksdóttir/Kalani%20Eriksdóttir_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Formulaic",
+      "@type": "DefinedTerm",
+      "name": "Proverb",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the disused swimming pool",
+      "@type": "Place",
+      "name": "the disused swimming pool"
+    },
+    {
+      "@id": "Sessions/INT_2019_0504/INT_2019_0504.session",
+      "@type": "File",
+      "contentSize": 1360,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2019_0504.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0504/INT_2019_0504_20190101.eaf",
+      "@type": "File",
+      "contentSize": 845,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2019_0504_20190101.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2019_0504/INT_2019_0504_20190101.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2019_0504_20190101.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

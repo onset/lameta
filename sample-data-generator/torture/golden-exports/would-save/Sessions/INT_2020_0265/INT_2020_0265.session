@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <id type="string">INT_2020_0265</id>
+  <Title type="string">Towards drawing with a ladder</Title>
+  <synopsis type="string">Kalani Rautenbach talks about why the frame is the real work. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.</synopsis>
+  <languages type="languageChoices">etr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">the rooftop</Location>
+  <Access type="string">U</Access>
+  <Status type="string">Skipped</Status>
+  <Date>2020-02-14</Date>
+  <Keywords type="string">Lateral Minimalism, studio visit</Keywords>
+  <Topic type="string">space</Topic>
+  <Contributions>
+    <contributor>
+      <name>KR080</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ásdís Tanaka</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Bartholomew Mbeki</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ingrid Blanc</name>
+      <role>photographer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

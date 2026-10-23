@@ -1,0 +1,286 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About painting the colour of a Tuesday",
+      "description": "Hiroshi Eriksdóttir talks about why the frame is the real work. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0446/INT_2021_0446.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0446/INT_2021_0446_20210327.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2021-03-27",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Hiroshi%20Eriksdóttir"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Tenzin%20Lindqvist"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Lucía%20Eriksdóttir"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 883,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Eriksdóttir.person",
+      "about": {
+        "@id": "#Hiroshi%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Hiroshi Eriksdóttir_Consent.png",
+      "about": {
+        "@id": "#Hiroshi%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Hiroshi Eriksdóttir",
+      "ldac:age": "66",
+      "gender": "Female",
+      "description": "Hiroshi Eriksdóttir belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Hiroshi Eriksdóttir said only \"listening to grey\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir.person"
+      },
+      "image": {
+        "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Lindqvist/Tenzin%20Lindqvist.person",
+      "@type": "File",
+      "contentSize": 853,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Lindqvist.person",
+      "about": {
+        "@id": "#Tenzin%20Lindqvist"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Lindqvist/Tenzin%20Lindqvist_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Tenzin Lindqvist_Consent.png",
+      "about": {
+        "@id": "#Tenzin%20Lindqvist"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Lindqvist",
+      "@type": "Person",
+      "name": "Tenzin Lindqvist",
+      "ldac:age": "67",
+      "gender": "Male",
+      "description": "Tenzin Lindqvist belongs to Frameless Expressionism and works in a borrowed greenhouse. Asked about influences, Tenzin Lindqvist said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Lindqvist/Tenzin%20Lindqvist.person"
+      },
+      "image": {
+        "@id": "People/Tenzin%20Lindqvist/Tenzin%20Lindqvist_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Eriksdóttir/Lucía%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 870,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Lucía Eriksdóttir.person",
+      "about": {
+        "@id": "#Lucía%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Lucía%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Lucía Eriksdóttir",
+      "ldac:age": "35",
+      "gender": "Male",
+      "description": "Lucía Eriksdóttir belongs to Neo-Beigeism and works in Gallery Huya. Asked about influences, Lucía Eriksdóttir said only \"the politics of the colour orange\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Lucía%20Eriksdóttir/Lucía%20Eriksdóttir.person"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2021_0446/INT_2021_0446.session",
+      "@type": "File",
+      "contentSize": 1338,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0446.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0446/INT_2021_0446_20210327.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0446_20210327.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

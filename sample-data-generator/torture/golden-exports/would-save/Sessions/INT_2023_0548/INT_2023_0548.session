@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2023_0548</id>
+  <Title type="string">Beyond an exhibition in total darkness</Title>
+  <synopsis type="string">Xochitl Fontaine talks about the brushstroke that got away. The interview stopped twice because the artist wanted to look at the corner of the room.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">personal_narrative</Genre>
+  <Location type="string">the artist's kitchen</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Skipped</Status>
+  <Date>2023-09-17</Date>
+  <Keywords type="string">Greyscale Romanticism, studio visit</Keywords>
+  <Topic type="string">frames</Topic>
+  <Contributions>
+    <contributor>
+      <name>Xochitl Fontaine</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>AU150</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>ZC215</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>ZN035</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,336 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Notes on the emotional weight of beige",
+      "description": "Farhad Søndergaard talks about an exhibition in total darkness. The artist asked that the microphone face away from the painting, so as not to influence it.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2020_0335/INT_2020_0335.session"
+        },
+        {
+          "@id": "Sessions/INT_2020_0335/INT_2020_0335_20201228.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a lift between floors 3 and 4"
+      },
+      "dateCreated": "2020-12-28",
+      "keywords": "Lateral Minimalism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Farhad%20Søndergaard"
+        },
+        {
+          "@id": "#Chiamaka%20Rautenbach"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Malak%20Pereira"
+        }
+      ],
+      "ldac:participant": [
+        {
+          "@id": "#Dmitri%20%28no%20record%29"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Søndergaard/Farhad%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 962,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Farhad Søndergaard.person",
+      "about": {
+        "@id": "#Farhad%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Søndergaard/Farhad%20Søndergaard_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Farhad Søndergaard_Consent.png",
+      "about": {
+        "@id": "#Farhad%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Farhad%20Søndergaard",
+      "@type": "Person",
+      "name": "Farhad Søndergaard",
+      "ldac:age": "59",
+      "gender": "Female",
+      "description": "Farhad Søndergaard belongs to Hesitationism and works in the rooftop. Asked about influences, Farhad Søndergaard said only \"negative space and its landlord\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Farhad%20Søndergaard/Farhad%20Søndergaard.person"
+      },
+      "image": {
+        "@id": "People/Farhad%20Søndergaard/Farhad%20Søndergaard_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Malak%20Pereira/Malak%20Pereira.person",
+      "@type": "File",
+      "contentSize": 1101,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak Pereira.person",
+      "about": {
+        "@id": "#Malak%20Pereira"
+      }
+    },
+    {
+      "@id": "People/Malak%20Pereira/Malak%20Pereira_Consent.pdf",
+      "@type": "File",
+      "contentSize": 595,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Malak Pereira_Consent.pdf",
+      "about": {
+        "@id": "#Malak%20Pereira"
+      }
+    },
+    {
+      "@id": "People/Malak%20Pereira/Malak%20Pereira_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak Pereira_Photo.png",
+      "about": {
+        "@id": "#Malak%20Pereira"
+      }
+    },
+    {
+      "@id": "#Malak%20Pereira",
+      "@type": "Person",
+      "name": "Malak Pereira",
+      "ldac:age": "32",
+      "gender": "Female",
+      "description": "Malak Pereira belongs to The Wet Paint School and works in the artist's kitchen. Asked about influences, Malak Pereira said only \"why the frame is the real work\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Malak%20Pereira/Malak%20Pereira.person"
+        },
+        {
+          "@id": "People/Malak%20Pereira/Malak%20Pereira_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Malak%20Pereira/Malak%20Pereira_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Rautenbach/Chiamaka%20Rautenbach.person",
+      "@type": "File",
+      "contentSize": 852,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Rautenbach.person",
+      "about": {
+        "@id": "#Chiamaka%20Rautenbach"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Rautenbach/Chiamaka%20Rautenbach_Consent.pdf",
+      "@type": "File",
+      "contentSize": 601,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Chiamaka Rautenbach_Consent.pdf",
+      "about": {
+        "@id": "#Chiamaka%20Rautenbach"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Rautenbach",
+      "@type": "Person",
+      "name": "Chiamaka Rautenbach",
+      "ldac:age": "20",
+      "gender": "Female",
+      "description": "Chiamaka Rautenbach belongs to Greyscale Romanticism and works in Gallery Huya. Asked about influences, Chiamaka Rautenbach said only \"the long argument with the colour blue\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Chiamaka%20Rautenbach/Chiamaka%20Rautenbach.person"
+        },
+        {
+          "@id": "People/Chiamaka%20Rautenbach/Chiamaka%20Rautenbach_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#Dmitri%20%28no%20record%29",
+      "@type": "Person",
+      "name": "Dmitri (no record)"
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a lift between floors 3 and 4",
+      "@type": "Place",
+      "name": "a lift between floors 3 and 4"
+    },
+    {
+      "@id": "Sessions/INT_2020_0335/INT_2020_0335.session",
+      "@type": "File",
+      "contentSize": 1494,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2020_0335.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2020_0335/INT_2020_0335_20201228.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2020_0335_20201228.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

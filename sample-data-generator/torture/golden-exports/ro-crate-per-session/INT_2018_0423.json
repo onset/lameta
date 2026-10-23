@@ -1,0 +1,300 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond a sculpture made entirely of hesitation",
+      "description": "Vũ Haddad talks about negative space and its landlord. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2018_0423/INT_2018_0423.session"
+        },
+        {
+          "@id": "Sessions/INT_2018_0423/INT_2018_0423_20180404.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "tag:lameta,Interviews with Abstract Artists: The Unseen Line:genre/Collection description"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2018-04-04",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Vũ%20Haddad"
+        },
+        {
+          "@id": "#Piotr%20Whitehorse"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Ếlodie%20Haddad"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Haddad/Vũ%20Haddad.person",
+      "@type": "File",
+      "contentSize": 1187,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Vũ Haddad.person",
+      "about": {
+        "@id": "#Vũ%20Haddad"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Haddad/Vũ%20Haddad_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Vũ Haddad_Consent.png",
+      "about": {
+        "@id": "#Vũ%20Haddad"
+      }
+    },
+    {
+      "@id": "#Vũ%20Haddad",
+      "@type": "Person",
+      "name": "Vũ Haddad",
+      "ldac:age": "78",
+      "gender": "Male",
+      "description": "Vũ Haddad belongs to Post-Squarism and works in a lift between floors 3 and 4. Asked about influences, Vũ Haddad said only \"how to hang a painting upside down on purpose\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Vũ%20Haddad/Vũ%20Haddad.person"
+      },
+      "image": {
+        "@id": "People/Vũ%20Haddad/Vũ%20Haddad_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Haddad/Ếlodie%20Haddad.person",
+      "@type": "File",
+      "contentSize": 859,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie Haddad.person",
+      "about": {
+        "@id": "#Ếlodie%20Haddad"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Haddad/Ếlodie%20Haddad_Consent.pdf",
+      "@type": "File",
+      "contentSize": 595,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie Haddad_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20Haddad"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20Haddad",
+      "@type": "Person",
+      "name": "Ếlodie Haddad",
+      "ldac:age": "16",
+      "gender": "Male",
+      "description": "Ếlodie Haddad belongs to Greyscale Romanticism and works in the disused swimming pool. Asked about influences, Ếlodie Haddad said only \"silence, in three coats of varnish\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20Haddad/Ếlodie%20Haddad.person"
+        },
+        {
+          "@id": "People/Ếlodie%20Haddad/Ếlodie%20Haddad_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Piotr%20Whitehorse/Piotr%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 1105,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Piotr Whitehorse.person",
+      "about": {
+        "@id": "#Piotr%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Whitehorse/Piotr%20Whitehorse_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Piotr Whitehorse_Consent.png",
+      "about": {
+        "@id": "#Piotr%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Piotr%20Whitehorse",
+      "@type": "Person",
+      "name": "Piotr Whitehorse",
+      "ldac:age": "59",
+      "gender": "Female",
+      "description": "Piotr Whitehorse belongs to Frameless Expressionism and works in Studio 4, the old soap factory. Asked about influences, Piotr Whitehorse said only \"the shadow of a canvas that was never painted\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Piotr%20Whitehorse/Piotr%20Whitehorse.person"
+      },
+      "image": {
+        "@id": "People/Piotr%20Whitehorse/Piotr%20Whitehorse_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "tag:lameta,Interviews with Abstract Artists: The Unseen Line:genre/Collection description",
+      "@type": "DefinedTerm",
+      "name": "Collection description",
+      "inDefinedTermSet": {
+        "@id": "#CustomGenreTerms"
+      }
+    },
+    {
+      "@id": "#CustomGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Custom Project Genres"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2018_0423/INT_2018_0423.session",
+      "@type": "File",
+      "contentSize": 1317,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2018_0423.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2018_0423/INT_2018_0423_20180404.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2018_0423_20180404.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

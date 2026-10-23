@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <id type="string">INT_2022_0447</id>
+  <Title type="string">Notes on silence, in three coats of varnish</Title>
+  <synopsis type="string">Ásdís Tanaka talks about a square that refuses to be a square. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">oral_history</Genre>
+  <Location type="string">the rooftop</Location>
+  <Access type="string">U</Access>
+  <Status type="string">In_Progress</Status>
+  <Date>2022-04-28</Date>
+  <Keywords type="string">Neo-Beigeism, studio visit</Keywords>
+  <Topic type="string">frames</Topic>
+  <Contributions>
+    <contributor>
+      <name>Ásdís Tanaka</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2022_0477</id>
+  <Title type="string">Against the politics of the colour orange</Title>
+  <synopsis type="string">Piotr Rautenbach talks about the third side of a line. The artist insists the recording itself is the artwork and that we are now co-authors.</synopsis>
+  <languages type="languageChoices">tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">photograph</Genre>
+  <Location type="string">Studio 4, the old soap factory</Location>
+  <Access type="string">S</Access>
+  <Status type="string">Finished</Status>
+  <Date>2022-10-02</Date>
+  <Keywords type="string">Frameless Expressionism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>PR225</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Nnamdi Gómez</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

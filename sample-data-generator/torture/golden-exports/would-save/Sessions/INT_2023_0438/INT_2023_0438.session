@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2023_0438</id>
+  <Title type="string">Against the politics of the colour orange</Title>
+  <synopsis type="string">Ulla Jovanović talks about the third side of a line. The artist answered every question with a question, and then with a long pause, which the transcript renders as "…".</synopsis>
+  <languages type="languageChoices">fr</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">interview</Genre>
+  <Location type="string">Studio 4, the old soap factory</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2023-07-19</Date>
+  <Keywords type="string">Post-Squarism, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>UJ160</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>ZT005</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

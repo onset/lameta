@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2022_0747</id>
+  <Title type="string">Beyond a sculpture made entirely of hesitation</Title>
+  <synopsis type="string">Tenzin Yılmaz talks about triangles as a form of apology. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;tpi;eng</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dictionary</Genre>
+  <Location type="string">a borrowed greenhouse</Location>
+  <Access type="string">U</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2022-04-20</Date>
+  <Keywords type="string">Post-Squarism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Tenzin Yılmaz</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

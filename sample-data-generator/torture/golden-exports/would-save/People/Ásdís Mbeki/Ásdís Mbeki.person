@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Ásdís Mbeki</FullName>
+  <BirthYear type="string">1946</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">The Wet Paint School</EthnicGroup>
+  <PrimaryOccupation type="string">Conceptual artist; the best work is the absence of work</PrimaryOccupation>
+  <Description type="string">Ásdís Mbeki belongs to Accidental Constructivism and works in Studio 4, the old soap factory. Asked about influences, Ásdís Mbeki said only "a sculpture made entirely of hesitation".</Description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</mothersLanguage>
+  <Contributions></Contributions>
+</Person>

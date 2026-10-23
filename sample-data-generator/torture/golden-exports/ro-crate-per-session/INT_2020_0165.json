@@ -1,0 +1,376 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On why the frame is the real work",
+      "description": "Agnès Ikeda talks about drawing with a ladder. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2020_0165/INT_2020_0165.session"
+        },
+        {
+          "@id": "Sessions/INT_2020_0165/INT_2020_0165_20201026.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "accessDescription": "The artist asks that this stay closed until the paint is dry.",
+      "dateCreated": "2020-10-26",
+      "keywords": "Post-Squarism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Agnès%20Ikeda"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Vũ%20Nakamura"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Dmitri%20Vasquez"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Ingrid%20Castellanos"
+        }
+      ],
+      "ldac:participant": [
+        {
+          "@id": "#Quilla%20%28no%20record%29"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Ikeda/Agnès%20Ikeda.person",
+      "@type": "File",
+      "contentSize": 1111,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Agnès Ikeda.person",
+      "about": {
+        "@id": "#Agnès%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Ikeda/Agnès%20Ikeda_Consent.pdf",
+      "@type": "File",
+      "contentSize": 593,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Agnès Ikeda_Consent.pdf",
+      "about": {
+        "@id": "#Agnès%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Ikeda/Agnès%20Ikeda_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Agnès Ikeda_Photo.png",
+      "about": {
+        "@id": "#Agnès%20Ikeda"
+      }
+    },
+    {
+      "@id": "#Agnès%20Ikeda",
+      "@type": "Person",
+      "name": "Agnès Ikeda",
+      "ldac:age": "60",
+      "gender": "Female",
+      "description": "Agnès Ikeda belongs to Neo-Beigeism and works in the rooftop. Asked about influences, Agnès Ikeda said only \"the moment before the first mark\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Agnès%20Ikeda/Agnès%20Ikeda.person"
+        },
+        {
+          "@id": "People/Agnès%20Ikeda/Agnès%20Ikeda_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Agnès%20Ikeda/Agnès%20Ikeda_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Nakamura/Vũ%20Nakamura.person",
+      "@type": "File",
+      "contentSize": 989,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Vũ Nakamura.person",
+      "about": {
+        "@id": "#Vũ%20Nakamura"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Nakamura/Vũ%20Nakamura_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Vũ Nakamura_Consent.png",
+      "about": {
+        "@id": "#Vũ%20Nakamura"
+      }
+    },
+    {
+      "@id": "#Vũ%20Nakamura",
+      "@type": "Person",
+      "name": "Vũ Nakamura",
+      "ldac:age": "36",
+      "gender": "Male",
+      "description": "Vũ Nakamura belongs to Hesitationism and works in the back room of a frame shop. Asked about influences, Vũ Nakamura said only \"a portrait of the wind, from behind\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Vũ%20Nakamura/Vũ%20Nakamura.person"
+      },
+      "image": {
+        "@id": "People/Vũ%20Nakamura/Vũ%20Nakamura_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Vasquez/Dmitri%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 1066,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Dmitri Vasquez.person",
+      "about": {
+        "@id": "#Dmitri%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Vasquez/Dmitri%20Vasquez_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Dmitri Vasquez_Consent.png",
+      "about": {
+        "@id": "#Dmitri%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Dmitri%20Vasquez",
+      "@type": "Person",
+      "name": "Dmitri Vasquez",
+      "ldac:age": "42",
+      "gender": "Other",
+      "description": "Dmitri Vasquez belongs to Neo-Beigeism and works in the artist's kitchen. Asked about influences, Dmitri Vasquez said only \"the installation that was mistaken for scaffolding\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Dmitri%20Vasquez/Dmitri%20Vasquez.person"
+      },
+      "image": {
+        "@id": "People/Dmitri%20Vasquez/Dmitri%20Vasquez_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20Castellanos/Ingrid%20Castellanos.person",
+      "@type": "File",
+      "contentSize": 886,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ingrid Castellanos.person",
+      "about": {
+        "@id": "#Ingrid%20Castellanos"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20Castellanos/Ingrid%20Castellanos_Consent.pdf",
+      "@type": "File",
+      "contentSize": 600,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ingrid Castellanos_Consent.pdf",
+      "about": {
+        "@id": "#Ingrid%20Castellanos"
+      }
+    },
+    {
+      "@id": "#Ingrid%20Castellanos",
+      "@type": "Person",
+      "name": "Ingrid Castellanos",
+      "ldac:age": "19",
+      "gender": "Other",
+      "description": "Ingrid Castellanos belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Ingrid Castellanos said only \"why the frame is the real work\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": [
+        {
+          "@id": "People/Ingrid%20Castellanos/Ingrid%20Castellanos.person"
+        },
+        {
+          "@id": "People/Ingrid%20Castellanos/Ingrid%20Castellanos_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#Quilla%20%28no%20record%29",
+      "@type": "Person",
+      "name": "Quilla (no record)"
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2020_0165/INT_2020_0165.session",
+      "@type": "File",
+      "contentSize": 1683,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2020_0165.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2020_0165/INT_2020_0165_20201026.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2020_0165_20201026.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

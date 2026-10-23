@@ -1,0 +1,345 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On why the frame is the real work",
+      "description": "Jules Achterberg talks about drawing with a ladder. The artist brought a canvas, unwrapped it, looked at it, and wrapped it again.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2015_0680/INT_2015_0680.session"
+        },
+        {
+          "@id": "Sessions/INT_2015_0680/INT_2015_0680_20150909.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2015_0680/INT_2015_0680_20150909.wav"
+        },
+        {
+          "@id": "Sessions/INT_2015_0680/INT_2015_0680_Artwork.png"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2015-09-09",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Jules%20Achterberg"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Vũ%20O'Shaughnessy"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Agnès%20Ulloa"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Jules%20Achterberg/Jules%20Achterberg.person",
+      "@type": "File",
+      "contentSize": 1055,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Jules Achterberg.person",
+      "about": {
+        "@id": "#Jules%20Achterberg"
+      }
+    },
+    {
+      "@id": "People/Jules%20Achterberg/Jules%20Achterberg_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Jules Achterberg_Consent.png",
+      "about": {
+        "@id": "#Jules%20Achterberg"
+      }
+    },
+    {
+      "@id": "#Jules%20Achterberg",
+      "@type": "Person",
+      "name": "Jules Achterberg",
+      "ldac:age": "31",
+      "gender": "Male",
+      "description": "Jules Achterberg belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Jules Achterberg said only \"a square that refuses to be a square\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Jules%20Achterberg/Jules%20Achterberg.person"
+      },
+      "image": {
+        "@id": "People/Jules%20Achterberg/Jules%20Achterberg_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Vũ%20O'Shaughnessy/Vũ%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 1210,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Vũ O'Shaughnessy.person",
+      "about": {
+        "@id": "#Vũ%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Vũ%20O'Shaughnessy/Vũ%20O'Shaughnessy_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Vũ O'Shaughnessy_Consent.png",
+      "about": {
+        "@id": "#Vũ%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Vũ%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Vũ O'Shaughnessy",
+      "ldac:age": "71",
+      "gender": "Male",
+      "description": "Vũ O'Shaughnessy belongs to Neo-Beigeism and works in the back room of a frame shop. Asked about influences, Vũ O'Shaughnessy said only \"the emotional weight of beige\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Vũ%20O'Shaughnessy/Vũ%20O'Shaughnessy.person"
+      },
+      "image": {
+        "@id": "People/Vũ%20O'Shaughnessy/Vũ%20O'Shaughnessy_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Ulloa/Agnès%20Ulloa.person",
+      "@type": "File",
+      "contentSize": 1026,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Agnès Ulloa.person",
+      "about": {
+        "@id": "#Agnès%20Ulloa"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Ulloa/Agnès%20Ulloa_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Agnès Ulloa_Photo.png",
+      "about": {
+        "@id": "#Agnès%20Ulloa"
+      }
+    },
+    {
+      "@id": "#Agnès%20Ulloa",
+      "@type": "Person",
+      "name": "Agnès Ulloa",
+      "ldac:age": "18",
+      "gender": "Female",
+      "description": "Agnès Ulloa belongs to Neo-Beigeism and works in Gallery Huya. Asked about influences, Agnès Ulloa said only \"the politics of the colour orange\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Agnès%20Ulloa/Agnès%20Ulloa.person"
+      },
+      "image": {
+        "@id": "People/Agnès%20Ulloa/Agnès%20Ulloa_Photo.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2015_0680/INT_2015_0680.session",
+      "@type": "File",
+      "contentSize": 1298,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2015_0680.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0680/INT_2015_0680_20150909.eaf",
+      "@type": "File",
+      "contentSize": 839,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2015_0680_20150909.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0680/INT_2015_0680_20150909.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2015_0680_20150909.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0680/INT_2015_0680_Artwork.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 456,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "INT_2015_0680_Artwork.png",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

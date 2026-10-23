@@ -1,0 +1,317 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Notes on the third side of a line",
+      "description": "Nnamdi Gómez talks about the politics of the colour orange. The artist asked that the microphone face away from the painting, so as not to influence it.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2023_0468/INT_2023_0468.session"
+        },
+        {
+          "@id": "Sessions/INT_2023_0468/INT_2023_0468_20230121.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2023_0468/INT_2023_0468_20230121.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Ludic"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the back room of a frame shop"
+      },
+      "dateCreated": "2023-01-21",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Nnamdi%20Gómez"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Ếlodie%20Blanc"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Quilla%20Vasquez"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Gómez/Nnamdi%20Gómez.person",
+      "@type": "File",
+      "contentSize": 978,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nnamdi Gómez.person",
+      "about": {
+        "@id": "#Nnamdi%20Gómez"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Gómez/Nnamdi%20Gómez_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Nnamdi Gómez_Consent.png",
+      "about": {
+        "@id": "#Nnamdi%20Gómez"
+      }
+    },
+    {
+      "@id": "#Nnamdi%20Gómez",
+      "@type": "Person",
+      "name": "Nnamdi Gómez",
+      "ldac:age": "66",
+      "gender": "Other",
+      "description": "Nnamdi Gómez belongs to Lateral Minimalism and works in the back room of a frame shop. Asked about influences, Nnamdi Gómez said only \"the emotional weight of beige\". Primary Occupation: Gallery cleaner and, by accident, prize-winning artist.",
+      "subjectOf": {
+        "@id": "People/Nnamdi%20Gómez/Nnamdi%20Gómez.person"
+      },
+      "image": {
+        "@id": "People/Nnamdi%20Gómez/Nnamdi%20Gómez_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Blanc/Ếlodie%20Blanc.person",
+      "@type": "File",
+      "contentSize": 863,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie Blanc.person",
+      "about": {
+        "@id": "#Ếlodie%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Blanc/Ếlodie%20Blanc_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie Blanc_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20Blanc"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20Blanc",
+      "@type": "Person",
+      "name": "Ếlodie Blanc",
+      "ldac:age": "69",
+      "gender": "Male",
+      "description": "Ếlodie Blanc belongs to Frameless Expressionism and works in the disused swimming pool. Asked about influences, Ếlodie Blanc said only \"painting the colour of a Tuesday\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20Blanc/Ếlodie%20Blanc.person"
+        },
+        {
+          "@id": "People/Ếlodie%20Blanc/Ếlodie%20Blanc_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Quilla%20Vasquez/Quilla%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 943,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Quilla Vasquez.person",
+      "about": {
+        "@id": "#Quilla%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Quilla%20Vasquez/Quilla%20Vasquez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Quilla Vasquez_Consent.pdf",
+      "about": {
+        "@id": "#Quilla%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Quilla%20Vasquez",
+      "@type": "Person",
+      "name": "Quilla Vasquez",
+      "ldac:age": "64",
+      "gender": "Male",
+      "description": "Quilla Vasquez belongs to Lateral Minimalism and works in a lift between floors 3 and 4. Asked about influences, Quilla Vasquez said only \"the third side of a line\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Quilla%20Vasquez/Quilla%20Vasquez.person"
+        },
+        {
+          "@id": "People/Quilla%20Vasquez/Quilla%20Vasquez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Ludic",
+      "@type": "DefinedTerm",
+      "name": "Ludic discourse",
+      "description": "Language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the back room of a frame shop",
+      "@type": "Place",
+      "name": "the back room of a frame shop"
+    },
+    {
+      "@id": "Sessions/INT_2023_0468/INT_2023_0468.session",
+      "@type": "File",
+      "contentSize": 1340,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2023_0468.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2023_0468/INT_2023_0468_20230121.eaf",
+      "@type": "File",
+      "contentSize": 839,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2023_0468_20230121.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2023_0468/INT_2023_0468_20230121.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2023_0468_20230121.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

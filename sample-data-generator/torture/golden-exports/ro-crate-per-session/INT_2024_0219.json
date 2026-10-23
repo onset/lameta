@@ -1,0 +1,285 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On why the canvas must stay blank",
+      "description": "Jules Blanc talks about the third side of a line. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2024_0219/INT_2024_0219.session"
+        },
+        {
+          "@id": "Sessions/INT_2024_0219/INT_2024_0219_20240424.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2024-04-24",
+      "keywords": "Frameless Expressionism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Jules%20Blanc"
+        },
+        {
+          "@id": "#Zofia%20Ikeda"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Tenzin%20Kowalczyk"
+        }
+      ],
+      "ldac:participant": [
+        {
+          "@id": "#Ulla%20%28no%20record%29"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Jules%20Blanc/Jules%20Blanc.person",
+      "@type": "File",
+      "contentSize": 1091,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Jules Blanc.person",
+      "about": {
+        "@id": "#Jules%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Jules%20Blanc/Jules%20Blanc_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Jules Blanc_Consent.png",
+      "about": {
+        "@id": "#Jules%20Blanc"
+      }
+    },
+    {
+      "@id": "#Jules%20Blanc",
+      "@type": "Person",
+      "name": "Jules Blanc",
+      "ldac:age": "47",
+      "gender": "Male",
+      "description": "Jules Blanc belongs to Neo-Beigeism and works in a lift between floors 3 and 4. Asked about influences, Jules Blanc said only \"a dot, considered at length\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Jules%20Blanc/Jules%20Blanc.person"
+      },
+      "image": {
+        "@id": "People/Jules%20Blanc/Jules%20Blanc_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Ikeda/Zofia%20Ikeda.person",
+      "@type": "File",
+      "contentSize": 983,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Ikeda.person",
+      "about": {
+        "@id": "#Zofia%20Ikeda"
+      }
+    },
+    {
+      "@id": "#Zofia%20Ikeda",
+      "@type": "Person",
+      "name": "Zofia Ikeda",
+      "ldac:age": "80",
+      "gender": "Female",
+      "description": "Zofia Ikeda belongs to Greyscale Romanticism and works in the back room of a frame shop. Asked about influences, Zofia Ikeda said only \"the brushstroke that got away\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Ikeda/Zofia%20Ikeda.person"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Kowalczyk/Tenzin%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 845,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Kowalczyk.person",
+      "about": {
+        "@id": "#Tenzin%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Kowalczyk",
+      "@type": "Person",
+      "name": "Tenzin Kowalczyk",
+      "ldac:age": "77",
+      "gender": "Male",
+      "description": "Tenzin Kowalczyk belongs to Frameless Expressionism and works in a lift between floors 3 and 4. Asked about influences, Tenzin Kowalczyk said only \"a dot, considered at length\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Kowalczyk/Tenzin%20Kowalczyk.person"
+      }
+    },
+    {
+      "@id": "#Ulla%20%28no%20record%29",
+      "@type": "Person",
+      "name": "Ulla (no record)"
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2024_0219/INT_2024_0219.session",
+      "@type": "File",
+      "contentSize": 1440,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2024_0219.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2024_0219/INT_2024_0219_20240424.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2024_0219_20240424.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

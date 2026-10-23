@@ -1,0 +1,318 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards drawing with a ladder",
+      "description": "Malak Castellanos talks about the installation that was mistaken for scaffolding. The artist asked that the microphone face away from the painting, so as not to influence it.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2016_0761/INT_2016_0761.session"
+        },
+        {
+          "@id": "Sessions/INT_2016_0761/INT_2016_0761_20160606.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2016-06-06",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Malak%20Castellanos"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Oona%20Mbeki"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Kalani%20Yılmaz"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Malak%20Castellanos/Malak%20Castellanos.person",
+      "@type": "File",
+      "contentSize": 1020,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak Castellanos.person",
+      "about": {
+        "@id": "#Malak%20Castellanos"
+      }
+    },
+    {
+      "@id": "People/Malak%20Castellanos/Malak%20Castellanos_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Malak Castellanos_Consent.pdf",
+      "about": {
+        "@id": "#Malak%20Castellanos"
+      }
+    },
+    {
+      "@id": "People/Malak%20Castellanos/Malak%20Castellanos_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak Castellanos_Photo.png",
+      "about": {
+        "@id": "#Malak%20Castellanos"
+      }
+    },
+    {
+      "@id": "#Malak%20Castellanos",
+      "@type": "Person",
+      "name": "Malak Castellanos",
+      "ldac:age": "61",
+      "gender": "Female",
+      "description": "Malak Castellanos belongs to Accidental Constructivism and works in a lift between floors 3 and 4. Asked about influences, Malak Castellanos said only \"a dot, considered at length\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Malak%20Castellanos/Malak%20Castellanos.person"
+        },
+        {
+          "@id": "People/Malak%20Castellanos/Malak%20Castellanos_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Malak%20Castellanos/Malak%20Castellanos_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Mbeki/Oona%20Mbeki.person",
+      "@type": "File",
+      "contentSize": 998,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Mbeki.person",
+      "about": {
+        "@id": "#Oona%20Mbeki"
+      }
+    },
+    {
+      "@id": "People/Oona%20Mbeki/Oona%20Mbeki_Consent.pdf",
+      "@type": "File",
+      "contentSize": 592,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Mbeki_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Mbeki"
+      }
+    },
+    {
+      "@id": "#Oona%20Mbeki",
+      "@type": "Person",
+      "name": "Oona Mbeki",
+      "ldac:age": "56",
+      "gender": "Male",
+      "description": "Oona Mbeki belongs to Greyscale Romanticism and works in the rooftop. Asked about influences, Oona Mbeki said only \"triangles as a form of apology\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Mbeki/Oona%20Mbeki.person"
+        },
+        {
+          "@id": "People/Oona%20Mbeki/Oona%20Mbeki_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Kalani%20Yılmaz/Kalani%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 1056,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Kalani Yılmaz.person",
+      "about": {
+        "@id": "#Kalani%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Yılmaz/Kalani%20Yılmaz_Consent.pdf",
+      "@type": "File",
+      "contentSize": 595,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Kalani Yılmaz_Consent.pdf",
+      "about": {
+        "@id": "#Kalani%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Kalani%20Yılmaz",
+      "@type": "Person",
+      "name": "Kalani Yılmaz",
+      "ldac:age": "50",
+      "gender": "Female",
+      "description": "Kalani Yılmaz belongs to Lateral Minimalism and works in Gallery Huya. Asked about influences, Kalani Yılmaz said only \"the politics of the colour orange\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Kalani%20Yılmaz/Kalani%20Yılmaz.person"
+        },
+        {
+          "@id": "People/Kalani%20Yılmaz/Kalani%20Yılmaz_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2016_0761/INT_2016_0761.session",
+      "@type": "File",
+      "contentSize": 1334,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2016_0761.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2016_0761/INT_2016_0761_20160606.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2016_0761_20160606.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

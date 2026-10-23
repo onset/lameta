@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <FullName type="string">Þóra Whitehorse</FullName>
+  <BirthYear type="string">1973</BirthYear>
+  <Gender type="string">Other</Gender>
+  <EthnicGroup type="string">The Wet Paint School</EthnicGroup>
+  <PrimaryOccupation type="string">Painter of one grey square, repeatedly</PrimaryOccupation>
+  <Description type="string">Þóra Whitehorse belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Þóra Whitehorse said only "an exhibition in total darkness".</Description>
+  <languages type="xml">
+    <language tag="tpi" primary="true" mother="true" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</mothersLanguage>
+  <Contributions></Contributions>
+</Person>

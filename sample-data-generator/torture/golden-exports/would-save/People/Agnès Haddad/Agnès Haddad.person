@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">Agnès Haddad</FullName>
+  <Code type="string">AH090</Code>
+  <BirthYear type="string">1960</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Ladderism</EthnicGroup>
+  <PrimaryOccupation type="string">Installation artist, mainly scaffolding</PrimaryOccupation>
+  <Description type="string">Agnès Haddad belongs to Greyscale Romanticism and works in the back room of a frame shop. Asked about influences, Agnès Haddad said only "the brushstroke that got away".</Description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</mothersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Accidental Constructivism</Movement>
+    <Studio type="string">Gallery Huya</Studio>
+  </CustomFields>
+</Person>

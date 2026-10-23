@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Ŋozi Lindqvist</FullName>
+  <BirthYear type="string">1946</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">The Wet Paint School</EthnicGroup>
+  <PrimaryOccupation type="string">Painter of one grey square, repeatedly</PrimaryOccupation>
+  <Description type="string">Ŋozi Lindqvist belongs to Accidental Constructivism and works in Studio 4, the old soap factory. Asked about influences, Ŋozi Lindqvist said only "a sculpture made entirely of hesitation".</Description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="false"></language>
+    <language tag="tpi" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</fathersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Lateral Minimalism</Movement>
+    <Studio type="string">the back room of a frame shop</Studio>
+  </CustomFields>
+</Person>

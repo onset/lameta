@@ -1,0 +1,256 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond an exhibition in total darkness",
+      "description": "Piotr Yılmaz talks about the emotional weight of beige. The artist answered every question with a question, and then with a long pause, which the transcript renders as \"…\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0106/INT_2021_0106.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0106/INT_2021_0106_20211123.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the artist's kitchen"
+      },
+      "dateCreated": "2021-11-23",
+      "keywords": "Frameless Expressionism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Piotr%20Yılmaz"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Þóra%20Quispe"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Yılmaz/Piotr%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 1063,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Piotr Yılmaz.person",
+      "about": {
+        "@id": "#Piotr%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Piotr%20Yılmaz/Piotr%20Yılmaz_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Piotr Yılmaz_Consent.png",
+      "about": {
+        "@id": "#Piotr%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Piotr%20Yılmaz",
+      "@type": "Person",
+      "name": "Piotr Yılmaz",
+      "ldac:age": "46",
+      "gender": "Female",
+      "description": "Piotr Yılmaz belongs to Neo-Beigeism and works in Studio 4, the old soap factory. Asked about influences, Piotr Yılmaz said only \"eleven shades of white and one impostor\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Piotr%20Yılmaz/Piotr%20Yılmaz.person"
+      },
+      "image": {
+        "@id": "People/Piotr%20Yılmaz/Piotr%20Yılmaz_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Quispe/Þóra%20Quispe.person",
+      "@type": "File",
+      "contentSize": 991,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Þóra Quispe.person",
+      "about": {
+        "@id": "#Þóra%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Quispe/Þóra%20Quispe_Consent.pdf",
+      "@type": "File",
+      "contentSize": 593,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Þóra Quispe_Consent.pdf",
+      "about": {
+        "@id": "#Þóra%20Quispe"
+      }
+    },
+    {
+      "@id": "#Þóra%20Quispe",
+      "@type": "Person",
+      "name": "Þóra Quispe",
+      "ldac:age": "83",
+      "gender": "Other",
+      "description": "Þóra Quispe belongs to Hesitationism and works in the disused swimming pool. Asked about influences, Þóra Quispe said only \"drawing with a ladder\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Þóra%20Quispe/Þóra%20Quispe.person"
+        },
+        {
+          "@id": "People/Þóra%20Quispe/Þóra%20Quispe_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the artist's kitchen",
+      "@type": "Place",
+      "name": "the artist's kitchen"
+    },
+    {
+      "@id": "Sessions/INT_2021_0106/INT_2021_0106.session",
+      "@type": "File",
+      "contentSize": 1235,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0106.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0106/INT_2021_0106_20211123.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0106_20211123.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

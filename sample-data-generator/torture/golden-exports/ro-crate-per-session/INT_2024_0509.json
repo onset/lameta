@@ -1,0 +1,358 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond the long argument with the colour blue",
+      "description": "Lucía Eriksdóttir talks about a dot, considered at length. The artist answered every question with a question, and then with a long pause, which the transcript renders as \"…\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2024_0509/INT_2024_0509.session"
+        },
+        {
+          "@id": "Sessions/INT_2024_0509/INT_2024_0509_20240606.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2024-06-06",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Lucía%20Eriksdóttir"
+        },
+        {
+          "@id": "#Hiroshi%20Dubois-Ngata"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Malak%20Pereira"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Þóra%20Pereira"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Eriksdóttir/Lucía%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 870,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Lucía Eriksdóttir.person",
+      "about": {
+        "@id": "#Lucía%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Lucía%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Lucía Eriksdóttir",
+      "ldac:age": "38",
+      "gender": "Male",
+      "description": "Lucía Eriksdóttir belongs to Neo-Beigeism and works in Gallery Huya. Asked about influences, Lucía Eriksdóttir said only \"the politics of the colour orange\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Lucía%20Eriksdóttir/Lucía%20Eriksdóttir.person"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Dubois-Ngata/Hiroshi%20Dubois-Ngata.person",
+      "@type": "File",
+      "contentSize": 954,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Dubois-Ngata.person",
+      "about": {
+        "@id": "#Hiroshi%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Dubois-Ngata/Hiroshi%20Dubois-Ngata_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Hiroshi Dubois-Ngata_Consent.png",
+      "about": {
+        "@id": "#Hiroshi%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Dubois-Ngata",
+      "@type": "Person",
+      "name": "Hiroshi Dubois-Ngata",
+      "ldac:age": "35",
+      "gender": "Female",
+      "description": "Hiroshi Dubois-Ngata belongs to Ladderism and works in Gallery Huya. Asked about influences, Hiroshi Dubois-Ngata said only \"why the canvas must stay blank\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Dubois-Ngata/Hiroshi%20Dubois-Ngata.person"
+      },
+      "image": {
+        "@id": "People/Hiroshi%20Dubois-Ngata/Hiroshi%20Dubois-Ngata_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Malak%20Pereira/Malak%20Pereira.person",
+      "@type": "File",
+      "contentSize": 1101,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak Pereira.person",
+      "about": {
+        "@id": "#Malak%20Pereira"
+      }
+    },
+    {
+      "@id": "People/Malak%20Pereira/Malak%20Pereira_Consent.pdf",
+      "@type": "File",
+      "contentSize": 595,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Malak Pereira_Consent.pdf",
+      "about": {
+        "@id": "#Malak%20Pereira"
+      }
+    },
+    {
+      "@id": "People/Malak%20Pereira/Malak%20Pereira_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak Pereira_Photo.png",
+      "about": {
+        "@id": "#Malak%20Pereira"
+      }
+    },
+    {
+      "@id": "#Malak%20Pereira",
+      "@type": "Person",
+      "name": "Malak Pereira",
+      "ldac:age": "36",
+      "gender": "Female",
+      "description": "Malak Pereira belongs to The Wet Paint School and works in the artist's kitchen. Asked about influences, Malak Pereira said only \"why the frame is the real work\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Malak%20Pereira/Malak%20Pereira.person"
+        },
+        {
+          "@id": "People/Malak%20Pereira/Malak%20Pereira_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Malak%20Pereira/Malak%20Pereira_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Pereira/Þóra%20Pereira.person",
+      "@type": "File",
+      "contentSize": 872,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Þóra Pereira.person",
+      "about": {
+        "@id": "#Þóra%20Pereira"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Pereira/Þóra%20Pereira_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Þóra Pereira_Consent.pdf",
+      "about": {
+        "@id": "#Þóra%20Pereira"
+      }
+    },
+    {
+      "@id": "#Þóra%20Pereira",
+      "@type": "Person",
+      "name": "Þóra Pereira",
+      "ldac:age": "30",
+      "gender": "Other",
+      "description": "Þóra Pereira belongs to The Wet Paint School and works in Gallery Huya. Asked about influences, Þóra Pereira said only \"the politics of the colour orange\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": [
+        {
+          "@id": "People/Þóra%20Pereira/Þóra%20Pereira.person"
+        },
+        {
+          "@id": "People/Þóra%20Pereira/Þóra%20Pereira_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2024_0509/INT_2024_0509.session",
+      "@type": "File",
+      "contentSize": 1528,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2024_0509.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2024_0509/INT_2024_0509_20240606.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2024_0509_20240606.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

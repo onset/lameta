@@ -1,0 +1,357 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On why the canvas must stay blank",
+      "description": "Zofia Tanaka talks about the third side of a line. The artist answered every question with a question, and then with a long pause, which the transcript renders as \"…\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2017_0662/INT_2017_0662.session"
+        },
+        {
+          "@id": "Sessions/INT_2017_0662/INT_2017_0662_20170319.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2017-03-19",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Zofia%20Tanaka"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Saoirse%20Gómez"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Þóra%20Kowalczyk"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Tenzin%20Whitehorse"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Tanaka/Zofia%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 1036,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Tanaka.person",
+      "about": {
+        "@id": "#Zofia%20Tanaka"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Tanaka/Zofia%20Tanaka_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia Tanaka_Consent.png",
+      "about": {
+        "@id": "#Zofia%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Zofia%20Tanaka",
+      "@type": "Person",
+      "name": "Zofia Tanaka",
+      "ldac:age": "49",
+      "gender": "Female",
+      "description": "Zofia Tanaka belongs to Lateral Minimalism and works in the rooftop. Asked about influences, Zofia Tanaka said only \"the moment before the first mark\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Tanaka/Zofia%20Tanaka.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20Tanaka/Zofia%20Tanaka_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez.person",
+      "@type": "File",
+      "contentSize": 1118,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Saoirse Gómez.person",
+      "about": {
+        "@id": "#Saoirse%20Gómez"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Saoirse Gómez_Photo.png",
+      "about": {
+        "@id": "#Saoirse%20Gómez"
+      }
+    },
+    {
+      "@id": "#Saoirse%20Gómez",
+      "@type": "Person",
+      "name": "Saoirse Gómez",
+      "ldac:age": "55",
+      "gender": "Other",
+      "description": "Saoirse Gómez belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Saoirse Gómez said only \"why the canvas must stay blank\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez.person"
+      },
+      "image": {
+        "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Kowalczyk/Þóra%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 851,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Þóra Kowalczyk.person",
+      "about": {
+        "@id": "#Þóra%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Kowalczyk/Þóra%20Kowalczyk_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Þóra Kowalczyk_Consent.pdf",
+      "about": {
+        "@id": "#Þóra%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Þóra%20Kowalczyk",
+      "@type": "Person",
+      "name": "Þóra Kowalczyk",
+      "ldac:age": "79",
+      "gender": "Other",
+      "description": "Þóra Kowalczyk belongs to Post-Squarism and works in the disused swimming pool. Asked about influences, Þóra Kowalczyk said only \"painting the colour of a Tuesday\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Þóra%20Kowalczyk/Þóra%20Kowalczyk.person"
+        },
+        {
+          "@id": "People/Þóra%20Kowalczyk/Þóra%20Kowalczyk_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 897,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Whitehorse.person",
+      "about": {
+        "@id": "#Tenzin%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Tenzin Whitehorse_Consent.png",
+      "about": {
+        "@id": "#Tenzin%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Whitehorse",
+      "@type": "Person",
+      "name": "Tenzin Whitehorse",
+      "ldac:age": "78",
+      "gender": "Male",
+      "description": "Tenzin Whitehorse belongs to Greyscale Romanticism and works in the artist's kitchen. Asked about influences, Tenzin Whitehorse said only \"the installation that was mistaken for scaffolding\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse.person"
+      },
+      "image": {
+        "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2017_0662/INT_2017_0662.session",
+      "@type": "File",
+      "contentSize": 1502,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2017_0662.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0662/INT_2017_0662_20170319.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2017_0662_20170319.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

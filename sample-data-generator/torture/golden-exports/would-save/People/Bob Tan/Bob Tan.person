@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <FullName type="string">Bob Tan</FullName>
+  <Code type="string">alice wong</Code>
+  <PrimaryOccupation type="string">Curator of empty frames</PrimaryOccupation>
+  <Description type="string">Bob Tan belongs to Ladderism and works in Gallery Huya. Asked about influences, Bob Tan said only "the politics of the colour orange".</Description>
+  <languages type="xml"></languages>
+  <Contributions></Contributions>
+</Person>

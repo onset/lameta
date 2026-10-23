@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <FullName type="string">Alice Wong</FullName>
+  <PrimaryOccupation type="string">Gallery cleaner and, by accident, prize-winning artist</PrimaryOccupation>
+  <Description type="string">Alice Wong belongs to Frameless Expressionism and works in the disused swimming pool. Asked about influences, Alice Wong said only "silence, in three coats of varnish".</Description>
+  <languages type="xml"></languages>
+  <Contributions></Contributions>
+</Person>

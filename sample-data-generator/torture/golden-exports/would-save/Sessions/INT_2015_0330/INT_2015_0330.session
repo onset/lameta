@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2015_0330</id>
+  <Title type="string">On why the frame is the real work</Title>
+  <synopsis type="string">Nnamdi Ulloa talks about painting the colour of a Tuesday. Recorded while the artist repainted the studio wall the same white, four times.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">oral_history</Genre>
+  <Location type="string">Gallery Huya</Location>
+  <Access type="string">O</Access>
+  <AccessExplanation type="string">The artist asks that this stay closed until the paint is dry.</AccessExplanation>
+  <Status type="string">Incoming</Status>
+  <Date>2015-07-23</Date>
+  <Keywords type="string">Greyscale Romanticism, studio visit</Keywords>
+  <Topic type="string">silence</Topic>
+  <Contributions>
+    <contributor>
+      <name>Nnamdi Ulloa</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ŋozi Eriksdóttir</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Vũ Achterberg</name>
+      <role>transcriber</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

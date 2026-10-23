@@ -1,0 +1,300 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards negative space and its landlord",
+      "description": "Greta Kowalczyk talks about a sculpture made entirely of hesitation. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0626/INT_2021_0626.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0626/INT_2021_0626_20210311.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the disused swimming pool"
+      },
+      "dateCreated": "2021-03-11",
+      "keywords": "Lateral Minimalism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Greta%20Kowalczyk"
+        },
+        {
+          "@id": "#Malak%20Vasquez"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Wanjiru%20Fontaine"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 1069,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Greta Kowalczyk.person",
+      "about": {
+        "@id": "#Greta%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Greta Kowalczyk_Photo.png",
+      "about": {
+        "@id": "#Greta%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Greta%20Kowalczyk",
+      "@type": "Person",
+      "name": "Greta Kowalczyk",
+      "ldac:age": "34",
+      "gender": "Male",
+      "description": "Greta Kowalczyk belongs to Post-Squarism and works in a borrowed greenhouse. Asked about influences, Greta Kowalczyk said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk.person"
+      },
+      "image": {
+        "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Malak%20Vasquez/Malak%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 1015,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak Vasquez.person",
+      "about": {
+        "@id": "#Malak%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Malak%20Vasquez/Malak%20Vasquez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 595,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Malak Vasquez_Consent.pdf",
+      "about": {
+        "@id": "#Malak%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Malak%20Vasquez/Malak%20Vasquez_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak Vasquez_Photo.png",
+      "about": {
+        "@id": "#Malak%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Malak%20Vasquez",
+      "@type": "Person",
+      "name": "Malak Vasquez",
+      "ldac:age": "30",
+      "gender": "Female",
+      "description": "Malak Vasquez belongs to Post-Squarism and works in a lift between floors 3 and 4. Asked about influences, Malak Vasquez said only \"how to hang a painting upside down on purpose\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Malak%20Vasquez/Malak%20Vasquez.person"
+        },
+        {
+          "@id": "People/Malak%20Vasquez/Malak%20Vasquez_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Malak%20Vasquez/Malak%20Vasquez_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Wanjiru%20Fontaine/Wanjiru%20Fontaine.person",
+      "@type": "File",
+      "contentSize": 900,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Wanjiru Fontaine.person",
+      "about": {
+        "@id": "#Wanjiru%20Fontaine"
+      }
+    },
+    {
+      "@id": "#Wanjiru%20Fontaine",
+      "@type": "Person",
+      "name": "Wanjiru Fontaine",
+      "ldac:age": "35",
+      "gender": "Female",
+      "description": "Wanjiru Fontaine belongs to Accidental Constructivism and works in the artist's kitchen. Asked about influences, Wanjiru Fontaine said only \"why the frame is the real work\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Wanjiru%20Fontaine/Wanjiru%20Fontaine.person"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the disused swimming pool",
+      "@type": "Place",
+      "name": "the disused swimming pool"
+    },
+    {
+      "@id": "Sessions/INT_2021_0626/INT_2021_0626.session",
+      "@type": "File",
+      "contentSize": 1386,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0626.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0626/INT_2021_0626_20210311.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0626_20210311.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

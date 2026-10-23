@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <FullName type="string">Ásdís Nakamura</FullName>
+  <BirthYear type="string">1961</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Accidental Constructivism</EthnicGroup>
+  <PrimaryOccupation type="string">Conceptual artist; the best work is the absence of work</PrimaryOccupation>
+  <Description type="string">Ásdís Nakamura belongs to The Wet Paint School and works in a borrowed greenhouse. Asked about influences, Ásdís Nakamura said only "what the gallery cleaner threw away".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+    <language tag="etr" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</otherLanguage0>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</fathersLanguage>
+  <Contributions></Contributions>
+</Person>

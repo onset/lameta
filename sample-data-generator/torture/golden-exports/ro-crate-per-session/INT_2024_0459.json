@@ -1,0 +1,274 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On the shadow of a canvas that was never painted",
+      "description": "Malak Blanc talks about the moment before the first mark. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2024_0459/INT_2024_0459.session"
+        },
+        {
+          "@id": "Sessions/INT_2024_0459/INT_2024_0459_20240412.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "tag:lameta,Interviews with Abstract Artists: The Unseen Line:genre/Stimuli"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2024-04-12",
+      "keywords": "Frameless Expressionism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Malak%20Blanc"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Saoirse%20Gómez"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc.person",
+      "@type": "File",
+      "contentSize": 1155,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak Blanc.person",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc_Consent.pdf",
+      "@type": "File",
+      "contentSize": 593,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Malak Blanc_Consent.pdf",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak Blanc_Photo.png",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "#Malak%20Blanc",
+      "@type": "Person",
+      "name": "Malak Blanc",
+      "ldac:age": "28",
+      "gender": "Female",
+      "description": "Malak Blanc belongs to Ladderism and works in a borrowed greenhouse. Asked about influences, Malak Blanc said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Malak%20Blanc/Malak%20Blanc.person"
+        },
+        {
+          "@id": "People/Malak%20Blanc/Malak%20Blanc_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Malak%20Blanc/Malak%20Blanc_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez.person",
+      "@type": "File",
+      "contentSize": 1118,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Saoirse Gómez.person",
+      "about": {
+        "@id": "#Saoirse%20Gómez"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Saoirse Gómez_Photo.png",
+      "about": {
+        "@id": "#Saoirse%20Gómez"
+      }
+    },
+    {
+      "@id": "#Saoirse%20Gómez",
+      "@type": "Person",
+      "name": "Saoirse Gómez",
+      "ldac:age": "62",
+      "gender": "Other",
+      "description": "Saoirse Gómez belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Saoirse Gómez said only \"why the canvas must stay blank\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez.person"
+      },
+      "image": {
+        "@id": "People/Saoirse%20Gómez/Saoirse%20Gómez_Photo.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "tag:lameta,Interviews with Abstract Artists: The Unseen Line:genre/Stimuli",
+      "@type": "DefinedTerm",
+      "name": "Stimuli",
+      "inDefinedTermSet": {
+        "@id": "#CustomGenreTerms"
+      }
+    },
+    {
+      "@id": "#CustomGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Custom Project Genres"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2024_0459/INT_2024_0459.session",
+      "@type": "File",
+      "contentSize": 1195,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2024_0459.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2024_0459/INT_2024_0459_20240412.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2024_0459_20240412.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

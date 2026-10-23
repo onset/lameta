@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <id type="string">INT_2016_0711</id>
+  <Title type="string">Against the politics of the colour orange</Title>
+  <synopsis type="string">Wanjiru Lindqvist talks about a dot, considered at length. The interview stopped twice because the artist wanted to look at the corner of the room.</synopsis>
+  <languages type="languageChoices">etr;tpi</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">photograph</Genre>
+  <Location type="string">Studio 4, the old soap factory</Location>
+  <Access type="string">S</Access>
+  <Status type="string">In_Progress</Status>
+  <Date>2016-04-12</Date>
+  <Keywords type="string">Neo-Beigeism, studio visit</Keywords>
+  <Topic type="string">space</Topic>
+  <Contributions>
+    <contributor>
+      <name>Wanjiru Lindqvist</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Jules Gómez</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

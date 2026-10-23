@@ -1,0 +1,329 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond a square that refuses to be a square",
+      "description": "Xochitl Lindqvist talks about painting the colour of a Tuesday. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2016_0371/INT_2016_0371.session"
+        },
+        {
+          "@id": "Sessions/INT_2016_0371/INT_2016_0371_20161208.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2016-12-08",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Xochitl%20Lindqvist"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Malak%20Blanc"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Dmitri%20Pereira"
+        },
+        {
+          "@id": "#Bartholomew%20Zielińska"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Lindqvist/Xochitl%20Lindqvist.person",
+      "@type": "File",
+      "contentSize": 956,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Xochitl Lindqvist.person",
+      "about": {
+        "@id": "#Xochitl%20Lindqvist"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Lindqvist/Xochitl%20Lindqvist_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Xochitl Lindqvist_Consent.png",
+      "about": {
+        "@id": "#Xochitl%20Lindqvist"
+      }
+    },
+    {
+      "@id": "#Xochitl%20Lindqvist",
+      "@type": "Person",
+      "name": "Xochitl Lindqvist",
+      "ldac:age": "46",
+      "gender": "Other",
+      "description": "Xochitl Lindqvist belongs to Neo-Beigeism and works in the rooftop. Asked about influences, Xochitl Lindqvist said only \"triangles as a form of apology\". Primary Occupation: Gallery cleaner and, by accident, prize-winning artist.",
+      "subjectOf": {
+        "@id": "People/Xochitl%20Lindqvist/Xochitl%20Lindqvist.person"
+      },
+      "image": {
+        "@id": "People/Xochitl%20Lindqvist/Xochitl%20Lindqvist_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc.person",
+      "@type": "File",
+      "contentSize": 1155,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Malak Blanc.person",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc_Consent.pdf",
+      "@type": "File",
+      "contentSize": 593,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Malak Blanc_Consent.pdf",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Malak%20Blanc/Malak%20Blanc_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Malak Blanc_Photo.png",
+      "about": {
+        "@id": "#Malak%20Blanc"
+      }
+    },
+    {
+      "@id": "#Malak%20Blanc",
+      "@type": "Person",
+      "name": "Malak Blanc",
+      "ldac:age": "20",
+      "gender": "Female",
+      "description": "Malak Blanc belongs to Ladderism and works in a borrowed greenhouse. Asked about influences, Malak Blanc said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Malak%20Blanc/Malak%20Blanc.person"
+        },
+        {
+          "@id": "People/Malak%20Blanc/Malak%20Blanc_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Malak%20Blanc/Malak%20Blanc_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Pereira/Dmitri%20Pereira.person",
+      "@type": "File",
+      "contentSize": 1123,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Dmitri Pereira.person",
+      "about": {
+        "@id": "#Dmitri%20Pereira"
+      }
+    },
+    {
+      "@id": "#Dmitri%20Pereira",
+      "@type": "Person",
+      "name": "Dmitri Pereira",
+      "ldac:age": "44",
+      "gender": "Other",
+      "description": "Dmitri Pereira belongs to The Wet Paint School and works in a lift between floors 3 and 4. Asked about influences, Dmitri Pereira said only \"how to hang a painting upside down on purpose\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Dmitri%20Pereira/Dmitri%20Pereira.person"
+      }
+    },
+    {
+      "@id": "People/Bartholomew%20Zielińska/Bartholomew%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 938,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Bartholomew Zielińska.person",
+      "about": {
+        "@id": "#Bartholomew%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Bartholomew%20Zielińska",
+      "@type": "Person",
+      "name": "Bartholomew Zielińska",
+      "ldac:age": "31",
+      "gender": "Male",
+      "description": "Bartholomew Zielińska belongs to Lateral Minimalism and works in a borrowed greenhouse. Asked about influences, Bartholomew Zielińska said only \"listening to grey\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Bartholomew%20Zielińska/Bartholomew%20Zielińska.person"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2016_0371/INT_2016_0371.session",
+      "@type": "File",
+      "contentSize": 1488,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2016_0371.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2016_0371/INT_2016_0371_20161208.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2016_0371_20161208.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

@@ -1,0 +1,345 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Notes on the emotional weight of beige",
+      "description": "Dmitri Dubois-Ngata talks about an exhibition in total darkness. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2023_0158/INT_2023_0158.session"
+        },
+        {
+          "@id": "Sessions/INT_2023_0158/INT_2023_0158_20230319.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a lift between floors 3 and 4"
+      },
+      "dateCreated": "2023-03-19",
+      "keywords": "Post-Squarism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Dmitri%20Dubois-Ngata"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Tenzin%20Lindqvist"
+        },
+        {
+          "@id": "#Ulla%20Jovanović"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Ếlodie%20Nakamura"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Dubois-Ngata/Dmitri%20Dubois-Ngata.person",
+      "@type": "File",
+      "contentSize": 1042,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Dmitri Dubois-Ngata.person",
+      "about": {
+        "@id": "#Dmitri%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Dubois-Ngata/Dmitri%20Dubois-Ngata_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Dmitri Dubois-Ngata_Consent.png",
+      "about": {
+        "@id": "#Dmitri%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "#Dmitri%20Dubois-Ngata",
+      "@type": "Person",
+      "name": "Dmitri Dubois-Ngata",
+      "ldac:age": "30",
+      "gender": "Other",
+      "description": "Dmitri Dubois-Ngata belongs to Frameless Expressionism and works in a lift between floors 3 and 4. Asked about influences, Dmitri Dubois-Ngata said only \"how to hang a painting upside down on purpose\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Dmitri%20Dubois-Ngata/Dmitri%20Dubois-Ngata.person"
+      },
+      "image": {
+        "@id": "People/Dmitri%20Dubois-Ngata/Dmitri%20Dubois-Ngata_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Lindqvist/Tenzin%20Lindqvist.person",
+      "@type": "File",
+      "contentSize": 853,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Lindqvist.person",
+      "about": {
+        "@id": "#Tenzin%20Lindqvist"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Lindqvist/Tenzin%20Lindqvist_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Tenzin Lindqvist_Consent.png",
+      "about": {
+        "@id": "#Tenzin%20Lindqvist"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Lindqvist",
+      "@type": "Person",
+      "name": "Tenzin Lindqvist",
+      "ldac:age": "69",
+      "gender": "Male",
+      "description": "Tenzin Lindqvist belongs to Frameless Expressionism and works in a borrowed greenhouse. Asked about influences, Tenzin Lindqvist said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Lindqvist/Tenzin%20Lindqvist.person"
+      },
+      "image": {
+        "@id": "People/Tenzin%20Lindqvist/Tenzin%20Lindqvist_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ulla%20Jovanović/Ulla%20Jovanović.person",
+      "@type": "File",
+      "contentSize": 905,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ulla Jovanović.person",
+      "about": {
+        "@id": "#Ulla%20Jovanović"
+      }
+    },
+    {
+      "@id": "People/Ulla%20Jovanović/Ulla%20Jovanović_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ulla Jovanović_Consent.pdf",
+      "about": {
+        "@id": "#Ulla%20Jovanović"
+      }
+    },
+    {
+      "@id": "#Ulla%20Jovanović",
+      "@type": "Person",
+      "name": "Ulla Jovanović",
+      "ldac:age": "59",
+      "gender": "Female",
+      "description": "Ulla Jovanović belongs to Ladderism and works in a lift between floors 3 and 4. Asked about influences, Ulla Jovanović said only \"how to hang a painting upside down on purpose\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Ulla%20Jovanović/Ulla%20Jovanović.person"
+        },
+        {
+          "@id": "People/Ulla%20Jovanović/Ulla%20Jovanović_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Ếlodie%20Nakamura/Ếlodie%20Nakamura.person",
+      "@type": "File",
+      "contentSize": 1020,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie Nakamura.person",
+      "about": {
+        "@id": "#Ếlodie%20Nakamura"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Nakamura/Ếlodie%20Nakamura_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie Nakamura_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20Nakamura"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20Nakamura",
+      "@type": "Person",
+      "name": "Ếlodie Nakamura",
+      "ldac:age": "50",
+      "gender": "Male",
+      "description": "Ếlodie Nakamura belongs to Neo-Beigeism and works in the disused swimming pool. Asked about influences, Ếlodie Nakamura said only \"painting the colour of a Tuesday\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20Nakamura/Ếlodie%20Nakamura.person"
+        },
+        {
+          "@id": "People/Ếlodie%20Nakamura/Ếlodie%20Nakamura_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a lift between floors 3 and 4",
+      "@type": "Place",
+      "name": "a lift between floors 3 and 4"
+    },
+    {
+      "@id": "Sessions/INT_2023_0158/INT_2023_0158.session",
+      "@type": "File",
+      "contentSize": 1494,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2023_0158.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2023_0158/INT_2023_0158_20230319.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2023_0158_20230319.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

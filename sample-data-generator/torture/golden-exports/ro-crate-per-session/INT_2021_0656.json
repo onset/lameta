@@ -1,0 +1,282 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the politics of the colour orange",
+      "description": "Chiamaka Quispe talks about a dot, considered at length. The artist insists the recording itself is the artwork and that we are now co-authors.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0656/INT_2021_0656.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0656/INT_2021_0656_20210913.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2021_0656/INT_2021_0656_20210913.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        },
+        {
+          "@id": "#language_eng"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2021-09-13",
+      "keywords": "The Wet Paint School, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Chiamaka%20Quispe"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Kalani%20Yılmaz"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Quispe/Chiamaka%20Quispe.person",
+      "@type": "File",
+      "contentSize": 855,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Quispe.person",
+      "about": {
+        "@id": "#Chiamaka%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Quispe/Chiamaka%20Quispe_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Chiamaka Quispe_Consent.pdf",
+      "about": {
+        "@id": "#Chiamaka%20Quispe"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Quispe",
+      "@type": "Person",
+      "name": "Chiamaka Quispe",
+      "ldac:age": "82",
+      "gender": "Female",
+      "description": "Chiamaka Quispe belongs to Post-Squarism and works in Gallery Huya. Asked about influences, Chiamaka Quispe said only \"why the canvas must stay blank\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Chiamaka%20Quispe/Chiamaka%20Quispe.person"
+        },
+        {
+          "@id": "People/Chiamaka%20Quispe/Chiamaka%20Quispe_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Kalani%20Yılmaz/Kalani%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 1056,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Kalani Yılmaz.person",
+      "about": {
+        "@id": "#Kalani%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Yılmaz/Kalani%20Yılmaz_Consent.pdf",
+      "@type": "File",
+      "contentSize": 595,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Kalani Yılmaz_Consent.pdf",
+      "about": {
+        "@id": "#Kalani%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Kalani%20Yılmaz",
+      "@type": "Person",
+      "name": "Kalani Yılmaz",
+      "ldac:age": "55",
+      "gender": "Female",
+      "description": "Kalani Yılmaz belongs to Lateral Minimalism and works in Gallery Huya. Asked about influences, Kalani Yılmaz said only \"the politics of the colour orange\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Kalani%20Yılmaz/Kalani%20Yılmaz.person"
+        },
+        {
+          "@id": "People/Kalani%20Yılmaz/Kalani%20Yılmaz_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2021_0656/INT_2021_0656.session",
+      "@type": "File",
+      "contentSize": 1221,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0656.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0656/INT_2021_0656_20210913.eaf",
+      "@type": "File",
+      "contentSize": 847,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2021_0656_20210913.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0656/INT_2021_0656_20210913.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0656_20210913.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

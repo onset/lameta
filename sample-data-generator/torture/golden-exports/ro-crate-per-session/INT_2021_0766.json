@@ -1,0 +1,264 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond the long argument with the colour blue",
+      "description": "Ásdís Tanaka talks about a dot, considered at length. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2021_0766/INT_2021_0766.session"
+        },
+        {
+          "@id": "Sessions/INT_2021_0766/INT_2021_0766_20211111.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2021-11-11",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Ásdís%20Tanaka"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Þóra%20Vasquez"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 854,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ásdís Tanaka.person",
+      "about": {
+        "@id": "#Ásdís%20Tanaka"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ásdís Tanaka_Consent.pdf",
+      "about": {
+        "@id": "#Ásdís%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Ásdís%20Tanaka",
+      "@type": "Person",
+      "name": "Ásdís Tanaka",
+      "ldac:age": "74",
+      "gender": "Male",
+      "description": "Ásdís Tanaka belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Ásdís Tanaka said only \"the long argument with the colour blue\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka.person"
+        },
+        {
+          "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Þóra%20Vasquez/Þóra%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 971,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Þóra Vasquez.person",
+      "about": {
+        "@id": "#Þóra%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Þóra%20Vasquez/Þóra%20Vasquez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Þóra Vasquez_Consent.pdf",
+      "about": {
+        "@id": "#Þóra%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Þóra%20Vasquez",
+      "@type": "Person",
+      "name": "Þóra Vasquez",
+      "ldac:age": "46",
+      "gender": "Other",
+      "description": "Þóra Vasquez belongs to The Wet Paint School and works in the rooftop. Asked about influences, Þóra Vasquez said only \"negative space and its landlord\". Primary Occupation: Gallery cleaner and, by accident, prize-winning artist.",
+      "subjectOf": [
+        {
+          "@id": "People/Þóra%20Vasquez/Þóra%20Vasquez.person"
+        },
+        {
+          "@id": "People/Þóra%20Vasquez/Þóra%20Vasquez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2021_0766/INT_2021_0766.session",
+      "@type": "File",
+      "contentSize": 1222,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2021_0766.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2021_0766/INT_2021_0766_20211111.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2021_0766_20211111.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

@@ -1,0 +1,326 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond the long argument with the colour blue",
+      "description": "Jules Achterberg talks about a dot, considered at length. Recorded while the artist repainted the studio wall the same white, four times.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2023_0148/INT_2023_0148.session"
+        },
+        {
+          "@id": "Sessions/INT_2023_0148/INT_2023_0148_20230509.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2023_0148/INT_2023_0148_20230509.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Studio 4, the old soap factory"
+      },
+      "dateCreated": "2023-05-09",
+      "keywords": "Frameless Expressionism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Jules%20Achterberg"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Vũ%20Haddad"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Oona%20Gómez"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Jules%20Achterberg/Jules%20Achterberg.person",
+      "@type": "File",
+      "contentSize": 1055,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Jules Achterberg.person",
+      "about": {
+        "@id": "#Jules%20Achterberg"
+      }
+    },
+    {
+      "@id": "People/Jules%20Achterberg/Jules%20Achterberg_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Jules Achterberg_Consent.png",
+      "about": {
+        "@id": "#Jules%20Achterberg"
+      }
+    },
+    {
+      "@id": "#Jules%20Achterberg",
+      "@type": "Person",
+      "name": "Jules Achterberg",
+      "ldac:age": "39",
+      "gender": "Male",
+      "description": "Jules Achterberg belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Jules Achterberg said only \"a square that refuses to be a square\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Jules%20Achterberg/Jules%20Achterberg.person"
+      },
+      "image": {
+        "@id": "People/Jules%20Achterberg/Jules%20Achterberg_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Haddad/Vũ%20Haddad.person",
+      "@type": "File",
+      "contentSize": 1187,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Vũ Haddad.person",
+      "about": {
+        "@id": "#Vũ%20Haddad"
+      }
+    },
+    {
+      "@id": "People/Vũ%20Haddad/Vũ%20Haddad_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Vũ Haddad_Consent.png",
+      "about": {
+        "@id": "#Vũ%20Haddad"
+      }
+    },
+    {
+      "@id": "#Vũ%20Haddad",
+      "@type": "Person",
+      "name": "Vũ Haddad",
+      "ldac:age": "83",
+      "gender": "Male",
+      "description": "Vũ Haddad belongs to Post-Squarism and works in a lift between floors 3 and 4. Asked about influences, Vũ Haddad said only \"how to hang a painting upside down on purpose\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Vũ%20Haddad/Vũ%20Haddad.person"
+      },
+      "image": {
+        "@id": "People/Vũ%20Haddad/Vũ%20Haddad_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Gómez/Oona%20Gómez.person",
+      "@type": "File",
+      "contentSize": 926,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Gómez.person",
+      "about": {
+        "@id": "#Oona%20Gómez"
+      }
+    },
+    {
+      "@id": "People/Oona%20Gómez/Oona%20Gómez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 592,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Gómez_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Gómez"
+      }
+    },
+    {
+      "@id": "#Oona%20Gómez",
+      "@type": "Person",
+      "name": "Oona Gómez",
+      "ldac:age": "48",
+      "gender": "Male",
+      "description": "Oona Gómez belongs to Accidental Constructivism and works in the rooftop. Asked about influences, Oona Gómez said only \"negative space and its landlord\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Gómez/Oona%20Gómez.person"
+        },
+        {
+          "@id": "People/Oona%20Gómez/Oona%20Gómez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Studio 4, the old soap factory",
+      "@type": "Place",
+      "name": "Studio 4, the old soap factory"
+    },
+    {
+      "@id": "Sessions/INT_2023_0148/INT_2023_0148.session",
+      "@type": "File",
+      "contentSize": 1342,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2023_0148.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2023_0148/INT_2023_0148_20230509.eaf",
+      "@type": "File",
+      "contentSize": 851,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2023_0148_20230509.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2023_0148/INT_2023_0148_20230509.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2023_0148_20230509.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

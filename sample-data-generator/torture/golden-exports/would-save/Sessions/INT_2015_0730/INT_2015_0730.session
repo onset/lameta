@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Transcribe the pauses; the artist says they are the content.</notes>
+  <id type="string">INT_2015_0730</id>
+  <Title type="string">Against eleven shades of white and one impostor</Title>
+  <synopsis type="string">Xochitl Quispe talks about the moment before the first mark. The artist insists the recording itself is the artwork and that we are now co-authors.</synopsis>
+  <languages type="languageChoices">es;qaa-x-kurbin</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">a borrowed greenhouse</Location>
+  <Access type="string">O</Access>
+  <Status type="string">Finished</Status>
+  <Date>2015-11-03</Date>
+  <Keywords type="string">Neo-Beigeism, studio visit</Keywords>
+  <Topic type="string">line</Topic>
+  <Contributions>
+    <contributor>
+      <name>Xochitl Quispe</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Ếlodie Haddad</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>KY050</name>
+      <role>recorder</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

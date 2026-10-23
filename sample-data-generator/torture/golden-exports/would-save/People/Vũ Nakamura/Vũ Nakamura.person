@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <FullName type="string">Vũ Nakamura</FullName>
+  <BirthYear type="string">1984</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Lateral Minimalism</EthnicGroup>
+  <PrimaryOccupation type="string">Paints with ladders</PrimaryOccupation>
+  <Description type="string">Vũ Nakamura belongs to Hesitationism and works in the back room of a frame shop. Asked about influences, Vũ Nakamura said only "a portrait of the wind, from behind".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <Contributions></Contributions>
+  <CustomFields type="xml">
+    <Movement type="string">Neo-Beigeism</Movement>
+    <Studio type="string">Gallery Huya</Studio>
+  </CustomFields>
+</Person>

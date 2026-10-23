@@ -1,0 +1,321 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the installation that was mistaken for scaffolding",
+      "description": "Xochitl Rautenbach talks about silence, in three coats of varnish. The artist answered every question with a question, and then with a long pause, which the transcript renders as \"…\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2018_0333/INT_2018_0333.session"
+        },
+        {
+          "@id": "Sessions/INT_2018_0333/INT_2018_0333_20181026.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_es"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Ludic"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#Gallery Huya"
+      },
+      "dateCreated": "2018-10-26",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Xochitl%20Rautenbach"
+        },
+        {
+          "@id": "#Hiroshi%20Eriksdóttir"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Greta%20Kowalczyk"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Ingrid%20Blanc"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Xochitl%20Rautenbach/Xochitl%20Rautenbach.person",
+      "@type": "File",
+      "contentSize": 958,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Xochitl Rautenbach.person",
+      "about": {
+        "@id": "#Xochitl%20Rautenbach"
+      }
+    },
+    {
+      "@id": "#Xochitl%20Rautenbach",
+      "@type": "Person",
+      "name": "Xochitl Rautenbach",
+      "ldac:age": "50",
+      "gender": "Other",
+      "description": "Xochitl Rautenbach belongs to Greyscale Romanticism and works in a borrowed greenhouse. Asked about influences, Xochitl Rautenbach said only \"an exhibition in total darkness\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Xochitl%20Rautenbach/Xochitl%20Rautenbach.person"
+      }
+    },
+    {
+      "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 1069,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Greta Kowalczyk.person",
+      "about": {
+        "@id": "#Greta%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Greta Kowalczyk_Photo.png",
+      "about": {
+        "@id": "#Greta%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Greta%20Kowalczyk",
+      "@type": "Person",
+      "name": "Greta Kowalczyk",
+      "ldac:age": "31",
+      "gender": "Male",
+      "description": "Greta Kowalczyk belongs to Post-Squarism and works in a borrowed greenhouse. Asked about influences, Greta Kowalczyk said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk.person"
+      },
+      "image": {
+        "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir.person",
+      "@type": "File",
+      "contentSize": 883,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Eriksdóttir.person",
+      "about": {
+        "@id": "#Hiroshi%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Hiroshi Eriksdóttir_Consent.png",
+      "about": {
+        "@id": "#Hiroshi%20Eriksdóttir"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Eriksdóttir",
+      "@type": "Person",
+      "name": "Hiroshi Eriksdóttir",
+      "ldac:age": "63",
+      "gender": "Female",
+      "description": "Hiroshi Eriksdóttir belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Hiroshi Eriksdóttir said only \"listening to grey\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir.person"
+      },
+      "image": {
+        "@id": "People/Hiroshi%20Eriksdóttir/Hiroshi%20Eriksdóttir_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ingrid%20Blanc/Ingrid%20Blanc.person",
+      "@type": "File",
+      "contentSize": 864,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ingrid Blanc.person",
+      "about": {
+        "@id": "#Ingrid%20Blanc"
+      }
+    },
+    {
+      "@id": "#Ingrid%20Blanc",
+      "@type": "Person",
+      "name": "Ingrid Blanc",
+      "ldac:age": "77",
+      "gender": "Other",
+      "description": "Ingrid Blanc belongs to Frameless Expressionism and works in the disused swimming pool. Asked about influences, Ingrid Blanc said only \"painting the colour of a Tuesday\". Primary Occupation: Gallery cleaner and, by accident, prize-winning artist.",
+      "subjectOf": {
+        "@id": "People/Ingrid%20Blanc/Ingrid%20Blanc.person"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Ludic",
+      "@type": "DefinedTerm",
+      "name": "Language play",
+      "description": "A language whose primary function is to be part of play, or a style of speech that involves a creative manipulation of the structures of the language.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#Gallery Huya",
+      "@type": "Place",
+      "name": "Gallery Huya"
+    },
+    {
+      "@id": "Sessions/INT_2018_0333/INT_2018_0333.session",
+      "@type": "File",
+      "contentSize": 1551,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2018_0333.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2018_0333/INT_2018_0333_20181026.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2018_0333_20181026.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

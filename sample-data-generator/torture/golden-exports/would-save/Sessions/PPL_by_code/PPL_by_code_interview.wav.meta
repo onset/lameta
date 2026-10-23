@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta minimum_lameta_version_to_read="0.0.0">
+  <Contributions>
+    <contributor>
+      <name>WD</name>
+      <role>participant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Tolo Kesi</name>
+      <role>interviewer</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Meta>

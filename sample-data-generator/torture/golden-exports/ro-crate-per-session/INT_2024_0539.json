@@ -1,0 +1,359 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About the moment before the first mark",
+      "description": "Nnamdi Achterberg talks about eleven shades of white and one impostor. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2024_0539/INT_2024_0539.session"
+        },
+        {
+          "@id": "Sessions/INT_2024_0539/INT_2024_0539_20241208.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the disused swimming pool"
+      },
+      "accessDescription": "The artist asks that this stay closed until the paint is dry.",
+      "dateCreated": "2024-12-08",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Nnamdi%20Achterberg"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Tenzin%20Dubois-Ngata"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Ulla%20O'Shaughnessy"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Saoirse%20Mbeki"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Achterberg/Nnamdi%20Achterberg.person",
+      "@type": "File",
+      "contentSize": 911,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nnamdi Achterberg.person",
+      "about": {
+        "@id": "#Nnamdi%20Achterberg"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Achterberg/Nnamdi%20Achterberg_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Nnamdi Achterberg_Consent.png",
+      "about": {
+        "@id": "#Nnamdi%20Achterberg"
+      }
+    },
+    {
+      "@id": "#Nnamdi%20Achterberg",
+      "@type": "Person",
+      "name": "Nnamdi Achterberg",
+      "ldac:age": "81",
+      "gender": "Other",
+      "description": "Nnamdi Achterberg belongs to Lateral Minimalism and works in Studio 4, the old soap factory. Asked about influences, Nnamdi Achterberg said only \"a sculpture made entirely of hesitation\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Nnamdi%20Achterberg/Nnamdi%20Achterberg.person"
+      },
+      "image": {
+        "@id": "People/Nnamdi%20Achterberg/Nnamdi%20Achterberg_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Dubois-Ngata/Tenzin%20Dubois-Ngata.person",
+      "@type": "File",
+      "contentSize": 1020,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Dubois-Ngata.person",
+      "about": {
+        "@id": "#Tenzin%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Dubois-Ngata/Tenzin%20Dubois-Ngata_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Tenzin Dubois-Ngata_Consent.png",
+      "about": {
+        "@id": "#Tenzin%20Dubois-Ngata"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Dubois-Ngata",
+      "@type": "Person",
+      "name": "Tenzin Dubois-Ngata",
+      "ldac:age": "41",
+      "gender": "Male",
+      "description": "Tenzin Dubois-Ngata belongs to The Wet Paint School and works in Gallery Huya. Asked about influences, Tenzin Dubois-Ngata said only \"why the canvas must stay blank\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Dubois-Ngata/Tenzin%20Dubois-Ngata.person"
+      },
+      "image": {
+        "@id": "People/Tenzin%20Dubois-Ngata/Tenzin%20Dubois-Ngata_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ulla%20O'Shaughnessy/Ulla%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 925,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ulla O'Shaughnessy.person",
+      "about": {
+        "@id": "#Ulla%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Ulla%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Ulla O'Shaughnessy",
+      "ldac:age": "65",
+      "gender": "Female",
+      "description": "Ulla O'Shaughnessy belongs to Frameless Expressionism and works in the artist's kitchen. Asked about influences, Ulla O'Shaughnessy said only \"a square that refuses to be a square\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Ulla%20O'Shaughnessy/Ulla%20O'Shaughnessy.person"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Mbeki/Saoirse%20Mbeki.person",
+      "@type": "File",
+      "contentSize": 1017,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Saoirse Mbeki.person",
+      "about": {
+        "@id": "#Saoirse%20Mbeki"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Mbeki/Saoirse%20Mbeki_Consent.pdf",
+      "@type": "File",
+      "contentSize": 595,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Saoirse Mbeki_Consent.pdf",
+      "about": {
+        "@id": "#Saoirse%20Mbeki"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Mbeki/Saoirse%20Mbeki_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Saoirse Mbeki_Photo.png",
+      "about": {
+        "@id": "#Saoirse%20Mbeki"
+      }
+    },
+    {
+      "@id": "#Saoirse%20Mbeki",
+      "@type": "Person",
+      "name": "Saoirse Mbeki",
+      "ldac:age": "53",
+      "gender": "Other",
+      "description": "Saoirse Mbeki belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Saoirse Mbeki said only \"the long argument with the colour blue\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Saoirse%20Mbeki/Saoirse%20Mbeki.person"
+        },
+        {
+          "@id": "People/Saoirse%20Mbeki/Saoirse%20Mbeki_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Saoirse%20Mbeki/Saoirse%20Mbeki_Photo.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the disused swimming pool",
+      "@type": "Place",
+      "name": "the disused swimming pool"
+    },
+    {
+      "@id": "Sessions/INT_2024_0539/INT_2024_0539.session",
+      "@type": "File",
+      "contentSize": 1610,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2024_0539.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2024_0539/INT_2024_0539_20241208.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2024_0539_20241208.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

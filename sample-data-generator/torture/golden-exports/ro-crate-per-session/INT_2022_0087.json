@@ -1,0 +1,256 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Notes on silence, in three coats of varnish",
+      "description": "Zofia Tanaka talks about a square that refuses to be a square. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2022_0087/INT_2022_0087.session"
+        },
+        {
+          "@id": "Sessions/INT_2022_0087/INT_2022_0087_20220404.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2022-04-04",
+      "keywords": "Post-Squarism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Zofia%20Tanaka"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Ásdís%20Tanaka"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Tanaka/Zofia%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 1036,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Tanaka.person",
+      "about": {
+        "@id": "#Zofia%20Tanaka"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Tanaka/Zofia%20Tanaka_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia Tanaka_Consent.png",
+      "about": {
+        "@id": "#Zofia%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Zofia%20Tanaka",
+      "@type": "Person",
+      "name": "Zofia Tanaka",
+      "ldac:age": "54",
+      "gender": "Female",
+      "description": "Zofia Tanaka belongs to Lateral Minimalism and works in the rooftop. Asked about influences, Zofia Tanaka said only \"the moment before the first mark\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Tanaka/Zofia%20Tanaka.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20Tanaka/Zofia%20Tanaka_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 854,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ásdís Tanaka.person",
+      "about": {
+        "@id": "#Ásdís%20Tanaka"
+      }
+    },
+    {
+      "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ásdís Tanaka_Consent.pdf",
+      "about": {
+        "@id": "#Ásdís%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Ásdís%20Tanaka",
+      "@type": "Person",
+      "name": "Ásdís Tanaka",
+      "ldac:age": "75",
+      "gender": "Male",
+      "description": "Ásdís Tanaka belongs to Accidental Constructivism and works in Gallery Huya. Asked about influences, Ásdís Tanaka said only \"the long argument with the colour blue\". Primary Occupation: Curator of empty frames.",
+      "subjectOf": [
+        {
+          "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka.person"
+        },
+        {
+          "@id": "People/Ásdís%20Tanaka/Ásdís%20Tanaka_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2022_0087/INT_2022_0087.session",
+      "@type": "File",
+      "contentSize": 1203,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2022_0087.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2022_0087/INT_2022_0087_20220404.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2022_0087_20220404.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

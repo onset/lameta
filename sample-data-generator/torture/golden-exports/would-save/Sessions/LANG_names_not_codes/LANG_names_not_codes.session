@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <id type="string">LANG_names_not_codes</id>
+  <Title type="string">Towards a portrait of the wind, from behind</Title>
+  <synopsis type="string">The artist talks about what the gallery cleaner threw away. There is a long passage about a single brush, which the artist calls "the elder".</synopsis>
+  <languages type="languageChoices">Edolo;Tok Pisin</languages>
+  <WorkingLanguages type="languageChoices">English</WorkingLanguages>
+  <Genre type="string">narrative</Genre>
+  <Access type="string">O</Access>
+  <Status type="string">Incoming</Status>
+  <Date>2024-06-01</Date>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

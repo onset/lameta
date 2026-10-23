@@ -1,0 +1,328 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About painting the colour of a Tuesday",
+      "description": "Quilla Ikeda talks about a square that refuses to be a square. Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2022_0717/INT_2022_0717.session"
+        },
+        {
+          "@id": "Sessions/INT_2022_0717/INT_2022_0717_20221018.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2022-10-18",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Quilla%20Ikeda"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Agnès%20Haddad"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Farhad%20Achterberg"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Quilla%20Ikeda/Quilla%20Ikeda.person",
+      "@type": "File",
+      "contentSize": 957,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Quilla Ikeda.person",
+      "about": {
+        "@id": "#Quilla%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Quilla%20Ikeda/Quilla%20Ikeda_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Quilla Ikeda_Consent.pdf",
+      "about": {
+        "@id": "#Quilla%20Ikeda"
+      }
+    },
+    {
+      "@id": "#Quilla%20Ikeda",
+      "@type": "Person",
+      "name": "Quilla Ikeda",
+      "ldac:age": "73",
+      "gender": "Male",
+      "description": "Quilla Ikeda belongs to Greyscale Romanticism and works in Studio 4, the old soap factory. Asked about influences, Quilla Ikeda said only \"eleven shades of white and one impostor\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Quilla%20Ikeda/Quilla%20Ikeda.person"
+        },
+        {
+          "@id": "People/Quilla%20Ikeda/Quilla%20Ikeda_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Agnès%20Haddad/Agnès%20Haddad.person",
+      "@type": "File",
+      "contentSize": 1066,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Agnès Haddad.person",
+      "about": {
+        "@id": "#Agnès%20Haddad"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Haddad/Agnès%20Haddad_Consent.pdf",
+      "@type": "File",
+      "contentSize": 594,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Agnès Haddad_Consent.pdf",
+      "about": {
+        "@id": "#Agnès%20Haddad"
+      }
+    },
+    {
+      "@id": "People/Agnès%20Haddad/Agnès%20Haddad_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Agnès Haddad_Photo.png",
+      "about": {
+        "@id": "#Agnès%20Haddad"
+      }
+    },
+    {
+      "@id": "#Agnès%20Haddad",
+      "@type": "Person",
+      "name": "Agnès Haddad",
+      "ldac:age": "62",
+      "gender": "Female",
+      "description": "Agnès Haddad belongs to Greyscale Romanticism and works in the back room of a frame shop. Asked about influences, Agnès Haddad said only \"the brushstroke that got away\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": [
+        {
+          "@id": "People/Agnès%20Haddad/Agnès%20Haddad.person"
+        },
+        {
+          "@id": "People/Agnès%20Haddad/Agnès%20Haddad_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Agnès%20Haddad/Agnès%20Haddad_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Achterberg/Farhad%20Achterberg.person",
+      "@type": "File",
+      "contentSize": 1045,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Farhad Achterberg.person",
+      "about": {
+        "@id": "#Farhad%20Achterberg"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Achterberg/Farhad%20Achterberg_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Farhad Achterberg_Consent.png",
+      "about": {
+        "@id": "#Farhad%20Achterberg"
+      }
+    },
+    {
+      "@id": "#Farhad%20Achterberg",
+      "@type": "Person",
+      "name": "Farhad Achterberg",
+      "ldac:age": "28",
+      "gender": "Female",
+      "description": "Farhad Achterberg belongs to Neo-Beigeism and works in the disused swimming pool. Asked about influences, Farhad Achterberg said only \"painting the colour of a Tuesday\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Farhad%20Achterberg/Farhad%20Achterberg.person"
+      },
+      "image": {
+        "@id": "People/Farhad%20Achterberg/Farhad%20Achterberg_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2022_0717/INT_2022_0717.session",
+      "@type": "File",
+      "contentSize": 1336,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2022_0717.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2022_0717/INT_2022_0717_20221018.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2022_0717_20221018.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

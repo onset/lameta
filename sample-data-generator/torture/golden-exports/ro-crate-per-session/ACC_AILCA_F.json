@@ -1,0 +1,248 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against the installation that was mistaken for scaffolding (AILCA access F: Free to All)",
+      "description": "The artist talks about drawing with a ladder. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/ACC_AILCA_F/ACC_AILCA_F.session"
+        },
+        {
+          "@id": "Sessions/ACC_AILCA_F/ACC_AILCA_F_20240401.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "accessDescription": "[[en]]Access F: Free to All[[es]]Acceso F: Free to All",
+      "dateCreated": "2024-04-01",
+      "ldac:speaker": [
+        {
+          "@id": "#Nɔkɔ%20Ɛsi"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-f"
+      }
+    },
+    {
+      "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi.person",
+      "@type": "File",
+      "contentSize": 1135,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nɔkɔ Ɛsi.person",
+      "about": {
+        "@id": "#Nɔkɔ%20Ɛsi"
+      }
+    },
+    {
+      "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi_Consent.mp4",
+      "@type": [
+        "File",
+        "VideoObject"
+      ],
+      "contentSize": 16436,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "video/mp4",
+      "name": "Nɔkɔ Ɛsi_Consent.mp4",
+      "about": {
+        "@id": "#Nɔkɔ%20Ɛsi"
+      }
+    },
+    {
+      "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi_Photo.jpg",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 1962,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/jpeg",
+      "name": "Nɔkɔ Ɛsi_Photo.jpg",
+      "about": {
+        "@id": "#Nɔkɔ%20Ɛsi"
+      }
+    },
+    {
+      "@id": "#Nɔkɔ%20Ɛsi",
+      "@type": "Person",
+      "name": "Nɔkɔ Ɛsi",
+      "ldac:age": "52",
+      "gender": "Female",
+      "description": "[[en]]Has painted the same grey square since 1994 and considers it unfinished.[[es]]Pinta el mismo cuadrado gris desde 1994 y lo considera inacabado. Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": [
+        {
+          "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi.person"
+        },
+        {
+          "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi_Consent.mp4"
+        }
+      ],
+      "image": {
+        "@id": "People/Nɔkɔ%20Ɛsi/Nɔkɔ%20Ɛsi_Photo.jpg"
+      }
+    },
+    {
+      "@id": "#license-elar-f",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR F License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'F'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Narrative",
+      "description": "A monologic discourse which represents temporally organized events.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "Sessions/ACC_AILCA_F/ACC_AILCA_F.session",
+      "@type": "File",
+      "contentSize": 898,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "ACC_AILCA_F.session",
+      "license": {
+        "@id": "#license-elar-f"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/ACC_AILCA_F/ACC_AILCA_F_20240401.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "ACC_AILCA_F_20240401.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    }
+  ]
+}

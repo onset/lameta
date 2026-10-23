@@ -1,0 +1,356 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards a portrait of the wind, from behind",
+      "description": "Zofia Ulloa talks about what the gallery cleaner threw away. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2022_0467/INT_2022_0467.session"
+        },
+        {
+          "@id": "Sessions/INT_2022_0467/INT_2022_0467_20221220.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_es"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a lift between floors 3 and 4"
+      },
+      "dateCreated": "2022-12-20",
+      "keywords": "Accidental Constructivism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Zofia%20Ulloa"
+        }
+      ],
+      "ldac:consultant": [
+        {
+          "@id": "#Oona%20Mbeki"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Nnamdi%20Tanaka"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Oona%20Gómez"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Ulloa/Zofia%20Ulloa.person",
+      "@type": "File",
+      "contentSize": 884,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Ulloa.person",
+      "about": {
+        "@id": "#Zofia%20Ulloa"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Ulloa/Zofia%20Ulloa_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia Ulloa_Consent.png",
+      "about": {
+        "@id": "#Zofia%20Ulloa"
+      }
+    },
+    {
+      "@id": "#Zofia%20Ulloa",
+      "@type": "Person",
+      "name": "Zofia Ulloa",
+      "ldac:age": "66",
+      "gender": "Female",
+      "description": "Zofia Ulloa belongs to Hesitationism and works in the artist's kitchen. Asked about influences, Zofia Ulloa said only \"why the frame is the real work\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Ulloa/Zofia%20Ulloa.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20Ulloa/Zofia%20Ulloa_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Mbeki/Oona%20Mbeki.person",
+      "@type": "File",
+      "contentSize": 998,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Mbeki.person",
+      "about": {
+        "@id": "#Oona%20Mbeki"
+      }
+    },
+    {
+      "@id": "People/Oona%20Mbeki/Oona%20Mbeki_Consent.pdf",
+      "@type": "File",
+      "contentSize": 592,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Mbeki_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Mbeki"
+      }
+    },
+    {
+      "@id": "#Oona%20Mbeki",
+      "@type": "Person",
+      "name": "Oona Mbeki",
+      "ldac:age": "62",
+      "gender": "Male",
+      "description": "Oona Mbeki belongs to Greyscale Romanticism and works in the rooftop. Asked about influences, Oona Mbeki said only \"triangles as a form of apology\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Mbeki/Oona%20Mbeki.person"
+        },
+        {
+          "@id": "People/Oona%20Mbeki/Oona%20Mbeki_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Nnamdi%20Tanaka/Nnamdi%20Tanaka.person",
+      "@type": "File",
+      "contentSize": 944,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Nnamdi Tanaka.person",
+      "about": {
+        "@id": "#Nnamdi%20Tanaka"
+      }
+    },
+    {
+      "@id": "People/Nnamdi%20Tanaka/Nnamdi%20Tanaka_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Nnamdi Tanaka_Consent.png",
+      "about": {
+        "@id": "#Nnamdi%20Tanaka"
+      }
+    },
+    {
+      "@id": "#Nnamdi%20Tanaka",
+      "@type": "Person",
+      "name": "Nnamdi Tanaka",
+      "ldac:age": "46",
+      "gender": "Other",
+      "description": "Nnamdi Tanaka belongs to Greyscale Romanticism and works in a lift between floors 3 and 4. Asked about influences, Nnamdi Tanaka said only \"the third side of a line\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Nnamdi%20Tanaka/Nnamdi%20Tanaka.person"
+      },
+      "image": {
+        "@id": "People/Nnamdi%20Tanaka/Nnamdi%20Tanaka_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Gómez/Oona%20Gómez.person",
+      "@type": "File",
+      "contentSize": 926,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Gómez.person",
+      "about": {
+        "@id": "#Oona%20Gómez"
+      }
+    },
+    {
+      "@id": "People/Oona%20Gómez/Oona%20Gómez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 592,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Gómez_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Gómez"
+      }
+    },
+    {
+      "@id": "#Oona%20Gómez",
+      "@type": "Person",
+      "name": "Oona Gómez",
+      "ldac:age": "47",
+      "gender": "Male",
+      "description": "Oona Gómez belongs to Accidental Constructivism and works in the rooftop. Asked about influences, Oona Gómez said only \"negative space and its landlord\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Gómez/Oona%20Gómez.person"
+        },
+        {
+          "@id": "People/Oona%20Gómez/Oona%20Gómez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a lift between floors 3 and 4",
+      "@type": "Place",
+      "name": "a lift between floors 3 and 4"
+    },
+    {
+      "@id": "Sessions/INT_2022_0467/INT_2022_0467.session",
+      "@type": "File",
+      "contentSize": 1494,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2022_0467.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2022_0467/INT_2022_0467_20221220.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2022_0467_20221220.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

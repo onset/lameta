@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Consent form signed in charcoal. Scan it before it smudges.</notes>
+  <id type="string">INT_2024_0039</id>
+  <Title type="string">Against what the gallery cleaner threw away</Title>
+  <synopsis type="string">Tenzin Quispe talks about the emotional weight of beige. Recorded while the artist repainted the studio wall the same white, four times.</synopsis>
+  <languages type="languageChoices">qaa-x-kurbin;tpi;eng</languages>
+  <WorkingLanguages type="languageChoices">eng</WorkingLanguages>
+  <Genre type="string">dialog</Genre>
+  <Location type="string">the artist's kitchen</Location>
+  <Access type="string">S</Access>
+  <Status type="string">Finished</Status>
+  <Date>2024-04-12</Date>
+  <Keywords type="string">Hesitationism, studio visit</Keywords>
+  <Topic type="string">frames</Topic>
+  <Contributions>
+    <contributor>
+      <name>Tenzin Quispe</name>
+      <role>speaker</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>

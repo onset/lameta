@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">Ingrid Ikeda</FullName>
+  <BirthYear type="string">1953</BirthYear>
+  <Gender type="string">Other</Gender>
+  <EthnicGroup type="string">Hesitationism</EthnicGroup>
+  <PrimaryOccupation type="string">Sculptor of negative space</PrimaryOccupation>
+  <Description type="string">Ingrid Ikeda belongs to Lateral Minimalism and works in the back room of a frame shop. Asked about influences, Ingrid Ikeda said only "the emotional weight of beige".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+    <language tag="eng" primary="false" mother="false" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <otherLanguage1 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">English</otherLanguage1>
+  <Contributions></Contributions>
+</Person>

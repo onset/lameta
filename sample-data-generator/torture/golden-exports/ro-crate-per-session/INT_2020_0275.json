@@ -1,0 +1,327 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond a sculpture made entirely of hesitation",
+      "description": "Kalani Søndergaard talks about negative space and its landlord. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2020_0275/INT_2020_0275.session"
+        },
+        {
+          "@id": "Sessions/INT_2020_0275/INT_2020_0275_20201224.wav"
+        },
+        {
+          "@id": "Sessions/INT_2020_0275/INT_2020_0275_20201224_notes.txt"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_es"
+        },
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "accessDescription": "The artist asks that this stay closed until the paint is dry.",
+      "dateCreated": "2020-12-24",
+      "keywords": "Hesitationism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Kalani%20Søndergaard"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Dmitri%20Kowalczyk"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Ömer%20Ulloa"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Søndergaard/Kalani%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 886,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Kalani Søndergaard.person",
+      "about": {
+        "@id": "#Kalani%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Søndergaard/Kalani%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 600,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Kalani Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Kalani%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Kalani%20Søndergaard",
+      "@type": "Person",
+      "name": "Kalani Søndergaard",
+      "ldac:age": "81",
+      "gender": "Female",
+      "description": "Kalani Søndergaard belongs to Accidental Constructivism and works in the rooftop. Asked about influences, Kalani Søndergaard said only \"negative space and its landlord\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Kalani%20Søndergaard/Kalani%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Kalani%20Søndergaard/Kalani%20Søndergaard_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Dmitri%20Kowalczyk/Dmitri%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 1147,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Dmitri Kowalczyk.person",
+      "about": {
+        "@id": "#Dmitri%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Dmitri%20Kowalczyk/Dmitri%20Kowalczyk_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Dmitri Kowalczyk_Consent.png",
+      "about": {
+        "@id": "#Dmitri%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Dmitri%20Kowalczyk",
+      "@type": "Person",
+      "name": "Dmitri Kowalczyk",
+      "ldac:age": "22",
+      "gender": "Other",
+      "description": "Dmitri Kowalczyk belongs to Frameless Expressionism and works in Studio 4, the old soap factory. Asked about influences, Dmitri Kowalczyk said only \"the shadow of a canvas that was never painted\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Dmitri%20Kowalczyk/Dmitri%20Kowalczyk.person"
+      },
+      "image": {
+        "@id": "People/Dmitri%20Kowalczyk/Dmitri%20Kowalczyk_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Ulloa/Ömer%20Ulloa.person",
+      "@type": "File",
+      "contentSize": 951,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ömer Ulloa.person",
+      "about": {
+        "@id": "#Ömer%20Ulloa"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Ulloa/Ömer%20Ulloa_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Ömer Ulloa_Consent.png",
+      "about": {
+        "@id": "#Ömer%20Ulloa"
+      }
+    },
+    {
+      "@id": "#Ömer%20Ulloa",
+      "@type": "Person",
+      "name": "Ömer Ulloa",
+      "ldac:age": "48",
+      "gender": "Male",
+      "description": "Ömer Ulloa belongs to Lateral Minimalism and works in the disused swimming pool. Asked about influences, Ömer Ulloa said only \"silence, in three coats of varnish\". Primary Occupation: Gallery cleaner and, by accident, prize-winning artist.",
+      "subjectOf": {
+        "@id": "People/Ömer%20Ulloa/Ömer%20Ulloa.person"
+      },
+      "image": {
+        "@id": "People/Ömer%20Ulloa/Ömer%20Ulloa_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2020_0275/INT_2020_0275.session",
+      "@type": "File",
+      "contentSize": 1452,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2020_0275.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2020_0275/INT_2020_0275_20201224.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2020_0275_20201224.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2020_0275/INT_2020_0275_20201224_notes.txt",
+      "@type": "File",
+      "contentSize": 154,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/plain",
+      "name": "INT_2020_0275_20201224_notes.txt",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_es",
+      "@type": "Language",
+      "code": "es",
+      "name": "Spanish"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

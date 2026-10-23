@@ -1,0 +1,338 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "On the shadow of a canvas that was never painted",
+      "description": "Lucía Yılmaz talks about triangles as a form of apology. The interview stopped twice because the artist wanted to look at the corner of the room.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2023_0278/INT_2023_0278.session"
+        },
+        {
+          "@id": "Sessions/INT_2023_0278/INT_2023_0278_20230327.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        },
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2023-03-27",
+      "keywords": "The Wet Paint School, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Lucía%20Yılmaz"
+        },
+        {
+          "@id": "#Zofia%20Blanc"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Ếlodie%20Vasquez"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Wanjiru%20Fontaine"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 877,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Lucía Yılmaz.person",
+      "about": {
+        "@id": "#Lucía%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Lucía Yılmaz_Consent.png",
+      "about": {
+        "@id": "#Lucía%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Lucía%20Yılmaz",
+      "@type": "Person",
+      "name": "Lucía Yılmaz",
+      "ldac:age": "81",
+      "gender": "Male",
+      "description": "Lucía Yılmaz belongs to Neo-Beigeism and works in Studio 4, the old soap factory. Asked about influences, Lucía Yılmaz said only \"a sculpture made entirely of hesitation\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz.person"
+      },
+      "image": {
+        "@id": "People/Lucía%20Yılmaz/Lucía%20Yılmaz_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Vasquez/Ếlodie%20Vasquez.person",
+      "@type": "File",
+      "contentSize": 889,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie Vasquez.person",
+      "about": {
+        "@id": "#Ếlodie%20Vasquez"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Vasquez/Ếlodie%20Vasquez_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie Vasquez_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20Vasquez"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20Vasquez",
+      "@type": "Person",
+      "name": "Ếlodie Vasquez",
+      "ldac:age": "83",
+      "gender": "Male",
+      "description": "Ếlodie Vasquez belongs to Post-Squarism and works in Studio 4, the old soap factory. Asked about influences, Ếlodie Vasquez said only \"eleven shades of white and one impostor\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20Vasquez/Ếlodie%20Vasquez.person"
+        },
+        {
+          "@id": "People/Ếlodie%20Vasquez/Ếlodie%20Vasquez_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Wanjiru%20Fontaine/Wanjiru%20Fontaine.person",
+      "@type": "File",
+      "contentSize": 900,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Wanjiru Fontaine.person",
+      "about": {
+        "@id": "#Wanjiru%20Fontaine"
+      }
+    },
+    {
+      "@id": "#Wanjiru%20Fontaine",
+      "@type": "Person",
+      "name": "Wanjiru Fontaine",
+      "ldac:age": "37",
+      "gender": "Female",
+      "description": "Wanjiru Fontaine belongs to Accidental Constructivism and works in the artist's kitchen. Asked about influences, Wanjiru Fontaine said only \"why the frame is the real work\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Wanjiru%20Fontaine/Wanjiru%20Fontaine.person"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Blanc/Zofia%20Blanc.person",
+      "@type": "File",
+      "contentSize": 956,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia Blanc.person",
+      "about": {
+        "@id": "#Zofia%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Zofia%20Blanc/Zofia%20Blanc_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia Blanc_Consent.png",
+      "about": {
+        "@id": "#Zofia%20Blanc"
+      }
+    },
+    {
+      "@id": "#Zofia%20Blanc",
+      "@type": "Person",
+      "name": "Zofia Blanc",
+      "ldac:age": "45",
+      "gender": "Female",
+      "description": "Zofia Blanc belongs to Neo-Beigeism and works in the disused swimming pool. Asked about influences, Zofia Blanc said only \"painting the colour of a Tuesday\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Zofia%20Blanc/Zofia%20Blanc.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20Blanc/Zofia%20Blanc_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2023_0278/INT_2023_0278.session",
+      "@type": "File",
+      "contentSize": 1488,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2023_0278.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2023_0278/INT_2023_0278_20230327.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2023_0278_20230327.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

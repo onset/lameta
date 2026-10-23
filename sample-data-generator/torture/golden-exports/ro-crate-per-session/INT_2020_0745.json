@@ -1,0 +1,282 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Beyond a sculpture made entirely of hesitation",
+      "description": "Saoirse Zielińska talks about triangles as a form of apology. The artist answered every question with a question, and then with a long pause, which the transcript renders as \"…\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2020_0745/INT_2020_0745.session"
+        },
+        {
+          "@id": "Sessions/INT_2020_0745/INT_2020_0745_20200218.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        },
+        {
+          "@id": "#language_tpi"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a borrowed greenhouse"
+      },
+      "dateCreated": "2020-02-18",
+      "keywords": "Ladderism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Saoirse%20Zielińska"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Oona%20Yılmaz"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-u"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Zielińska/Saoirse%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 1010,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Saoirse Zielińska.person",
+      "about": {
+        "@id": "#Saoirse%20Zielińska"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Zielińska/Saoirse%20Zielińska_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Saoirse Zielińska_Consent.pdf",
+      "about": {
+        "@id": "#Saoirse%20Zielińska"
+      }
+    },
+    {
+      "@id": "People/Saoirse%20Zielińska/Saoirse%20Zielińska_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Saoirse Zielińska_Photo.png",
+      "about": {
+        "@id": "#Saoirse%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Saoirse%20Zielińska",
+      "@type": "Person",
+      "name": "Saoirse Zielińska",
+      "ldac:age": "62",
+      "gender": "Other",
+      "description": "Saoirse Zielińska belongs to Ladderism and works in a borrowed greenhouse. Asked about influences, Saoirse Zielińska said only \"listening to grey\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Saoirse%20Zielińska/Saoirse%20Zielińska.person"
+        },
+        {
+          "@id": "People/Saoirse%20Zielińska/Saoirse%20Zielińska_Consent.pdf"
+        }
+      ],
+      "image": {
+        "@id": "People/Saoirse%20Zielińska/Saoirse%20Zielińska_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Yılmaz/Oona%20Yılmaz.person",
+      "@type": "File",
+      "contentSize": 862,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Yılmaz.person",
+      "about": {
+        "@id": "#Oona%20Yılmaz"
+      }
+    },
+    {
+      "@id": "People/Oona%20Yılmaz/Oona%20Yılmaz_Consent.pdf",
+      "@type": "File",
+      "contentSize": 593,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Oona Yılmaz_Consent.pdf",
+      "about": {
+        "@id": "#Oona%20Yılmaz"
+      }
+    },
+    {
+      "@id": "#Oona%20Yılmaz",
+      "@type": "Person",
+      "name": "Oona Yılmaz",
+      "ldac:age": "21",
+      "gender": "Male",
+      "description": "Oona Yılmaz belongs to Accidental Constructivism and works in the disused swimming pool. Asked about influences, Oona Yılmaz said only \"painting the colour of a Tuesday\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Oona%20Yılmaz/Oona%20Yılmaz.person"
+        },
+        {
+          "@id": "People/Oona%20Yılmaz/Oona%20Yılmaz_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-u",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR U License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'U' which means 'Registered users can access (after registration)'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a borrowed greenhouse",
+      "@type": "Place",
+      "name": "a borrowed greenhouse"
+    },
+    {
+      "@id": "Sessions/INT_2020_0745/INT_2020_0745.session",
+      "@type": "File",
+      "contentSize": 1246,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2020_0745.session",
+      "license": {
+        "@id": "#license-elar-u"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2020_0745/INT_2020_0745_20200218.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2020_0745_20200218.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_tpi",
+      "@type": "Language",
+      "code": "tpi",
+      "name": "Tok Pisin"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

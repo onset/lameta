@@ -1,0 +1,377 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Against what the gallery cleaner threw away",
+      "description": "Hiroshi Jovanović talks about a portrait of the wind, from behind. The artist answered every question with a question, and then with a long pause, which the transcript renders as \"…\".",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2015_0620/INT_2015_0620.session"
+        },
+        {
+          "@id": "Sessions/INT_2015_0620/INT_2015_0620_20150905.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2015_0620/INT_2015_0620_20150905.wav"
+        },
+        {
+          "@id": "Sessions/INT_2015_0620/INT_2015_0620_Artwork.png"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the artist's kitchen"
+      },
+      "dateCreated": "2015-09-05",
+      "keywords": "Frameless Expressionism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Hiroshi%20Jovanović"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Wanjiru%20Zielińska"
+        }
+      ],
+      "ldac:photographer": [
+        {
+          "@id": "#Ulla%20Jovanović"
+        },
+        {
+          "@id": "#Kalani%20Søndergaard"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-s"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Jovanović/Hiroshi%20Jovanović.person",
+      "@type": "File",
+      "contentSize": 876,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Hiroshi Jovanović.person",
+      "about": {
+        "@id": "#Hiroshi%20Jovanović"
+      }
+    },
+    {
+      "@id": "People/Hiroshi%20Jovanović/Hiroshi%20Jovanović_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Hiroshi Jovanović_Consent.png",
+      "about": {
+        "@id": "#Hiroshi%20Jovanović"
+      }
+    },
+    {
+      "@id": "#Hiroshi%20Jovanović",
+      "@type": "Person",
+      "name": "Hiroshi Jovanović",
+      "ldac:age": "49",
+      "gender": "Female",
+      "description": "Hiroshi Jovanović belongs to Post-Squarism and works in the rooftop. Asked about influences, Hiroshi Jovanović said only \"the moment before the first mark\". Primary Occupation: Installation artist, mainly scaffolding.",
+      "subjectOf": {
+        "@id": "People/Hiroshi%20Jovanović/Hiroshi%20Jovanović.person"
+      },
+      "image": {
+        "@id": "People/Hiroshi%20Jovanović/Hiroshi%20Jovanović_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Wanjiru%20Zielińska/Wanjiru%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 974,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Wanjiru Zielińska.person",
+      "about": {
+        "@id": "#Wanjiru%20Zielińska"
+      }
+    },
+    {
+      "@id": "People/Wanjiru%20Zielińska/Wanjiru%20Zielińska_Consent.pdf",
+      "@type": "File",
+      "contentSize": 599,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Wanjiru Zielińska_Consent.pdf",
+      "about": {
+        "@id": "#Wanjiru%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Wanjiru%20Zielińska",
+      "@type": "Person",
+      "name": "Wanjiru Zielińska",
+      "ldac:age": "36",
+      "gender": "Female",
+      "description": "Wanjiru Zielińska belongs to Greyscale Romanticism and works in a borrowed greenhouse. Asked about influences, Wanjiru Zielińska said only \"what the gallery cleaner threw away\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": [
+        {
+          "@id": "People/Wanjiru%20Zielińska/Wanjiru%20Zielińska.person"
+        },
+        {
+          "@id": "People/Wanjiru%20Zielińska/Wanjiru%20Zielińska_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Ulla%20Jovanović/Ulla%20Jovanović.person",
+      "@type": "File",
+      "contentSize": 905,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ulla Jovanović.person",
+      "about": {
+        "@id": "#Ulla%20Jovanović"
+      }
+    },
+    {
+      "@id": "People/Ulla%20Jovanović/Ulla%20Jovanović_Consent.pdf",
+      "@type": "File",
+      "contentSize": 596,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ulla Jovanović_Consent.pdf",
+      "about": {
+        "@id": "#Ulla%20Jovanović"
+      }
+    },
+    {
+      "@id": "#Ulla%20Jovanović",
+      "@type": "Person",
+      "name": "Ulla Jovanović",
+      "ldac:age": "51",
+      "gender": "Female",
+      "description": "Ulla Jovanović belongs to Ladderism and works in a lift between floors 3 and 4. Asked about influences, Ulla Jovanović said only \"how to hang a painting upside down on purpose\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": [
+        {
+          "@id": "People/Ulla%20Jovanović/Ulla%20Jovanović.person"
+        },
+        {
+          "@id": "People/Ulla%20Jovanović/Ulla%20Jovanović_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Kalani%20Søndergaard/Kalani%20Søndergaard.person",
+      "@type": "File",
+      "contentSize": 886,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Kalani Søndergaard.person",
+      "about": {
+        "@id": "#Kalani%20Søndergaard"
+      }
+    },
+    {
+      "@id": "People/Kalani%20Søndergaard/Kalani%20Søndergaard_Consent.pdf",
+      "@type": "File",
+      "contentSize": 600,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Kalani Søndergaard_Consent.pdf",
+      "about": {
+        "@id": "#Kalani%20Søndergaard"
+      }
+    },
+    {
+      "@id": "#Kalani%20Søndergaard",
+      "@type": "Person",
+      "name": "Kalani Søndergaard",
+      "ldac:age": "76",
+      "gender": "Female",
+      "description": "Kalani Søndergaard belongs to Accidental Constructivism and works in the rooftop. Asked about influences, Kalani Søndergaard said only \"negative space and its landlord\". Primary Occupation: Paints with ladders.",
+      "subjectOf": [
+        {
+          "@id": "People/Kalani%20Søndergaard/Kalani%20Søndergaard.person"
+        },
+        {
+          "@id": "People/Kalani%20Søndergaard/Kalani%20Søndergaard_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-s",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR S License",
+      "ldac:access": {
+        "@id": "ldac:AuthorizedAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'S' which means 'Access must be obtained from Depositor via ELAR'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Oral history",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the artist's kitchen",
+      "@type": "Place",
+      "name": "the artist's kitchen"
+    },
+    {
+      "@id": "Sessions/INT_2015_0620/INT_2015_0620.session",
+      "@type": "File",
+      "contentSize": 1509,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2015_0620.session",
+      "license": {
+        "@id": "#license-elar-s"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0620/INT_2015_0620_20150905.eaf",
+      "@type": "File",
+      "contentSize": 849,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2015_0620_20150905.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0620/INT_2015_0620_20150905.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2015_0620_20150905.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2015_0620/INT_2015_0620_Artwork.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 456,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "INT_2015_0620_Artwork.png",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:AuthorizedAccess",
+      "@type": "DefinedTerm",
+      "name": "Authorized Access",
+      "description": "Data covered by this license requires explicit authorization for access.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

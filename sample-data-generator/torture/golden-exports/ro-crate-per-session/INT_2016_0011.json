@@ -1,0 +1,258 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "About a dot, considered at length",
+      "description": "Farhad Zielińska talks about the long argument with the colour blue. Background noise: a gallery fan, rain, and someone hammering a nail into a work in progress.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2016_0011/INT_2016_0011.session"
+        },
+        {
+          "@id": "Sessions/INT_2016_0011/INT_2016_0011_20161212.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_qaa-x-kurbin"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Narrative"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the back room of a frame shop"
+      },
+      "accessDescription": "The artist asks that this stay closed until the paint is dry.",
+      "dateCreated": "2016-12-12",
+      "keywords": "Greyscale Romanticism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Farhad%20Zielińska"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Rangi%20Haddad"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Zielińska/Farhad%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 932,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Farhad Zielińska.person",
+      "about": {
+        "@id": "#Farhad%20Zielińska"
+      }
+    },
+    {
+      "@id": "People/Farhad%20Zielińska/Farhad%20Zielińska_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Farhad Zielińska_Consent.png",
+      "about": {
+        "@id": "#Farhad%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Farhad%20Zielińska",
+      "@type": "Person",
+      "name": "Farhad Zielińska",
+      "ldac:age": "39",
+      "gender": "Female",
+      "description": "Farhad Zielińska belongs to Lateral Minimalism and works in the artist's kitchen. Asked about influences, Farhad Zielińska said only \"a square that refuses to be a square\". Primary Occupation: Performance artist who performs mostly in the car park.",
+      "subjectOf": {
+        "@id": "People/Farhad%20Zielińska/Farhad%20Zielińska.person"
+      },
+      "image": {
+        "@id": "People/Farhad%20Zielińska/Farhad%20Zielińska_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Rangi%20Haddad/Rangi%20Haddad.person",
+      "@type": "File",
+      "contentSize": 921,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Rangi Haddad.person",
+      "about": {
+        "@id": "#Rangi%20Haddad"
+      }
+    },
+    {
+      "@id": "People/Rangi%20Haddad/Rangi%20Haddad_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Rangi Haddad_Consent.png",
+      "about": {
+        "@id": "#Rangi%20Haddad"
+      }
+    },
+    {
+      "@id": "#Rangi%20Haddad",
+      "@type": "Person",
+      "name": "Rangi Haddad",
+      "ldac:age": "41",
+      "gender": "Female",
+      "description": "Rangi Haddad belongs to Frameless Expressionism and works in the disused swimming pool. Asked about influences, Rangi Haddad said only \"drawing with a ladder\". Primary Occupation: Sculptor of negative space.",
+      "subjectOf": {
+        "@id": "People/Rangi%20Haddad/Rangi%20Haddad.person"
+      },
+      "image": {
+        "@id": "People/Rangi%20Haddad/Rangi%20Haddad_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Narrative",
+      "@type": "DefinedTerm",
+      "name": "Personal narrative",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the back room of a frame shop",
+      "@type": "Place",
+      "name": "the back room of a frame shop"
+    },
+    {
+      "@id": "Sessions/INT_2016_0011/INT_2016_0011.session",
+      "@type": "File",
+      "contentSize": 1352,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2016_0011.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2016_0011/INT_2016_0011_20161212.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2016_0011_20161212.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_qaa-x-kurbin",
+      "@type": "Language",
+      "code": "qaa-x-kurbin",
+      "name": "Kürbinian"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

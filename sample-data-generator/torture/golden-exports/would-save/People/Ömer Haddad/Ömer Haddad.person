@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">The title is the artist's own and must not be translated literally.</notes>
+  <FullName type="string">Ömer Haddad</FullName>
+  <BirthYear type="string">1969</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Accidental Constructivism</EthnicGroup>
+  <PrimaryOccupation type="string">Curator of empty frames</PrimaryOccupation>
+  <Description type="string">Ömer Haddad belongs to Greyscale Romanticism and works in a borrowed greenhouse. Asked about influences, Ömer Haddad said only "what the gallery cleaner threw away".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+    <language tag="tpi" primary="false" mother="false" father="true"></language>
+    <language tag="eng" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</fathersLanguage>
+  <otherLanguage1 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">English</otherLanguage1>
+  <Contributions></Contributions>
+</Person>

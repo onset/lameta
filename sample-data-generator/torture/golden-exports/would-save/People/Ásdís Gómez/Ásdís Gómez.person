@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
+  <FullName type="string">Ásdís Gómez</FullName>
+  <BirthYear type="string">1967</BirthYear>
+  <Gender type="string">Male</Gender>
+  <EthnicGroup type="string">Greyscale Romanticism</EthnicGroup>
+  <PrimaryOccupation type="string">Former accountant, now draws only diagonals</PrimaryOccupation>
+  <Description type="string">Ásdís Gómez belongs to Ladderism and works in the artist's kitchen. Asked about influences, Ásdís Gómez said only "why the frame is the real work".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="false"></language>
+    <language tag="tpi" primary="false" mother="false" father="true"></language>
+    <language tag="eng" primary="false" mother="false" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</fathersLanguage>
+  <otherLanguage1 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">English</otherLanguage1>
+  <Contributions></Contributions>
+</Person>

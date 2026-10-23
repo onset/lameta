@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Ask again about the yellow period, which may not have happened.</notes>
+  <FullName type="string">Hiroshi Dubois-Ngata</FullName>
+  <BirthYear type="string">1989</BirthYear>
+  <Gender type="string">Female</Gender>
+  <EthnicGroup type="string">Greyscale Romanticism</EthnicGroup>
+  <PrimaryOccupation type="string">Former accountant, now draws only diagonals</PrimaryOccupation>
+  <Description type="string">Hiroshi Dubois-Ngata belongs to Ladderism and works in Gallery Huya. Asked about influences, Hiroshi Dubois-Ngata said only "why the canvas must stay blank".</Description>
+  <languages type="xml">
+    <language tag="qaa-x-kurbin" primary="true" mother="true" father="true"></language>
+    <language tag="etr" primary="false" mother="false" father="true"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Kürbinian</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</otherLanguage0>
+  <Contributions></Contributions>
+</Person>

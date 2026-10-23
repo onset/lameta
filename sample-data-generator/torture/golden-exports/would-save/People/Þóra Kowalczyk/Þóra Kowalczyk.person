@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">Þóra Kowalczyk</FullName>
+  <BirthYear type="string">1938</BirthYear>
+  <Gender type="string">Other</Gender>
+  <EthnicGroup type="string">Ladderism</EthnicGroup>
+  <PrimaryOccupation type="string">Paints with ladders</PrimaryOccupation>
+  <Description type="string">Þóra Kowalczyk belongs to Post-Squarism and works in the disused swimming pool. Asked about influences, Þóra Kowalczyk said only "painting the colour of a Tuesday".</Description>
+  <languages type="xml">
+    <language tag="fr" primary="true" mother="true" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</primaryLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">French</mothersLanguage>
+  <Contributions></Contributions>
+</Person>

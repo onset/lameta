@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">Con Dempsey</FullName>
+  <NickName type="string">Con</NickName>
+  <PrimaryOccupation type="string">Colourist specialising in beige</PrimaryOccupation>
+  <Description type="string">Con Dempsey belongs to Lateral Minimalism and works in the back room of a frame shop. Asked about influences, Con Dempsey said only "the emotional weight of beige".</Description>
+  <languages type="xml"></languages>
+  <Contributions></Contributions>
+</Person>

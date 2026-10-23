@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Person minimum_lameta_version_to_read="0.0.0">
+  <notes type="string">Check the spelling of the movement; the artist spells it differently every year.</notes>
+  <FullName type="string">Xochitl Eriksdóttir</FullName>
+  <BirthYear type="string">1975</BirthYear>
+  <Gender type="string">Other</Gender>
+  <EthnicGroup type="string">Frameless Expressionism</EthnicGroup>
+  <PrimaryOccupation type="string">Sculptor of negative space</PrimaryOccupation>
+  <Description type="string">Xochitl Eriksdóttir belongs to Ladderism and works in the rooftop. Asked about influences, Xochitl Eriksdóttir said only "triangles as a form of apology".</Description>
+  <languages type="xml">
+    <language tag="etr" primary="true" mother="true" father="true"></language>
+    <language tag="tpi" primary="false" mother="false" father="false"></language>
+  </languages>
+  <primaryLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</primaryLanguage>
+  <fathersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</fathersLanguage>
+  <mothersLanguage deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Edolo</mothersLanguage>
+  <otherLanguage0 deprecated="lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.">Tok Pisin</otherLanguage0>
+  <Contributions></Contributions>
+</Person>

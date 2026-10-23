@@ -1,0 +1,328 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards silence, in three coats of varnish",
+      "description": "Greta Kowalczyk talks about the installation that was mistaken for scaffolding. A curator joined for ten minutes and left convinced that the chair was part of the exhibition.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2020_0315/INT_2020_0315.session"
+        },
+        {
+          "@id": "Sessions/INT_2020_0315/INT_2020_0315_20200408.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_fr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Dialogue"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#the rooftop"
+      },
+      "dateCreated": "2020-04-08",
+      "keywords": "Frameless Expressionism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Greta%20Kowalczyk"
+        }
+      ],
+      "ldac:transcriber": [
+        {
+          "@id": "#Oona%20Zielińska"
+        },
+        {
+          "@id": "#Ếlodie%20Nakamura"
+        }
+      ],
+      "ldac:recorder": [
+        {
+          "@id": "#Chiamaka%20Quispe"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk.person",
+      "@type": "File",
+      "contentSize": 1069,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Greta Kowalczyk.person",
+      "about": {
+        "@id": "#Greta%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk_Photo.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 279,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Greta Kowalczyk_Photo.png",
+      "about": {
+        "@id": "#Greta%20Kowalczyk"
+      }
+    },
+    {
+      "@id": "#Greta%20Kowalczyk",
+      "@type": "Person",
+      "name": "Greta Kowalczyk",
+      "ldac:age": "33",
+      "gender": "Male",
+      "description": "Greta Kowalczyk belongs to Post-Squarism and works in a borrowed greenhouse. Asked about influences, Greta Kowalczyk said only \"listening to grey\". Primary Occupation: Painter of one grey square, repeatedly.",
+      "subjectOf": {
+        "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk.person"
+      },
+      "image": {
+        "@id": "People/Greta%20Kowalczyk/Greta%20Kowalczyk_Photo.png"
+      }
+    },
+    {
+      "@id": "People/Oona%20Zielińska/Oona%20Zielińska.person",
+      "@type": "File",
+      "contentSize": 863,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Oona Zielińska.person",
+      "about": {
+        "@id": "#Oona%20Zielińska"
+      }
+    },
+    {
+      "@id": "#Oona%20Zielińska",
+      "@type": "Person",
+      "name": "Oona Zielińska",
+      "ldac:age": "57",
+      "gender": "Male",
+      "description": "Oona Zielińska belongs to Neo-Beigeism and works in the disused swimming pool. Asked about influences, Oona Zielińska said only \"silence, in three coats of varnish\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Oona%20Zielińska/Oona%20Zielińska.person"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Nakamura/Ếlodie%20Nakamura.person",
+      "@type": "File",
+      "contentSize": 1020,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ếlodie Nakamura.person",
+      "about": {
+        "@id": "#Ếlodie%20Nakamura"
+      }
+    },
+    {
+      "@id": "People/Ếlodie%20Nakamura/Ếlodie%20Nakamura_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Ếlodie Nakamura_Consent.pdf",
+      "about": {
+        "@id": "#Ếlodie%20Nakamura"
+      }
+    },
+    {
+      "@id": "#Ếlodie%20Nakamura",
+      "@type": "Person",
+      "name": "Ếlodie Nakamura",
+      "ldac:age": "47",
+      "gender": "Male",
+      "description": "Ếlodie Nakamura belongs to Neo-Beigeism and works in the disused swimming pool. Asked about influences, Ếlodie Nakamura said only \"painting the colour of a Tuesday\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": [
+        {
+          "@id": "People/Ếlodie%20Nakamura/Ếlodie%20Nakamura.person"
+        },
+        {
+          "@id": "People/Ếlodie%20Nakamura/Ếlodie%20Nakamura_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "People/Chiamaka%20Quispe/Chiamaka%20Quispe.person",
+      "@type": "File",
+      "contentSize": 855,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Chiamaka Quispe.person",
+      "about": {
+        "@id": "#Chiamaka%20Quispe"
+      }
+    },
+    {
+      "@id": "People/Chiamaka%20Quispe/Chiamaka%20Quispe_Consent.pdf",
+      "@type": "File",
+      "contentSize": 597,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/pdf",
+      "name": "Chiamaka Quispe_Consent.pdf",
+      "about": {
+        "@id": "#Chiamaka%20Quispe"
+      }
+    },
+    {
+      "@id": "#Chiamaka%20Quispe",
+      "@type": "Person",
+      "name": "Chiamaka Quispe",
+      "ldac:age": "81",
+      "gender": "Female",
+      "description": "Chiamaka Quispe belongs to Post-Squarism and works in Gallery Huya. Asked about influences, Chiamaka Quispe said only \"why the canvas must stay blank\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": [
+        {
+          "@id": "People/Chiamaka%20Quispe/Chiamaka%20Quispe.person"
+        },
+        {
+          "@id": "People/Chiamaka%20Quispe/Chiamaka%20Quispe_Consent.pdf"
+        }
+      ]
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Dialogue",
+      "@type": "DefinedTerm",
+      "name": "Dialog",
+      "description": "An interactive discourse with two or more participants.",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#the rooftop",
+      "@type": "Place",
+      "name": "the rooftop"
+    },
+    {
+      "@id": "Sessions/INT_2020_0315/INT_2020_0315.session",
+      "@type": "File",
+      "contentSize": 1488,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2020_0315.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2020_0315/INT_2020_0315_20200408.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2020_0315_20200408.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_fr",
+      "@type": "Language",
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

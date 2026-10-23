@@ -1,0 +1,364 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "ldac": "https://w3id.org/ldac/terms#",
+      "Dataset": "http://schema.org/Dataset",
+      "name": "http://schema.org/name",
+      "description": "http://schema.org/description",
+      "datePublished": "(export time)",
+      "license": "http://schema.org/license"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryObject",
+        "CollectionEvent"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ldac/profile#Object"
+      },
+      "name": "Towards a portrait of the wind, from behind",
+      "description": "Tenzin Whitehorse talks about listening to grey. The artist asked that the microphone face away from the painting, so as not to influence it.",
+      "datePublished": "(export time)",
+      "collectionEventType": "https://w3id.org/ldac/terms#Session",
+      "hasPart": [
+        {
+          "@id": "Sessions/INT_2017_0092/INT_2017_0092.session"
+        },
+        {
+          "@id": "Sessions/INT_2017_0092/INT_2017_0092_20170909.eaf"
+        },
+        {
+          "@id": "Sessions/INT_2017_0092/INT_2017_0092_20170909.wav"
+        }
+      ],
+      "publisher": {
+        "@id": "#publisher-elar"
+      },
+      "author": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "accountablePerson": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "dct:rightsHolder": "Nɔkɔ Ɛsi <noko@studio.example.org>",
+      "ldac:subjectLanguage": [
+        {
+          "@id": "#language_etr"
+        }
+      ],
+      "inLanguage": {
+        "@id": "#language_eng"
+      },
+      "ldac:linguisticGenre": [
+        {
+          "@id": "ldac:Interview"
+        }
+      ],
+      "contentLocation": {
+        "@id": "#a lift between floors 3 and 4"
+      },
+      "dateCreated": "2017-09-09",
+      "keywords": "Neo-Beigeism, studio visit",
+      "ldac:speaker": [
+        {
+          "@id": "#Tenzin%20Whitehorse"
+        }
+      ],
+      "ldac:translator": [
+        {
+          "@id": "#Ömer%20Ikeda"
+        }
+      ],
+      "ldac:performer": [
+        {
+          "@id": "#Zofia%20O'Shaughnessy"
+        }
+      ],
+      "ldac:interviewer": [
+        {
+          "@id": "#Jules%20Blanc"
+        }
+      ],
+      "license": {
+        "@id": "#license-elar-o"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse.person",
+      "@type": "File",
+      "contentSize": 897,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Tenzin Whitehorse.person",
+      "about": {
+        "@id": "#Tenzin%20Whitehorse"
+      }
+    },
+    {
+      "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Tenzin Whitehorse_Consent.png",
+      "about": {
+        "@id": "#Tenzin%20Whitehorse"
+      }
+    },
+    {
+      "@id": "#Tenzin%20Whitehorse",
+      "@type": "Person",
+      "name": "Tenzin Whitehorse",
+      "ldac:age": "78",
+      "gender": "Male",
+      "description": "Tenzin Whitehorse belongs to Greyscale Romanticism and works in the artist's kitchen. Asked about influences, Tenzin Whitehorse said only \"the installation that was mistaken for scaffolding\". Primary Occupation: Former accountant, now draws only diagonals.",
+      "subjectOf": {
+        "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse.person"
+      },
+      "image": {
+        "@id": "People/Tenzin%20Whitehorse/Tenzin%20Whitehorse_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Ikeda/Ömer%20Ikeda.person",
+      "@type": "File",
+      "contentSize": 866,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Ömer Ikeda.person",
+      "about": {
+        "@id": "#Ömer%20Ikeda"
+      }
+    },
+    {
+      "@id": "People/Ömer%20Ikeda/Ömer%20Ikeda_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Ömer Ikeda_Consent.png",
+      "about": {
+        "@id": "#Ömer%20Ikeda"
+      }
+    },
+    {
+      "@id": "#Ömer%20Ikeda",
+      "@type": "Person",
+      "name": "Ömer Ikeda",
+      "ldac:age": "44",
+      "gender": "Male",
+      "description": "Ömer Ikeda belongs to Accidental Constructivism and works in a borrowed greenhouse. Asked about influences, Ömer Ikeda said only \"listening to grey\". Primary Occupation: Conceptual artist; the best work is the absence of work.",
+      "subjectOf": {
+        "@id": "People/Ömer%20Ikeda/Ömer%20Ikeda.person"
+      },
+      "image": {
+        "@id": "People/Ömer%20Ikeda/Ömer%20Ikeda_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Zofia%20O'Shaughnessy/Zofia%20O'Shaughnessy.person",
+      "@type": "File",
+      "contentSize": 881,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Zofia O'Shaughnessy.person",
+      "about": {
+        "@id": "#Zofia%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "People/Zofia%20O'Shaughnessy/Zofia%20O'Shaughnessy_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Zofia O'Shaughnessy_Consent.png",
+      "about": {
+        "@id": "#Zofia%20O'Shaughnessy"
+      }
+    },
+    {
+      "@id": "#Zofia%20O'Shaughnessy",
+      "@type": "Person",
+      "name": "Zofia O'Shaughnessy",
+      "ldac:age": "31",
+      "gender": "Female",
+      "description": "Zofia O'Shaughnessy belongs to Greyscale Romanticism and works in the rooftop. Asked about influences, Zofia O'Shaughnessy said only \"the moment before the first mark\". Primary Occupation: Colourist specialising in beige.",
+      "subjectOf": {
+        "@id": "People/Zofia%20O'Shaughnessy/Zofia%20O'Shaughnessy.person"
+      },
+      "image": {
+        "@id": "People/Zofia%20O'Shaughnessy/Zofia%20O'Shaughnessy_Consent.png"
+      }
+    },
+    {
+      "@id": "People/Jules%20Blanc/Jules%20Blanc.person",
+      "@type": "File",
+      "contentSize": 1091,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-person",
+      "name": "Jules Blanc.person",
+      "about": {
+        "@id": "#Jules%20Blanc"
+      }
+    },
+    {
+      "@id": "People/Jules%20Blanc/Jules%20Blanc_Consent.png",
+      "@type": [
+        "File",
+        "ImageObject"
+      ],
+      "contentSize": 162,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "image/png",
+      "name": "Jules Blanc_Consent.png",
+      "about": {
+        "@id": "#Jules%20Blanc"
+      }
+    },
+    {
+      "@id": "#Jules%20Blanc",
+      "@type": "Person",
+      "name": "Jules Blanc",
+      "ldac:age": "40",
+      "gender": "Male",
+      "description": "Jules Blanc belongs to Neo-Beigeism and works in a lift between floors 3 and 4. Asked about influences, Jules Blanc said only \"a dot, considered at length\". Primary Occupation: Paints with ladders.",
+      "subjectOf": {
+        "@id": "People/Jules%20Blanc/Jules%20Blanc.person"
+      },
+      "image": {
+        "@id": "People/Jules%20Blanc/Jules%20Blanc_Consent.png"
+      }
+    },
+    {
+      "@id": "#license-elar-o",
+      "@type": "ldac:DataReuseLicense",
+      "name": "ELAR O License",
+      "ldac:access": {
+        "@id": "ldac:OpenAccess"
+      },
+      "description": "Marked with the ELAR-specific term, 'O'"
+    },
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:Interview",
+      "@type": "DefinedTerm",
+      "name": "Interview",
+      "inDefinedTermSet": {
+        "@id": "ldac:LinguisticGenreTerms"
+      }
+    },
+    {
+      "@id": "ldac:LinguisticGenreTerms",
+      "@type": "DefinedTermSet",
+      "name": "Linguistic Genre Terms"
+    },
+    {
+      "@id": "#a lift between floors 3 and 4",
+      "@type": "Place",
+      "name": "a lift between floors 3 and 4"
+    },
+    {
+      "@id": "Sessions/INT_2017_0092/INT_2017_0092.session",
+      "@type": "File",
+      "contentSize": 1455,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "application/lameta-session",
+      "name": "INT_2017_0092.session",
+      "license": {
+        "@id": "#license-elar-o"
+      },
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0092/INT_2017_0092_20170909.eaf",
+      "@type": "File",
+      "contentSize": 849,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "text/x-eaf+xml",
+      "name": "INT_2017_0092_20170909.eaf",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "Sessions/INT_2017_0092/INT_2017_0092_20170909.wav",
+      "@type": [
+        "File",
+        "AudioObject"
+      ],
+      "contentSize": 1644,
+      "dateCreated": "(file time)",
+      "dateModified": "(file time)",
+      "encodingFormat": "audio/wav",
+      "name": "INT_2017_0092_20170909.wav",
+      "isPartOf": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "ldac:AccessTypes",
+      "@type": "DefinedTermSet",
+      "name": "Access Types"
+    },
+    {
+      "@id": "ldac:OpenAccess",
+      "@type": "DefinedTerm",
+      "name": "Open Access",
+      "description": "Data covered by this license may be accessed as long as the license is served alongside it, and does not require any specific authorization step.",
+      "inDefinedTermSet": {
+        "@id": "ldac:AccessTypes"
+      }
+    },
+    {
+      "@id": "#publisher-elar",
+      "@type": "Organization",
+      "name": "ELAR",
+      "description": "Endangered Languages Archive",
+      "url": "https://www.elararchive.org/"
+    },
+    {
+      "@id": "#language_etr",
+      "@type": "Language",
+      "code": "etr",
+      "name": "Edolo"
+    },
+    {
+      "@id": "#language_eng",
+      "@type": "Language",
+      "code": "eng",
+      "name": "English"
+    }
+  ]
+}

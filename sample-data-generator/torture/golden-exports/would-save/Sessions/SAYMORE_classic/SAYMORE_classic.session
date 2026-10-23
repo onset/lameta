@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session minimum_lameta_version_to_read="0.0.0">
+  <id type="string">SAYMORE_classic</id>
+  <Title type="string">The Unconquered Rectangle</Title>
+  <synopsis type="string">Situation: Walking back from the opening Setting: On the gallery steps</synopsis>
+  <languages type="languageChoices">etr</languages>
+  <WorkingLanguages type="languageChoices">eng;es</WorkingLanguages>
+  <Genre type="string">procedural_discourse</Genre>
+  <Access type="string">S</Access>
+  <Status type="string">Finished</Status>
+  <Date>2018-02-23</Date>
+  <Keywords type="string">edges</Keywords>
+  <Topic type="string">rectangles, conquest</Topic>
+  <stage_consent type="string">NotComplete</stage_consent>
+  <Contributions>
+    <contributor>
+      <name>Nɔkɔ Ɛsi</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+    <contributor>
+      <name>Wilema Dimo</name>
+      <role>consultant</role>
+      <date>0001-01-01</date>
+    </contributor>
+  </Contributions>
+</Session>
