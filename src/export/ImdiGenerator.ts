@@ -832,7 +832,7 @@ export default class ImdiGenerator {
       if (moreKeys) {
         moreKeys.forEach((m) => {
           this.withSource(m.source, () => {
-            this.tail = this.tail.element("Key", m.text);
+            this.tail = this.tail.element("Key", m.text.trim());
             this.mostRecentElement = this.tail;
             this.attributeLiteral("Name", m.name);
             this.tail = this.tail.up();
@@ -1698,7 +1698,7 @@ export default class ImdiGenerator {
     const newElement = this.tail.element(
       elementName,
       //https://trello.com/c/jRC5wpKp/67-imdi-unspecified-should-always-be-unspecified-with-upper-case-not-unspecified-with-lower-case
-      value === "unspecified" ? "Unspecified" : value,
+      value?.trim() === "unspecified" ? "Unspecified" : value?.trim(),
     );
     if (isClosedVocabulary === true || isClosedVocabulary === false) {
       newElement.attribute("Link", vocabularyUrl);
