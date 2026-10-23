@@ -16,7 +16,8 @@ import {
   getMimeType,
 } from "../model/file/FileTypeInfo";
 import { titleCase } from "title-case";
-import { sanitizeForArchive } from "../other/sanitizeForArchive";
+import { sanitizeForExport } from "../other/sanitizeForArchive";
+import { fileExportNames, sessionFolderExportNames } from "./exportNames";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyWarning } from "../components/Notify";
@@ -24,7 +25,7 @@ import { collectExportWarning } from "./ExportWarningCollector";
 import { getStatusOfFile } from "../model/file/FileStatus";
 import { capitalCase, sentenceCase, sentenceCaseUnlessAcronym } from "../other/case";
 import { Field } from "../model/field/Field";
-import { fieldElement } from "./Imdi-static-fns";
+import { fieldElement, textElement } from "./Imdi-static-fns";
 import { applyCapitalization } from "../model/field/capitalization";
 import { FieldDefinition } from "../model/field/FieldDefinition";
 import { makeLametaSourceComment, makeLametaTranslationsComment } from "./lametaSourceComment";
@@ -121,12 +122,18 @@ export default class ImdiGenerator {
   // same for project, focus, etc. But child folders (e.g. sessions)
   // will include some data from the parent project (which is also a folder)
   private folderInFocus: Folder;
+  // the export names of folderInFocus, when it is a session, and of its files
+  private exportFolderName: string | undefined;
+  private exportFileNames: Map<File, string> | undefined;
 
   private project: Project;
   private mostRecentElement: XmlBuilder.XMLElementOrXMLNode;
 
   //We enable this when we want to keep unit test xpaths simple
   private omitNamespaces: boolean;
+  // Whether to put lameta-source and lameta-translations comments in the IMDI. The
+  // checks and the IMDI view need them; what export writes to disk leaves them out.
+  public writeLametaComments = true;
 
   private keysThatHaveBeenOutput = new Set<string>();
   private mode: IMDIMode;
@@ -190,11 +197,13 @@ export default class ImdiGenerator {
     childrenSubPaths: string[],
 
     omitNamespaces?: boolean,
+    writeLametaComments: boolean = true,
   ): string {
     const generator = new ImdiGenerator(mode, project, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
+    generator.writeLametaComments = writeLametaComments;
     return generator.corpus(childrenSubPaths);
   }
   public static generateProject(mode: IMDIMode, project: Project): string {
@@ -207,11 +216,13 @@ export default class ImdiGenerator {
     project: Project,
 
     omitNamespaces?: boolean,
+    writeLametaComments: boolean = true,
   ): string {
     const generator = new ImdiGenerator(mode, session, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
+    generator.writeLametaComments = writeLametaComments;
     sentryBreadCrumb(`Generating IMDI for session ${session.metadataFile?.metadataFilePath}`);
     return generator.session();
   }
@@ -809,7 +820,7 @@ export default class ImdiGenerator {
                 }
 
                 this.withSource(source, () => {
-                  this.tail = this.tail.element("Key", v);
+                  this.tail = textElement(this.tail, "Key", v);
                   this.mostRecentElement = this.tail;
                   this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
                   this.tail = this.tail.up();
@@ -822,7 +833,7 @@ export default class ImdiGenerator {
       if (moreKeys) {
         moreKeys.forEach((m) => {
           this.withSource(m.source, () => {
-            this.tail = this.tail.element("Key", m.text);
+            this.tail = textElement(this.tail, "Key", m.text);
             this.mostRecentElement = this.tail;
             this.attributeLiteral("Name", m.name);
             this.tail = this.tail.up();
@@ -862,7 +873,7 @@ export default class ImdiGenerator {
         const values = valuesByLanguage.get(lang)!;
         if (i < values.length && values[i].length > 0) {
           const v = values[i];
-          this.tail = this.tail.element("Key", v);
+          this.tail = textElement(this.tail, "Key", v);
           this.mostRecentElement = this.tail;
           this.attributeLiteral("Name", capitalCase(key));
 
@@ -990,14 +1001,21 @@ export default class ImdiGenerator {
     return !!g?.isMediaType;
   }
 
-  private sanitizedRelativePath(path: string): string {
+  private sanitizedRelativePath(f: File): string {
     // If the project has the right setting, then this path is probably already sanitized (though there may be corner
     // cases where it isn't, e.g. the setting was set after files were added.) But in the ImdiBundler, we sanitize
     // files as they get copied to the export, regardless of that setting. This is because this is a *requirement* of
     // IMDI archives. Anyhow, since the bundler would have (or will have) export the sanitized version, we need to do
-    // that to the file name we use for it in the xml.
-    const filename = sanitizeForArchive(Path.basename(path), "ASCII");
-    const immediateParentDirectoryName = Path.basename(Path.dirname(path));
+    // that to the file name we use for it in the xml. The names come from exportNames, as the bundler's do, so
+    // that two names that sanitize to the same one still get places of their own.
+    const path = f.getRelativePathForExportingTheActualFile();
+    this.exportFileNames ??= fileExportNames(this.folderInFocus.files);
+    this.exportFolderName ??= this.project
+      ? sessionFolderExportNames(this.project).get(this.folderInFocus)
+      : undefined;
+    const filename = this.exportFileNames.get(f) ?? sanitizeForExport(Path.basename(path));
+    const immediateParentDirectoryName =
+      this.exportFolderName ?? sanitizeForExport(Path.basename(Path.dirname(path)));
 
     const relativePath = Path.join(immediateParentDirectoryName, filename)
       // get a path that works across platforms.
@@ -1012,10 +1030,7 @@ export default class ImdiGenerator {
     return this.group("MediaFile", () => {
       // ResourceLink, Type and Format all come from the file itself
       this.withSource(this.sourceOf(f), () => {
-        this.element(
-          "ResourceLink",
-          this.sanitizedRelativePath(f.getRelativePathForExportingTheActualFile()),
-        );
+        this.element("ResourceLink", this.sanitizedRelativePath(f));
         this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
         this.element(
@@ -1053,10 +1068,7 @@ export default class ImdiGenerator {
   public writtenResource(f: File): string | null {
     return this.group("WrittenResource", () => {
       this.withSource(this.sourceOf(f), () =>
-        this.element(
-          "ResourceLink",
-          this.sanitizedRelativePath(f.getRelativePathForExportingTheActualFile()),
-        ),
+        this.element("ResourceLink", this.sanitizedRelativePath(f)),
       );
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
@@ -1600,7 +1612,8 @@ export default class ImdiGenerator {
     if (v && v.length > 0) {
       this.mostRecentElement.attribute(attributeName, v);
       const source = this.sourceOf(f, fieldName);
-      if (source) (this.mostRecentElement as any).commentBefore(makeLametaSourceComment(source));
+      if (source && this.writeLametaComments)
+        (this.mostRecentElement as any).commentBefore(makeLametaSourceComment(source));
     }
   }
   private attributeLiteral(attributeName: string, value: string) {
@@ -1654,7 +1667,7 @@ export default class ImdiGenerator {
     makeComment: (target: NavigationTarget) => string = makeLametaSourceComment,
   ) {
     const parent = this.tail as any;
-    if (!source || !parent) {
+    if (!source || !parent || !this.writeLametaComments) {
       write();
       return;
     }
@@ -1667,7 +1680,8 @@ export default class ImdiGenerator {
       .forEach((element: any) => element.commentBefore(comment));
   }
   private commentBeforeCurrentGroup(source: NavigationTarget | undefined) {
-    if (source) (this.tail as any).commentBefore(makeLametaSourceComment(source));
+    if (source && this.writeLametaComments)
+      (this.tail as any).commentBefore(makeLametaSourceComment(source));
   }
   private startGroup(elementName: string) {
     this.tail = this.tail.element(elementName);
@@ -1682,10 +1696,11 @@ export default class ImdiGenerator {
     vocabularyUrl?,
     vocabularyType?: VocabularyType,
   ) {
-    const newElement = this.tail.element(
+    const newElement = textElement(
+      this.tail,
       elementName,
       //https://trello.com/c/jRC5wpKp/67-imdi-unspecified-should-always-be-unspecified-with-upper-case-not-unspecified-with-lower-case
-      value === "unspecified" ? "Unspecified" : value,
+      value?.trim() === "unspecified" ? "Unspecified" : value,
     );
     if (isClosedVocabulary === true || isClosedVocabulary === false) {
       newElement.attribute("Link", vocabularyUrl);
@@ -1755,7 +1770,7 @@ export default class ImdiGenerator {
           : value;
     if (!englishValue || englishValue.trim().length === 0) {
       // Output empty element with attributes if value is empty
-      const newElement = this.tail.element(elementName, "");
+      const newElement = textElement(this.tail, elementName, "");
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;
@@ -1775,7 +1790,7 @@ export default class ImdiGenerator {
         englishValue,
         englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase(),
       );
-      const newElement = this.tail.element(elementName, outputValue);
+      const newElement = textElement(this.tail, elementName, outputValue);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;
@@ -1793,7 +1808,7 @@ export default class ImdiGenerator {
         // Normalize to sentence case for consistent IMDI output
         // (ELAR prefers "Careful speech speaker" not "Careful Speech Speaker")
         const normalizedTranslation = inCase(translation, true);
-        const newElement = this.tail.element(elementName, normalizedTranslation);
+        const newElement = textElement(this.tail, elementName, normalizedTranslation);
         // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
         const iso639_3 = this.iso639_3ForExport(slot.tag);
         newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
@@ -1812,7 +1827,7 @@ export default class ImdiGenerator {
         englishValue,
         englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase(),
       );
-      const newElement = this.tail.element(elementName, outputValue);
+      const newElement = textElement(this.tail, elementName, outputValue);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;
@@ -1836,7 +1851,7 @@ export default class ImdiGenerator {
   ) {
     if (!englishValue || englishValue.trim().length === 0) {
       // Output empty element if value is empty
-      const newElement = this.tail.element(elementName, "");
+      const newElement = textElement(this.tail, elementName, "");
       this.mostRecentElement = newElement;
       this.tail = newElement.up();
       return;
@@ -1848,7 +1863,7 @@ export default class ImdiGenerator {
 
     if (!supportsMultilingual) {
       // Standard IMDI 3.0: output single element without LanguageId
-      const newElement = this.tail.element(elementName, englishValue);
+      const newElement = textElement(this.tail, elementName, englishValue);
       this.mostRecentElement = newElement;
       this.tail = newElement.up();
       return;
@@ -1861,7 +1876,7 @@ export default class ImdiGenerator {
     for (const slot of metadataSlots) {
       const translation = translateFn(englishValue, slot.tag);
       if (translation) {
-        const newElement = this.tail.element(elementName, translation);
+        const newElement = textElement(this.tail, elementName, translation);
         // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
         const iso639_3 = this.iso639_3ForExport(slot.tag);
         newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
@@ -1873,7 +1888,7 @@ export default class ImdiGenerator {
 
     // If no translations were output, fall back to English
     if (outputCount === 0) {
-      const newElement = this.tail.element(elementName, englishValue);
+      const newElement = textElement(this.tail, elementName, englishValue);
       this.mostRecentElement = newElement;
       this.tail = newElement.up();
     }

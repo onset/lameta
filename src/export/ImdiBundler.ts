@@ -6,8 +6,9 @@ import { File } from "../model/file/File";
 import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
-import { sanitizeForArchive } from "../other/sanitizeForArchive";
+import { sanitizeForExport } from "../other/sanitizeForArchive";
 import { taggedAxis } from "../model/field/TextHolderMigration";
+import { corpusExportName, fileExportNames, sessionFolderExportNames } from "./exportNames";
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import { NotifyError } from "../components/Notify";
@@ -171,7 +172,7 @@ export default class ImdiBundler {
     omitNamespaces?: boolean,
   ): AsyncGenerator<ExportSessionData, ExportCorpusData, void> {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
-    const secondLevel = Path.basename(project.directory);
+    const secondLevel = sanitizeForExport(Path.basename(project.directory));
     const childrenSubpaths: string[] = [];
 
     // --- Project Documents ---
@@ -225,22 +226,31 @@ export default class ImdiBundler {
     }
 
     // --- Sessions ---
+    const sessionFolderNames = sessionFolderExportNames(project);
     const sessions = exportableSessions(project).filter(folderFilter);
     for (const session of sessions) {
+      const sessionDirName = sessionFolderNames.get(session)!;
       const sessionData = await this.generateSessionData(
         session,
         project,
         rootDirectory,
         secondLevel,
+        sessionDirName,
         imdiMode,
         copyInProjectFiles,
       );
-      childrenSubpaths.push(secondLevel + "/" + session.filePrefix + extensionWithDot);
+      childrenSubpaths.push(secondLevel + "/" + sessionDirName + extensionWithDot);
       yield sessionData;
     }
 
     // --- Corpus IMDI (final return value) ---
-    const corpusImdi = ImdiGenerator.generateCorpus(imdiMode, project, childrenSubpaths, false);
+    const corpusImdi = ImdiGenerator.generateCorpus(
+      imdiMode,
+      project,
+      childrenSubpaths,
+      false,
+      false, // no lameta comments in a deposit
+    );
     await validateImdiOrThrow(corpusImdi, project.displayName);
 
     const targetDirForProjectFile = Path.join(
@@ -250,7 +260,7 @@ export default class ImdiBundler {
 
     return {
       imdiXml: corpusImdi,
-      imdiPath: Path.join(targetDirForProjectFile, `${project.displayName}${extensionWithDot}`),
+      imdiPath: Path.join(targetDirForProjectFile, corpusExportName(project) + extensionWithDot),
       displayName: project.displayName,
     };
   }
@@ -270,7 +280,7 @@ export default class ImdiBundler {
     return {
       totalSessions,
       rootDirectory,
-      secondLevelDirectory: Path.basename(project.directory),
+      secondLevelDirectory: sanitizeForExport(Path.basename(project.directory)),
     };
   }
 
@@ -282,25 +292,32 @@ export default class ImdiBundler {
     project: Project,
     rootDirectory: string,
     secondLevel: string,
+    // the session's folder in the export, which also names its IMDI or OPEX file
+    sessionDirName: string,
     imdiMode: IMDIMode,
     copyInProjectFiles: boolean,
   ): Promise<ExportSessionData> {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
-    const imdiFileName = `${session.filePrefix}${extensionWithDot}`;
+    const imdiFileName = `${sessionDirName}${extensionWithDot}`;
 
-    const sessionImdi = ImdiGenerator.generateSession(imdiMode, session, project);
+    const sessionImdi = ImdiGenerator.generateSession(
+      imdiMode,
+      session,
+      project,
+      undefined,
+      false, // no lameta comments in a deposit
+    );
     await validateImdiOrThrow(sessionImdi, session.displayName);
 
-    const sessionDirName = Path.basename(session.directory);
     const directoriesToCreate: string[] = [];
     let imdiPath: string;
 
     if (imdiMode === IMDIMode.OPEX) {
       const sessionOutputDir = Path.join(rootDirectory, secondLevel, sessionDirName);
       directoriesToCreate.push(sessionOutputDir);
-      imdiPath = Path.join(sessionOutputDir, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(sessionOutputDir, imdiFileName);
     } else {
-      imdiPath = Path.join(rootDirectory, secondLevel, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(rootDirectory, secondLevel, imdiFileName);
     }
 
     const filesToCopy: FileCopyRequest[] = [];
@@ -308,14 +325,12 @@ export default class ImdiBundler {
       const targetDirectory = Path.join(rootDirectory, secondLevel, sessionDirName);
       directoriesToCreate.push(targetDirectory);
 
+      const fileNames = fileExportNames(session.files);
       session.files.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
             source: f.getActualFilePath(),
-            destination: Path.join(
-              targetDirectory,
-              sanitizeForArchive(f.getNameToUseWhenExportingUsingTheActualFile(), "ASCII"),
-            ),
+            destination: Path.join(targetDirectory, fileNames.get(f)!),
           });
         }
       });
@@ -351,6 +366,7 @@ export default class ImdiBundler {
     }
 
     const generator = new ImdiGenerator(imdiMode, folder, project);
+    generator.writeLametaComments = false; // none in a deposit
     const imdiXml = generator.makePseudoSessionImdiForOtherFolder(
       name,
       folder,
@@ -368,24 +384,22 @@ export default class ImdiBundler {
 
     if (imdiMode === IMDIMode.OPEX) {
       directoriesToCreate.push(destinationFolderPath);
-      imdiPath = Path.join(destinationFolderPath, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(destinationFolderPath, sanitizeForExport(imdiFileName));
     } else {
       const imdiOnlyFolderPath = Path.join(rootDirectory, secondLevel);
       directoriesToCreate.push(imdiOnlyFolderPath);
-      imdiPath = Path.join(imdiOnlyFolderPath, sanitizeForArchive(imdiFileName, "ASCII"));
+      imdiPath = Path.join(imdiOnlyFolderPath, sanitizeForExport(imdiFileName));
     }
 
     const filesToCopy: FileCopyRequest[] = [];
     if (copyInProjectFiles) {
       directoriesToCreate.push(destinationFolderPath);
+      const fileNames = fileExportNames(folder.files);
       folder.files.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
             source: f.getActualFilePath(),
-            destination: Path.join(
-              destinationFolderPath,
-              sanitizeForArchive(f.getNameToUseWhenExportingUsingTheActualFile(), "ASCII"),
-            ),
+            destination: Path.join(destinationFolderPath, fileNames.get(f)!),
           });
         }
       });
@@ -497,14 +511,22 @@ export default class ImdiBundler {
 
     // Build filesToCopy from the ORIGINAL consent files (not the temp copies)
     if (copyInProjectFiles) {
+      // The consent IMDI links to the copies in the dummy session, which have the original
+      // files' names, so name each original file as the IMDI names its copy
+      const copyExportNames = fileExportNames(dummySession.files);
+      const exportNameOfCopyNamed = new Map(
+        dummySession.files.map((f) => [
+          f.getNameToUseWhenExportingUsingTheActualFile(),
+          copyExportNames.get(f)!,
+        ]),
+      );
       // Track which files we've already added (by their destination name) to avoid duplicates
       const addedFiles = new Set<string>();
       originalConsentFiles.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-          const destName = sanitizeForArchive(
+          const destName = exportNameOfCopyNamed.get(
             f.getNameToUseWhenExportingUsingTheActualFile(),
-            "ASCII",
-          );
+          )!;
           if (!addedFiles.has(destName)) {
             addedFiles.add(destName);
             filesToCopy.push({
@@ -524,7 +546,13 @@ export default class ImdiBundler {
 
     let imdiXml: string;
     try {
-      imdiXml = ImdiGenerator.generateSession(imdiMode, dummySession, project, omitNamespaces);
+      imdiXml = ImdiGenerator.generateSession(
+        imdiMode,
+        dummySession,
+        project,
+        omitNamespaces,
+        false, // no lameta comments in a deposit
+      );
       await validateImdiOrThrow(imdiXml, dummySession.displayName);
     } finally {
       ImdiBundler.cleanupConsentBundleTempDir(dir);

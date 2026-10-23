@@ -4,6 +4,7 @@
 
 import { Context } from "./cases";
 import * as m from "./media";
+import * as ml from "./multilingual";
 import * as theme from "./theme";
 import { genres } from "./vocabularies";
 import { Contribution, lametaPerson, lametaSession, metaFile } from "./xml";
@@ -38,14 +39,15 @@ export interface BulkPerson {
 
 function bulkPeople(count: number): BulkPerson[] {
   const max = theme.kFirstNames.length * theme.kLastNames.length;
-  if (count > max) throw new Error(`--bulk-people can be at most ${max}`);
   const people: BulkPerson[] = [];
   for (let i = 0; i < count; i++) {
     // step through the grid of names in an order that mixes first and last names
     const k = (i * 7919) % max;
     const first = theme.kFirstNames[k % theme.kFirstNames.length];
     const last = theme.kLastNames[Math.floor(k / theme.kFirstNames.length)];
-    const folder = `${first} ${last}`;
+    // past the grid of names, number the second and later artists of the same name
+    const round = Math.floor(i / max);
+    const folder = round ? `${first} ${last} ${round + 1}` : `${first} ${last}`;
     // every fifth artist goes by a code, which sessions then use
     const code =
       i % 5 === 0 ? `${first[0]}${last[0]}${String(i).padStart(3, "0")}`.normalize("NFC") : "";
@@ -73,7 +75,10 @@ export function writeBulk(ctx: Context, sessionCount: number, peopleCount: numbe
         birthYear: String(1938 + r(65)),
         gender: ["Female", "Male", "Other", "Female", "Male"][i % 5],
         primaryOccupation: theme.themedOccupation(p.folder),
-        description: theme.themedBiography(p.folder, p.folder),
+        description: ml.partlyTranslatedText(
+          ml.themedBiographies(p.folder, p.folder),
+          `${p.folder}|description`,
+        ),
         ethnicGroup: theme.pick(theme.kMovements, p.folder, "e"),
         languages,
         custom:
@@ -95,7 +100,7 @@ export function writeBulk(ctx: Context, sessionCount: number, peopleCount: numbe
   });
   w.note(
     "People (bulk)",
-    `${people.length} artists with themed biographies, languages, codes on every fifth one (sessions use the code), consent files on six in seven.`,
+    `${people.length} artists with themed biographies in English, Spanish and Arabic (about four in ten partly translated), languages, codes on every fifth one (sessions use the code), consent files on six in seven.`,
     "load time, People list, consent checks, export size",
   );
 
@@ -129,8 +134,11 @@ export function writeBulk(ctx: Context, sessionCount: number, peopleCount: numbe
       lametaSession({
         notes: theme.themedNotes(id),
         id,
-        title: theme.themedTitle(id),
-        description: theme.themedDescription(id, artist),
+        title: ml.partlyTranslatedText(ml.themedTitles(id), `${id}|title`),
+        description: ml.partlyTranslatedText(
+          ml.themedDescriptions(id, artist),
+          `${id}|description`,
+        ),
         date,
         genre:
           i % 9 === 0
@@ -139,14 +147,14 @@ export function writeBulk(ctx: Context, sessionCount: number, peopleCount: numbe
         access: accessPool[r(accessPool.length)],
         accessDescription:
           i % 11 === 0
-            ? "The artist asks that this stay closed until the paint is dry."
+            ? ml.partlyTranslatedText(ml.kClosedUntilDry, `${id}|accessDescription`)
             : undefined,
         status: statusPool[r(statusPool.length)],
         languages: languagePool[r(languagePool.length)],
         workingLanguages: "eng",
         location: theme.pick(theme.kStudios, id),
-        keyword: `${theme.pick(theme.kMovements, id)}, studio visit`,
-        topic: theme.pick(["colour", "line", "space", "silence", "frames"], id),
+        keyword: ml.partlyTranslatedText(ml.themedKeywords(id), `${id}|keyword`),
+        topic: ml.partlyTranslatedText(ml.themedTopics(id), `${id}|topic`),
         contributions,
       }),
     );
@@ -176,7 +184,7 @@ export function writeBulk(ctx: Context, sessionCount: number, peopleCount: numbe
   }
   w.note(
     "Sessions/INT_* (bulk)",
-    `${sessionCount} interviews, 2015-2024, each with a short WAV and its .meta; every fourth has an EAF, every tenth an artwork photo. About one in a hundred credits a person with no People record.`,
+    `${sessionCount} interviews, 2015-2024, each with a short WAV and its .meta; titles, descriptions, keywords, topics and access explanations in English, Spanish and Arabic, about four in ten partly translated (only English, only Spanish, English and Arabic, or no Arabic), and Arabic keywords separated by the Arabic comma; every fourth has an EAF, every tenth an artwork photo. About one in a hundred credits a person with no People record.`,
     "load time, Sessions list, search index, problems sidebar, export size and time",
   );
 }

@@ -9,6 +9,7 @@ import { getIdValidationMessageOrUndefined, Session } from "./Session/Session";
 import { Folder, IFolderType } from "../Folder/Folder";
 import { FolderGroup } from "../Folder/FolderGroup";
 import { Person } from "./Person/Person";
+import { personReferenceKey } from "./Person/personReferenceKey";
 import { File, Contribution } from "../file/File";
 import { ProjectDocuments } from "./ProjectDocuments";
 import { AuthorityLists } from "./AuthorityLists/AuthorityLists";
@@ -1309,12 +1310,12 @@ export class Project extends Folder {
   }
 
   public getContributionsMatchingPerson(id: string): Contribution[] {
-    const lowerCaseName = id.toLocaleLowerCase();
+    const key = personReferenceKey(id);
     const arraysOfMatchingContributions = this.sessions.items.map((session: Session) => {
       return session
         .getAllContributionsToAllFiles()
         .map((contribution) => {
-          if (contribution.personReference.toLowerCase() === lowerCaseName) {
+          if (personReferenceKey(contribution.personReference) === key) {
             // the session name isn't normally part of the contribution because it is owned
             // by the session. But we stick it in here for display purposes. Alternatively,
             // we could stick in the session itself; might be useful for linking back to it.

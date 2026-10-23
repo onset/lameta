@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Person minimum_lameta_version_to_read="0.0.0">
-  <notes type="string">Follow-up visit planned once the paint dries, which may take a decade.</notes>
-  <name type="string">Maria Gomez</name>
-  <gender type="string">Female</gender>
-  <primaryOccupation type="string">Former accountant, now draws only diagonals</primaryOccupation>
-  <description type="string">Maria Gomez belongs to Frameless Expressionism and works in Gallery Huya. Asked about influences, Maria Gomez said only &quot;the long argument with the colour blue&quot;.</description>
-  <contributions type="xml"></contributions>
-</Person>
