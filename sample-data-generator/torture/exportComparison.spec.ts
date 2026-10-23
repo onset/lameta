@@ -7,7 +7,6 @@ import {
   compareFolders,
   compareLines,
   isCompared,
-  isInside,
   normalizeExportFile,
   normalizeExportText,
   normalizeReport,
@@ -234,17 +233,6 @@ describe("isCompared", () => {
     expect(isCompared("opex-bundle/P/S1/S1.session")).toBe(false);
     expect(isCompared("ro-crate-per-session/S1.json")).toBe(true);
     expect(isCompared("would-save/Sessions/S1/S1.session")).toBe(true);
-  });
-});
-
-describe("isInside", () => {
-  it("is true for the folder itself and folders below it, and only those", () => {
-    const out = path.resolve("runs", "out");
-    expect(isInside(path.join(out, "project", "P"), out)).toBe(true);
-    expect(isInside(out, out)).toBe(true);
-    expect(isInside(path.resolve("runs", "P"), out)).toBe(false);
-    expect(isInside(path.join(path.dirname(out), "..out2"), out)).toBe(false);
-    expect(isInside(path.join(out, "..cache"), out)).toBe(true);
   });
 });
 

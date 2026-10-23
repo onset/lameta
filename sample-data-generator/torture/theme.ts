@@ -22,7 +22,7 @@ export const kProjectDescription =
   "Interviews took place in studios, galleries, one disused swimming pool and a lift that was stuck between floors. " +
   'The artists speak Kürbinian, Edolo, Tok Pisin and several languages they describe as "still being invented".';
 
-const subjects = [
+export const kSubjects = [
   "the emotional weight of beige",
   "why the canvas must stay blank",
   "painting the colour of a Tuesday",
@@ -49,7 +49,7 @@ const subjects = [
   "eleven shades of white and one impostor",
 ];
 
-const quirks = [
+export const kQuirks = [
   "The artist asked that the microphone face away from the painting, so as not to influence it.",
   "Recorded while the artist repainted the studio wall the same white, four times.",
   "Halfway through, a visitor asked whether the work was finished. It was not clear that the question had an answer.",
@@ -80,12 +80,14 @@ export const kGenreFlavor: Record<string, string> = {
   oratory: "addresses an empty gallery",
 };
 
+export const kTitleOpenings = ["On", "About", "Against", "Towards", "Beyond", "Notes on"];
+
 export function themedTitle(id: string): string {
-  return `${pick(["On", "About", "Against", "Towards", "Beyond", "Notes on"], id, "t")} ${pick(subjects, id, "s")}`;
+  return `${pick(kTitleOpenings, id, "t")} ${pick(kSubjects, id, "s")}`;
 }
 
 export function themedDescription(id: string, who = "The artist"): string {
-  return `${who} talks about ${pick(subjects, id, "d")}. ${pick(quirks, id, "q")}`;
+  return `${who} talks about ${pick(kSubjects, id, "d")}. ${pick(kQuirks, id, "q")}`;
 }
 
 export function themedNotes(id: string): string {
@@ -192,5 +194,5 @@ export function themedOccupation(id: string): string {
 }
 
 export function themedBiography(id: string, name: string): string {
-  return `${name} belongs to ${pick(kMovements, id, "m")} and works in ${pick(kStudios, id, "w")}. Asked about influences, ${name} said only \"${pick(subjects, id, "b")}\".`;
+  return `${name} belongs to ${pick(kMovements, id, "m")} and works in ${pick(kStudios, id, "w")}. Asked about influences, ${name} said only \"${pick(kSubjects, id, "b")}\".`;
 }

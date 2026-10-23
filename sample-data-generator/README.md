@@ -29,8 +29,8 @@ The `.sprj` takes the name of the folder. It writes the same bytes on every run,
 
 | Option                                     | Adds                                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| (none)                                     | Only names that git can check out on Windows, macOS and Linux. This version is committed in `sample data/Interviews with Abstract Artists ŋ` (where lameta never saves).                                                                                                                                                                         |
-| `--hostile-names`                          | NFC and NFD spellings of one name, trailing dots and spaces, Windows device names (`CON`, `aux.txt`, `COM1`), paths over 260 characters. Never commit these; OneDrive and Explorer cannot handle some of them.                                                                                                                                   |
+| (none)                                     | Only names that Windows, macOS and Linux can all hold. The project is not committed; generate it where you need it, for example in `tmp/`, which git ignores.                                                                                                                                                                                    |
+| `--hostile-names`                          | NFC and NFD spellings of one name, trailing dots and spaces, Windows device names (`CON`, `aux.txt`, `COM1`), paths over 260 characters. OneDrive and Explorer cannot handle some of them.                                                                                                                                                       |
 | `--blocking`                               | Files that stop the whole project from loading (zero-byte, truncated or UTF-16 metadata, a newer `minimum_lameta_version_to_read`), custom fields whose names contain "date" (they stop every session from saving), and the old slash form of multilingual text (it blocks IMDI export). Each hides the other cases, so test them one at a time. |
 | `--large-media`                            | About 1.9 GB in `Sessions/BIG_media`: a playable 1 GB 1080p video, a 500 MB WAV, the first 300 MB of the video, 50 MB of random bytes named `.mp4`, and zero-byte files. Needs ffmpeg on the PATH or in `node_modules/ffmpeg-ffprobe-static`. Files already there at full size are kept on the next run.                                         |
 | `--archive-config <name>`                  | The archive configuration in the `.sprj` (default `ELAR`).                                                                                                                                                                                                                                                                                       |
@@ -56,24 +56,16 @@ $env:LAMETA_SCALING_DIRS="D:\perf-projects\elar-1000"; pnpm exec playwright test
 
 ### Comparing exports
 
-`torture/compare-exports.ts` runs that harness in a lameta worktree and compares what two runs exported, so you can see what a change, or a range of releases, did to lameta's exports.
+`torture/compare-exports.ts` shows what this checkout changes in lameta's exports compared with an earlier version: by default the newest beta or release tag (alphas are skipped), or a tag you name.
 
 ```bash
-pnpm run compare-exports run <lameta worktree> <project folder> <output folder>
-pnpm run compare-exports diff <before>/normalized <after>/normalized [--ignore-source-comments]
+pnpm run compare-exports               # against the newest beta or release, e.g. v3.0.21-beta
+pnpm run compare-exports v3.0.20-beta  # against a tag you name
 ```
 
-`run` runs the harness on a copy of the project in `<output folder>/project`, because loading a project writes into it. It writes the harness output to `<output folder>/raw` and a copy without what changes from run to run (export dates, lameta's version, RO-Crate's `datePublished` and the file times it reads from disk, the time in a date-parse note, a random project guid, the paths of the run) to `<output folder>/normalized`. A worktree of a lameta too old to have the harness gets a copy of this one's, and one from before Vite+ runs it under the Node version in its `package.json`. `diff` lists each changed line, or for a CSV each changed cell, once, with the files it is in, and exits with 1 if anything differs. `--ignore-source-comments` leaves out the `lameta-source` and `lameta-translations` comments that lameta writes before IMDI elements so that a problem can lead back to its field; comparing with a version that predates them, every line would differ otherwise.
+It makes a git worktree of the tag in `tmp/compare-exports/lameta-<tag>` and installs it the first time; later runs use that worktree again. A version from before pnpm is installed with yarn 1, and its harness runs under the Node version that its `package.json` names. A version too old to have the harness gets a copy of this one's. The script generates the torture project with this checkout's generator once for each version, because loading a project writes into it, and runs the harness in each.
 
-`torture/golden-exports` holds master's normalized output for the portable torture project. To check a change against it:
-
-```bash
-pnpm run make-torture-project "D:/runs/Interviews with Abstract Artists ŋ"
-pnpm run compare-exports run . "D:/runs/Interviews with Abstract Artists ŋ" D:/runs/out
-pnpm run compare-exports diff sample-data-generator/torture/golden-exports D:/runs/out/normalized
-```
-
-When the differences are the ones you meant, replace the golden files by running `run` again with `--normalized sample-data-generator/torture/golden-exports`, and commit them with the change.
+It writes the differences to `tmp/compare-exports/differences.txt` and prints them: each changed line, or for a CSV each changed cell, once, with the number of files it is in. Before comparing, it removes what changes from run to run (export dates, lameta's version, RO-Crate's `datePublished` and the file times it reads from disk, the time in a date-parse note, a random project guid, the paths of the run), and the `lameta-source` and `lameta-translations` comments that lameta writes into the IMDI that its checks read. The output of each version is in `tmp/compare-exports/before` and `after`. `--out <folder>` puts all of this somewhere else; on Windows the script stops, before running any exporter, if the generated project's longest path reaches 260 characters, and asks for a shorter folder.
 
 ## Requirements
 
