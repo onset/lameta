@@ -1021,13 +1021,17 @@ export default class ImdiGenerator {
     // that to the file name we use for it in the xml. The names come from exportNames, as the bundler's do, so
     // that two names that sanitize to the same one still get places of their own.
     const path = f.getRelativePathForExportingTheActualFile();
-    this.exportFileNames ??= fileExportNames(this.folderInFocus.files);
     this.exportFolderName ??= this.project
       ? sessionFolderExportNames(this.project).get(this.folderInFocus)
       : undefined;
-    const filename = this.exportFileNames.get(f) ?? sanitizeForExport(Path.basename(path));
     const immediateParentDirectoryName =
       this.exportFolderName ?? sanitizeForExport(Path.basename(Path.dirname(path)));
+    // an OPEX export writes the folder's metadata file, named after the folder, among its files
+    this.exportFileNames ??= fileExportNames(
+      this.folderInFocus.files,
+      this.mode === IMDIMode.OPEX ? `${immediateParentDirectoryName}.opex` : undefined,
+    );
+    const filename = this.exportFileNames.get(f) ?? sanitizeForExport(Path.basename(path));
 
     const relativePath = Path.join(immediateParentDirectoryName, filename)
       // get a path that works across platforms.

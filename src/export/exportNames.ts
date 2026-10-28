@@ -10,12 +10,23 @@ const kDocumentFolderNames = ["OtherDocuments", "DescriptionDocuments", "Consent
 // Windows does not tell names apart by case
 const key = (name: string) => name.toLowerCase();
 
+// The extensions of the metadata file that an IMDI or OPEX export writes next to each
+// session folder and document folder
+const kMetadataExtensions = [".imdi", ".opex"];
+
 // Sanitizes each name for an IMDI or OPEX export, numbering any that would then be the
 // same as another one, or as a taken name: "Tape 1" and "Tape_1" become "Tape_1_2" and
-// "Tape_1". A name that sanitizing leaves unchanged keeps it.
-export function uniqueExportNames(names: string[], taken: string[] = []): string[] {
+// "Tape_1". A name that sanitizing leaves unchanged keeps it. Each name, taken or not,
+// also takes itself followed by each of the suffixes, so that "Tape_1" with the suffix
+// ".imdi" cannot become the same as a name "Tape_1.imdi".
+export function uniqueExportNames(
+  names: string[],
+  taken: string[] = [],
+  suffixes: string[] = [],
+): string[] {
   const sanitized = names.map(sanitizeForExport);
-  const used = new Set(taken.map(key));
+  const withSuffixes = (name: string) => [name, ...suffixes.map((s) => name + s)].map(key);
+  const used = new Set(taken.flatMap(withSuffixes));
   const result: string[] = Array.from({ length: names.length });
   const unchangedFirst = names
     .map((_, i) => i)
@@ -24,8 +35,9 @@ export function uniqueExportNames(names: string[], taken: string[] = []): string
     const extension = Path.extname(sanitized[i]);
     const base = sanitized[i].slice(0, sanitized[i].length - extension.length);
     let name = sanitized[i];
-    for (let n = 2; used.has(key(name)); n++) name = `${base}_${n}${extension}`;
-    used.add(key(name));
+    for (let n = 2; withSuffixes(name).some((k) => used.has(k)); n++)
+      name = `${base}_${n}${extension}`;
+    for (const k of withSuffixes(name)) used.add(k);
     result[i] = name;
   }
   return result;
@@ -33,25 +45,29 @@ export function uniqueExportNames(names: string[], taken: string[] = []): string
 
 // The name of the corpus file of an IMDI or OPEX export, without its extension
 export function corpusExportName(project: Project): string {
-  return uniqueExportNames([project.displayName], kDocumentFolderNames)[0];
+  return uniqueExportNames([project.displayName], kDocumentFolderNames, kMetadataExtensions)[0];
 }
 
 // The name of each session's folder in an IMDI or OPEX export, which also names its IMDI
 // or OPEX file. It is worked out from all of the project's sessions, so that it does not
-// depend on which of them are exported.
+// depend on which of them are exported. An IMDI export writes each session's IMDI file
+// beside the session folders, so no folder may have the name of another one's IMDI file.
 export function sessionFolderExportNames(project: Project): Map<Folder, string> {
   const sessions = project.sessions.items;
   const names = uniqueExportNames(
     sessions.map((s) => Path.basename(s.directory)),
     [...kDocumentFolderNames, corpusExportName(project)],
+    kMetadataExtensions,
   );
   return new Map(sessions.map((s, i) => [s, names[i]]));
 }
 
-// The name of each of a folder's files in an IMDI or OPEX export
-export function fileExportNames(files: File[]): Map<File, string> {
+// The name of each of a folder's files in an IMDI or OPEX export. An OPEX export writes the
+// folder's metadata file among them, so no file may have its name.
+export function fileExportNames(files: File[], metadataFileName?: string): Map<File, string> {
   const names = uniqueExportNames(
     files.map((f) => f.getNameToUseWhenExportingUsingTheActualFile()),
+    metadataFileName ? [metadataFileName] : [],
   );
   return new Map(files.map((f, i) => [f, names[i]]));
 }
