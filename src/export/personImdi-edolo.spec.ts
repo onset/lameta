@@ -129,6 +129,35 @@ describe("actor imdi export", () => {
     expect(xml.indexOf("-x-")).toBe(-1);
   });
 
+  it("should export a language that SayMore stored as a name as that name", () => {
+    // SayMore stored a person's languages as names, and a name that lameta cannot find stays
+    // in the .person file as it is. "Aka" (the Aka of the Central African Republic) must not
+    // become the code "aka", which is Akan.
+    for (const name of ["Aka", "Ngbaka-Mabo", "Lingala (un peu)", "Kinkengué"]) {
+      person.languages.splice(0, 10);
+      person.languages.push({ code: name, primary: true });
+      const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
+      setResultXml(gen.actor(person, "pretend-role", pretendSessionDate) as string);
+      expect("Actor/Languages/Language[1]/Id").toHaveText("ISO639-3:" + name);
+      expect("Actor/Languages/Language[1]/Name").toHaveText(name);
+    }
+  });
+
+  it("should still read a tag written in capitals as a tag", () => {
+    project.setSubjectLanguages("qab-x-tolo:Tolo");
+    for (const [tag, id, name] of [
+      ["EN", "ISO639-3:eng", "English"],
+      ["QAB-x-Tolo", "ISO639-3:qab", "Tolo"],
+    ]) {
+      person.languages.splice(0, 10);
+      person.languages.push({ code: tag, primary: true });
+      const gen = new ImdiGenerator(IMDIMode.RAW_IMDI, person, project);
+      setResultXml(gen.actor(person, "pretend-role", pretendSessionDate) as string);
+      expect("Actor/Languages/Language[1]/Id").toHaveText(id);
+      expect("Actor/Languages/Language[1]/Name").toHaveText(name);
+    }
+  });
+
   it("should match a person's tag to the project's whatever the case", () => {
     // A .person file written by 3.0.x holds the tag with the capital letter the user typed.
     project.setSubjectLanguages("qab-x-tolo:Tolo");

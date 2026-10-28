@@ -46,6 +46,16 @@ const imdiDatePattern =
 // Pattern to match approximate birth years like "~1964"
 const tildeBirthYearPattern = /^~(\d{4})$/;
 
+// SayMore stored languages as names, and a name that lameta cannot find stays as it is, e.g.
+// "Aka" or "Lingala (un peu)". Lower-cased, "Aka" would be the code of a different language
+// (Akan), so only a value whose primary subtag is two or three letters, all lower case or all
+// upper case ("EN"), is a tag. What follows the primary subtag is not checked: lameta 3.0.x
+// minted private-use tags such as "qaa-x-Kürbinian".
+function isLanguageName(value: string | undefined): boolean {
+  const trimmed = (value || "").trim();
+  return trimmed.length > 0 && !/^([a-z]{2,3}|[A-Z]{2,3})(-.*)?$/.test(trimmed);
+}
+
 // Track if we've already emitted the tilde birth year warning
 let hasEmittedTildeBirthYearWarning = false;
 
@@ -161,6 +171,7 @@ export default class ImdiGenerator {
    * subtag, so nothing ever reaches IMDI with subtags still attached.
    */
   private iso639_3ForExport(tag: string): string {
+    if (isLanguageName(tag)) return tag.trim();
     // Lowercase, because a project written by 3.0.x holds "qaa-x-MyLanguage" while a session
     // that used the picker holds the same tag in lower case. A hand-edited file can hold a
     // language element with no tag at all, so guard against undefined.
@@ -179,6 +190,7 @@ export default class ImdiGenerator {
   private nameForExport(tag: string): string {
     const key = (tag || "").trim().toLowerCase();
     if (key.length === 0) return "";
+    if (isLanguageName(tag)) return tag.trim();
     const fromProject = this.project
       ?.getAllProjectLanguages()
       .find((l) => (l.iso639_3 || "").toLowerCase() === key);
