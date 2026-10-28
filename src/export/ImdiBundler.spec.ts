@@ -393,6 +393,137 @@ describe("names that clash only after sanitizing", () => {
   });
 });
 
+describe("names that clash with a metadata file", () => {
+  // A project with the given title, and a session for each folder, each with the given files
+  function makeProject(title: string, sessions: Record<string, string[]>): Project {
+    const dir = Path.join(temp.mkdirSync("lameta metadata clash"), "Clash");
+    const sessionXml = fs.readFileSync(
+      "sample data/Edolo sample/Sessions/ETR009/ETR009.session",
+      "utf8",
+    );
+    for (const [folder, files] of Object.entries(sessions)) {
+      const sessionDir = Path.join(dir, "Sessions", folder);
+      fs.mkdirSync(sessionDir, { recursive: true });
+      fs.writeFileSync(Path.join(sessionDir, folder + ".session"), sessionXml);
+      for (const file of files) fs.writeFileSync(Path.join(sessionDir, file), "file " + file);
+    }
+    const project = Project.fromDirectory(dir);
+    project.properties.setText("name", "");
+    project.properties.setText("title", title);
+    return project;
+  }
+
+  // exports the project as the app does, and returns what it wrote
+  async function exportProject(project: Project, mode: IMDIMode) {
+    const target = temp.mkdirSync("lameta metadata clash output");
+    const generator = ImdiBundler.generateExportData(project, target, mode, true, () => true);
+    const writer = new MainProcessImdiExport(() => null);
+    const sessions: ExportSessionData[] = [];
+    let result = await generator.next();
+    while (!result.done) {
+      const data = result.value as ExportSessionData;
+      expect((await writer.writeImdiSessionData(data)).errors, data.imdiPath).toEqual([]);
+      sessions.push(data);
+      result = await generator.next();
+    }
+    await writer.writeImdiCorpusData(result.value);
+    return sessions;
+  }
+
+  // "Tape 1" exports as "Tape_1_2", the name of its OPEX file's folder, so its OPEX file
+  // would be "Tape_1_2.opex", the name of one of its files
+  it("in OPEX mode, does not copy a file over its session's OPEX file", async () => {
+    const project = makeProject("Clash", { "Tape 1": ["Tape_1_2.opex"], Tape_1: [] });
+    const sessions = await exportProject(project, IMDIMode.OPEX);
+    const tape1 = sessions.find((s) => s.imdiPath.endsWith("Tape_1_2.opex"))!;
+    expect(fs.readFileSync(tape1.imdiPath, "utf8")).toBe(tape1.imdiXml);
+    expect(tape1.filesToCopy.length).toBe(1);
+    const copy = tape1.filesToCopy[0].destination;
+    expect(copy).not.toBe(tape1.imdiPath);
+    expect(fs.readFileSync(copy, "utf8")).toBe("file Tape_1_2.opex");
+    expect(tape1.imdiXml).toContain(Path.basename(copy));
+  });
+
+  // The corpus takes "Tape_1", so "Tape 1" would export as "Tape_1_2", whose IMDI file
+  // "Tape_1_2.imdi" would be the folder of the session "Tape_1_2.imdi"
+  it("in IMDI mode, does not name a session's IMDI file like another session's folder", async () => {
+    const project = makeProject("Tape_1", { "Tape 1": [], "Tape_1_2.imdi": [] });
+    const sessions = await exportProject(project, IMDIMode.RAW_IMDI);
+    const documentFolders = ["OtherDocuments", "DescriptionDocuments", "ConsentDocuments"];
+    const sessionData = sessions.filter((s) => !documentFolders.includes(s.sessionId));
+    expect(sessionData.map((s) => Path.basename(s.imdiPath)).sort()).toEqual([
+      "Tape_1_2.imdi.imdi",
+      "Tape_1_3.imdi",
+    ]);
+    for (const data of sessionData) {
+      expect(fs.readFileSync(data.imdiPath, "utf8")).toBe(data.imdiXml);
+    }
+  });
+});
+
+describe("consent files of the same name", () => {
+  it("copies the consent file of each person, and links the IMDI to each copy", async () => {
+    const dir = Path.join(temp.mkdirSync("lameta same consent"), "Same Consent");
+    const edolo = "sample data/Edolo sample";
+    const sessionDir = Path.join(dir, "Sessions", "ETR009");
+    fs.mkdirSync(sessionDir, { recursive: true });
+    fs.copyFileSync(
+      `${edolo}/Sessions/ETR009/ETR009.session`,
+      Path.join(sessionDir, "ETR009.session"),
+    );
+    fs.writeFileSync(Path.join(sessionDir, "notes.txt"), "notes");
+    fs.writeFileSync(
+      Path.join(sessionDir, "notes.txt.meta"),
+      `<?xml version="1.0" encoding="utf-8"?>
+<MetaData>
+  <contributions type="xml">
+    <contributor><name>Awi Heole</name><role>speaker</role></contributor>
+    <contributor><name>Ilawi Amosa</name><role>speaker</role></contributor>
+  </contributions>
+</MetaData>`,
+    );
+    for (const person of ["Awi_Heole", "Ilawi_Amosa"]) {
+      const personDir = Path.join(dir, "People", person);
+      fs.mkdirSync(personDir, { recursive: true });
+      fs.copyFileSync(
+        `${edolo}/People/${person}/${person}.person`,
+        Path.join(personDir, `${person}.person`),
+      );
+      fs.writeFileSync(Path.join(personDir, "Consent.jpg"), "consent of " + person);
+    }
+    const project = Project.fromDirectory(dir);
+    const target = temp.mkdirSync("lameta same consent output");
+    const generator = ImdiBundler.generateExportData(
+      project,
+      target,
+      IMDIMode.RAW_IMDI,
+      true,
+      () => true,
+    );
+    const writer = new MainProcessImdiExport(() => null);
+    let consent: ExportSessionData | undefined;
+    let result = await generator.next();
+    while (!result.done) {
+      const data = result.value as ExportSessionData;
+      expect((await writer.writeImdiSessionData(data)).errors).toEqual([]);
+      if (data.sessionId === "ConsentDocuments") consent = data;
+      result = await generator.next();
+    }
+
+    const destinations = consent!.filesToCopy.map((f) => f.destination);
+    expect(destinations.length).toBe(2);
+    expect(destinations.map((d) => fs.readFileSync(d, "utf8")).sort()).toEqual([
+      "consent of Awi_Heole",
+      "consent of Ilawi_Amosa",
+    ]);
+    const resourceLinks = links(consent!.imdiXml, "ResourceLink").filter((l) => l);
+    expect(resourceLinks.length).toBe(2);
+    for (const link of resourceLinks) {
+      expect(destinations).toContain(Path.join(Path.dirname(consent!.imdiPath), link));
+    }
+  });
+});
+
 describe("what export writes to disk", () => {
   // The lameta-source and lameta-translations comments lead a problem in the IMDI back
   // to its field. The checks and the IMDI view need them; a deposit does not.

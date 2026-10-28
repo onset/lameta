@@ -113,19 +113,20 @@ export abstract class Folder {
   // for a future "copy" user function, but
   // 1) we'd need to copy over all the meta data
   // 2) it is currently synchronous. If we change that, it will break tests so something would have to be done.
-  public copyInOneProjectFileIfNotThereAlready(sourceFile: File, destDirectory: string) {
-    const destPath = Path.join(
-      destDirectory,
-      Path.basename(sourceFile.pathInFolderToLinkFileOrLocalCopy),
-    );
-    if (fs.existsSync(destPath)) {
-      return;
-    }
+  // Copies the file into the directory, numbering its name if the directory already has a
+  // file of that name, and returns the copy
+  public copyInOneProjectFile(sourceFile: File, destDirectory: string): File {
+    const name = Path.basename(sourceFile.pathInFolderToLinkFileOrLocalCopy);
+    const extension = Path.extname(name);
+    const base = name.slice(0, name.length - extension.length);
+    let destPath = Path.join(destDirectory, name);
+    for (let n = 2; fs.existsSync(destPath); n++)
+      destPath = Path.join(destDirectory, `${base}_${n}${extension}`);
 
     // just for unit tests
     if (!fs.existsSync(sourceFile.pathInFolderToLinkFileOrLocalCopy))
       throw new Error(
-        `copyInOneProjectFileIfNotThereAlready ${sourceFile.pathInFolderToLinkFileOrLocalCopy} doesn't exist.`,
+        `copyInOneProjectFile ${sourceFile.pathInFolderToLinkFileOrLocalCopy} doesn't exist.`,
       );
 
     // note, I can't think of how the .meta file of the consent could be helpful, so
@@ -134,6 +135,7 @@ export abstract class Folder {
     const destFile = new OtherFile(destPath, this.customVocabularies, true);
     destFile.addTextProperty("size", sourceFile.getTextProperty("size"), false);
     this.files.push(destFile);
+    return destFile;
   }
 
   public async addFileForTestAsync(name: string) {

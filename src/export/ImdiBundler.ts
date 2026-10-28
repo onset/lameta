@@ -24,6 +24,12 @@ import {
 import { ExportStrings } from "./ExportStringDefinitions";
 temp.track(true);
 
+// A person's consent file, and its copy in the session that collects the consent files
+interface ConsentFileCopy {
+  original: File;
+  copy: File;
+}
+
 /**
  * Build a multilingual text string from an English value using export string translations.
  * Returns text in the format [[en]]English[[es]]Spanish[[fr]]French if translations exist,
@@ -325,7 +331,10 @@ export default class ImdiBundler {
       const targetDirectory = Path.join(rootDirectory, secondLevel, sessionDirName);
       directoriesToCreate.push(targetDirectory);
 
-      const fileNames = fileExportNames(session.files);
+      const fileNames = fileExportNames(
+        session.files,
+        imdiMode === IMDIMode.OPEX ? imdiFileName : undefined,
+      );
       session.files.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
@@ -394,7 +403,10 @@ export default class ImdiBundler {
     const filesToCopy: FileCopyRequest[] = [];
     if (copyInProjectFiles) {
       directoriesToCreate.push(destinationFolderPath);
-      const fileNames = fileExportNames(folder.files);
+      const fileNames = fileExportNames(
+        folder.files,
+        imdiMode === IMDIMode.OPEX ? sanitizeForExport(imdiFileName) : undefined,
+      );
       folder.files.forEach((f: File) => {
         if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
@@ -418,7 +430,7 @@ export default class ImdiBundler {
   /**
    * Creates and populates a dummy session for the consent bundle.
    * This is the shared logic used by both export and preview.
-   * Returns the session, temp directory, and the original consent files.
+   * Returns the session, temp directory, and each consent file with its copy in the session.
    */
   public static createConsentBundleSession(
     project: Project,
@@ -426,7 +438,7 @@ export default class ImdiBundler {
   ): {
     session: Session;
     tempDir: string;
-    originalConsentFiles: File[];
+    consentFileCopies: ConsentFileCopy[];
     hasConsentFiles: boolean;
   } {
     const dir = temp.mkdirSync("imdiConsentBundle");
@@ -454,7 +466,7 @@ export default class ImdiBundler {
       );
     }
 
-    const originalConsentFiles = ImdiBundler.addDummyFileForConsentActors(
+    const consentFileCopies = ImdiBundler.addDummyFileForConsentActors(
       project,
       sessionFilter,
       dummySession,
@@ -468,7 +480,7 @@ export default class ImdiBundler {
     return {
       session: dummySession,
       tempDir: dir,
-      originalConsentFiles,
+      consentFileCopies,
       hasConsentFiles,
     };
   }
@@ -501,7 +513,7 @@ export default class ImdiBundler {
     const {
       session: dummySession,
       tempDir: dir,
-      originalConsentFiles,
+      consentFileCopies,
       hasConsentFiles,
     } = ImdiBundler.createConsentBundleSession(project, sessionFilter);
 
@@ -511,29 +523,18 @@ export default class ImdiBundler {
 
     // Build filesToCopy from the ORIGINAL consent files (not the temp copies)
     if (copyInProjectFiles) {
-      // The consent IMDI links to the copies in the dummy session, which have the original
-      // files' names, so name each original file as the IMDI names its copy
-      const copyExportNames = fileExportNames(dummySession.files);
-      const exportNameOfCopyNamed = new Map(
-        dummySession.files.map((f) => [
-          f.getNameToUseWhenExportingUsingTheActualFile(),
-          copyExportNames.get(f)!,
-        ]),
+      // The consent IMDI links to the copies in the dummy session, so name each original
+      // file as the IMDI names its copy
+      const copyExportNames = fileExportNames(
+        dummySession.files,
+        imdiMode === IMDIMode.OPEX ? "ConsentDocuments" + extensionWithDot : undefined,
       );
-      // Track which files we've already added (by their destination name) to avoid duplicates
-      const addedFiles = new Set<string>();
-      originalConsentFiles.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
-          const destName = exportNameOfCopyNamed.get(
-            f.getNameToUseWhenExportingUsingTheActualFile(),
-          )!;
-          if (!addedFiles.has(destName)) {
-            addedFiles.add(destName);
-            filesToCopy.push({
-              source: f.getActualFilePath(),
-              destination: Path.join(destinationFolderPath, destName),
-            });
-          }
+      consentFileCopies.forEach(({ original, copy }) => {
+        if (ImdiGenerator.shouldIncludeFile(original.getActualFilePath())) {
+          filesToCopy.push({
+            source: original.getActualFilePath(),
+            destination: Path.join(destinationFolderPath, copyExportNames.get(copy)!),
+          });
         }
       });
     }
@@ -646,13 +647,13 @@ export default class ImdiBundler {
   // So we need this dummy session to contain all the contributions to all sessions in the whole project
   // for which the person has a consent artifcat.
   // That will mean walking through every session of the project, using session.getAllContributionsToAllFiles().
-  // Returns the original consent files that were added (for use in file copying).
+  // Returns each consent file with its copy in the dummy session (for use in file copying).
   private static addDummyFileForConsentActors(
     project: Project,
     sessionFilter: (f: Folder) => boolean,
     dummySession: Session,
     outputFolder: string,
-  ): File[] {
+  ): ConsentFileCopy[] {
     // Session is a *folder*, but only *files* have contributions. So we add this dummy file. The ".skip" extension
     // will cause it to not be listed in the IMDI
     const dummyFileForActors = new File(
@@ -663,7 +664,7 @@ export default class ImdiBundler {
       "dummy",
       false,
     );
-    const originalConsentFiles: File[] = [];
+    const consentFileCopies: ConsentFileCopy[] = [];
     exportableSessions(project)
       .filter(sessionFilter)
       .forEach((session: Session) => {
@@ -683,12 +684,16 @@ export default class ImdiBundler {
                 dummyFileForActors.contributions.push(contribution);
 
                 // copy over the actual consent files
+                // two people can have consent files of the same name, so a copy may get a
+                // numbered name; two references can lead to the same person, whose files
+                // are then copied once
                 consentFiles.forEach((file) => {
-                  // note, it should be rare, but someone might place a consent file with the name in more than one place in the project
-                  // enhance: should add unique numbers, as needed, just in case two with the same name are somehow unique
-                  dummySession.copyInOneProjectFileIfNotThereAlready(file, outputFolder);
-                  // Track the original file for later copying
-                  originalConsentFiles.push(file);
+                  if (!consentFileCopies.some((c) => c.original === file)) {
+                    consentFileCopies.push({
+                      original: file,
+                      copy: dummySession.copyInOneProjectFile(file, outputFolder),
+                    });
+                  }
                 });
               }
             }
@@ -696,6 +701,6 @@ export default class ImdiBundler {
         });
       });
     dummySession.files.push(dummyFileForActors);
-    return originalConsentFiles;
+    return consentFileCopies;
   }
 }

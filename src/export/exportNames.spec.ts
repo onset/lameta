@@ -21,4 +21,13 @@ describe("uniqueExportNames", () => {
   it("leaves names that do not clash as sanitizing makes them", () => {
     expect(uniqueExportNames(["COM1", "x y"])).toEqual(["COM1_", "x_y"]);
   });
+  it("does not make a name that, with a suffix, is another name", () => {
+    expect(uniqueExportNames(["Tape 1", "Tape_1_2.imdi"], ["Tape_1"], [".imdi"])).toEqual([
+      "Tape_1_3",
+      "Tape_1_2.imdi",
+    ]);
+    expect(uniqueExportNames(["Tape_1_2.imdi"], ["Tape_1_2"], [".imdi"])).toEqual([
+      "Tape_1_2_2.imdi",
+    ]);
+  });
 });
