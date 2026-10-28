@@ -48,12 +48,12 @@ const tildeBirthYearPattern = /^~(\d{4})$/;
 
 // SayMore stored languages as names, and a name that lameta cannot find stays as it is, e.g.
 // "Aka" or "Lingala (un peu)". Lower-cased, "Aka" would be the code of a different language
-// (Akan), so only a value whose primary subtag is two or three lower-case letters is a tag.
-// What follows the primary subtag is not checked: lameta 3.0.x minted private-use tags such
-// as "qaa-x-Kürbinian".
+// (Akan), so only a value whose primary subtag is two or three letters, all lower case or all
+// upper case ("EN"), is a tag. What follows the primary subtag is not checked: lameta 3.0.x
+// minted private-use tags such as "qaa-x-Kürbinian".
 function isLanguageName(value: string | undefined): boolean {
   const trimmed = (value || "").trim();
-  return trimmed.length > 0 && !/^[a-z]{2,3}(-.*)?$/.test(trimmed);
+  return trimmed.length > 0 && !/^([a-z]{2,3}|[A-Z]{2,3})(-.*)?$/.test(trimmed);
 }
 
 // Track if we've already emitted the tilde birth year warning
