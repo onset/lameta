@@ -51,6 +51,7 @@ export function sanitizeForArchive(
 }
 
 // What sanitize-filename removes before it checks for a device name
+// oxlint-disable-next-line no-control-regex
 const kIllegalCharacters = /[/?<>\\:*|"\x00-\x1f\x80-\x9f]/g;
 
 // The name of a file or folder in an IMDI or OPEX export. Unlike sanitizeForArchive, it

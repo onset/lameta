@@ -16,7 +16,7 @@ const key = (name: string) => name.toLowerCase();
 export function uniqueExportNames(names: string[], taken: string[] = []): string[] {
   const sanitized = names.map(sanitizeForExport);
   const used = new Set(taken.map(key));
-  const result: string[] = new Array(names.length);
+  const result: string[] = Array.from({ length: names.length });
   const unchangedFirst = names
     .map((_, i) => i)
     .sort((a, b) => Number(sanitized[b] === names[b]) - Number(sanitized[a] === names[a]));
