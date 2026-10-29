@@ -315,10 +315,10 @@ msgid "For documenting my own language"
 msgstr "用于记录自己的语言"
 
 msgid "Found file with a name containing 'Consent'"
-msgstr "找到名称包含“知情同意”的文件"
+msgstr "找到名称包含“Consent”的文件"
 
 msgid "Found no file with a name containing 'Consent'"
-msgstr "未找到名称包含“知情同意”的文件"
+msgstr "未找到名称包含“Consent”的文件"
 
 msgid "Full Name"
 msgstr "全名"

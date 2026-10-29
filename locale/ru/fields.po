@@ -61,10 +61,6 @@ msgctxt "lameta/person/gender/choices"
 msgid "Other"
 msgstr "Другое"
 
-msgctxt "lameta/person/languages"
-msgid "Languages"
-msgstr "Какими языками владеет"
-
 msgctxt "lameta/person/name"
 msgid "Full Name"
 msgstr "Полное имя"

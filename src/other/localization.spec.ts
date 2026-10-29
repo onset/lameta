@@ -1,4 +1,6 @@
 import path from "path";
+import fs from "fs";
+import PO from "pofile";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { userSettingsMock } = vi.hoisted(() => ({
@@ -70,6 +72,29 @@ describe("the translations each UI language ships with", () => {
       expect(i18n._("Birth Year")).not.toBe("Birth Year");
       expect(i18n._("Title")).not.toBe("Title");
       expect(i18n._("Add Files")).not.toBe("Add Files");
+    }
+  );
+});
+// setUILanguage loads the fields catalog after the messages catalog into one locale, so a
+// field label's translation also replaces the UI's translation of the same English text.
+describe("text that both the UI and a field label use", () => {
+  it.each(["es", "fr", "fa", "id", "ru", "pt-BR", "zh-cn"])(
+    "%s translates it the same way in both catalogs",
+    (folder) => {
+      const translations = (catalog: string) =>
+        new Map(
+          PO.parse(
+            fs.readFileSync(
+              path.join(process.cwd(), "locale", folder, `${catalog}.po`),
+              "utf8"
+            )
+          ).items.map((item) => [item.msgid, item.msgstr[0] || ""])
+        );
+      const messages = translations("messages");
+      const differing = [...translations("fields")].filter(
+        ([id, str]) => str && messages.get(id) && messages.get(id) !== str
+      );
+      expect(differing).toEqual([]);
     }
   );
 });

@@ -675,7 +675,7 @@ msgid "Something is wrong here..."
 msgstr "Há algo errado aqui..."
 
 msgid "Sorry, no slashes are allowed"
-msgstr "Desculpe, mas não são permitidos travessões"
+msgstr "Desculpe, mas não são permitidas barras"
 
 msgid "Start Screen"
 msgstr "Tela inicial"

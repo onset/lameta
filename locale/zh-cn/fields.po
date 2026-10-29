@@ -90,10 +90,6 @@ msgctxt "lameta/person/mothersLanguage"
 msgid "Mother's Language"
 msgstr "母亲的语言"
 
-msgctxt "lameta/person/name"
-msgid "Full Name"
-msgstr "全称"
-
 msgctxt "lameta/person/nickname"
 msgid "Nickname"
 msgstr "昵称"
