@@ -10,12 +10,52 @@ import { is } from "@electron-toolkit/utils";
 import { app, BrowserWindow, shell, ipcMain, screen, session } from "electron";
 import { release } from "os";
 import { join } from "path";
-import { mkdirSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import * as path from "path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
-import { initLaunchTest, isLaunchTest } from "./launchTest";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
+
+// --launch-test opens the app, checks it came up, and quits again (scripts/test-launch.ts).
+// Nothing about it may leave a modal error dialog on the developer's screen, so this is
+// handled here, at the top of the main process, depending on nothing but electron and fs:
+// the failure that made us write this was a module that would not load, which a guard inside
+// launchTest.ts could not have caught, because it was launchTest.ts.
+const isLaunchTest = (): boolean =>
+  process.argv.some((a) => a.startsWith("--launch-test"));
+
+if (isLaunchTest()) {
+  // Electron's own uncaught-exception handler is already registered and shows a blocking
+  // dialog. Take away what it shows, then exit before anyone could click it anyway.
+  try {
+    dialog.showErrorBox = () => {};
+  } catch {}
+  const failTheLaunchTest = (phase: string, error: unknown) => {
+    console.error(`launch test: ${phase}:`, error);
+    const arg = process.argv.find((a) => a.startsWith("--launch-test="));
+    if (arg) {
+      try {
+        writeFileSync(
+          arg.substring("--launch-test=".length),
+          JSON.stringify({
+            ok: false,
+            phase,
+            error: String(error),
+            when: new Date().toISOString(),
+            pid: process.pid
+          })
+        );
+      } catch {}
+    }
+    app.exit(1);
+  };
+  process.on("uncaughtException", (e) =>
+    failTheLaunchTest("uncaughtException", e)
+  );
+  process.on("unhandledRejection", (e) =>
+    failTheLaunchTest("unhandledRejection", e)
+  );
+}
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -174,8 +214,16 @@ async function createWindow() {
     }
   });
 
-  // Initialize launch-test handling (no-op if not requested)
-  initLaunchTest(win);
+  // Initialize launch-test handling (no-op if not requested). Required lazily, and only in a
+  // launch-test run, so that a module this one cannot load fails the check rather than the app.
+  if (launchTest) {
+    try {
+      require("./launchTest").initLaunchTest(win);
+    } catch (e) {
+      console.error("launch test: could not start:", e);
+      throw e; // the guard at the top of this file turns this into a failed check
+    }
+  }
 
   function fillLastMonitor() {
     const displays = screen.getAllDisplays();

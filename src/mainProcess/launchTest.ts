@@ -4,9 +4,6 @@ import { existsSync, writeFileSync } from "fs";
 import * as path from "path";
 import { ffprobePathForAppPath } from "../other/ffprobePath";
 
-export const isLaunchTest = (): boolean =>
-  process.argv.some((a) => a.startsWith("--launch-test"));
-
 type FfprobeCheck = {
   path: string;
   exists: boolean;
@@ -18,12 +15,15 @@ type FfprobeCheck = {
 // Checks that the app can find and run ffprobe where it is actually packaged. Only a packaged
 // app can get this wrong -- the paths differ inside app.asar -- so this runs where the only
 // test of a packaged app runs, and scripts/test-launch.ts fails the run on it.
+// Never throws: a launch test reports its failures through the marker, because an exception
+// escaping the main process is what puts a modal dialog on the developer's screen.
 const checkFfprobe = (): FfprobeCheck => {
-  const ffprobePath = ffprobePathForAppPath(app.getAppPath());
-  if (!existsSync(ffprobePath)) {
-    return { path: ffprobePath, exists: false, ran: false };
-  }
+  let ffprobePath = "(not resolved)";
   try {
+    ffprobePath = ffprobePathForAppPath(app.getAppPath());
+    if (!existsSync(ffprobePath)) {
+      return { path: ffprobePath, exists: false, ran: false };
+    }
     const version = execFileSync(ffprobePath, ["-version"], {
       encoding: "utf8"
     })
@@ -33,7 +33,7 @@ const checkFfprobe = (): FfprobeCheck => {
   } catch (e) {
     return {
       path: ffprobePath,
-      exists: true,
+      exists: existsSync(ffprobePath),
       ran: false,
       error: (e as Error).message
     };

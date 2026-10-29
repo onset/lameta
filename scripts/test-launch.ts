@@ -180,16 +180,14 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
   // Only a packaged app can get the ffprobe path wrong, and this is the only check in the repo
   // that runs one, so the failure message has to name the path the app actually resolved.
   const ffprobe = parsed?.ffprobe;
-  if (!ffprobe || ffprobe.ran !== true) {
+  if (ffprobe && ffprobe.ran !== true) {
     throw new Error(
       [
         `The app could not run ffprobe, so selecting an audio or video file would fail.`,
-        ffprobe
-          ? `It resolved the path to ${ffprobe.path}, which ${
-              ffprobe.exists ? "exists but would not run" : "does not exist"
-            }.`
-          : `The marker carried no ffprobe result at all: ${raw}`,
-        ffprobe?.error ? `error=${ffprobe.error}` : "",
+        `It resolved the path to ${ffprobe.path}, which ${
+          ffprobe.exists ? "exists but would not run" : "does not exist"
+        }.`,
+        ffprobe.error ? `error=${ffprobe.error}` : "",
         parsed?.appPath ? `app.getAppPath()=${parsed.appPath}` : "",
         `marker=${marker}`
       ]
@@ -205,6 +203,15 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
         `App reported a launch failure via marker.`,
         phase,
         detail,
+        `marker=${marker}`
+      ].join(" ")
+    );
+  }
+  if (!ffprobe) {
+    throw new Error(
+      [
+        `The app reported a successful launch but no ffprobe result, so the check did not run.`,
+        `Marker contents: ${raw}`,
         `marker=${marker}`
       ].join(" ")
     );
