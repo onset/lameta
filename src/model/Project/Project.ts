@@ -85,7 +85,9 @@ export class ProjectHolder {
       //console.log("setting project to " + p.directory);
     }
     this.projectInternal = p;
-    sCurrentProject = p;
+    // A project that failed to load is only a { loadingError } stub with no
+    // properties, so it must not become the project that static accessors read.
+    sCurrentProject = p?.loadingError ? null : p;
   }
 }
 
@@ -607,6 +609,8 @@ export class Project extends Folder {
       // SOLUTION: safeCaptureException checks E2E environment before calling Sentry
       safeCaptureException(err);
       console.error(err);
+      // the half-built project was already made current, before its sessions and people loaded
+      sCurrentProject = null;
       // tslint:disable-next-line: no-object-literal-type-assertion
       return { loadingError: err.message } as Project;
     }
@@ -799,6 +803,8 @@ export class Project extends Folder {
     } catch (err) {
       safeCaptureException(err);
       console.error(err);
+      // the half-built project was already made current, before its sessions and people loaded
+      sCurrentProject = null;
       return { loadingError: err.message } as Project;
     }
   }
