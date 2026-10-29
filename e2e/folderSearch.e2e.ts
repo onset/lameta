@@ -202,7 +202,7 @@ test.describe("Folder Search UI", () => {
     const idField = page.getByTestId("field-id-edit");
     await idField.waitFor({ state: "visible", timeout: 10000 });
     await idField.click();
-    await page.keyboard.press("Control+A");
+    await page.keyboard.press("ControlOrMeta+A");
     await page.keyboard.type("AlphaFilterTestOne");
     await page.keyboard.press("Enter");
     const alphaOneIdCell = page
@@ -216,7 +216,7 @@ test.describe("Folder Search UI", () => {
     // Verify the field shows a default id before renaming
     await expect(idField).toHaveText(/New_Session/i);
     await idField.click();
-    await page.keyboard.press("Control+A");
+    await page.keyboard.press("ControlOrMeta+A");
     await page.keyboard.type("AlphaFilterTestTwo");
     await page.keyboard.press("Enter");
     // Filter to only Alpha sessions

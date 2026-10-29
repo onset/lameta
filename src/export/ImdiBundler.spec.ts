@@ -224,8 +224,9 @@ describe("names that Windows or the archive cannot take", () => {
       "utf8",
     );
     for (const folder of sessionFolders) {
-      // the \\?\ form lets Node make a folder whose name ends in a dot
-      const sessionDir = "\\\\?\\" + Path.resolve(dir, "Sessions", folder);
+      // on Windows, the \\?\ form lets Node make a folder whose name ends in a dot
+      const sessionDir =
+        (process.platform === "win32" ? "\\\\?\\" : "") + Path.resolve(dir, "Sessions", folder);
       fs.mkdirSync(sessionDir, { recursive: true });
       fs.writeFileSync(Path.join(sessionDir, folder + ".session"), sessionXml);
       fs.writeFileSync(Path.join(sessionDir, "notes.txt"), "notes");
