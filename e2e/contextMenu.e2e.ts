@@ -16,6 +16,9 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
     lameta = new LametaE2ERunner();
     project = await launchWithProject(lameta, `ContextMenuTest_${Date.now()}`);
     page = lameta.page;
+    // a real popup menu stays open on macOS, where Escape in the page does not reach it,
+    // and an open menu keeps lameta from quitting
+    await lameta.capturePopupMenus();
   });
 
   test.afterAll(async () => {
@@ -41,11 +44,11 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
     await idField.fill(uniqueText);
 
     // Select all text
-    await idField.press("Control+a");
+    await idField.press("ControlOrMeta+a");
     await page.waitForTimeout(100);
 
     // Copy using keyboard
-    await idField.press("Control+c");
+    await idField.press("ControlOrMeta+c");
     await page.waitForTimeout(100);
 
     // Clear the field
@@ -53,7 +56,7 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
     await page.waitForTimeout(100);
 
     // Paste using keyboard
-    await idField.press("Control+v");
+    await idField.press("ControlOrMeta+v");
     await page.waitForTimeout(200);
 
     // Verify the text was pasted
@@ -77,11 +80,11 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
     await idField.fill(uniqueText);
 
     // Select all text
-    await idField.press("Control+a");
+    await idField.press("ControlOrMeta+a");
     await page.waitForTimeout(100);
 
     // Cut using keyboard
-    await idField.press("Control+x");
+    await idField.press("ControlOrMeta+x");
     await page.waitForTimeout(100);
 
     // The field should be empty now
@@ -89,7 +92,7 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
     expect(fieldAfterCut).toBe("");
 
     // Paste using keyboard to verify the text was cut (not just deleted)
-    await idField.press("Control+v");
+    await idField.press("ControlOrMeta+v");
     await page.waitForTimeout(200);
 
     // Verify the text was pasted back
@@ -116,27 +119,26 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
     await page.waitForTimeout(100);
 
     // Select all using keyboard
-    await idField.press("Control+a");
+    await idField.press("ControlOrMeta+a");
     await page.waitForTimeout(100);
 
     // Copy the selection
-    await idField.press("Control+c");
+    await idField.press("ControlOrMeta+c");
     await page.waitForTimeout(100);
 
     // Clear field and paste to verify select all worked
     await idField.fill("");
-    await idField.press("Control+v");
+    await idField.press("ControlOrMeta+v");
     await page.waitForTimeout(200);
 
     const fieldValue = await idField.textContent();
     expect(fieldValue).toContain(uniqueText);
   });
 
-  test("right-click on editable field triggers context menu (manual verification)", async () => {
-    // This test just ensures right-click doesn't crash the app
-    // The actual context menu is a native Electron menu that Playwright can't directly inspect
-    // The menu functionality is verified via the keyboard tests above
-    // and can be manually verified during development
+  test("right-click on editable field triggers context menu", async () => {
+    // This test ensures right-click asks for a menu and doesn't crash the app.
+    // The menu functionality is verified via the keyboard tests above,
+    // and the menu's items are tested in mainProcessIntegration.e2e.ts.
 
     // Wait for the session form to load
     await page.waitForSelector('[data-testid="field-id-edit"]', {
@@ -151,19 +153,13 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
     await idField.fill("Test content for context menu");
 
     // Select all text
-    await idField.press("Control+a");
+    await idField.press("ControlOrMeta+a");
     await page.waitForTimeout(100);
 
     // Right-click on the field - this should trigger our context menu handler
-    // The menu is native and not visible to Playwright, but we verify no crash
+    const count = await lameta.getPopupMenuCount();
     await idField.click({ button: "right" });
-
-    // Wait a moment to let the menu appear
-    await page.waitForTimeout(300);
-
-    // Dismiss the context menu by clicking elsewhere or pressing Escape
-    await page.keyboard.press("Escape");
-    await page.waitForTimeout(100);
+    await lameta.waitForPopupMenu(count);
 
     // Verify the field still has its content (no crash, app still works)
     const fieldValue = await idField.textContent();

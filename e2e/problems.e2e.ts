@@ -71,7 +71,7 @@ async function newSession(project: E2eProject, page: Page, id: string) {
   // a new session opens on the tab that the last one was on
   await page.getByRole("tab", { name: /^Session$/ }).click();
   await editorOf(page, "id").click();
-  await page.keyboard.press("Control+A");
+  await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type(id);
   await page.keyboard.press("Tab");
   await expect(page.locator(".fileList .rt-tr", { hasText: `${id}.session` })).toBeVisible();
