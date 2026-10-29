@@ -530,7 +530,11 @@ export default class ImdiBundler {
         imdiMode === IMDIMode.OPEX ? "ConsentDocuments" + extensionWithDot : undefined,
       );
       consentFileCopies.forEach(({ original, copy }) => {
-        if (ImdiGenerator.shouldIncludeFile(original.getActualFilePath())) {
+        // checked again here because a sync service may have deleted the .link file since
+        if (
+          !original.isDeletedLinkFile() &&
+          ImdiGenerator.shouldIncludeFile(original.getActualFilePath())
+        ) {
           filesToCopy.push({
             source: original.getActualFilePath(),
             destination: Path.join(destinationFolderPath, copyExportNames.get(copy)!),
@@ -671,7 +675,10 @@ export default class ImdiBundler {
         session.getAllContributionsToAllFiles().forEach((contribution) => {
           const p = findPersonToExport(project, contribution.personReference);
           if (p) {
-            const consentFiles = p.files.filter((f) => f.isLabeledAsConsent());
+            // a linked file whose .link file was deleted is not there to give consent
+            const consentFiles = p.files.filter(
+              (f) => f.isLabeledAsConsent() && !f.isDeletedLinkFile(),
+            );
             // only add if it has at least one consent file
             if (consentFiles && consentFiles.length > 0) {
               // only add each person once (or once for each unique role?)
@@ -686,13 +693,9 @@ export default class ImdiBundler {
                 // copy over the actual consent files
                 // two people can have consent files of the same name, so a copy may get a
                 // numbered name; two references can lead to the same person, whose files
-                // are then copied once. A linked file whose .link file was deleted has
-                // nothing to copy.
+                // are then copied once
                 consentFiles.forEach((file) => {
-                  if (
-                    !file.isDeletedLinkFile() &&
-                    !consentFileCopies.some((c) => c.original === file)
-                  ) {
+                  if (!consentFileCopies.some((c) => c.original === file)) {
                     consentFileCopies.push({
                       original: file,
                       copy: dummySession.copyInOneProjectFile(file, outputFolder),

@@ -87,17 +87,17 @@ describe("IMDI export of a person whose linked consent file's .link file was del
     setupLanguageFinderForTests();
   });
 
-  it("exports without copying the consent file", async () => {
-    const projectDirectory = Path.join(temp.mkdirSync("deletedConsentLink"), "Consenty");
+  it("exports without copying that file or listing that person among those who gave consent", async () => {
+    const projectDirectory = Path.join(temp.mkdirSync("deletedPermitLink"), "Permits");
     const sessionDirectory = Path.join(projectDirectory, "Sessions", "Talk");
     fs.mkdirpSync(sessionDirectory);
     fs.writeFileSync(
-      Path.join(projectDirectory, "Consenty.sprj"),
-      `<?xml version="1.0" encoding="utf-8"?><Project><Title>Consenty</Title></Project>`,
+      Path.join(projectDirectory, "Permits.sprj"),
+      `<?xml version="1.0" encoding="utf-8"?><Project><Title>Permits</Title></Project>`,
     );
     fs.writeFileSync(
       Path.join(sessionDirectory, "Talk.session"),
-      `<Session><id type="string">Talk</id><contributions type="xml"><contributor><name>Awi Heole</name><role>speaker</role></contributor></contributions></Session>`,
+      `<Session><id type="string">Talk</id><contributions type="xml"><contributor><name>Awi Heole</name><role>speaker</role></contributor><contributor><name>Ilawi Amosa</name><role>speaker</role></contributor></contributions></Session>`,
     );
     const personDirectory = Path.join(projectDirectory, "People", "Awi_Heole");
     fs.mkdirpSync(personDirectory);
@@ -105,13 +105,21 @@ describe("IMDI export of a person whose linked consent file's .link file was del
       "sample data/Edolo sample/People/Awi_Heole/Awi_Heole.person",
       Path.join(personDirectory, "Awi_Heole.person"),
     );
+    // a second person whose consent file is there, so that the export has a consent bundle
+    const otherDirectory = Path.join(projectDirectory, "People", "Ilawi_Amosa");
+    fs.mkdirpSync(otherDirectory);
+    fs.copyFileSync(
+      "sample data/Edolo sample/People/Ilawi_Amosa/Ilawi_Amosa.person",
+      Path.join(otherDirectory, "Ilawi_Amosa.person"),
+    );
+    fs.writeFileSync(Path.join(otherDirectory, "Ilawi_Amosa_Consent.jpg"), "consent");
     const project = Project.fromDirectory(projectDirectory);
     expect(project.loadingError).toBeUndefined();
-    const mediaDirectory = temp.mkdirSync("deletedConsentLinkMedia");
+    const mediaDirectory = temp.mkdirSync("deletedPermitLinkMedia");
     setMediaFolderOrEmptyForThisProjectAndMachine(mediaDirectory);
     const media = Path.join(mediaDirectory, "Awi_Heole_Consent.jpg");
     fs.writeFileSync(media, "pretend consent");
-    const person = project.persons.items[0];
+    const person = project.persons.items.find((p) => p.directory === personDirectory)!;
     const link = OtherFile.CreateLinkFile(
       media,
       new EncounteredVocabularyRegistry(),
@@ -124,17 +132,24 @@ describe("IMDI export of a person whose linked consent file's .link file was del
 
     const generator = ImdiBundler.generateExportData(
       project,
-      temp.mkdirSync("deletedConsentLinkImdi"),
+      temp.mkdirSync("deletedPermitLinkImdi"),
       IMDIMode.RAW_IMDI,
       true,
       () => true,
     );
     const copied: string[] = [];
+    let consentImdi = "";
     for (let r = await generator.next(); ; r = await generator.next()) {
       const filesToCopy = "filesToCopy" in r.value ? r.value.filesToCopy : [];
       copied.push(...filesToCopy.map((c) => Path.basename(c.source)));
+      if (/<Session>\s*<Name>ConsentDocuments</.test(r.value.imdiXml))
+        consentImdi = r.value.imdiXml;
       if (r.done) break;
     }
-    expect(copied.some((name) => name.includes("Consent"))).toBe(false);
+    expect(copied).toContain("Ilawi_Amosa_Consent.jpg");
+    expect(copied.some((name) => name.startsWith("Awi_Heole_Consent"))).toBe(false);
+    // the person whose consent file is gone is not listed as having given consent
+    expect(consentImdi).toContain("Ilawi Amosa");
+    expect(consentImdi).not.toContain("Awi Heole");
   });
 });
