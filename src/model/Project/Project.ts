@@ -950,7 +950,7 @@ export class Project extends Folder {
     );
     this.persons.items.push(person);
     person.nameMightHaveChanged();
-    person.saveFolderMetaData;
+    person.saveFolderMetaData();
     this.persons.selectedIndex = this.persons.items.length - 1;
     analyticsEvent("Create", "Create Person");
     return person;
