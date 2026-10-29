@@ -15,3 +15,384 @@ msgstr ""
 "POT-Creation-Date: \n"
 "Last-Translator: \n"
 "Content-Transfer-Encoding: \n"
+
+
+msgctxt "lameta/person/birthYear"
+msgid "Birth Year"
+msgstr "Год рождения"
+
+msgctxt "lameta/person/code"
+msgid "Code"
+msgstr "Код"
+
+msgctxt "lameta/person/customFields"
+msgid "Custom Fields"
+msgstr "Определяемые пользователем поля"
+
+msgctxt "lameta/person/description"
+msgid "Description"
+msgstr "Описание"
+
+msgctxt "lameta/person/education"
+msgid "Education"
+msgstr "Сведения об образовании"
+
+msgctxt "lameta/person/ethnicGroup"
+msgid "Ethnic Group"
+msgstr "Этническая группа, национальность"
+
+msgctxt "lameta/person/gender"
+msgid "Gender"
+msgstr "Пол"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Unknown"
+msgstr "Неизвестно"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Male"
+msgstr "Мужской"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Female"
+msgstr "Женский"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Other"
+msgstr "Другое"
+
+msgctxt "lameta/person/name"
+msgid "Full Name"
+msgstr "Полное имя"
+
+msgctxt "lameta/person/nickname"
+msgid "Nickname"
+msgstr "Прозвище"
+
+msgctxt "lameta/person/primaryOccupation"
+msgid "Primary Occupation"
+msgstr "Основное занятие"
+
+msgctxt "lameta/project/continent"
+msgid "Continent"
+msgstr "Континент местонахождения"
+
+msgctxt "lameta/project/continent/choices"
+msgid "unspecified"
+msgstr "не указано"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Africa"
+msgstr "Африка"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Asia"
+msgstr "Азия"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Australia"
+msgstr "Австралия"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Europe"
+msgstr "Европа"
+
+msgctxt "lameta/project/continent/choices"
+msgid "North-America"
+msgstr "Северная Америка"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Middle-America"
+msgstr "Средняя Америка"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Oceania"
+msgstr "Океания"
+
+msgctxt "lameta/project/continent/choices"
+msgid "South-America"
+msgstr "Южная Америка"
+
+msgctxt "lameta/project/country"
+msgid "Country"
+msgstr "Страна местонахождения"
+
+msgctxt "lameta/project/fundingProjectTitle"
+msgid "Funding Project Title"
+msgstr "Название проекта"
+
+msgctxt "lameta/project/location"
+msgid "Location/Address"
+msgstr "Место осуществления проекта"
+
+msgctxt "lameta/project/name"
+msgid "Name"
+msgstr "Имя"
+
+msgctxt "lameta/project/projectDescription"
+msgid "Description"
+msgstr "Описание"
+
+msgctxt "lameta/project/region"
+msgid "Region"
+msgstr "Регион местонахождения"
+
+msgctxt "lameta/project/SubjectLanguages"
+msgid "Subject Languages"
+msgstr "Документируемые языки"
+
+msgctxt "lameta/project/title"
+msgid "Title"
+msgstr "Название"
+
+msgctxt "lameta/project/WorkingLanguages"
+msgid "Working Languages"
+msgstr "Языки-посредники"
+
+msgctxt "lameta/projectDocuments/access"
+msgid "Access"
+msgstr "Доступ"
+
+msgctxt "lameta/projectDocuments/accessDescription"
+msgid "Access Explanation"
+msgstr "Почему ограничен доступ"
+
+msgctxt "lameta/projectDocuments/accessDescription/description"
+msgid "If the access is not open/free, use this to explain why."
+msgstr "Если доступ не является открытым/свободным, используйте это для того, чтобы объяснить, почему."
+
+msgctxt "lameta/session/access"
+msgid "Access"
+msgstr "Доступ"
+
+msgctxt "lameta/session/accessDescription"
+msgid "Access Explanation"
+msgstr "Почему ограничен доступ"
+
+msgctxt "lameta/session/accessDescription/description"
+msgid "If the access is not open/free, use this to explain why."
+msgstr "Если доступ не является открытым/свободным, используйте это для того, чтобы объяснить, почему."
+
+msgctxt "lameta/session/customFields"
+msgid "Custom Fields"
+msgstr "Определяемые пользователем поля"
+
+msgctxt "lameta/session/date"
+msgid "Date"
+msgstr "Дата"
+
+msgctxt "lameta/session/description"
+msgid "Description"
+msgstr "Описание"
+
+msgctxt "lameta/session/genre"
+msgid "Genre"
+msgstr "Жанр"
+
+msgctxt "lameta/session/id"
+msgid "ID"
+msgstr "Идентификатор сессии записи"
+
+msgctxt "lameta/session/involvement"
+msgid "Researcher Involvement"
+msgstr "Участие"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "unspecified"
+msgstr "не указано"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "elicited"
+msgstr "речь/песня исполнена в рамках предложенных исследователем (вовлечение)"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "non-elicited"
+msgstr "не в рамках предложенных исследователем"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "no-observer"
+msgstr "без наблюдателей"
+
+msgctxt "lameta/session/languages"
+msgid "Subject Languages"
+msgstr "Документируемые языки"
+
+msgctxt "lameta/session/location"
+msgid "Neighborhood/Town/Village"
+msgstr "Место записи"
+
+msgctxt "lameta/session/locationContinent"
+msgid "Continent"
+msgstr "Континент местонахождения"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "unspecified"
+msgstr "не указано"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Africa"
+msgstr "Африка"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Asia"
+msgstr "Азия"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Australia"
+msgstr "Австралия"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Europe"
+msgstr "Европа"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "North-America"
+msgstr "Северная Америка"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Middle-America"
+msgstr "Средняя Америка"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Oceania"
+msgstr "Океания"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "South-America"
+msgstr "Южная Америка"
+
+msgctxt "lameta/session/locationCountry"
+msgid "Country"
+msgstr "Страна местонахождения"
+
+msgctxt "lameta/session/locationRegion"
+msgid "Region"
+msgstr "Регион местонахождения"
+
+msgctxt "lameta/session/participants"
+msgid "People"
+msgstr "Люди"
+
+msgctxt "lameta/session/planningType"
+msgid "Planning Type"
+msgstr "Тип планирования"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "unspecified"
+msgstr "не указано"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "spontaneous"
+msgstr "спонтанное"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "semi-spontaneous"
+msgstr "частично спонтанное"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "planned"
+msgstr "спланированное"
+
+msgctxt "lameta/session/socialContext"
+msgid "Social Context"
+msgstr "Социальный контекст"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "unspecified"
+msgstr "не указано"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "family"
+msgstr "семья"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "private"
+msgstr "частный "
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "public"
+msgstr "открытый доступ"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "controlled environment"
+msgstr "контролируемая среда"
+
+msgctxt "lameta/session/status"
+msgid "Status"
+msgstr "Статус"
+
+msgctxt "lameta/session/status/choices"
+msgid "Incoming"
+msgstr "Входящие"
+
+msgctxt "lameta/session/status/choices"
+msgid "Finished"
+msgstr "Закончил"
+
+msgctxt "lameta/session/status/choices"
+msgid "Skipped"
+msgstr "Пропущен"
+
+msgctxt "lameta/session/subgenre"
+msgid "Subgenre"
+msgstr "Поджанры"
+
+msgctxt "lameta/session/title"
+msgid "Title"
+msgstr "Название"
+
+msgctxt "lameta/session/workingLanguages"
+msgid "Working Languages"
+msgstr "Языки-посредники"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "unspecified"
+msgstr "не указано"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Africa"
+msgstr "Африка"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Asia"
+msgstr "Азия"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Australia"
+msgstr "Австралия"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Europe"
+msgstr "Европа"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Oceania"
+msgstr "Океания"
+
+msgctxt "ELAR/projectDocuments/access"
+msgid "Access"
+msgstr "Доступ"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "unspecified"
+msgstr "не указано"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Africa"
+msgstr "Африка"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Asia"
+msgstr "Азия"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Australia"
+msgstr "Австралия"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Europe"
+msgstr "Европа"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Oceania"
+msgstr "Океания"

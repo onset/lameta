@@ -22,6 +22,10 @@
     height: 16px;
     width: auto;
   }
+  .unreadableMetadataFlag {
+    vertical-align: text-bottom;
+    margin-right: 4px;
+  }
   .rt-td.status {
     display: flex;
     img {

@@ -1,3 +1,7 @@
+import {
+  exportableSessions,
+  findPersonToExport
+} from "../model/Project/exportableFolders";
 import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
@@ -6,6 +10,7 @@ import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
+const sanitizeFilename = require("sanitize-filename");
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import { NotifyError } from "../components/Notify";
@@ -235,7 +240,7 @@ export default class ImdiBundler {
     }
 
     // --- Sessions ---
-    const sessions = project.sessions.items.filter(folderFilter) as Session[];
+    const sessions = exportableSessions(project).filter(folderFilter);
     for (const session of sessions) {
       const sessionData = await this.generateSessionData(
         session,
@@ -269,7 +274,9 @@ export default class ImdiBundler {
       imdiXml: corpusImdi,
       imdiPath: Path.join(
         targetDirForProjectFile,
-        `${project.displayName}${extensionWithDot}`
+        // the title can hold characters that a file name cannot, such as ":", or be a
+        // name that a file cannot have, such as "CON", which leaves nothing
+        `${sanitizeFilename(project.displayName) || "corpus"}${extensionWithDot}`
       ),
       displayName: project.displayName
     };
@@ -283,7 +290,7 @@ export default class ImdiBundler {
     rootDirectory: string,
     folderFilter: (f: Folder) => boolean
   ): ExportJobInfo {
-    const sessions = project.sessions.items.filter(folderFilter);
+    const sessions = exportableSessions(project).filter(folderFilter);
     // +3 for OtherDocs, DescriptionDocs, ConsentBundle (even if some might be empty)
     const totalSessions = sessions.length + 3;
 
@@ -726,9 +733,9 @@ export default class ImdiBundler {
       false
     );
     const originalConsentFiles: File[] = [];
-    project.sessions.items.filter(sessionFilter).forEach((session: Session) => {
+    exportableSessions(project).filter(sessionFilter).forEach((session: Session) => {
       session.getAllContributionsToAllFiles().forEach((contribution) => {
-        const p = project.findPerson(contribution.personReference);
+        const p = findPersonToExport(project, contribution.personReference);
         if (p) {
           const consentFiles = p.files.filter((f) => f.isLabeledAsConsent());
           // only add if it has at least one consent file

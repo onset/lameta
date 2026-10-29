@@ -22,9 +22,16 @@ export function getStatusOfFile(f: File): {
     | "missing"
     | "goodLink"
     | "copyInProgress"
-    | "noMediaFolderConnection";
+    | "noMediaFolderConnection"
+    | "metadataUnreadable";
   info: string;
 } {
+  // A file that is gone gets one of the missing statuses below, so that exports
+  // skip it
+  const unreadable = describeUnreadableMetadata(f);
+  if (unreadable && f.getActualFileExists()) {
+    return { missing: false, status: "metadataUnreadable", info: unreadable };
+  }
   if (f.copyInProgress) {
     return {
       missing: false,
@@ -119,6 +126,15 @@ export function getStatusOfFile(f: File): {
   };
 }
 
+// What to tell the user when lameta could not read the file's metadata file, or
+// undefined when it could
+export function describeUnreadableMetadata(f: File): string | undefined {
+  const reason = f.metadataReadProblem;
+  if (reason === undefined) return undefined;
+  const fileName = Path.basename(f.metadataFilePath);
+  return t`lameta could not read ${fileName}: ${reason}`;
+}
+
 export function getLinkStatusIconPath(f: File): string {
   const { status } = getStatusOfFile(f);
   switch (status) {
@@ -129,6 +145,7 @@ export function getLinkStatusIconPath(f: File): string {
     case "noMediaFolderConnection":
       return "assets/noMediaFolder.png";
     case "fileNamingProblem":
+    case "metadataUnreadable":
       return "assets/error.png";
     default:
       return "";
@@ -149,6 +166,7 @@ export const FileStatusBlock: React.FunctionComponent<{
   return fileStatus.status === "normalFile" ||
     fileStatus.status === "goodLink" ? null : (
     <div
+      data-testid={`file-status-${fileStatus.status}`}
       css={css`
         display: flex;
         flex-direction: column;

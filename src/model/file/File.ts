@@ -21,7 +21,6 @@ import {
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import {
   NotifyError,
-  NotifyException,
   NotifyFileAccessProblem,
   NotifyRenameProblem,
   NotifySuccess,
@@ -100,6 +99,14 @@ export /*babel doesn't like this: abstract*/ class File {
 
   public contributions = new Array<Contribution>();
 
+  // Why readMetadataFile() could not read the metadata file (0-byte file,
+  // truncated write from an interrupted cloud sync, another encoding, a file
+  // from a newer lameta, etc.), or undefined when it could. The in-memory
+  // properties are then empty/default, so save() must refuse to write --
+  // otherwise it would overwrite the user's real (possibly recoverable) bytes
+  // with an empty template.
+  public metadataReadProblem: string | undefined = undefined;
+
   public encounteredVocabularyRegistry: EncounteredVocabularyRegistry;
 
   public get isMedia(): boolean {
@@ -125,27 +132,13 @@ export /*babel doesn't like this: abstract*/ class File {
     this.metadataFilePath = "error: this file was previously put in trash";
     this.describedFileOrLinkFilePath = "";
   }
-  protected addDatePropertyFromString(key: string, dateString: string) {
-    // Note: I am finding it rather hard to not mess up dates, because in javascript
-    // everything (including moment) wants to over-think things and convert dates
-    // to one's local timezone. You get bugs like having the file say 2015-3-21, but
-    // then saving as 2015-3-20 because you're running this in America. Ugghhh.
-    // It's just too easy to mess up. So what I'm trying for now
-    // is to confine anything that could mess with the date to 2 places: here,
-    // at import time where we have to be permissive, and when displaying in the UI.
-    // Other than those two places, the rule is that all strings are YYYY-MM-DD in UTC.
-
-    //assert.ok(moment(dateString).isValid()); //todo: handle bad data
-
-    this.properties.setValue(
-      key,
-      new Field(
-        key,
-        FieldType.Date,
-        this.normalizeIncomingDateString(dateString)
-      )
-    );
-  }
+  // Note: I am finding it rather hard to not mess up dates, because in javascript
+  // everything (including moment) wants to over-think things and convert dates
+  // to one's local timezone. You get bugs like having the file say 2015-3-21, but
+  // then saving as 2015-3-20 because you're running this in America. Ugghhh.
+  // So anything that could mess with the date is confined to 2 places: here,
+  // at import time where we have to be permissive, and when displaying in the UI.
+  // Other than those two places, the rule is that all strings are YYYY-MM-DD in UTC.
   protected normalizeIncomingDateString(dateString: string): string {
     if (!dateString || dateString.trim().length === 0) {
       return "";
@@ -206,12 +199,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     // If both US and EU interpretations parse, treat as ambiguous regardless of equality
     if (usResults.length > 0 && euResults.length > 0) {
-      this.setTextProperty(
-        "notes",
-        `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
-          moment.now()
-        ).toString()}`
-      );
+      this.reportUnparseableDate(dateString);
       return "";
     }
 
@@ -237,13 +225,26 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     // If we reach here, either nothing parsed or it was ambiguous
-    this.setTextProperty(
-      "notes",
+    this.reportUnparseableDate(dateString);
+    return ""; // Our GUI controls need an unambiguous date, so it's safer to just clear the date and leave it for the human to fix it using the error we put in the notes
+  }
+  // The notes may not have been read yet, so these are added to them after loading.
+  private dateParsingProblems: string[] = [];
+  private reportUnparseableDate(dateString: string) {
+    this.dateParsingProblems.push(
       `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
         moment.now()
       ).toString()}`
     );
-    return ""; // Our GUI controls need an unambiguous date, so it's safer to just clear the date and leave it for the human to fix it using the error we put in the notes
+  }
+  private addDateParsingProblemsToNotes() {
+    if (this.dateParsingProblems.length === 0) return;
+    const notes = this.properties.getTextStringOrEmpty("notes");
+    this.setTextProperty(
+      "notes",
+      [notes, ...this.dateParsingProblems].filter((n) => n).join("\n")
+    );
+    this.dateParsingProblems = [];
   }
   protected addDateProperty(key: string, date: Date, persist: boolean = true) {
     this.checkType(key, date);
@@ -386,7 +387,8 @@ export /*babel doesn't like this: abstract*/ class File {
       copyInProgress: observable,
       copyProgress: observable,
       properties: observable,
-      contributions: observable
+      contributions: observable,
+      metadataReadProblem: observable
     });
 
     this.canDelete = canDelete;
@@ -683,27 +685,18 @@ export /*babel doesn't like this: abstract*/ class File {
       processedTextValue = normalizedGenre;
     }
 
-    // ---- DATES  --
-    if (xmlTag.toLowerCase().indexOf("date") > -1) {
-      const normalizedDateString =
-        this.normalizeIncomingDateString(processedTextValue);
-      if (this.properties.containsKey(fixedKey)) {
-        const existingDateField = this.properties.getValueOrThrow(fixedKey);
-        existingDateField.setValueFromString(normalizedDateString);
-        //console.log("11111" + key);
-      } else {
-        this.addDatePropertyFromString(fixedKey, normalizedDateString);
-      }
+    const existingField = this.properties.containsKey(fixedKey)
+      ? this.properties.getValueOrThrow(fixedKey)
+      : undefined;
+    if (existingField?.type === FieldType.Date) {
+      existingField.setValueFromString(
+        this.normalizeIncomingDateString(processedTextValue)
+      );
     }
-
-    // --- Text ----
-    // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
-    else if (this.properties.containsKey(fixedKey)) {
-      const v = this.properties.getValueOrThrow(fixedKey);
-      v.setValueFromString(processedTextValue);
-      //console.log("11111" + key);
+    // if it's already defined, let the existing field parse this into whatever structure it has
+    else if (existingField) {
+      existingField.setValueFromString(processedTextValue);
     } else {
-      //console.log("extra" + fixedKey + "=" + value);
       // otherwise treat it as a string
       this.addTextProperty(
         fixedKey,
@@ -767,7 +760,7 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
-        const xml: string = PatientFS.readFileSyncWithNotifyAndRethrow(
+        const xml: string = PatientFS.readFileSyncNoNotify(
           this.metadataFilePath
         );
 
@@ -782,18 +775,14 @@ export /*babel doesn't like this: abstract*/ class File {
           },
           (err, result) => {
             if (err) {
-              throw Error(
-                `There was a problem reading the XML in ${this.metadataFilePath}: ${err.message}`
-              );
+              throw err;
             }
             xmlAsObject = result;
           }
         );
         if (!xmlAsObject) {
-          // there was a sentry error report that seemed to implicate this being null
-          throw new Error(
-            `Got null xmlAsObject in readMetadataFile ${this.metadataFilePath}`
-          );
+          // xml2js gives null for an empty file (Sentry LAMETA-2RM)
+          throw new Error(t`The file is empty.`);
         }
         // that will have a root with one child, like "Session" or "Meta". Zoom in on that
         // so that we just have the object with its properties.
@@ -809,12 +798,13 @@ export /*babel doesn't like this: abstract*/ class File {
           const current = pkg.version;
           if (compareVersions(minimumVersion, current) === 1) {
             throw Error(
-              `The file ${this.metadataFilePath} is from a later version of lameta. It claims to require at least lameta version ${minimumVersion}. Please upgrade.`
+              t`It is from a later version of lameta and needs lameta ${minimumVersion} or later.`
             );
           }
         }
         //copies from this object (which is just the xml as an object) into this File object
         this.loadPropertiesFromXml(properties);
+        this.addDateParsingProblemsToNotes();
         // But otherwise, we don't want to spend time saving, notifying, and messing with the file change dates.
         this.clearDirty();
 
@@ -826,11 +816,13 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.recomputedChangeWatcher();
     } catch (err) {
-      NotifyException(
-        err,
-        `There was a problem reading ${this.metadataFilePath}`
-      );
-      throw err;
+      // The read or parse failed (0-byte or truncated file, corrupt XML, a
+      // file from a newer lameta, ...). The properties are empty/default, so
+      // save() refuses to write this file. The rest of the project still
+      // loads, and the file's list row and pane say what went wrong, so there
+      // is no notification here.
+      this.metadataReadProblem =
+        err instanceof Error ? err.message : String(err);
     } finally {
       sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
     }
@@ -864,6 +856,17 @@ export /*babel doesn't like this: abstract*/ class File {
     // DEBUG: Allow disabling saves for testing migration without affecting files
     if (userSettings.DisableSavingProjectData) {
       console.log(`[SAVE DISABLED] Would save ${this.metadataFilePath}`);
+      return;
+    }
+
+    // Never overwrite a file whose metadata we could not read. The in-memory
+    // properties are empty/default in that case (see readMetadataFile's
+    // catch), so writing them would destroy the user's real, possibly still
+    // recoverable, bytes on disk.
+    if (this.metadataReadProblem !== undefined) {
+      console.warn(
+        `Refusing to save ${this.metadataFilePath} because lameta could not read it; the file on disk was left untouched.`
+      );
       return;
     }
 
