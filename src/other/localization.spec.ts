@@ -58,3 +58,18 @@ describe("setUILanguage", () => {
     expect(userSettingsMock.UILanguage).toBe("pt-BR");
   });
 });
+// Needs the compiled catalogs ("yarn strings:compile").
+describe("the translations each UI language ships with", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+  it.each(["es", "fr", "fa", "id", "ru", "pt-BR", "zh-CN"])(
+    "%s translates field labels and the UI",
+    (code) => {
+      setUILanguage(code, false);
+      expect(i18n._("Birth Year")).not.toBe("Birth Year");
+      expect(i18n._("Title")).not.toBe("Title");
+      expect(i18n._("Add Files")).not.toBe("Add Files");
+    }
+  );
+});

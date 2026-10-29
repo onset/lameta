@@ -43,7 +43,7 @@ msgid "About lameta"
 msgstr "A propos de Lameta"
 
 msgid "Access"
-msgstr ""
+msgstr "Accès"
 
 msgid "Add \"{inputValue}\" as an unlisted language"
 msgstr ""
@@ -392,7 +392,7 @@ msgid "Language Code"
 msgstr "Code de la Langue"
 
 msgid "Languages"
-msgstr ""
+msgstr "Langues"
 
 msgid "Larger"
 msgstr "Plus grand"
