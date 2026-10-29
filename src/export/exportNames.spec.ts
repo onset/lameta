@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vite-plus/test";
-import { uniqueExportNames } from "./exportNames";
+import * as fs from "fs";
+import * as Path from "path";
+import * as temp from "temp";
+import { autorun, runInAction } from "mobx";
+import { sessionFolderExportName, uniqueExportNames } from "./exportNames";
+import { Project } from "../model/Project/Project";
+import { Session } from "../model/Project/Session/Session";
+import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 
 describe("uniqueExportNames", () => {
   it("numbers names that sanitize to the same name, and leaves an unchanged name alone", () => {
@@ -29,5 +36,49 @@ describe("uniqueExportNames", () => {
     expect(uniqueExportNames(["Tape_1_2.imdi"], ["Tape_1_2"], [".imdi"])).toEqual([
       "Tape_1_2_2.imdi",
     ]);
+  });
+});
+
+describe("sessionFolderExportName", () => {
+  temp.track();
+  const sessionXml = fs.readFileSync(
+    "sample data/Edolo sample/Sessions/ETR009/ETR009.session",
+    "utf8",
+  );
+  function makeSession(projectDir: string, folder: string): string {
+    const dir = Path.join(projectDir, "Sessions", folder);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(Path.join(dir, folder + ".session"), sessionXml);
+    return dir;
+  }
+
+  it.each([
+    ["Tape 1", "Tape_1"],
+    ["Récit 1", "Recit_1"],
+    ["故事 1", "XX_1"],
+  ])("tells a reaction about the name of %s only when that name changes", (folder, name) => {
+    const projectDir = Path.join(temp.mkdirSync("lameta export name"), "Names");
+    makeSession(projectDir, folder);
+    const project = Project.fromDirectory(projectDir);
+    const first = project.sessions.items[0];
+    const names: (string | undefined)[] = [];
+    const stop = autorun(() => names.push(sessionFolderExportName(project, first)));
+    const add = (other: string) =>
+      runInAction(() =>
+        project.sessions.items.push(
+          Session.fromDirectory(
+            makeSession(projectDir, other),
+            new EncounteredVocabularyRegistry(),
+          ),
+        ),
+      );
+
+    add("Interview");
+    expect(names).toEqual([name]);
+    // a folder already named what the first one sanitizes to keeps its name, so the first
+    // one is numbered
+    add(name);
+    expect(names).toEqual([name, `${name}_2`]);
+    stop();
   });
 });
