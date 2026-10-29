@@ -215,6 +215,18 @@ describe("a project with a folder whose metadata file cannot be read", () => {
     expectLeftOutAndUntouched(holder.loadedProject!, folder, before);
   });
 
+  it("names the folder of a person whose load fails with an error that does not name the file", () => {
+    const folder = addFolder(
+      "People",
+      "<Person><languages><language/></languages></Person>"
+    );
+    const before = snapshotFiles(folder);
+    const holder = new ProjectHolder();
+    holder.setProject(Project.fromDirectory(projectDir));
+    expect(holder.loadedProject).toBeTruthy();
+    expectLeftOutAndUntouched(holder.loadedProject!, folder, before);
+  });
+
   it("says nothing when every folder can be read", () => {
     const project = Project.fromDirectory(projectDir);
     expect(project.loadingError).toBeUndefined();

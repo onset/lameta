@@ -561,6 +561,7 @@ export class Project extends Folder {
         if (fs.lstatSync(dir).isDirectory()) {
           // console.log(dir);
           const session = this.loadFolderOrLeaveOut(
+            dir,
             () => Session.fromDirectory(dir, project.customVocabularies),
             foldersLeftOut
           );
@@ -578,6 +579,7 @@ export class Project extends Folder {
         if (fs.lstatSync(dir).isDirectory()) {
           //console.log(dir);
           const person = this.loadFolderOrLeaveOut(
+            dir,
             () =>
               Person.fromDirectory(
                 dir,
@@ -635,6 +637,7 @@ export class Project extends Folder {
   // from a newer lameta) stays out of the project, so lameta has nothing that could
   // save over those files.
   private static loadFolderOrLeaveOut<T>(
+    directory: string,
     load: () => T,
     foldersLeftOut: string[]
   ): T | undefined {
@@ -643,7 +646,11 @@ export class Project extends Folder {
     } catch (err) {
       safeCaptureException(err);
       console.error(err);
-      foldersLeftOut.push(err.message);
+      const reason = err?.message ?? String(err);
+      // most reasons already name the file; one that doesn't still has to name the folder
+      foldersLeftOut.push(
+        reason.includes(directory) ? reason : `${directory}: ${reason}`
+      );
       return undefined;
     }
   }
@@ -767,6 +774,7 @@ export class Project extends Folder {
         const dir = Path.join(sessionsDir, childName);
 
         const session = this.loadFolderOrLeaveOut(
+          dir,
           () => Session.fromDirectory(dir, project.customVocabularies),
           foldersLeftOut
         );
@@ -803,6 +811,7 @@ export class Project extends Folder {
         const dir = Path.join(peopleDir, childName);
 
         const person = this.loadFolderOrLeaveOut(
+          dir,
           () =>
             Person.fromDirectory(
               dir,
