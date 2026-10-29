@@ -13,7 +13,7 @@ function editorOf(page: Page, fieldKey: string): Locator {
 async function typeAndLeave(page: Page, fieldKey: string, text: string) {
   const editor = editorOf(page, fieldKey);
   await editor.click();
-  await page.keyboard.press("Control+A");
+  await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type(text);
   await page.keyboard.press("Tab");
 }

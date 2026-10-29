@@ -169,7 +169,7 @@ test.describe("Popup menus", () => {
   test("Copy copies the selection to the clipboard", async () => {
     await titleField().click();
     await titleField().fill("copy me");
-    await titleField().press("Control+a");
+    await titleField().press("ControlOrMeta+a");
     const menu = await rightClickTitle();
     expect(labels(menu)).toEqual(["Cut", "Copy", "Paste", "Select All"]);
     // The page has updated many times by now, and each update sets up the context menu
@@ -192,7 +192,7 @@ test.describe("Popup menus", () => {
   test("Cut removes the selection and puts it on the clipboard", async () => {
     await titleField().click();
     await titleField().fill("cut me");
-    await titleField().press("Control+a");
+    await titleField().press("ControlOrMeta+a");
     await rightClickTitle();
     await lameta.clickPopupMenuItem("Cut");
     await expect(titleField()).toHaveText("");
@@ -612,8 +612,11 @@ test.describe("Quitting", () => {
 
       await lameta.mockShowOpenDialog([source]);
       await page.getByRole("button", { name: "Add Files" }).click();
-      const destination = Path.join(sessionDir, Path.basename(source));
-      await expect.poll(() => fs.existsSync(destination)).toBe(true);
+      // rsync, which copies on macOS and Linux, writes to a hidden file whose name holds the
+      // file's name, and renames it only when the copy is done
+      await expect
+        .poll(() => fs.readdirSync(sessionDir).some((n) => n.includes(Path.basename(source))))
+        .toBe(true);
 
       await closeWindow();
       await expect
