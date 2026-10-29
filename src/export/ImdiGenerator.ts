@@ -928,7 +928,13 @@ export default class ImdiGenerator {
         : 1
     );
     sortedByFileNames.forEach((f: File) => {
-      if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+      // only the extension matters here, and this name has the same one as the
+      // actual file without reading a .link file, which may have been deleted
+      if (
+        ImdiGenerator.shouldIncludeFile(
+          f.getNameToUseWhenExportingUsingTheActualFile()
+        )
+      ) {
         const status = getStatusOfFile(f);
         if (status.missing) {
           // At the moment we're not even exporting metadata if the file is
