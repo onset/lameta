@@ -530,10 +530,7 @@ export default class ImdiBundler {
         imdiMode === IMDIMode.OPEX ? "ConsentDocuments" + extensionWithDot : undefined,
       );
       consentFileCopies.forEach(({ original, copy }) => {
-        if (
-          !original.isDeletedLinkFile() &&
-          ImdiGenerator.shouldIncludeFile(original.getActualFilePath())
-        ) {
+        if (ImdiGenerator.shouldIncludeFile(original.getActualFilePath())) {
           filesToCopy.push({
             source: original.getActualFilePath(),
             destination: Path.join(destinationFolderPath, copyExportNames.get(copy)!),
@@ -689,9 +686,13 @@ export default class ImdiBundler {
                 // copy over the actual consent files
                 // two people can have consent files of the same name, so a copy may get a
                 // numbered name; two references can lead to the same person, whose files
-                // are then copied once
+                // are then copied once. A linked file whose .link file was deleted has
+                // nothing to copy.
                 consentFiles.forEach((file) => {
-                  if (!consentFileCopies.some((c) => c.original === file)) {
+                  if (
+                    !file.isDeletedLinkFile() &&
+                    !consentFileCopies.some((c) => c.original === file)
+                  ) {
                     consentFileCopies.push({
                       original: file,
                       copy: dummySession.copyInOneProjectFile(file, outputFolder),

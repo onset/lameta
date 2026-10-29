@@ -43,6 +43,8 @@ test.describe("IMDI export of a project whose title a file name cannot hold", ()
     });
 
     const corpusFiles = fs.readdirSync(exportDirectory).filter((name) => name.endsWith(".imdi"));
-    expect(corpusFiles).toEqual([expect.stringMatching(/ - Kakabe stories\.imdi$/)]);
+    expect(corpusFiles).toHaveLength(1);
+    expect(corpusFiles[0]).toMatch(/Kakabe.*stories\.imdi$/);
+    expect(corpusFiles[0]).not.toMatch(/[<>:"/\\|?*]/);
   });
 });

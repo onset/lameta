@@ -81,3 +81,60 @@ describe("IMDI export of a session whose .link file was deleted", () => {
     expect(copied.some((name) => name.startsWith("clip.mp3"))).toBe(false);
   });
 });
+
+describe("IMDI export of a person whose linked consent file's .link file was deleted", () => {
+  beforeAll(() => {
+    setupLanguageFinderForTests();
+  });
+
+  it("exports without copying the consent file", async () => {
+    const projectDirectory = Path.join(temp.mkdirSync("deletedConsentLink"), "Consenty");
+    const sessionDirectory = Path.join(projectDirectory, "Sessions", "Talk");
+    fs.mkdirpSync(sessionDirectory);
+    fs.writeFileSync(
+      Path.join(projectDirectory, "Consenty.sprj"),
+      `<?xml version="1.0" encoding="utf-8"?><Project><Title>Consenty</Title></Project>`,
+    );
+    fs.writeFileSync(
+      Path.join(sessionDirectory, "Talk.session"),
+      `<Session><id type="string">Talk</id><contributions type="xml"><contributor><name>Awi Heole</name><role>speaker</role></contributor></contributions></Session>`,
+    );
+    const personDirectory = Path.join(projectDirectory, "People", "Awi_Heole");
+    fs.mkdirpSync(personDirectory);
+    fs.copyFileSync(
+      "sample data/Edolo sample/People/Awi_Heole/Awi_Heole.person",
+      Path.join(personDirectory, "Awi_Heole.person"),
+    );
+    const project = Project.fromDirectory(projectDirectory);
+    expect(project.loadingError).toBeUndefined();
+    const mediaDirectory = temp.mkdirSync("deletedConsentLinkMedia");
+    setMediaFolderOrEmptyForThisProjectAndMachine(mediaDirectory);
+    const media = Path.join(mediaDirectory, "Awi_Heole_Consent.jpg");
+    fs.writeFileSync(media, "pretend consent");
+    const person = project.persons.items[0];
+    const link = OtherFile.CreateLinkFile(
+      media,
+      new EncounteredVocabularyRegistry(),
+      personDirectory,
+    );
+    person.files.push(link);
+    expect(link.isLabeledAsConsent()).toBe(true);
+
+    fs.removeSync(link.pathInFolderToLinkFileOrLocalCopy);
+
+    const generator = ImdiBundler.generateExportData(
+      project,
+      temp.mkdirSync("deletedConsentLinkImdi"),
+      IMDIMode.RAW_IMDI,
+      true,
+      () => true,
+    );
+    const copied: string[] = [];
+    for (let r = await generator.next(); ; r = await generator.next()) {
+      const filesToCopy = "filesToCopy" in r.value ? r.value.filesToCopy : [];
+      copied.push(...filesToCopy.map((c) => Path.basename(c.source)));
+      if (r.done) break;
+    }
+    expect(copied.some((name) => name.includes("Consent"))).toBe(false);
+  });
+});

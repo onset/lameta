@@ -34,26 +34,42 @@ const appArgFlags = args
 
 // --packaged means "whatever electron-builder just wrote into release/", so that one command
 // works on either platform. electron-builder names the Mac folder after the architecture it
-// built (mac-universal, mac-arm64, ...), so the .app is looked up rather than spelled out.
+// built (mac-universal, mac-arm64, ...), and electron-builder.config.js names an alpha or beta
+// build "lameta alpha" or "lameta beta", so the app is looked up rather than spelled out.
+const packagedAppName = /^lameta( alpha| beta)?$/;
 function findPackagedApp(): string | undefined {
   const releaseDir = path.resolve(process.cwd(), "release");
+  if (!fs.existsSync(releaseDir)) return undefined;
+  const binaries: string[] = [];
   if (process.platform === "win32") {
-    return path.join(releaseDir, "win-unpacked", "lameta.exe");
+    const dir = path.join(releaseDir, "win-unpacked");
+    if (fs.existsSync(dir)) {
+      for (const entry of fs.readdirSync(dir)) {
+        if (entry.endsWith(".exe") && packagedAppName.test(entry.slice(0, -4))) {
+          binaries.push(path.join(dir, entry));
+        }
+      }
+    }
+  } else if (process.platform === "darwin") {
+    for (const entry of fs.readdirSync(releaseDir)) {
+      const dir = path.join(releaseDir, entry);
+      if (!fs.statSync(dir).isDirectory()) continue;
+      for (const app of fs.readdirSync(dir)) {
+        const name = app.slice(0, -".app".length);
+        if (app.endsWith(".app") && packagedAppName.test(name)) {
+          binaries.push(path.join(dir, app, "Contents", "MacOS", name));
+        }
+      }
+    }
   }
-  if (process.platform === "darwin") {
-    if (!fs.existsSync(releaseDir)) return undefined;
-    // There can be several: building for one architecture and later for another leaves
-    // release/mac-arm64 beside release/mac-universal. Take the most recently written, so a
-    // check never silently exercises a build from an earlier run.
-    const candidates = fs
-      .readdirSync(releaseDir)
-      .map((entry) => path.join(releaseDir, entry, "lameta.app", "Contents", "MacOS", "lameta"))
-      .filter((binary) => fs.existsSync(binary))
-      .map((binary) => ({ binary, when: fs.statSync(binary).mtimeMs }))
-      .sort((a, b) => b.when - a.when);
-    return candidates.length > 0 ? candidates[0].binary : undefined;
-  }
-  return undefined;
+  // There can be several: building for one architecture or channel and later for another
+  // leaves both in release/. Take the most recently written, so a check never silently
+  // exercises a build from an earlier run.
+  const newest = binaries
+    .filter((binary) => fs.existsSync(binary))
+    .map((binary) => ({ binary, when: fs.statSync(binary).mtimeMs }))
+    .sort((a, b) => b.when - a.when);
+  return newest.length > 0 ? newest[0].binary : undefined;
 }
 
 const usage = () => {
