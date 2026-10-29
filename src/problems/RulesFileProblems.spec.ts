@@ -8,6 +8,7 @@ import { Session } from "../model/Project/Session/Session";
 import { Contribution } from "../model/file/File";
 import { makeLametaSourceReader } from "../export/lametaSourceComment";
 import { RulesFileProblems } from "./RulesFileProblems";
+import { startedTyping, stoppedTyping } from "./whileTyping";
 import ImdiGenerator from "../export/ImdiGenerator";
 import { rulesSandboxMain } from "./rulesSandboxMain";
 
@@ -114,6 +115,51 @@ describe("RulesFileProblems", () => {
     await vi.advanceTimersByTimeAsync(1000);
     expect(runner.problems[1].message).toBe("Title is Changed");
     expect(runner.timing.sessionsGenerated).toBe(1);
+
+    stop();
+  });
+
+  it("runs again only once the user leaves the field they are typing in", async () => {
+    vi.useFakeTimers();
+    const project = loadEdoloUnderElarWithTwoSessions();
+    const runner = makeRunnerThatReportsEachSession();
+    const stop = runner.watch(project);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(runner.timing.sessionsGenerated).toBe(2);
+
+    const editor = {};
+    startedTyping(editor);
+    const etr010 = project.sessions.items[1] as Session;
+    for (const text of ["C", "Ch", "Cha", "Chan"]) {
+      etr010.properties.setText("title", text);
+      await vi.advanceTimersByTimeAsync(1000);
+    }
+    await vi.advanceTimersByTimeAsync(5000);
+    // the last run was the first one
+    expect(runner.timing.sessionsGenerated).toBe(2);
+
+    stoppedTyping(editor);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(runner.timing.sessionsGenerated).toBe(1);
+
+    stop();
+  });
+
+  it("keeps the same lists when a run finds the same problems", async () => {
+    vi.useFakeTimers();
+    const project = loadEdoloUnderElarWithTwoSessions();
+    const runner = makeRunnerThatReportsEachSession();
+    const stop = runner.watch(project);
+    await vi.advanceTimersByTimeAsync(10);
+    const problems = runner.problems;
+    const errors = runner.errors;
+    expect(problems.length).toBe(2);
+
+    (project.sessions.items[1] as Session).properties.setText("title", "Changed");
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(runner.timing.sessionsGenerated).toBe(1);
+    expect(runner.problems).toBe(problems);
+    expect(runner.errors).toBe(errors);
 
     stop();
   });

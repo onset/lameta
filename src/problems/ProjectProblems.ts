@@ -1,8 +1,10 @@
-import { autorun, makeObservable, observable, runInAction } from "mobx";
+import { autorun, makeObservable, observable, runInAction, untracked } from "mobx";
 import { Project } from "../model/Project/Project";
 import { Field } from "../model/field/Field";
 import { checkProjectFields, IFieldProblem } from "./fieldRules";
 import { checkProjectFolders } from "./lametaChecks";
+import { keepIfSame } from "./problems";
+import { afterTyping } from "./whileTyping";
 
 // how long to wait after the last change before checking again
 const kRecheckDelayMilliseconds = 400;
@@ -30,39 +32,50 @@ export class ProjectProblems {
   }
 
   // Checks now and again whenever a value that the check read changes, waiting until
-  // the user pauses. Returns a function that stops it.
+  // the user pauses and has left the text field they are typing in. Returns a
+  // function that stops it.
   public watch(project: Project): () => void {
     let timer: ReturnType<typeof setTimeout> | undefined;
+    let cancelWait = () => {};
     let first = true;
     const dispose = autorun(
       () => {
         const start = performance.now();
-        const problems = [...checkProjectFields(project), ...checkProjectFolders(project)];
+        const found = [...checkProjectFields(project), ...checkProjectFolders(project)];
         const elapsed = performance.now() - start;
-        const byField = new Map<Field, IFieldProblem[]>();
-        for (const p of problems) {
-          if (!p.field) continue;
-          byField.set(p.field, [...(byField.get(p.field) ?? []), p]);
-        }
+        // untracked, or each new list would make the check due again
+        const problems = keepIfSame(
+          untracked(() => this.problems),
+          found,
+        );
         runInAction(() => {
+          this.checkMilliseconds = elapsed;
+          if (problems === this.problems) return;
+          const byField = new Map<Field, IFieldProblem[]>();
+          for (const p of problems) {
+            if (!p.field) continue;
+            byField.set(p.field, [...(byField.get(p.field) ?? []), p]);
+          }
           this.problemsByField = byField;
           this.problems = problems;
-          this.checkMilliseconds = elapsed;
         });
       },
       {
         scheduler: (run) => {
           if (timer) clearTimeout(timer);
+          cancelWait();
           // the first check runs at once, so the problems show as soon as the project does
           if (first) {
             first = false;
             run();
-          } else timer = setTimeout(run, kRecheckDelayMilliseconds);
+          } else
+            timer = setTimeout(() => (cancelWait = afterTyping(run)), kRecheckDelayMilliseconds);
         },
       },
     );
     return () => {
       if (timer) clearTimeout(timer);
+      cancelWait();
       dispose();
       runInAction(() => {
         this.problemsByField = new Map();

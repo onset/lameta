@@ -95,6 +95,8 @@ async function addSong(lameta: LametaE2ERunner, page: Page) {
   await page.getByRole("button", { name: "Add Files" }).click();
   const mediaRow = page.locator(".fileList .rt-tr", { hasText: "song.mp3" }).first();
   await expect(mediaRow).toBeVisible({ timeout: 10000 });
+  // a click on a file that is still being copied is ignored
+  await expect(mediaRow).not.toHaveClass(/copyPending/, { timeout: 10000 });
   await mediaRow.click();
 }
 
@@ -191,7 +193,12 @@ test.describe("Problems in a brand-new ELAR project", () => {
 
     await editorOf(page, "title").click();
     await page.keyboard.type("Fishing at night");
-    // the problem and the highlight go once the check has run again
+    // nothing is checked again while the user is still in the field
+    await page.waitForTimeout(2500);
+    await expect(titleRequired).toHaveCount(1);
+    await expect(highlighted).toHaveCount(1);
+    // the problem and the highlight go once the user leaves it
+    await page.keyboard.press("Tab");
     await expect(titleRequired).toHaveCount(0, { timeout: 10000 });
     await expect(highlighted).toHaveCount(0, { timeout: 10000 });
   });
@@ -302,6 +309,8 @@ test.describe("Problems in a brand-new ELAR project", () => {
   test("from the Sessions tab, a click on a person's problems goes to the person's field and to their languages", async () => {
     await project.goToPeople();
     await project.addPerson("Nav Person");
+    // the person's problems are checked once the user leaves the name
+    await page.keyboard.press("Tab");
     await openSidebar(page);
     const person = groupOf(page, "person:Nav Person");
     const birthYearRequired = person.locator(entries(page, "required", "birthYear"));
@@ -374,6 +383,44 @@ test.describe("Problems in a brand-new ELAR project", () => {
     // with the mouse over the list, nothing is dimmed
     await projectGroup.hover();
     await expect.poll(() => opacity(projectGroup)).toBe(1);
+  });
+
+  test("the sidebar stays as it was while the user types a session's id, and catches up after", async () => {
+    await newSession(project, page, "NAV-TYPING");
+    await openSidebar(page);
+    await expect(groupOf(page, "session:NAV-TYPING")).toBeVisible({ timeout: 15000 });
+    await editorOf(page, "id").click();
+    await page.keyboard.press("End");
+    // count every change to the sidebar while the user types
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__sidebarChanges = 0;
+      w.__sidebarObserver = new MutationObserver((records) => {
+        w.__sidebarChanges += records.length;
+      });
+      w.__sidebarObserver.observe(document.querySelector("[data-testid='problems-sidebar']")!, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        characterData: true,
+      });
+    });
+    for (const key of "XYZ") {
+      await page.keyboard.type(key);
+      await page.waitForTimeout(300);
+    }
+    await page.waitForTimeout(1500);
+    const changes = await page.evaluate(() => {
+      const w = window as any;
+      w.__sidebarObserver.disconnect();
+      return w.__sidebarChanges;
+    });
+    expect(changes).toBe(0);
+    await expect(groupOf(page, "session:NAV-TYPING")).toBeVisible();
+    await expect(groupOf(page, "session:NAV-TYPINGXYZ")).toHaveCount(0);
+    await page.keyboard.press("Tab");
+    await expect(groupOf(page, "session:NAV-TYPINGXYZ")).toBeVisible({ timeout: 15000 });
+    await expect(groupOf(page, "session:NAV-TYPING")).toHaveCount(0);
   });
 
   test("Tab goes down the left half of the session form, then the right", async () => {

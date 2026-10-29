@@ -65,6 +65,9 @@ export { win as mainWindow };
 function isExternalUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
+    // in development lameta itself is served over http, and a reload navigates to it
+    const devServer = process.env.VITE_DEV_SERVER_URL;
+    if (devServer && parsed.origin === new URL(devServer).origin) return false;
     return ["http:", "https:", "mailto:"].includes(parsed.protocol);
   } catch {
     return false;
