@@ -40,7 +40,7 @@ export default class LametaMenu {
   public updateMainMenu(sessionMenu: any, peopleMenu: any) {
     log.info("updateMainMenu");
 
-    const haveProject = this.homePage.projectHolder.project !== null;
+    const haveProject = this.homePage.projectHolder.loadedProject !== null;
     // console.log(
     //   `updating Main Menu. haveProject=${haveProject.toLocaleString()}`
     // );
