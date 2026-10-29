@@ -185,6 +185,31 @@ describe("ELAR rules.js", () => {
     expect(found("genreTranslation")).toEqual([]);
   });
 
+  it("leaves English out of the genre and role checks when English is not a metadata language", async () => {
+    const rules = await import("../../archive-configurations/ELAR/rules.js");
+    // what lameta exports when Spanish is the only metadata language
+    const spanishOnly = session(
+      "ETR020",
+      `<MDGroup><Content><Genre LanguageId="ISO639-3:spa">Mitología</Genre></Content>
+      <Actors><Actor><Role LanguageId="ISO639-3:spa">Hablante</Role><Name>Awi</Name><FullName>Awi Heole</FullName></Actor></Actors></MDGroup>`,
+    );
+    const check = (metadataLanguages: string[]) =>
+      rulesSandboxMain(
+        {
+          rulesSource: "(the module is passed in directly)",
+          sessions: [{ sessionId: "ETR020", xml: spanishOnly }],
+          metadataLanguages,
+          maxProblems: 1000,
+        },
+        makeLametaSourceReader,
+        async () => rules,
+      ).then((o) => o.problems.map((p) => p.checkId).filter((id) => /genre|ActorRole/.test(id)));
+    // the field rules report, on the project, that English is not a metadata language
+    expect(await check(["es"])).toEqual([]);
+    // "Mitología" is not compared with ELAR's English list
+    expect(await check(["en", "es"])).toEqual(["checkActorRole/english"]);
+  });
+
   it("wants a translated access description for S", () => {
     expect(found("accessDescriptionTranslation")).toEqual([["ETR009", "warning"]]);
   });

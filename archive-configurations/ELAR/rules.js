@@ -147,9 +147,12 @@ export function checkSession(doc, report, project) {
   const isConsent = sessionName === "ConsentDocuments";
   // ELAR: if there is no second metadata language, do not expect a translation
   const expectTranslations = project.metadataLanguages.some((tag) => tag !== "en");
+  // The IMDI has English only when it is a metadata language. When it is not, the
+  // field rules report that once, on the project's Metadata Languages.
+  const expectEnglish = project.metadataLanguages.includes("en");
 
   checkResources(session, sessionName, isConsent, report);
-  checkActors(session, expectTranslations, report);
+  checkActors(session, expectTranslations, expectEnglish, report);
   checkGenres(session, expectTranslations, report);
   if (expectTranslations) checkAccessDescriptionTranslations(session, report);
 }
@@ -270,7 +273,7 @@ function checkResources(session, sessionName, isConsent, report) {
   }
 }
 
-function checkActors(session, expectTranslations, report) {
+function checkActors(session, expectTranslations, expectEnglish, report) {
   const actorsElement = first(session, "Actors");
   if (!actorsElement) return;
   const actors = all(actorsElement, "Actor");
@@ -295,6 +298,7 @@ function checkActors(session, expectTranslations, report) {
     const role = readMultilingual(roles);
     if (role.usesLanguageId) {
       if (!role.hasEnglish) {
+        if (!expectEnglish) continue;
         report_(
           report,
           "checkActorRole/english",
@@ -335,7 +339,8 @@ function checkGenres(session, expectTranslations, report) {
   const genres = children(content, "Genre");
   if (genres.length === 0) return;
   const genre = readMultilingual(genres);
-  const english = genre.english;
+  // a genre in other languages alone has nothing to compare with ELAR's English list
+  const english = genre.hasEnglish ? genre.english : "";
   if (!english || english === "Unknown" || english === "Unspecified") return;
   // ELAR's validator reports this as a warning
   if (!kElarGenresLowerCase.includes(english.toLowerCase())) {

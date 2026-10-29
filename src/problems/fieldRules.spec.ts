@@ -122,6 +122,23 @@ describe("checkField", () => {
     set.setText("title", "");
     expect(check(set, "title")).toEqual(["englishRequired"]);
   });
+  it("englishRequired on a list of languages", () => {
+    const set = fieldSet({
+      key: "metadataLanguages",
+      englishLabel: "Metadata Languages",
+      type: "languageChoices",
+      englishRequired: true,
+      value: "spa:Spanish",
+    });
+    expect(check(set, "metadataLanguages")).toEqual(["englishRequired"]);
+    set.setText("metadataLanguages", "spa:Spanish;eng:English");
+    expect(check(set, "metadataLanguages")).toEqual([]);
+    set.setText("metadataLanguages", "en;es");
+    expect(check(set, "metadataLanguages")).toEqual([]);
+    // no metadata languages means English alone
+    set.setText("metadataLanguages", "");
+    expect(check(set, "metadataLanguages")).toEqual([]);
+  });
   it("an empty field that is required is reported once, as required", () => {
     const set = fieldSet({
       key: "title",
@@ -368,6 +385,24 @@ describe("checkProjectFields on the Edolo sample under ELAR", () => {
     } finally {
       genreField.definition.translationRequired = undefined;
       session.properties.setText("genre", genre);
+      project.properties.setText("metadataLanguages", metadataLanguages);
+    }
+  });
+
+  it("requires English among the metadata languages, and points at them", () => {
+    const metadataLanguages = project.properties.getTextStringOrEmpty("metadataLanguages");
+    const metadataLanguageProblems = () =>
+      checkProjectFields(project)
+        .filter((p) => p.target.fieldKey === "metadataLanguages")
+        .map((p) => [p.checkId, p.severity, p.target]);
+    try {
+      project.properties.setText("metadataLanguages", "es");
+      expect(metadataLanguageProblems()).toEqual([
+        ["englishRequired", "error", { folderType: "project", fieldKey: "metadataLanguages" }],
+      ]);
+      project.properties.setText("metadataLanguages", "es;en");
+      expect(metadataLanguageProblems()).toEqual([]);
+    } finally {
       project.properties.setText("metadataLanguages", metadataLanguages);
     }
   });

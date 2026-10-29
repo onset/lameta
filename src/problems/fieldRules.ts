@@ -246,6 +246,17 @@ export function checkField(
       ),
     });
 
+  // English must be one of the languages of a list, such as the metadata languages,
+  // where an empty list means English alone
+  const isLanguageList = d.type === "languageChoices";
+  if (
+    isLanguageList &&
+    d.englishRequired &&
+    !Project.parseLanguagesToSlots(value).some((slot) => slot.tag === "en" || slot.tag === "eng")
+  ) {
+    addEnglishRequired();
+  }
+
   if (listItemCount !== undefined) {
     if (listItemCount === 0 && d.required) {
       addRequired();
@@ -283,7 +294,7 @@ export function checkField(
         );
       }
     }
-    if (broken.length === 0 && d.englishRequired && fallbackValue === "") {
+    if (broken.length === 0 && d.englishRequired && !isLanguageList && fallbackValue === "") {
       addEnglishRequired();
     }
     if (broken.length === 0 && d.minItems) {
@@ -350,7 +361,11 @@ export function checkField(
       addMinItems(d.minItems);
     }
   }
-  if (d.englishRequired && field.getTextAxisVirtual("en", metadataSlotTags).trim() === "") {
+  if (
+    d.englishRequired &&
+    !isLanguageList &&
+    field.getTextAxisVirtual("en", metadataSlotTags).trim() === ""
+  ) {
     addEnglishRequired();
   }
   // the project's metadata languages are the ones a translation can be in; with

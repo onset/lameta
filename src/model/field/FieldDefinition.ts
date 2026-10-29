@@ -66,7 +66,8 @@ export class FieldDefinition {
   public maxLength?: number;
   // for comma-separated fields such as topic and keyword
   public minItems?: number;
-  // a multilingual field must have an English value
+  // a multilingual field must have an English value, and a list of languages must
+  // include English
   public englishRequired?: boolean;
   // a multilingual field must have a value in a language other than English
   public translationRequired?: boolean;
