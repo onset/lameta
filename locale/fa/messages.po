@@ -45,7 +45,7 @@ msgid "About lameta"
 msgstr "درباره لامتا"
 
 msgid "Access"
-msgstr ""
+msgstr "دسترسی"
 
 msgid "Add \"{inputValue}\" as an unlisted language"
 msgstr ""
@@ -394,7 +394,7 @@ msgid "Language Code"
 msgstr "کد زبانی"
 
 msgid "Languages"
-msgstr ""
+msgstr "زبانها"
 
 msgid "Larger"
 msgstr "بزرگتر"
