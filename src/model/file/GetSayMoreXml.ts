@@ -2,7 +2,6 @@ import * as xmlbuilder from "xmlbuilder";
 import { FieldSet } from "../field/FieldSet";
 import { Field } from "../field/Field";
 import { File, Contribution } from "./File";
-import assert from "assert";
 import { NotifyException } from "../../components/Notify";
 import { override } from "mobx";
 
@@ -265,11 +264,6 @@ function writeField(
     // );
     writeDate(root, tag, value);
   } else {
-    assert.ok(
-      field.key.indexOf("date") === -1 || type === "date",
-      "SHOULDN'T " + field.key + " BE A DATE?"
-    );
-
     // output comment
     if (comment) {
       root.comment(comment);

@@ -12,3 +12,384 @@ msgstr ""
 "Last-Translator: \n"
 "Language-Team: \n"
 "Plural-Forms: \n"
+
+
+msgctxt "lameta/person/birthYear"
+msgid "Birth Year"
+msgstr "Ano de nascimento"
+
+msgctxt "lameta/person/code"
+msgid "Code"
+msgstr "Código"
+
+msgctxt "lameta/person/customFields"
+msgid "Custom Fields"
+msgstr "Campos Personalizados"
+
+msgctxt "lameta/person/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr "Use vírgulas se você quiser valores múltiplos. Para remover um campo personalizado, limpe o valor em todos os lugares onde você o utilizou e, em seguida, reinicie lameta."
+
+msgctxt "lameta/person/description"
+msgid "Description"
+msgstr "Descrição"
+
+msgctxt "lameta/person/education"
+msgid "Education"
+msgstr "Educação"
+
+msgctxt "lameta/person/ethnicGroup"
+msgid "Ethnic Group"
+msgstr "Grupo Étnico"
+
+msgctxt "lameta/person/gender"
+msgid "Gender"
+msgstr "Gênero"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Unknown"
+msgstr "Desconhecido"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Male"
+msgstr "Masculino"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Female"
+msgstr "Feminino"
+
+msgctxt "lameta/person/gender/choices"
+msgid "Other"
+msgstr "Outro"
+
+msgctxt "lameta/person/languages"
+msgid "Languages"
+msgstr "Línguas"
+
+msgctxt "lameta/person/name"
+msgid "Full Name"
+msgstr "Nome Completo"
+
+msgctxt "lameta/person/nickname"
+msgid "Nickname"
+msgstr "Apelido"
+
+msgctxt "lameta/person/primaryOccupation"
+msgid "Primary Occupation"
+msgstr "Ocupação Principal"
+
+msgctxt "lameta/project/continent"
+msgid "Continent"
+msgstr "Continente"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Africa"
+msgstr "África"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Asia"
+msgstr "Ásia"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Australia"
+msgstr "Austrália"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Europe"
+msgstr "Europa"
+
+msgctxt "lameta/project/continent/choices"
+msgid "North-America"
+msgstr "América do Norte"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Middle-America"
+msgstr "América Central"
+
+msgctxt "lameta/project/continent/choices"
+msgid "Oceania"
+msgstr "Oceania"
+
+msgctxt "lameta/project/continent/choices"
+msgid "South-America"
+msgstr "América do Sul"
+
+msgctxt "lameta/project/country"
+msgid "Country"
+msgstr "País"
+
+msgctxt "lameta/project/fundingProjectTitle"
+msgid "Funding Project Title"
+msgstr "Título do Projeto Patrocinador"
+
+msgctxt "lameta/project/grantId"
+msgid "Grant ID"
+msgstr "ID do Financiamento"
+
+msgctxt "lameta/project/location"
+msgid "Location/Address"
+msgstr "Localização/Endereço"
+
+msgctxt "lameta/project/name"
+msgid "Name"
+msgstr "Nome"
+
+msgctxt "lameta/project/projectDescription"
+msgid "Description"
+msgstr "Descrição"
+
+msgctxt "lameta/project/region"
+msgid "Region"
+msgstr "Região"
+
+msgctxt "lameta/project/SubjectLanguages"
+msgid "Subject Languages"
+msgstr "Línguas temáticas"
+
+msgctxt "lameta/project/title"
+msgid "Title"
+msgstr "Título"
+
+msgctxt "lameta/project/WorkingLanguages"
+msgid "Working Languages"
+msgstr "Línguas de trabalho"
+
+msgctxt "lameta/projectDocuments/access"
+msgid "Access"
+msgstr "Acesso"
+
+msgctxt "lameta/projectDocuments/accessDescription"
+msgid "Access Explanation"
+msgstr "Explicação de Acesso"
+
+msgctxt "lameta/projectDocuments/accessDescription/description"
+msgid "If the access is not open/free, use this to explain why."
+msgstr "Se o acesso não for aberto/gratuito, use isto para explicar o motivo."
+
+msgctxt "lameta/session/access"
+msgid "Access"
+msgstr "Acesso"
+
+msgctxt "lameta/session/accessDescription"
+msgid "Access Explanation"
+msgstr "Explicação de Acesso"
+
+msgctxt "lameta/session/accessDescription/description"
+msgid "If the access is not open/free, use this to explain why."
+msgstr "Se o acesso não for aberto/gratuito, use isto para explicar o motivo."
+
+msgctxt "lameta/session/customFields"
+msgid "Custom Fields"
+msgstr "Campos Personalizados"
+
+msgctxt "lameta/session/customFields/tipOnUsingThisField"
+msgid "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta."
+msgstr "Use vírgulas se você quiser valores múltiplos. Para remover um campo personalizado, limpe o valor em todos os lugares onde você o utilizou e, em seguida, reinicie lameta."
+
+msgctxt "lameta/session/date"
+msgid "Date"
+msgstr "Data"
+
+msgctxt "lameta/session/description"
+msgid "Description"
+msgstr "Descrição"
+
+msgctxt "lameta/session/genre"
+msgid "Genre"
+msgstr "Gênero"
+
+msgctxt "lameta/session/id"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "lameta/session/involvement"
+msgid "Researcher Involvement"
+msgstr "Envolvimento do Pesquisador"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "elicited"
+msgstr "elicitado"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "non-elicited"
+msgstr "não-elicitado"
+
+msgctxt "lameta/session/involvement/choices"
+msgid "no-observer"
+msgstr "sem-observador"
+
+msgctxt "lameta/session/keyword/separatorWithCommaInstructions"
+msgid "Separate with commas. Note that individual keywords cannot contain a comma."
+msgstr "Separar com vírgulas. Note que palavras-chave individuais não podem conter uma vírgula."
+
+msgctxt "lameta/session/languages"
+msgid "Subject Languages"
+msgstr "Línguas temáticas"
+
+msgctxt "lameta/session/location"
+msgid "Neighborhood/Town/Village"
+msgstr "Bairro/Cidade"
+
+msgctxt "lameta/session/location/description"
+msgid "A location that is relevant within the group you are studying"
+msgstr "Um local que seja relevante dentro do grupo que você está estudando"
+
+msgctxt "lameta/session/locationContinent"
+msgid "Continent"
+msgstr "Continente"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Africa"
+msgstr "África"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Asia"
+msgstr "Ásia"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Australia"
+msgstr "Austrália"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Europe"
+msgstr "Europa"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "North-America"
+msgstr "América do Norte"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Middle-America"
+msgstr "América Central"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "Oceania"
+msgstr "Oceania"
+
+msgctxt "lameta/session/locationContinent/choices"
+msgid "South-America"
+msgstr "América do Sul"
+
+msgctxt "lameta/session/locationCountry"
+msgid "Country"
+msgstr "País"
+
+msgctxt "lameta/session/locationRegion"
+msgid "Region"
+msgstr "Região"
+
+msgctxt "lameta/session/participants"
+msgid "People"
+msgstr "Pessoas"
+
+msgctxt "lameta/session/planningType"
+msgid "Planning Type"
+msgstr "Tipo de planejamento"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "spontaneous"
+msgstr "espontâneo"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "semi-spontaneous"
+msgstr "semi-espontâneo"
+
+msgctxt "lameta/session/planningType/choices"
+msgid "planned"
+msgstr "planejado"
+
+msgctxt "lameta/session/socialContext"
+msgid "Social Context"
+msgstr "Contexto Social"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "family"
+msgstr "família"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "private"
+msgstr "privado"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "public"
+msgstr "público"
+
+msgctxt "lameta/session/socialContext/choices"
+msgid "controlled environment"
+msgstr "ambiente controlado"
+
+msgctxt "lameta/session/status"
+msgid "Status"
+msgstr "Status"
+
+msgctxt "lameta/session/status/choices"
+msgid "Incoming"
+msgstr "Novo"
+
+msgctxt "lameta/session/status/choices"
+msgid "Finished"
+msgstr "Concluído"
+
+msgctxt "lameta/session/status/choices"
+msgid "Skipped"
+msgstr "Interrompido"
+
+msgctxt "lameta/session/subgenre"
+msgid "Subgenre"
+msgstr "Subgênero"
+
+msgctxt "lameta/session/title"
+msgid "Title"
+msgstr "Título"
+
+msgctxt "lameta/session/topic/separatorWithCommaInstructions"
+msgid "Separate with commas. Note that individual topics cannot contain a comma."
+msgstr "Separar com vírgulas. Observe que tópicos individuais não podem conter uma vírgula."
+
+msgctxt "lameta/session/workingLanguages"
+msgid "Working Languages"
+msgstr "Línguas de trabalho"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Africa"
+msgstr "África"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Asia"
+msgstr "Ásia"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Australia"
+msgstr "Austrália"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Europe"
+msgstr "Europa"
+
+msgctxt "ELAR/project/continent/choices"
+msgid "Oceania"
+msgstr "Oceania"
+
+msgctxt "ELAR/projectDocuments/access"
+msgid "Access"
+msgstr "Acesso"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Africa"
+msgstr "África"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Asia"
+msgstr "Ásia"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Australia"
+msgstr "Austrália"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Europe"
+msgstr "Europa"
+
+msgctxt "ELAR/session/locationContinent/choices"
+msgid "Oceania"
+msgstr "Oceania"

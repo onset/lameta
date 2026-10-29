@@ -39,17 +39,69 @@ export class PatientFS {
       throw err;
     }
   }
+  public static readFileSyncNoNotify(path: string): string {
+    return PatientFS.patientFileOperationSync(() =>
+      fs.readFileSync(path, "utf8")
+    );
+  }
+  // Writing a file in place truncates it first, so a save that is cut off (power
+  // loss, a drive pulled out, an I/O error) leaves it empty. Instead, write a
+  // temporary file beside it, flush that to disk, and rename it over the file, so
+  // that an interruption leaves either the old contents or the new ones.
   public static writeFileSyncWithNotifyThenRethrow(
     path: string,
     contents: string
   ) {
+    const tempPath = PatientFS.temporaryPathForSaving(path);
     try {
-      return PatientFS.patientFileOperationSync(() =>
-        fs.writeFileSync(path, contents, { encoding: "utf8" })
+      // A rename ignores the file's own permissions on macOS and Linux, so refuse
+      // here, as writing in place did, when the file is read-only.
+      const existingMode = fs.existsSync(path)
+        ? PatientFS.patientFileOperationSync(() => {
+            fs.accessSync(path, fs.constants.W_OK);
+            return fs.statSync(path).mode;
+          })
+        : undefined;
+      PatientFS.patientFileOperationSync(() =>
+        PatientFS.writeAndFlush(tempPath, contents)
       );
+      if (existingMode !== undefined && process.platform !== "win32") {
+        fs.chmodSync(tempPath, existingMode);
+      }
+      PatientFS.patientFileOperationSync(() => fs.renameSync(tempPath, path));
     } catch (err) {
+      try {
+        fs.rmSync(tempPath, { force: true });
+      } catch {
+        // the next save of this file overwrites it
+      }
       NotifyFileAccessProblem(`Could not write ${path}`, err);
       throw err;
+    }
+  }
+
+  // Ends in ".meta" so that a folder's list of files skips one that a crash left
+  // behind, and the next save of the same file overwrites it. A name ending in
+  // ".meta" is also the metadata file of the file named without it, so skip any
+  // name whose such file exists, rather than overwrite or delete its metadata.
+  private static temporaryPathForSaving(path: string): string {
+    for (let n = 1; ; n++) {
+      const stem = `${path}.lameta-saving${n === 1 ? "" : "-" + n}`;
+      if (!fs.existsSync(stem)) return stem + ".meta";
+    }
+  }
+
+  private static writeAndFlush(path: string, contents: string) {
+    const bytes = Buffer.from(contents, "utf8");
+    const fd = fs.openSync(path, "w");
+    try {
+      let written = 0;
+      while (written < bytes.length) {
+        written += fs.writeSync(fd, bytes, written, bytes.length - written);
+      }
+      fs.fsyncSync(fd);
+    } finally {
+      fs.closeSync(fd);
     }
   }
 

@@ -82,8 +82,12 @@ export class ProjectHolder {
       ? null
       : this.projectInternal;
   }
-  public setProject(p: Project | null) {
+  // Saves the project unless it is a { loadingError } stub, which has no saveAllFilesInFolder().
+  public saveLoadedProject() {
     this.loadedProject?.saveAllFilesInFolder();
+  }
+  public setProject(p: Project | null) {
+    this.saveLoadedProject();
     if (p == null) {
       //console.log("setting project to null");
       // removed Apri 2024 but not sure userSettings.PreviousProjectDirectory = null;
@@ -93,6 +97,25 @@ export class ProjectHolder {
     this.projectInternal = p;
     // the static accessors read sCurrentProject, so it must never hold a stub
     sCurrentProject = this.loadedProject;
+  }
+
+  private closingProjectWhoseFolderIsMissing = false;
+
+  // Closes the project after a save found one of its folders missing from disk, so the
+  // user stops making edits that cannot be saved. Every folder that fails to save reports,
+  // including the save that setProject(null) makes, so this returns true only for the
+  // first report, the one that should tell the user.
+  public closeProjectWhoseFolderIsMissing(): boolean {
+    if (!this.loadedProject || this.closingProjectWhoseFolderIsMissing) {
+      return false;
+    }
+    this.closingProjectWhoseFolderIsMissing = true;
+    try {
+      this.setProject(null);
+    } finally {
+      this.closingProjectWhoseFolderIsMissing = false;
+    }
+    return true;
   }
 }
 
@@ -1122,6 +1145,9 @@ export class Project extends Folder {
     return undefined; // no problem
   }
   public saveAllFilesInFolder() {
+    if (this.reportIfDirectoryIsMissing()) {
+      return;
+    }
     this.saveFolderMetaData();
     for (const f of this.sessions.items) {
       // this gets called when we lose focus, and if we're in the process of deleting, then we don't want to save
@@ -1244,6 +1270,7 @@ export class Project extends Folder {
     const folderType = folder.folderType;
     folderType;
     try {
+      folder.beingDeleted = true; // prevent trying to save if lameta loses focus
       let didDelete = false;
       if (immediateWithoutTrash) {
         fs.rmdirSync(folder.directory, { recursive: true });
@@ -1276,6 +1303,7 @@ export class Project extends Folder {
         //);
       } else throw Error("Failed to delete folder.");
     } catch (e) {
+      folder.beingDeleted = false;
       console.log(e);
       NotifyException(e, "Error trying to delete folder.");
     }
@@ -1511,6 +1539,12 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     );
 
     this.finishLoading();
+    // Unlike a session or person, a project cannot open without its own file
+    if (this.metadataReadProblem !== undefined) {
+      throw new Error(
+        t`lameta could not read ${this.metadataFilePath}: ${this.metadataReadProblem}`
+      );
+    }
     this.migrate();
   }
 

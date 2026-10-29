@@ -19,6 +19,7 @@ import scrollSelectedIntoView from "./FixReactTableScroll";
 import HighlightSearchTerm from "./HighlightSearchTerm";
 import { observer } from "mobx-react";
 import { SearchBar } from "./FolderList.Search";
+import { describeUnreadableMetadata } from "../model/file/FileStatus";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -117,6 +118,8 @@ class FolderList extends React.Component<IProps, any> {
       <HighlightSearchTerm text={text} />
     );
 
+    // the column that flags a folder whose metadata file could not be read
+    const flagColumn = this.props.columns.find((key) => key !== "checked");
     const columns = this.props.columns.map((key, index) => {
       const header =
         key === "checked" ? (
@@ -172,6 +175,19 @@ class FolderList extends React.Component<IProps, any> {
                   f.marked = !f.marked;
                 }}
               />
+            );
+          }
+          const unreadable =
+            f.metadataFile && describeUnreadableMetadata(f.metadataFile);
+          if (key === flagColumn && unreadable) {
+            return (
+              <span title={unreadable} data-testid="unreadable-metadata-flag">
+                <img
+                  src="assets/error.png"
+                  className="unreadableMetadataFlag"
+                />
+                {highlightIfMatch(f.properties.getValueOrThrow(key).text)}
+              </span>
             );
           }
           const field = f.properties.getValueOrThrow(key);

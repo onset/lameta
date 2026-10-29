@@ -43,7 +43,7 @@ msgid "About lameta"
 msgstr "Tentang lameta"
 
 msgid "Access"
-msgstr ""
+msgstr "Akses"
 
 msgid "Add \"{inputValue}\" as an unlisted language"
 msgstr ""
@@ -385,6 +385,9 @@ msgstr "Menunjukkan bahwa ini adalah bahasa utama ayah atau ibu."
 msgid "Interface Language"
 msgstr "Bahasa Antarmuka"
 
+msgid "It is from a later version of lameta and needs lameta {minimumVersion} or later."
+msgstr ""
+
 msgid "Items"
 msgstr ""
 
@@ -392,7 +395,7 @@ msgid "Language Code"
 msgstr "Kode Bahasa"
 
 msgid "Languages"
-msgstr ""
+msgstr "Bahasa-Bahasa"
 
 msgid "Larger"
 msgstr "Lebih besar"
@@ -461,7 +464,7 @@ msgid "Normally, when you add a file to a project, session, or person, that file
 msgstr "Biasanya, ketika Anda menambahkan file ke proyek, sesi, atau orang, file tersebut disalin ke dalam folder yang sama dengan proyek lameta Anda. Untuk beberapa file, mungkin Anda lebih suka tidak menyalin file tersebut dari lokasi asalnya dan hanya membuat 'tautan' ke file tersebut."
 
 msgid "Not important to the archive, but will be included"
-msgstr ""
+msgstr "Tidak perlu untuk diarsipkan, tetapi akan diikutsertakan"
 
 msgid "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name."
 msgstr "Perhatikan bahwa ini adalah tautan ke file di direktori Media Files Anda. Di sini, Anda mengganti nama tautan ini, bukan file asli yang ditunjuknya. Jika nanti Anda membuat ekspor yang menyertakan file ini, ekspor tersebut akan menggunakan nama ini."
@@ -706,6 +709,9 @@ msgstr ""
 msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
+msgid "The file is empty."
+msgstr ""
+
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "File tersebut tidak ada di lokasi yang diharapkan di Folder Media. Folder Media diatur ke {m} dan fili ini seharusnya berada di {e}"
 
@@ -740,7 +746,7 @@ msgid "There was a problem exporting:"
 msgstr "Ada masalah saat mengekspor:"
 
 msgid "This Personally Identifiable Information may not be exported by some formats."
-msgstr ""
+msgstr "Informasi Penanda Pribadi mungkin tidak bisa diekspor ke dalam beberapa format."
 
 msgid "This XML conforms to the IMDI schema."
 msgstr "."
@@ -758,7 +764,7 @@ msgid "This setting is unique to the account you are using on this computer. A c
 msgstr "Pengaturan ini unik untuk akun yang Anda gunakan di komputer ini. Seorang rekan di komputer lain perlu mengatur nilai ini ke lokasi yang benar di komputer mereka."
 
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
-msgstr ""
+msgstr "Berkas ini tidak akan diarsipkan dan hanya dipergunakan oleh peneliti."
 
 msgid "Translations"
 msgstr ""
@@ -855,6 +861,12 @@ msgstr "lameta tidak dapat menemukan Folder Media {m}. Lihat Berkas: Pengaturan 
 
 msgid "lameta could not find a matching Person for the following contributors:"
 msgstr "lameta tidak dapat menemukan Orang yang sesuai dengan kontributor berikut:"
+
+msgid "lameta could not read {0}: {1}"
+msgstr ""
+
+msgid "lameta could not read {fileName}: {reason}"
+msgstr ""
 
 msgid "lameta could not rename the directory."
 msgstr "lameta tidak bisa mengubah nama direktori tersebut."
