@@ -82,8 +82,12 @@ export class ProjectHolder {
       ? null
       : this.projectInternal;
   }
-  public setProject(p: Project | null) {
+  // Saves the project unless it is a { loadingError } stub, which has no saveAllFilesInFolder().
+  public saveLoadedProject() {
     this.loadedProject?.saveAllFilesInFolder();
+  }
+  public setProject(p: Project | null) {
+    this.saveLoadedProject();
     if (p == null) {
       //console.log("setting project to null");
       // removed Apri 2024 but not sure userSettings.PreviousProjectDirectory = null;

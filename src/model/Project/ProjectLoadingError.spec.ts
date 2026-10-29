@@ -1,4 +1,12 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest";
 import * as fs from "fs-extra";
 import * as os from "os";
 import * as Path from "path";
@@ -85,6 +93,12 @@ describe("a project that fails to load", () => {
     expect(holder.loadedProject).toBeNull();
   });
 
+  it("is skipped by saveLoadedProject when loaded asynchronously", async () => {
+    const holder = new ProjectHolder();
+    holder.setProject(await Project.fromDirectoryAsync(projectDir));
+    expect(() => holder.saveLoadedProject()).not.toThrow();
+  });
+
   it("still lets the main menu get metadata language slots", () => {
     new ProjectHolder().setProject(Project.fromDirectory(projectDir));
     const slots = Project.getMetadataLanguageSlots();
@@ -127,5 +141,15 @@ describe("a project that loads", () => {
       "es",
       "en"
     ]);
+  });
+
+  it("is saved by saveLoadedProject", () => {
+    fs.removeSync(Path.join(projectDir, "Sessions", "broken"));
+    const project = Project.fromDirectory(projectDir);
+    const holder = new ProjectHolder();
+    holder.setProject(project);
+    const save = vi.spyOn(project, "saveAllFilesInFolder");
+    holder.saveLoadedProject();
+    expect(save).toHaveBeenCalledTimes(1);
   });
 });
