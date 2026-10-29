@@ -945,7 +945,15 @@ export default class ImdiGenerator {
           : 1,
       );
     sortedByFileNames.forEach((f: File) => {
-      if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+      // a deleted .link file can't tell us the actual path; the status below
+      // reports the file as missing
+      if (
+        ImdiGenerator.shouldIncludeFile(
+          f.isDeletedLinkFile()
+            ? f.getNameToUseWhenExportingUsingTheActualFile()
+            : f.getActualFilePath(),
+        )
+      ) {
         const status = getStatusOfFile(f);
         if (status.missing) {
           // At the moment we're not even exporting metadata if the file is

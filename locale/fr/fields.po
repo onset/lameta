@@ -222,7 +222,7 @@ msgstr ""
 
 msgctxt "lameta/project/name"
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 msgctxt "lameta/project/name/description"
 msgid "The formal name of the project."
@@ -230,7 +230,7 @@ msgstr ""
 
 msgctxt "lameta/project/projectDescription"
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 msgctxt "lameta/project/projectDescription/tipOnUsingThisField"
 msgid "This is a brief summary of your project"
@@ -242,7 +242,7 @@ msgstr "Région"
 
 msgctxt "lameta/project/SubjectLanguages"
 msgid "Subject Languages"
-msgstr ""
+msgstr "Langue documentée"
 
 msgctxt "lameta/project/SubjectLanguages/tipOnUsingThisField"
 msgid "Languages being studied in this project."
@@ -262,7 +262,7 @@ msgstr ""
 
 msgctxt "lameta/project/WorkingLanguages"
 msgid "Working Languages"
-msgstr ""
+msgstr "Langue d’analyse"
 
 msgctxt "lameta/project/WorkingLanguages/tipOnUsingThisField"
 msgid "Languages used by researchers during data collection and analysis."
@@ -270,15 +270,15 @@ msgstr ""
 
 msgctxt "lameta/projectDocuments/access"
 msgid "Access"
-msgstr ""
+msgstr "Accès"
 
 msgctxt "lameta/projectDocuments/accessDescription"
 msgid "Access Explanation"
-msgstr ""
+msgstr "Explications d'Accès"
 
 msgctxt "lameta/projectDocuments/accessDescription/description"
 msgid "If the access is not open/free, use this to explain why."
-msgstr ""
+msgstr "Si l'accès n'est pas ouvert/libre, utilisez ceci pour expliquer pourquoi."
 
 msgctxt "lameta/session/access"
 msgid "Access"
@@ -562,23 +562,23 @@ msgstr ""
 
 msgctxt "ELAR/project/continent/choices"
 msgid "unspecified"
-msgstr ""
+msgstr "non spécifié"
 
 msgctxt "ELAR/project/continent/choices"
 msgid "Africa"
-msgstr ""
+msgstr "Afrique"
 
 msgctxt "ELAR/project/continent/choices"
 msgid "Asia"
-msgstr ""
+msgstr "Asie"
 
 msgctxt "ELAR/project/continent/choices"
 msgid "Australia"
-msgstr ""
+msgstr "Australie"
 
 msgctxt "ELAR/project/continent/choices"
 msgid "Europe"
-msgstr ""
+msgstr "Europe"
 
 msgctxt "ELAR/project/continent/choices"
 msgid "Americas"
@@ -586,7 +586,7 @@ msgstr ""
 
 msgctxt "ELAR/project/continent/choices"
 msgid "Oceania"
-msgstr ""
+msgstr "Océanie"
 
 msgctxt "ELAR/project/continent/patternDescription"
 msgid "Africa, Americas, Asia, Europe or Oceania"
@@ -614,7 +614,7 @@ msgstr ""
 
 msgctxt "ELAR/projectDocuments/access"
 msgid "Access"
-msgstr ""
+msgstr "Accès"
 
 msgctxt "ELAR/projectDocuments/access/patternDescription"
 msgid "O, U or S"
@@ -658,11 +658,11 @@ msgstr ""
 
 msgctxt "ELAR/session/locationContinent/choices"
 msgid "unspecified"
-msgstr ""
+msgstr "non spécifié"
 
 msgctxt "ELAR/session/locationContinent/choices"
 msgid "Africa"
-msgstr ""
+msgstr "Afrique"
 
 msgctxt "ELAR/session/locationContinent/choices"
 msgid "Americas"
@@ -670,19 +670,19 @@ msgstr ""
 
 msgctxt "ELAR/session/locationContinent/choices"
 msgid "Asia"
-msgstr ""
+msgstr "Asie"
 
 msgctxt "ELAR/session/locationContinent/choices"
 msgid "Australia"
-msgstr ""
+msgstr "Australie"
 
 msgctxt "ELAR/session/locationContinent/choices"
 msgid "Europe"
-msgstr ""
+msgstr "Europe"
 
 msgctxt "ELAR/session/locationContinent/choices"
 msgid "Oceania"
-msgstr ""
+msgstr "Océanie"
 
 msgctxt "ELAR/session/locationContinent/patternDescription"
 msgid "Africa, Americas, Asia, Europe or Oceania"
@@ -707,4 +707,3 @@ msgstr ""
 msgctxt "ELAR/session/topic/separatorWithCommaInstructions"
 msgid "Add at least one Topic. Multiple values must be separated with commas. Individual topics cannot contain a comma."
 msgstr ""
-

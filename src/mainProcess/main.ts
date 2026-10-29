@@ -10,14 +10,49 @@ import { is } from "@electron-toolkit/utils";
 import { app, BrowserWindow, shell, ipcMain, screen, session } from "electron";
 import { release } from "os";
 import { join } from "node:path";
-import { mkdirSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import * as path from "node:path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
-import { initLaunchTest } from "./launchTest";
 import { claimSprjFiles } from "./fileAssociation";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
 import { forwardWindowEvents } from "./windowIpc";
+
+// --launch-test opens the app, checks it came up, and quits again (scripts/test-launch.ts).
+// Nothing about it may leave a modal error dialog on the developer's screen, so this is
+// handled here, at the top of the main process, depending on nothing but electron and fs:
+// the failure that made us write this was a module that would not load, which a guard inside
+// launchTest.ts could not have caught, because it was launchTest.ts.
+const isLaunchTest = (): boolean => process.argv.some((a) => a.startsWith("--launch-test"));
+
+if (isLaunchTest()) {
+  // Electron's own uncaught-exception handler is already registered and shows a blocking
+  // dialog. Take away what it shows, then exit before anyone could click it anyway.
+  try {
+    dialog.showErrorBox = () => {};
+  } catch {}
+  const failTheLaunchTest = (phase: string, error: unknown) => {
+    console.error(`launch test: ${phase}:`, error);
+    const arg = process.argv.find((a) => a.startsWith("--launch-test="));
+    if (arg) {
+      try {
+        writeFileSync(
+          arg.substring("--launch-test=".length),
+          JSON.stringify({
+            ok: false,
+            phase,
+            error: String(error),
+            when: new Date().toISOString(),
+            pid: process.pid,
+          }),
+        );
+      } catch {}
+    }
+    app.exit(1);
+  };
+  process.on("uncaughtException", (e) => failTheLaunchTest("uncaughtException", e));
+  process.on("unhandledRejection", (e) => failTheLaunchTest("unhandledRejection", e));
+}
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -130,6 +165,21 @@ async function createWindow() {
     }
   }
 
+  // The launch test opens the app and quits again. Keep its window off the display the
+  // developer is working on, and (below) don't maximize it: nobody is meant to look at it.
+  const launchTest = isLaunchTest();
+  if (launchTest) {
+    const primaryId = screen.getPrimaryDisplay().id;
+    const others = screen
+      .getAllDisplays()
+      .filter((d) => d.id !== primaryId)
+      .sort((a, b) => a.bounds.width * a.bounds.height - b.bounds.width * b.bounds.height);
+    if (others.length > 0) {
+      x = others[0].bounds.x + 40;
+      y = others[0].bounds.y + 40;
+    }
+  }
+
   win = new BrowserWindow({
     x: x,
     y: y,
@@ -159,14 +209,14 @@ async function createWindow() {
     win.loadFile(indexHtml).catch((err) => console.error("Could not load the main window:", err));
   }
   win.on("ready-to-show", () => {
-    win!.maximize();
+    if (!launchTest) win!.maximize();
     win!.show();
   });
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on("did-finish-load", () => {
     win!.show();
-    win!.focus();
+    if (!launchTest) win!.focus();
     //fillLastMonitor();
     if (process.env.NODE_ENV === "development") {
       console.log(
@@ -181,8 +231,16 @@ async function createWindow() {
   win.webContents.on("devtools-opened", () => devToolsStore.set("open", true));
   win.webContents.on("devtools-closed", () => devToolsStore.set("open", false));
 
-  // Initialize launch-test handling (no-op if not requested)
-  initLaunchTest(win);
+  // Initialize launch-test handling (no-op if not requested). Required lazily, and only in a
+  // launch-test run, so that a module this one cannot load fails the check rather than the app.
+  if (launchTest) {
+    try {
+      require("./launchTest").initLaunchTest(win);
+    } catch (e) {
+      console.error("launch test: could not start:", e);
+      throw e; // the guard at the top of this file turns this into a failed check
+    }
+  }
 
   // Make all external links open with the browser, not inside the application.
   win.webContents.setWindowOpenHandler(({ url }) => {

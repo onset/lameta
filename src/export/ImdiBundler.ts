@@ -336,7 +336,7 @@ export default class ImdiBundler {
         imdiMode === IMDIMode.OPEX ? imdiFileName : undefined,
       );
       session.files.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+        if (!f.isDeletedLinkFile() && ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
             source: f.getActualFilePath(),
             destination: Path.join(targetDirectory, fileNames.get(f)!),
@@ -408,7 +408,7 @@ export default class ImdiBundler {
         imdiMode === IMDIMode.OPEX ? sanitizeForExport(imdiFileName) : undefined,
       );
       folder.files.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+        if (!f.isDeletedLinkFile() && ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
             source: f.getActualFilePath(),
             destination: Path.join(destinationFolderPath, fileNames.get(f)!),
@@ -530,7 +530,10 @@ export default class ImdiBundler {
         imdiMode === IMDIMode.OPEX ? "ConsentDocuments" + extensionWithDot : undefined,
       );
       consentFileCopies.forEach(({ original, copy }) => {
-        if (ImdiGenerator.shouldIncludeFile(original.getActualFilePath())) {
+        if (
+          !original.isDeletedLinkFile() &&
+          ImdiGenerator.shouldIncludeFile(original.getActualFilePath())
+        ) {
           filesToCopy.push({
             source: original.getActualFilePath(),
             destination: Path.join(destinationFolderPath, copyExportNames.get(copy)!),

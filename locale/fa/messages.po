@@ -471,7 +471,7 @@ msgid "Language Code"
 msgstr "کد زبانی"
 
 msgid "Languages"
-msgstr ""
+msgstr "زبانها"
 
 msgid "Larger"
 msgstr "بزرگتر"

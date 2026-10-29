@@ -85,6 +85,20 @@ describe("Linked file", () => {
     expect(f.getActualFileExists()).toBe(false);
     expect(getStatusOfFile(f).missing).toBe(true);
   });
+
+  it("reports the file as missing when its .link file is deleted", () => {
+    const media = Path.join(externalMediaDirectory, "linkGoesAway.mp3");
+    fs.writeFileSync(media, "pretend contents");
+    const f = OtherFile.CreateLinkFile(
+      media,
+      new EncounteredVocabularyRegistry(),
+      testSessionFolder,
+    );
+
+    fs.removeSync(f.pathInFolderToLinkFileOrLocalCopy);
+
+    expect(getStatusOfFile(f).missing).toBe(true);
+  });
 });
 
 function getOtherFileForMinorMp3() {

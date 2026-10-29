@@ -59,7 +59,9 @@
   extraFiles: [],
   // makes ffprobe universal for the universal Mac app
   beforePack: "build/universalFfprobe.js",
-  asarUnpack: ["**/node_modules/fswin/**"],
+  // ffprobe has to live outside the asar archive, because a file inside an asar cannot be
+  // spawned. src/other/ffprobePath.ts builds the runtime path from this location.
+  asarUnpack: ["**/node_modules/fswin/**", "**/node_modules/ffmpeg-ffprobe-static/ffprobe*"],
   directories: {
     buildResources: "resources",
     output: "release",

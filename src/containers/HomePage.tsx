@@ -8,6 +8,7 @@ import * as React from "react";
 import { observable, makeObservable } from "mobx";
 import { observer } from "mobx-react";
 import { ProjectHolder } from "../model/Project/Project";
+import { Folder } from "../model/Folder/Folder";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import { OpenDialogOptions, ipcRenderer } from "electron";
@@ -90,6 +91,8 @@ class HomePage extends React.Component<IProps, IState> {
       },
       loadingCloudProviderName: undefined,
     };
+
+    Folder.onDirectoryMissingWhenSaving = this.closeProjectWhoseFolderIsMissing;
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
@@ -179,10 +182,39 @@ class HomePage extends React.Component<IProps, IState> {
     this.projectHolder.setProject(project);
   }
 
+  private closeProjectWhoseFolderIsMissing = (folder: Folder) => {
+    if (this.projectHolder.closeProjectWhoseFolderIsMissing()) {
+      ShowMessageDialog({
+        title: t`lameta cannot find a folder of this project`,
+        content: (
+          <div>
+            <p>{folder.directory}</p>
+            <p>
+              <Trans>
+                The folder may have been moved, renamed or deleted, or the drive it is on may have
+                been disconnected. lameta cannot save changes into a folder that is not there, so it
+                has closed the project. Changes that lameta had not yet saved are lost.
+              </Trans>
+            </p>
+            <p>
+              <Trans>To keep working, open the project again from where it is now.</Trans>
+            </p>
+          </div>
+        ),
+        width: "450px",
+        testId: "folder-missing-dialog",
+      });
+    }
+  };
+
   // for e2e (but not entirely?)
   public async softReload() {
-    const dir = this.projectHolder.project?.directory;
+    const dir = this.projectHolder.loadedProject?.directory;
     this.projectHolder.setProject(null);
+    // if the folder has gone, the save in setProject(null) has already told the user
+    if (!dir || !fs.existsSync(dir)) {
+      return;
+    }
 
     // Route through the async loader + progress dialog (same machinery as every
     // other open path) so a reload of a cloud-evicted project doesn't freeze.
@@ -268,27 +300,21 @@ class HomePage extends React.Component<IProps, IState> {
 
     // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", () => {
-      if (this.projectHolder.project && this.projectHolder.project.saveAllFilesInFolder) {
-        this.projectHolder.project.saveAllFilesInFolder();
-      }
+      this.projectHolder.saveLoadedProject();
     });
 
     // Save when we lose focus. Review: this might take care of the quitting one, above.
     onWindowBlur(() => {
       console.log("HomePage blur");
-      if (this.projectHolder.project) {
-        this.projectHolder.project.saveAllFilesInFolder();
-      }
+      this.projectHolder.saveLoadedProject();
     });
 
     // for trying to figure out https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
     window.setInterval(() => {
       try {
-        if (
-          this.projectHolder.project &&
-          this.previousFolderNames !== this.projectHolder.project.getFolderNamesForDebugging()
-        ) {
-          this.previousFolderNames = this.projectHolder.project.getFolderNamesForDebugging();
+        const project = this.projectHolder.loadedProject;
+        if (project && this.previousFolderNames !== project.getFolderNamesForDebugging()) {
+          this.previousFolderNames = project.getFolderNamesForDebugging();
           //console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
         }
       } catch (error) {

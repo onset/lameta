@@ -12,6 +12,7 @@ import { getRoCrate } from "../../export/ROCrate/RoCrateExporter";
 import { IMDIMode } from "../../export/ImdiGenerator";
 import * as NotifyModule from "../../components/Notify";
 import * as CloudFileStatusModule from "../../other/cloudFileStatus";
+import { getStatusOfFile } from "../file/FileStatus";
 
 temp.track();
 
@@ -51,6 +52,12 @@ describe("a project with metadata files that lameta cannot read", () => {
     const project = Project.fromDirectory(projectDirectory);
     expect(project.loadingError).toBeUndefined();
     return project;
+  }
+  function sessionInFolder(project: Project, folderName: string): Session {
+    const dir = Path.join(projectDirectory, "Sessions", folderName);
+    const s = (project.sessions.items as Session[]).find((s) => s.directory === dir);
+    expect(s, `session in ${folderName}`).toBeDefined();
+    return s!;
   }
   function session(project: Project, id: string): Session {
     const s = (project.sessions.items as Session[]).find((s) => s.id === id);
@@ -121,6 +128,32 @@ describe("a project with metadata files that lameta cannot read", () => {
 
     expect(project.metadataFile!.metadataReadProblem).toBeTruthy();
     expect(fs.statSync(sprj).isDirectory()).toBe(true);
+  });
+
+  it("opens with an unreadable .session when loaded asynchronously", async () => {
+    writeSession("Broken", "");
+
+    const project = await Project.fromDirectoryAsync(projectDirectory);
+
+    expect(project.loadingError).toBeUndefined();
+    expect(sessionInFolder(project, "Broken").metadataFile!.metadataReadProblem).toBeTruthy();
+    expect(sessionInFolder(project, "Good").id).toBe("Good");
+  });
+
+  it("still reports a media file as missing when its .meta is also unreadable", () => {
+    const dir = Path.join(projectDirectory, "Sessions", "Good");
+    const mediaPath = Path.join(dir, "gone.wav");
+    fs.writeFileSync(mediaPath, "pretend audio");
+    fs.writeFileSync(mediaPath + ".meta", `<MetaData><notes>unterminated`);
+
+    const project = open();
+    fs.removeSync(mediaPath);
+
+    const file = sessionInFolder(project, "Good").files.find((f) =>
+      f.pathInFolderToLinkFileOrLocalCopy.endsWith("gone.wav"),
+    );
+    expect(file?.metadataReadProblem).toBeTruthy();
+    expect(getStatusOfFile(file!).missing).toBe(true);
   });
 
   it("names the version that a file from a newer lameta needs", () => {

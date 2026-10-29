@@ -478,6 +478,11 @@ export /*babel doesn't like this: abstract*/ class File {
   public isLinkFile(): boolean {
     return this.describedFileOrLinkFilePath.endsWith(kLinkExtensionWithFullStop);
   }
+  // True when this is a link whose .link file was deleted while the project
+  // was open (e.g. by a sync service). getActualFilePath() throws then.
+  public isDeletedLinkFile(): boolean {
+    return this.isLinkFile() && !fs.existsSync(this.describedFileOrLinkFilePath);
+  }
   public getFilenameToShowInList(): string {
     return trimSuffix(this.getTextProperty("filename"), kLinkExtensionWithFullStop);
   }

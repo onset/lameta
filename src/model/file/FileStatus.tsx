@@ -29,8 +29,10 @@ export function getStatusOfFile(f: File): {
     | "metadataUnreadable";
   info: string;
 } {
+  // A file that is gone gets one of the missing statuses below, so that exports
+  // skip it
   const unreadable = describeUnreadableMetadata(f);
-  if (unreadable) {
+  if (unreadable && f.getActualFileExists()) {
     return { missing: false, status: "metadataUnreadable", info: unreadable };
   }
   if (f.copyInProgress) {
