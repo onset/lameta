@@ -6,6 +6,7 @@ import * as Path from "path";
 import * as fs from "fs-extra";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
+const sanitizeFilename = require("sanitize-filename");
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../model/Project/EncounteredVocabularyRegistry";
 import { NotifyError } from "../components/Notify";
@@ -269,7 +270,8 @@ export default class ImdiBundler {
       imdiXml: corpusImdi,
       imdiPath: Path.join(
         targetDirForProjectFile,
-        `${project.displayName}${extensionWithDot}`
+        // the title can hold characters that a file name cannot, such as ":"
+        `${sanitizeFilename(project.displayName)}${extensionWithDot}`
       ),
       displayName: project.displayName
     };

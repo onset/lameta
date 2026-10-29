@@ -213,3 +213,31 @@ describe("generateExportData async generator", () => {
     expect(jobInfo.secondLevelDirectory).toBe(Path.basename(generatorProjectDir));
   });
 });
+
+describe("a project title with characters that file names cannot have", () => {
+  it.each([
+    ["IMDI", IMDIMode.RAW_IMDI, ".imdi"],
+    ["OPEX", IMDIMode.OPEX, ".opex"]
+  ])(
+    "in %s mode, writes the corpus file without those characters",
+    async (_, mode, extension) => {
+      const dir = temp.mkdirSync("lameta title with colon");
+      const titled = Project.fromDirectory(dir);
+      titled.properties.setText("name", "");
+      titled.properties.setText("title", 'Kakabe: "stories" / songs?');
+      titled.addSession();
+      const target = temp.mkdirSync("lameta title with colon output");
+      await ImdiBundler.saveImdiBundleToFolder(
+        titled,
+        target,
+        mode,
+        false,
+        () => true
+      );
+      const written = (fs.readdirSync(target, {
+        recursive: true
+      }) as string[]).map((p) => Path.basename(p));
+      expect(written).toContain("Kakabe stories  songs" + extension);
+    }
+  );
+});
