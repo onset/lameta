@@ -96,8 +96,8 @@ class HomePage extends React.Component<IProps, IState> {
       }
     };
 
-    Folder.onDirectoryMissingWhenSaving = (folder) =>
-      this.closeProjectWhoseFolderIsMissing(folder);
+    Folder.onDirectoryMissingWhenSaving =
+      this.closeProjectWhoseFolderIsMissing;
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
@@ -175,7 +175,7 @@ class HomePage extends React.Component<IProps, IState> {
     this.projectHolder.setProject(project);
   }
 
-  private closeProjectWhoseFolderIsMissing(folder: Folder) {
+  private closeProjectWhoseFolderIsMissing = (folder: Folder) => {
     if (this.projectHolder.closeProjectWhoseFolderIsMissing()) {
       ShowMessageDialog({
         title: t`lameta cannot find a folder of this project`,
@@ -201,12 +201,16 @@ class HomePage extends React.Component<IProps, IState> {
         testId: "folder-missing-dialog"
       });
     }
-  }
+  };
 
   // for e2e (but not entirely?)
   public softReload() {
-    const dir = this.projectHolder.project?.directory;
+    const dir = this.projectHolder.loadedProject?.directory;
     this.projectHolder.setProject(null);
+    // if the folder has gone, the save in setProject(null) has already told the user
+    if (!dir || !fs.existsSync(dir)) {
+      return;
+    }
 
     const project = Project.fromDirectory(dir!);
     this.projectHolder.setProject(project);
