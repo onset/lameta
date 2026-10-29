@@ -71,13 +71,19 @@ export class ProjectHolder {
     });
   }
 
+  // After a failed load this is a { loadingError } stub, kept so HomePage can show the error.
   public get project(): Project | null {
     return this.projectInternal;
   }
+  // The project, or null when there is none or it is only a { loadingError } stub,
+  // which has no properties, files or methods.
+  public get loadedProject(): Project | null {
+    return !this.projectInternal || this.projectInternal.loadingError
+      ? null
+      : this.projectInternal;
+  }
   public setProject(p: Project | null) {
-    if (this.projectInternal && !this.projectInternal.loadingError) {
-      this.projectInternal.saveAllFilesInFolder();
-    }
+    this.loadedProject?.saveAllFilesInFolder();
     if (p == null) {
       //console.log("setting project to null");
       // removed Apri 2024 but not sure userSettings.PreviousProjectDirectory = null;
@@ -85,7 +91,8 @@ export class ProjectHolder {
       //console.log("setting project to " + p.directory);
     }
     this.projectInternal = p;
-    sCurrentProject = p;
+    // the static accessors read sCurrentProject, so it must never hold a stub
+    sCurrentProject = this.loadedProject;
   }
 }
 
@@ -607,6 +614,8 @@ export class Project extends Folder {
       // SOLUTION: safeCaptureException checks E2E environment before calling Sentry
       safeCaptureException(err);
       console.error(err);
+      // the half-built project was already made current, before its sessions and people loaded
+      sCurrentProject = null;
       // tslint:disable-next-line: no-object-literal-type-assertion
       return { loadingError: err.message } as Project;
     }
@@ -799,6 +808,8 @@ export class Project extends Folder {
     } catch (err) {
       safeCaptureException(err);
       console.error(err);
+      // the half-built project was already made current, before its sessions and people loaded
+      sCurrentProject = null;
       return { loadingError: err.message } as Project;
     }
   }
