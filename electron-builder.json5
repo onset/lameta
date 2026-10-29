@@ -56,6 +56,9 @@
     "!node_modules/ffmpeg-ffprobe-static/bin/*/ffmpeg*"
   ],
   extraFiles: [],
+  // ffprobe has to live outside the asar archive, because a file inside an asar cannot be
+  // spawned. src/other/ffprobePath.ts builds the runtime path from this location.
+  asarUnpack: ["**/node_modules/ffmpeg-ffprobe-static/ffprobe*"],
   directories: {
     buildResources: "resources",
     output: "release"

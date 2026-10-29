@@ -37,6 +37,10 @@ app/node_modules
 
 # App packaged
 release
+# electron-builder output sent somewhere else, e.g. with
+# --config.directories.output=release-check, which is handy when a previous build's app.asar
+# is still locked
+release-*
 *-bundle.*
 app/style.css
 app/style.css.map

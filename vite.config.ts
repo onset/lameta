@@ -58,6 +58,9 @@ export default defineConfig({
         "src/mainProcess/main",
         "src/mainProcess/launchTest.ts",
         "src/other/locateDependency.ts",
+        // the main process reaches this through src/mainProcess/launchTest.ts; files this
+        // plugin does not list are not emitted, and the require fails at runtime
+        "src/other/ffprobePath.ts",
         "src/other/spellCheckLanguages.ts",
         "src/mainProcess/MainProcessApi.ts",
         "src/mainProcess/MainProcessCopyManager.ts",
