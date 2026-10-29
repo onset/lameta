@@ -1,4 +1,12 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from "vitest";
 import * as fs from "fs-extra";
 import * as os from "os";
 import * as Path from "path";
@@ -68,6 +76,30 @@ describe("a project that fails to load", () => {
     expect(() => holder.setProject(null)).not.toThrow();
   });
 
+  // Sentry LAMETA-2RB: HomePage's window-blur handler called saveAllFilesInFolder()
+  // on ProjectHolder.project. A project with more than ten sessions loads
+  // asynchronously after HomePage has mounted and registered that handler, so
+  // the stub reaches the holder while the handler is live.
+  it("has no saveAllFilesInFolder when loaded asynchronously", async () => {
+    const holder = new ProjectHolder();
+    holder.setProject(await Project.fromDirectoryAsync(projectDir));
+    expect(() => holder.project!.saveAllFilesInFolder()).toThrow(
+      /saveAllFilesInFolder is not a function/
+    );
+  });
+
+  it("is not the ProjectHolder's loadedProject when loaded asynchronously", async () => {
+    const holder = new ProjectHolder();
+    holder.setProject(await Project.fromDirectoryAsync(projectDir));
+    expect(holder.loadedProject).toBeNull();
+  });
+
+  it("is skipped by saveLoadedProject when loaded asynchronously", async () => {
+    const holder = new ProjectHolder();
+    holder.setProject(await Project.fromDirectoryAsync(projectDir));
+    expect(() => holder.saveLoadedProject()).not.toThrow();
+  });
+
   it("still lets the main menu get metadata language slots", () => {
     new ProjectHolder().setProject(Project.fromDirectory(projectDir));
     const slots = Project.getMetadataLanguageSlots();
@@ -109,5 +141,14 @@ describe("a project that loads", () => {
       "es",
       "en"
     ]);
+  });
+
+  it("is saved by saveLoadedProject", () => {
+    const project = Project.fromDirectory(projectDir);
+    const holder = new ProjectHolder();
+    holder.setProject(project);
+    const save = vi.spyOn(project, "saveAllFilesInFolder");
+    holder.saveLoadedProject();
+    expect(save).toHaveBeenCalledTimes(1);
   });
 });
