@@ -25,19 +25,27 @@ export function logFinding(msg: string) {
 
 export const seconds = (since: number) => Math.round((Date.now() - since) / 1000);
 
+// The generator writes this document last, so a project without it is one that the
+// generator did not finish.
+const casesDocument = () => Path.join(projectDir(), "OtherDocuments", "torture-cases.md");
+
 export function ensureProjectGenerated() {
   fs.mkdirSync(cloudDir!, { recursive: true });
-  if (fs.existsSync(Path.join(projectDir(), `${projectName}.sprj`))) return;
+  if (fs.existsSync(casesDocument())) return;
+  if (fs.existsSync(projectDir()) && fs.readdirSync(projectDir()).length > 0)
+    throw new Error(
+      `${projectDir()} holds a project that the torture generator did not finish. Delete it and run again.`,
+    );
+  // no shell, so that a path with spaces stays one argument
   const r = spawnSync(
-    "pnpm",
+    process.execPath,
     [
-      "exec",
-      "tsx",
+      Path.join("node_modules", "tsx", "dist", "cli.mjs"),
       "sample-data-generator/torture/generate-torture-project.ts",
       projectDir(),
       "--large-media",
     ],
-    { stdio: "inherit", shell: true },
+    { stdio: "inherit" },
   );
   if (r.status !== 0) throw new Error("the torture generator failed");
 }
@@ -55,10 +63,14 @@ export function walk(dir: string, out: string[] = []): string[] {
 export function makeOnlineOnly(dir: string): number {
   if (process.platform === "win32") {
     spawnSync("attrib", ["+U", "-P", Path.join(dir, "*"), "/S", "/D"], { shell: true });
-    // OneDrive frees up the files on its own schedule; wait until it stops, up to ten minutes
+    // OneDrive frees up the files on its own schedule, and can take a while to start; wait
+    // until it has started and then stopped, up to ten minutes
     const started = Date.now();
     let count = countOnlineOnly(dir);
-    for (let previous = -1; count > previous && Date.now() - started < 10 * 60_000;) {
+    for (
+      let previous = -1;
+      (count === 0 || count > previous) && Date.now() - started < 10 * 60_000;
+    ) {
       previous = count;
       spawnSync("powershell", ["-NoProfile", "-Command", "Start-Sleep 30"]);
       count = countOnlineOnly(dir);
@@ -369,11 +381,12 @@ export interface SessionsDisk {
   texts(prefix: string): string[];
 }
 
+// Replaces the session's title element, whatever its case, with the <title> that lameta writes
 function insertTitle(xml: string, id: string, title: string): string {
-  const withoutOld = xml.replace(/\s*<Title[^>]*>[^<]*<\/Title>/, "");
+  const withoutOld = xml.replace(/\s*<title\b[^>]*>[^<]*<\/title>/gi, "");
   return withoutOld.replace(
     `<id type="string">${id}</id>`,
-    `<id type="string">${id}</id>\n  <Title type="string">${title}</Title>`,
+    `<id type="string">${id}</id>\n  <title type="string">${title}</title>`,
   );
 }
 

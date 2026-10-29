@@ -53,6 +53,7 @@ test.describe("Cloud sync torture (real sync client)", () => {
     const all = walk(Path.dirname(sessionsDir())).length;
     const offline = makeOnlineOnly(Path.dirname(sessionsDir()));
     logFinding(`online-only before opening: ${offline} of ${all} files`);
+    expect(offline, "the service made no file online-only").toBeGreaterThan(0);
 
     app = await CloudLameta.open();
     const page = app.page;
@@ -70,7 +71,7 @@ test.describe("Cloud sync torture (real sync client)", () => {
   test("renames a session while its large media is still downloading", async () => {
     const oldDir = Path.join(sessionsDir(), "BIG_media");
     test.skip(!fs.existsSync(oldDir), "BIG_media was renamed by an earlier run");
-    makeOnlineOnly(oldDir);
+    expect(makeOnlineOnly(oldDir), "the service made no file online-only").toBeGreaterThan(0);
     app = await CloudLameta.open();
     const page = app.page;
     await app.project.goToSessions();
