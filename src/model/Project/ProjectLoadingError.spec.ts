@@ -67,6 +67,24 @@ describe("a project that fails to load", () => {
     expect(() => holder.setProject(null)).not.toThrow();
   });
 
+  // Sentry LAMETA-2RB: HomePage's window-blur handler called saveAllFilesInFolder()
+  // on ProjectHolder.project. A project with more than ten sessions loads
+  // asynchronously after HomePage has mounted and registered that handler, so
+  // the stub reaches the holder while the handler is live.
+  it("has no saveAllFilesInFolder when loaded asynchronously", async () => {
+    const holder = new ProjectHolder();
+    holder.setProject(await Project.fromDirectoryAsync(projectDir));
+    expect(() => holder.project!.saveAllFilesInFolder()).toThrow(
+      /saveAllFilesInFolder is not a function/
+    );
+  });
+
+  it("is not the ProjectHolder's loadedProject when loaded asynchronously", async () => {
+    const holder = new ProjectHolder();
+    holder.setProject(await Project.fromDirectoryAsync(projectDir));
+    expect(holder.loadedProject).toBeNull();
+  });
+
   it("still lets the main menu get metadata language slots", () => {
     new ProjectHolder().setProject(Project.fromDirectory(projectDir));
     const slots = Project.getMetadataLanguageSlots();
