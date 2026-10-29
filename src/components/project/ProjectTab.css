@@ -2,6 +2,12 @@
 
 form.project {
   max-width: 600px;
+  /* one column that scrolls down when the window is too short for it, instead of
+     the second column that Form.css's wrapping would start */
+  flex-wrap: nowrap;
+  & > * {
+    flex-shrink: 0;
+  }
 }
 
 .project {
