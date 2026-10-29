@@ -1,3 +1,4 @@
+import { exportableSessions } from "../model/Project/exportableFolders";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
 import { Session } from "../model/Project/Session/Session";
@@ -155,7 +156,7 @@ export function makeParadisecSessionFields(
   // contributions come in groups of 3 columns. In order to put a header over each one, we need
   // do know how many their will be.
   let contributionGroups = 0;
-  project.sessions.items.filter(sessionFilter).forEach((session: Session) => {
+  exportableSessions(project).filter(sessionFilter).forEach((session: Session) => {
     contributionGroups = Math.max(
       contributionGroups,
       session.getAllContributionsToAllFiles().length
@@ -167,7 +168,7 @@ export function makeParadisecSessionFields(
   }
   lines.push(header);
 
-  project.sessions.items.filter(sessionFilter).forEach((session: Session) => {
+  exportableSessions(project).filter(sessionFilter).forEach((session: Session) => {
     const l = columns
       .map((c) =>
         c.func

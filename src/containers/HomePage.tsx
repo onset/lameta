@@ -284,12 +284,7 @@ class HomePage extends React.Component<IProps, IState> {
 
     // Save when we're quitting. Review: does this cover shutdown?
     window.addEventListener("beforeunload", (e) => {
-      if (
-        this.projectHolder.project &&
-        this.projectHolder.project.saveAllFilesInFolder
-      ) {
-        this.projectHolder.project.saveAllFilesInFolder();
-      }
+      this.projectHolder.saveLoadedProject();
     });
 
     // Without this timeout, one of: {remote, BrowserWindow, or getFocusedWindow()}, most likely the later,
@@ -300,7 +295,7 @@ class HomePage extends React.Component<IProps, IState> {
         // Save when we lose focus. Review: this might take care of the quitting one, above.
         remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
           console.log("HomePage blur");
-          this.projectHolder.loadedProject?.saveAllFilesInFolder();
+          this.projectHolder.saveLoadedProject();
         });
       } catch (error) {
         log.error(

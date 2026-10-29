@@ -43,7 +43,7 @@ msgid "About lameta"
 msgstr "A propos de Lameta"
 
 msgid "Access"
-msgstr ""
+msgstr "Accès"
 
 msgid "Add \"{inputValue}\" as an unlisted language"
 msgstr ""
@@ -385,6 +385,9 @@ msgstr "Indiquez que c'est la langue principale du père ou de la mère."
 msgid "Interface Language"
 msgstr "Langue d’interface"
 
+msgid "It is from a later version of lameta and needs lameta {minimumVersion} or later."
+msgstr ""
+
 msgid "Items"
 msgstr ""
 
@@ -392,7 +395,7 @@ msgid "Language Code"
 msgstr "Code de la Langue"
 
 msgid "Languages"
-msgstr ""
+msgstr "Langues"
 
 msgid "Larger"
 msgstr "Plus grand"
@@ -706,6 +709,9 @@ msgstr ""
 msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
+msgid "The file is empty."
+msgstr ""
+
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "Le fichier est absent de son emplacement prévu dans le dossier multimédia. Le dossier multimédia est défini sur {m} et ce fichier est censé être à {e}"
 
@@ -857,6 +863,12 @@ msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settin
 msgstr "lameta n'arrive pas à trouver le dossier multimédia {m}. Voir le fichier : Paramètres du fichier multimédia."
 
 msgid "lameta could not find a matching Person for the following contributors:"
+msgstr ""
+
+msgid "lameta could not read {0}: {1}"
+msgstr ""
+
+msgid "lameta could not read {fileName}: {reason}"
 msgstr ""
 
 msgid "lameta could not rename the directory."

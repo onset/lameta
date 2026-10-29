@@ -101,9 +101,23 @@ async function createWindow() {
   const testEnv = getTestEnvironment();
   const e2eHeadless = testEnv.E2E && process.env.E2E_HEADED !== "1";
   if (e2eHeadless) {
-    // Move window far off-screen to the right and down (Windows-compatible)
-    x = 10000;
-    y = 10000;
+    // Keep test windows off the primary display, where the developer works. A
+    // window placed off every screen is still maximized onto the primary display
+    // by ready-to-show below, so use the smallest other display when there is one.
+    const primaryId = screen.getPrimaryDisplay().id;
+    const others = screen.getAllDisplays().filter((d) => d.id !== primaryId);
+    if (others.length > 0) {
+      const target = others.reduce((a, b) =>
+        b.bounds.width * b.bounds.height < a.bounds.width * a.bounds.height
+          ? b
+          : a
+      );
+      x = target.bounds.x + 20;
+      y = target.bounds.y + 20;
+    } else {
+      x = 10000;
+      y = 10000;
+    }
   }
 
   win = new BrowserWindow({
