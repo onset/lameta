@@ -43,12 +43,18 @@ function findPackagedApp(): string | undefined {
   }
   if (process.platform === "darwin") {
     if (!fs.existsSync(releaseDir)) return undefined;
-    for (const entry of fs.readdirSync(releaseDir)) {
-      const app = path.join(releaseDir, entry, "lameta.app");
-      const binary = path.join(app, "Contents", "MacOS", "lameta");
-      if (fs.existsSync(binary)) return binary;
-    }
-    return undefined;
+    // There can be several: building for one architecture and later for another leaves
+    // release/mac-arm64 beside release/mac-universal. Take the most recently written, so a
+    // check never silently exercises a build from an earlier run.
+    const candidates = fs
+      .readdirSync(releaseDir)
+      .map((entry) =>
+        path.join(releaseDir, entry, "lameta.app", "Contents", "MacOS", "lameta")
+      )
+      .filter((binary) => fs.existsSync(binary))
+      .map((binary) => ({ binary, when: fs.statSync(binary).mtimeMs }))
+      .sort((a, b) => b.when - a.when);
+    return candidates.length > 0 ? candidates[0].binary : undefined;
   }
   return undefined;
 }
