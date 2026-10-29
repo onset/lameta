@@ -45,7 +45,10 @@ describe("fields whose names contain 'date'", () => {
         f.properties.getValueOrThrow("Validated_By").definition.isCustom
       ).toBe(true);
 
-      f.save(/*forceSave*/ true);
+      const sessionFile = Path.join(sessionFolder, "test.session");
+      const written = fs.readFileSync(sessionFile, "utf8");
+      f.save(false, /*forceSave*/ true);
+      expect(fs.readFileSync(sessionFile, "utf8")).not.toBe(written);
       const reloaded = new SessionMetadataFile(
         sessionFolder,
         new EncounteredVocabularyRegistry()
