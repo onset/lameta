@@ -26,9 +26,8 @@ export function getStatusOfFile(f: File): {
     | "metadataUnreadable";
   info: string;
 } {
-  // The .link file was deleted while the project was open (e.g. by a sync
-  // service). Everything below reads it, so check this first.
-  if (f.isLinkFile() && !fs.existsSync(f.pathInFolderToLinkFileOrLocalCopy))
+  // Everything below reads the .link file, so check this first
+  if (f.isDeletedLinkFile())
     return {
       missing: true,
       status: "missing",

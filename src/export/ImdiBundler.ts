@@ -355,7 +355,10 @@ export default class ImdiBundler {
       directoriesToCreate.push(targetDirectory);
 
       session.files.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+        if (
+          !f.isDeletedLinkFile() &&
+          ImdiGenerator.shouldIncludeFile(f.getActualFilePath())
+        ) {
           filesToCopy.push({
             source: f.getActualFilePath(),
             destination: Path.join(
@@ -441,7 +444,10 @@ export default class ImdiBundler {
     if (copyInProjectFiles) {
       directoriesToCreate.push(destinationFolderPath);
       folder.files.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+        if (
+          !f.isDeletedLinkFile() &&
+          ImdiGenerator.shouldIncludeFile(f.getActualFilePath())
+        ) {
           filesToCopy.push({
             source: f.getActualFilePath(),
             destination: Path.join(
@@ -585,7 +591,10 @@ export default class ImdiBundler {
       // Track which files we've already added (by their destination name) to avoid duplicates
       const addedFiles = new Set<string>();
       originalConsentFiles.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+        if (
+          !f.isDeletedLinkFile() &&
+          ImdiGenerator.shouldIncludeFile(f.getActualFilePath())
+        ) {
           const destName = sanitizeForArchive(
             f.getNameToUseWhenExportingUsingTheActualFile(),
             "ASCII"

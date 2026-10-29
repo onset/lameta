@@ -928,11 +928,13 @@ export default class ImdiGenerator {
         : 1
     );
     sortedByFileNames.forEach((f: File) => {
-      // only the extension matters here, and this name has the same one as the
-      // actual file without reading a .link file, which may have been deleted
+      // a deleted .link file can't tell us the actual path; the status below
+      // reports the file as missing
       if (
         ImdiGenerator.shouldIncludeFile(
-          f.getNameToUseWhenExportingUsingTheActualFile()
+          f.isDeletedLinkFile()
+            ? f.getNameToUseWhenExportingUsingTheActualFile()
+            : f.getActualFilePath()
         )
       ) {
         const status = getStatusOfFile(f);
