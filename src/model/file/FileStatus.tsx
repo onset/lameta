@@ -26,6 +26,17 @@ export function getStatusOfFile(f: File): {
     | "metadataUnreadable";
   info: string;
 } {
+  // Everything below reads the .link file, so check this first
+  if (f.isDeletedLinkFile())
+    return {
+      missing: true,
+      status: "missing",
+      info: t({
+        id: `lameta expected to find a .link file at {e}`,
+        values: { e: f.pathInFolderToLinkFileOrLocalCopy }
+      })
+    };
+
   // A file that is gone gets one of the missing statuses below, so that exports
   // skip it
   const unreadable = describeUnreadableMetadata(f);
@@ -97,17 +108,6 @@ export function getStatusOfFile(f: File): {
       info
     };
   }
-
-  //review: what is this scenario??
-  if (!fs.existsSync(f.pathInFolderToLinkFileOrLocalCopy))
-    return {
-      missing: true,
-      status: "missing",
-      info: t({
-        id: `lameta expected to find a .link file at {e}`,
-        values: { e: f.pathInFolderToLinkFileOrLocalCopy }
-      })
-    };
 
   // we have the link file. We have the media folder. But we cannot find the file itself.
   const subpath = fs.readFileSync(f.pathInFolderToLinkFileOrLocalCopy, "utf-8");
