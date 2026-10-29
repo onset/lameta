@@ -8,28 +8,27 @@ import ffmpeg from "fluent-ffmpeg";
 import ExifReader from "exifreader";
 import fs from "fs";
 import * as Path from "path";
+import { getFfprobePath } from "../other/ffprobePath";
 
 //const imagesize = require("image-size");
 const humanizeDuration = require("humanize-duration");
 
 type Stats = object;
 
-let ffprobePath = require("ffmpeg-ffprobe-static").ffprobePath;
-//console.log("raw ffprobePath: " + ffprobePath);
-// for mac & windows when installed
-ffprobePath = ffprobePath.replace("app.asar", "app.asar.unpacked");
-//console.log(`final ffprobePath: ${ffprobePath}`);
-ffmpeg.setFfprobePath(ffprobePath);
-
 export const MediaStats: React.FunctionComponent<{ file: File }> = (props) => {
   const [message, setMessage] = useState<string>("Processing...");
   const [stats, setStats] = useState<Stats>({});
 
   useEffect(() => {
-    getStatsFromFileAsync(props.file).then((s) => {
-      setStats(s);
-      setMessage("");
-    });
+    getStatsFromFileAsync(props.file)
+      .then((s) => {
+        setStats(s);
+        setMessage("");
+      })
+      .catch((err) => {
+        setStats({ error: err?.message ?? String(err) });
+        setMessage("");
+      });
   }, [props.file]);
 
   const columns = [
@@ -99,16 +98,26 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
 
     case "Audio":
     case "Video":
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         const stats: Stats = {};
         try {
+          const ffprobePath = getFfprobePath();
+          if (!fs.existsSync(ffprobePath)) {
+            resolve({
+              error: `lameta could not find ffprobe, which it needs to read audio and video statistics. It looked in ${ffprobePath}.`
+            });
+            return;
+          }
+          ffmpeg.setFfprobePath(ffprobePath);
           ffmpeg.ffprobe(file.getActualFilePath(), (err, result) => {
             if (err) {
               console.error(
                 `error testing ffprobe on '${file.getActualFilePath()}'`
               );
-              reject(err);
-            } else if (result && result.format && result.format.duration) {
+              resolve({ error: err.message });
+              return;
+            }
+            if (result && result.format && result.format.duration) {
               stats["Length"] = humanizeDuration(
                 1000 * result.format.duration,
                 {
@@ -119,18 +128,16 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
               result.streams.forEach((stream) => {
                 processVideoStream(stream, stats);
               });
-              resolve(stats);
             }
+            resolve(stats);
           });
         } catch (err) {
-          reject(err);
+          resolve({ error: err.message });
         }
       });
       break;
     default:
-      return new Promise((resolve, reject) => {
-        reject();
-      });
+      return Promise.resolve({});
   }
 }
 function processVideoStream(stream: ffmpeg.FfprobeStream, stats: Stats) {
