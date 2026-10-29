@@ -269,6 +269,22 @@ describe("a session whose save fails", () => {
     expect(realFs.readFileSync(sessionPath, "utf8")).toContain("The new title");
   });
 
+  it("leaves no empty .session behind when creating a new session's file is cut off", () => {
+    const sessionDir = Path.join(dir, "brand-new");
+    realFs.mkdirSync(sessionDir);
+    failures.set("renameSync", errorWithCode("EIO"));
+    expect(() =>
+      Session.fromDirectory(sessionDir, new EncounteredVocabularyRegistry())
+    ).toThrow("EIO");
+    failures.clear();
+    expect(realFs.readdirSync(sessionDir)).toEqual([]);
+
+    Session.fromDirectory(sessionDir, new EncounteredVocabularyRegistry());
+    expect(
+      realFs.readFileSync(Path.join(sessionDir, "brand-new.session"), "utf8")
+    ).toContain("<Session>");
+  });
+
   it("does not list a temporary file that a crash left behind", () => {
     const { sessionDir } = loadSession();
     realFs.writeFileSync(Path.join(sessionDir, "tha016.wav"), "not audio");
