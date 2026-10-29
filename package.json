@@ -121,7 +121,7 @@
     "css-loader": "^1.0.0",
     "css-modules-require-hook": "^4.0.6",
     "csv-loader": "^3.0.3",
-    "electron": "^37.3.0",
+    "electron": "^37.10.3",
     "electron-builder": "^25.1.8",
     "electron-builder-http": "^19.27.5",
     "electron-builder-notarize": "^1.5.2",
