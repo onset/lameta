@@ -264,9 +264,7 @@ class HomePage extends React.Component<IProps, IState> {
         // Save when we lose focus. Review: this might take care of the quitting one, above.
         remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
           console.log("HomePage blur");
-          if (this.projectHolder.project) {
-            this.projectHolder.project.saveAllFilesInFolder();
-          }
+          this.projectHolder.loadedProject?.saveAllFilesInFolder();
         });
       } catch (error) {
         log.error(
@@ -278,13 +276,12 @@ class HomePage extends React.Component<IProps, IState> {
     // for trying to figure out https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
     window.setInterval(() => {
       try {
+        const project = this.projectHolder.loadedProject;
         if (
-          this.projectHolder.project &&
-          this.previousFolderNames !==
-            this.projectHolder.project.getFolderNamesForDebugging()
+          project &&
+          this.previousFolderNames !== project.getFolderNamesForDebugging()
         ) {
-          this.previousFolderNames =
-            this.projectHolder.project.getFolderNamesForDebugging();
+          this.previousFolderNames = project.getFolderNamesForDebugging();
           //console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
         }
       } catch (error) {
