@@ -13,10 +13,19 @@ test.describe("New Person", () => {
     project = await launchWithProject(lameta, "AddPerson");
     await project.goToPeople();
   });
+  test.afterAll(async () => {
+    // the test stops lameta itself unless it failed before that
+    const lametaProcess = lameta.electronApp.process();
+    if (!lametaProcess.killed && lametaProcess.exitCode === null)
+      await lameta.quit();
+  });
 
   test("the new person's name is on disk even if lameta stops right away", async () => {
     await lameta.page.getByTestId("new-person-button").click();
-    await expect(lameta.page.getByText("New Person").first()).toBeVisible();
+    // the person's row in the list, not the New Person button
+    await expect(
+      lameta.page.getByRole("gridcell", { name: "New Person", exact: true })
+    ).toBeVisible();
 
     // as if lameta crashed or the computer lost power: nothing more gets saved
     lameta.electronApp.process().kill();
