@@ -18,6 +18,7 @@ import {
 } from "./MultilingualTextFieldControls";
 import { hasSpellCheckSupport } from "../other/spellCheckLanguages";
 import { capitalizeField } from "../model/field/capitalization";
+import { startedTyping, stoppedTyping } from "../problems/whileTyping";
 
 const rowStyleAffordanceWidth = "24px";
 
@@ -201,10 +202,14 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
   const [editing, setEditing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  // this editor, to the problem checks that wait while the user types
+  const typingToken = useRef({});
 
   useEffect(() => {
     validateValue(props.field.text);
   }, []); // run once on mount
+
+  useEffect(() => () => stoppedTyping(typingToken.current), []);
 
   // initial highlight after mount
   useEffect(() => {
@@ -250,6 +255,7 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
   }
 
   function beginEditing() {
+    startedTyping(typingToken.current);
     const el = contentRef.current;
     if (!el) return;
     setEditing(true);
@@ -458,7 +464,13 @@ const SingleLanguageTextFieldEdit: React.FunctionComponent<
               const text = event.clipboardData?.getData("text/plain") || "";
               document.execCommand("insertText", false, text);
             }}
-            onBlur={finishEditing}
+            onBlur={(event) => {
+              try {
+                finishEditing(event);
+              } finally {
+                stoppedTyping(typingToken.current);
+              }
+            }}
             css={css`
               height: 100%;
               min-height: 1.2em;

@@ -84,3 +84,18 @@ export function combineProblems(
     ...rulesProblems.map(fromRulesFileProblem),
   ];
 }
+
+// `previous` when `next` holds the same problems in the same order, so that a check
+// which finds nothing new leaves the observable list as it was and nothing re-renders.
+// A field problem's `field` is compared by identity, everything else by value.
+export function keepIfSame<T extends object>(previous: T[], next: T[]): T[] {
+  if (previous === next) return previous;
+  if (previous.length !== next.length) return next;
+  const withoutField = (p: T) => JSON.stringify(p, (k, v) => (k === "field" ? undefined : v));
+  for (let i = 0; i < next.length; i++) {
+    const a = previous[i] as { field?: unknown };
+    const b = next[i] as { field?: unknown };
+    if (a.field !== b.field || withoutField(previous[i]) !== withoutField(next[i])) return next;
+  }
+  return previous;
+}

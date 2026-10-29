@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 import * as React from "react";
 import { observer } from "mobx-react";
+import { reaction, untracked } from "mobx";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { SeverityIcon } from "./SeverityIcon";
@@ -30,6 +31,7 @@ import {
 import { projectProblems } from "../../problems/ProjectProblems";
 import { rulesFileProblems } from "../../problems/RulesFileProblems";
 import { IRulesFileError, IRulesFileProblem } from "../../problems/rulesSandboxMain";
+import { isTyping } from "../../problems/whileTyping";
 
 export const kProblemsSidebarWidth = 300;
 
@@ -175,11 +177,45 @@ const kFolderTypeColors = {
 // Lists metadata problems beside the workspace. Clicking one takes the user to
 // the place where they can fix it; the sidebar stays put.
 export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = observer((props) => {
+  // The groups are worked out from the project's sessions and people, whose ids change
+  // with every keystroke in an id field. While the user is typing in a text field, the
+  // sidebar keeps what it worked out before and reads nothing from the project, so the
+  // typing redraws none of it. It catches up once the user leaves the field, and
+  // whenever the checks, which wait until then, find new problems.
   const fieldProblems = projectProblems.problems;
   const rulesProblems = rulesFileProblems.problems;
-  const selected = selectedFolder(props.project);
-  const selectedKey = selected && folderKeyOf(selected.folderType, selected.folderId);
-  const groups = groupProblems(props.project, fieldProblems, rulesProblems, selected);
+  const shown = React.useRef<{
+    selectedKey?: string;
+    groups: IGroup[];
+    fieldProblems: IFieldProblem[];
+    rulesProblems: IRulesFileProblem[];
+  }>();
+  const [, catchUp] = React.useReducer((n: number) => n + 1, 0);
+  React.useEffect(
+    () =>
+      reaction(
+        () => isTyping(),
+        (typing) => {
+          if (!typing) catchUp();
+        },
+      ),
+    [],
+  );
+  if (
+    !shown.current ||
+    !untracked(isTyping) ||
+    shown.current.fieldProblems !== fieldProblems ||
+    shown.current.rulesProblems !== rulesProblems
+  ) {
+    const selected = selectedFolder(props.project);
+    shown.current = {
+      selectedKey: selected && folderKeyOf(selected.folderType, selected.folderId),
+      groups: groupProblems(props.project, fieldProblems, rulesProblems, selected),
+      fieldProblems,
+      rulesProblems,
+    };
+  }
+  const { selectedKey, groups } = shown.current;
   // a re-check makes new problem objects, so remember these by what they say
   const [selectedProblem, setSelectedProblem] = React.useState<string>();
   const [result, setResult] = React.useState<NavigationResult>();
@@ -207,11 +243,203 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
   }, [selectedKey, selectedHasGroup]);
   const all = groups.flatMap((g) => g.problems);
 
+  // the same elements while the groups and the selection stay the same, so that a
+  // render while the user types, which keeps the groups, compares none of the entries
+  const groupSections = React.useMemo(
+    () =>
+      groups.map((group) => {
+        const isCurrent = !!group.folderKey && group.folderKey === selectedKey;
+        const color = group.folderType ? kFolderTypeColors[group.folderType] : "#999";
+        // while a session or person is selected, the others' sections are dimmed
+        const dimmed = !!selectedKey && !isCurrent;
+        return (
+          <section
+            key={group.folderKey ?? group.title}
+            data-testid="problem-group"
+            data-folder-key={group.folderKey}
+            data-current={isCurrent || undefined}
+            css={css`
+              padding: 6px 0 4px;
+              ${dimmed ? "opacity: 0.45;" : ""}
+            `}
+          >
+            {group.folderType ? (
+              <h4
+                css={css`
+                  margin: 4px 0 4px;
+                  padding: 4px 12px 6px;
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  font-size: 13px;
+                  font-weight: 700;
+                  color: ${color};
+                  // the folder's colour, faded
+                  border-bottom: solid 2px ${color}40;
+                  img {
+                    height: 16px;
+                  }
+                `}
+              >
+                {kFolderTypeIcons[group.folderType]}
+                {group.title}
+              </h4>
+            ) : (
+              <h4
+                css={css`
+                  margin: 0;
+                  padding: 10px 12px 4px;
+                  font-size: 11px;
+                  font-weight: 600;
+                  letter-spacing: 0.06em;
+                  text-transform: uppercase;
+                  color: rgba(0, 0, 0, 0.6);
+                `}
+              >
+                {group.title}
+              </h4>
+            )}
+            <ul
+              css={css`
+                list-style: none;
+                margin: 0;
+                padding: 0;
+              `}
+            >
+              {group.problems.length === 0 && (
+                <li
+                  data-testid="problems-looks-good"
+                  css={css`
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 8px;
+                    // like a problem's entry
+                    padding: 6px 12px 6px 36px;
+                    font-size: 13px;
+                    line-height: 18px;
+                    color: rgba(0, 0, 0, 0.87);
+                    svg {
+                      font-size: 16px;
+                      margin-top: 1px;
+                      color: ${lameta_dark_green};
+                    }
+                  `}
+                >
+                  <CheckCircleIcon fontSize="inherit" />
+                  <Trans>Looks good</Trans>
+                </li>
+              )}
+              {group.problems.map((problem) => {
+                const isSelected = selectedProblem === problem.key;
+                const content = (
+                  <>
+                    <SeverityIcon severity={problem.severity} fontSize="inherit" />
+                    <div
+                      css={css`
+                        min-width: 0;
+                        overflow-wrap: anywhere;
+                      `}
+                    >
+                      <ProblemWording wording={problem} fileName={problem.target?.fileName} />
+                      {isSelected && result && !result.found && (
+                        <div
+                          data-testid="problem-target-missing"
+                          css={css`
+                            font-size: 0.8em;
+                            color: #c62828;
+                          `}
+                        >
+                          {describeMissing(result)}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                );
+                const rowStyle = css`
+                  display: flex;
+                  align-items: flex-start;
+                  gap: 8px;
+                  width: 100%;
+                  text-align: left;
+                  // the icon lines up with the name in the group heading
+                  padding: 6px 12px 6px 36px;
+                  border: none;
+                  background-color: ${isSelected ? "#e8eef7" : "transparent"};
+                  font: inherit;
+                  font-size: 13px;
+                  line-height: 18px;
+                  color: rgba(0, 0, 0, 0.87);
+                  // the icon's middle on the first line of text
+                  & > [data-testid^="severity-icon"] {
+                    font-size: 16px;
+                    margin-top: 1px;
+                  }
+                `;
+                return (
+                  <li
+                    key={problem.key}
+                    css={css`
+                      background-color: ${isSelected ? "#e8eef7" : "transparent"};
+                    `}
+                  >
+                    {problem.target ? (
+                      <button
+                        data-testid="problem-entry"
+                        data-check-id={problem.checkId}
+                        data-field-key={problem.target.fieldKey}
+                        onClick={async () => {
+                          const click = ++latestClick.current;
+                          setSelectedProblem(problem.key);
+                          // "" for the Project tab, where no session
+                          // or person is selected
+                          const clickedKey =
+                            problem.target!.folderType === "project"
+                              ? ""
+                              : folderKeyOf(problem.target!.folderType, problem.target!.folderId);
+                          selectedByClick.current =
+                            clickedKey !== (selectedKey ?? "") ? clickedKey : undefined;
+                          setResult(undefined);
+                          const target = problem.target!;
+                          // the problem may be fixed already, before the
+                          // next check removes its entry
+                          const keepHighlightWhile = hasProblemAt(target)
+                            ? () => hasProblemAt(target)
+                            : undefined;
+                          const r = await navigateTo(props.project, target, keepHighlightWhile);
+                          if (click === latestClick.current) setResult(r);
+                        }}
+                        css={css`
+                          ${rowStyle};
+                          cursor: pointer;
+                          &:hover {
+                            background-color: #f0f4fa;
+                          }
+                        `}
+                      >
+                        {content}
+                      </button>
+                    ) : (
+                      // lameta has nowhere to take the user, so this is not a link
+                      <div
+                        data-testid="problem-entry"
+                        data-check-id={problem.checkId}
+                        css={rowStyle}
+                      >
+                        {content}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      }),
+    [groups, selectedKey, selectedProblem, result, props.project],
+  );
   return (
     <div
       data-testid="problems-sidebar"
-      data-check-milliseconds={projectProblems.checkMilliseconds.toFixed(1)}
-      data-rules-timing={JSON.stringify(rulesFileProblems.timing)}
       css={css`
         width: ${kProblemsSidebarWidth}px;
         flex-shrink: 0;
@@ -248,220 +476,49 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
           }
         `}
       >
-        {groups.map((group) => {
-          const isCurrent = !!group.folderKey && group.folderKey === selectedKey;
-          const color = group.folderType ? kFolderTypeColors[group.folderType] : "#999";
-          // while a session or person is selected, the others' sections are dimmed
-          const dimmed = !!selectedKey && !isCurrent;
-          return (
-            <section
-              key={group.folderKey ?? group.title}
-              data-testid="problem-group"
-              data-folder-key={group.folderKey}
-              data-current={isCurrent || undefined}
-              css={css`
-                padding: 6px 0 4px;
-                ${dimmed ? "opacity: 0.45;" : ""}
-              `}
-            >
-              {group.folderType ? (
-                <h4
-                  css={css`
-                    margin: 4px 0 4px;
-                    padding: 4px 12px 6px;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    font-size: 13px;
-                    font-weight: 700;
-                    color: ${color};
-                    // the folder's colour, faded
-                    border-bottom: solid 2px ${color}40;
-                    img {
-                      height: 16px;
-                    }
-                  `}
-                >
-                  {kFolderTypeIcons[group.folderType]}
-                  {group.title}
-                </h4>
-              ) : (
-                <h4
-                  css={css`
-                    margin: 0;
-                    padding: 10px 12px 4px;
-                    font-size: 11px;
-                    font-weight: 600;
-                    letter-spacing: 0.06em;
-                    text-transform: uppercase;
-                    color: rgba(0, 0, 0, 0.6);
-                  `}
-                >
-                  {group.title}
-                </h4>
-              )}
-              <ul
-                css={css`
-                  list-style: none;
-                  margin: 0;
-                  padding: 0;
-                `}
-              >
-                {group.problems.length === 0 && (
-                  <li
-                    data-testid="problems-looks-good"
-                    css={css`
-                      display: flex;
-                      align-items: flex-start;
-                      gap: 8px;
-                      // like a problem's entry
-                      padding: 6px 12px 6px 36px;
-                      font-size: 13px;
-                      line-height: 18px;
-                      color: rgba(0, 0, 0, 0.87);
-                      svg {
-                        font-size: 16px;
-                        margin-top: 1px;
-                        color: ${lameta_dark_green};
-                      }
-                    `}
-                  >
-                    <CheckCircleIcon fontSize="inherit" />
-                    <Trans>Looks good</Trans>
-                  </li>
-                )}
-                {group.problems.map((problem) => {
-                  const isSelected = selectedProblem === problem.key;
-                  const content = (
-                    <>
-                      <SeverityIcon severity={problem.severity} fontSize="inherit" />
-                      <div
-                        css={css`
-                          min-width: 0;
-                          overflow-wrap: anywhere;
-                        `}
-                      >
-                        <ProblemWording wording={problem} fileName={problem.target?.fileName} />
-                        {isSelected && result && !result.found && (
-                          <div
-                            data-testid="problem-target-missing"
-                            css={css`
-                              font-size: 0.8em;
-                              color: #c62828;
-                            `}
-                          >
-                            {describeMissing(result)}
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  );
-                  const rowStyle = css`
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 8px;
-                    width: 100%;
-                    text-align: left;
-                    // the icon lines up with the name in the group heading
-                    padding: 6px 12px 6px 36px;
-                    border: none;
-                    background-color: ${isSelected ? "#e8eef7" : "transparent"};
-                    font: inherit;
-                    font-size: 13px;
-                    line-height: 18px;
-                    color: rgba(0, 0, 0, 0.87);
-                    // the icon's middle on the first line of text
-                    & > [data-testid^="severity-icon"] {
-                      font-size: 16px;
-                      margin-top: 1px;
-                    }
-                  `;
-                  return (
-                    <li
-                      key={problem.key}
-                      css={css`
-                        background-color: ${isSelected ? "#e8eef7" : "transparent"};
-                      `}
-                    >
-                      {problem.target ? (
-                        <button
-                          data-testid="problem-entry"
-                          data-check-id={problem.checkId}
-                          data-field-key={problem.target.fieldKey}
-                          onClick={async () => {
-                            const click = ++latestClick.current;
-                            setSelectedProblem(problem.key);
-                            // "" for the Project tab, where no session
-                            // or person is selected
-                            const clickedKey =
-                              problem.target!.folderType === "project"
-                                ? ""
-                                : folderKeyOf(problem.target!.folderType, problem.target!.folderId);
-                            selectedByClick.current =
-                              clickedKey !== (selectedKey ?? "") ? clickedKey : undefined;
-                            setResult(undefined);
-                            const target = problem.target!;
-                            // the problem may be fixed already, before the
-                            // next check removes its entry
-                            const keepHighlightWhile = hasProblemAt(target)
-                              ? () => hasProblemAt(target)
-                              : undefined;
-                            const r = await navigateTo(props.project, target, keepHighlightWhile);
-                            if (click === latestClick.current) setResult(r);
-                          }}
-                          css={css`
-                            ${rowStyle};
-                            cursor: pointer;
-                            &:hover {
-                              background-color: #f0f4fa;
-                            }
-                          `}
-                        >
-                          {content}
-                        </button>
-                      ) : (
-                        // lameta has nowhere to take the user, so this is not a link
-                        <div
-                          data-testid="problem-entry"
-                          data-check-id={problem.checkId}
-                          css={rowStyle}
-                        >
-                          {content}
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          );
-        })}
-        {all.length === 0 && !rulesFileProblems.running && (
-          <div
-            css={css`
-              padding: 12px;
-              color: rgba(0, 0, 0, 0.6);
-            `}
-          >
-            <Trans>No problems found.</Trans>
-          </div>
-        )}
+        {groupSections}
+        {all.length === 0 && <NoProblemsFound />}
       </div>
-      {rulesFileProblems.running && (
-        <div
-          css={css`
-            padding: 6px 12px;
-            border-top: solid 1px #ddd;
-            font-size: 12px;
-            color: rgba(0, 0, 0, 0.6);
-          `}
-        >
-          <Trans>Checking…</Trans>
-        </div>
-      )}
+      <CheckStatus />
     </div>
   );
 });
+
+// These read what changes on every run of the checks, so they are observers of their
+// own: a run that finds the same problems then re-renders only them, not the list.
+const NoProblemsFound: React.FunctionComponent = observer(() =>
+  rulesFileProblems.running ? null : (
+    <div
+      css={css`
+        padding: 12px;
+        color: rgba(0, 0, 0, 0.6);
+      `}
+    >
+      <Trans>No problems found.</Trans>
+    </div>
+  ),
+);
+
+const CheckStatus: React.FunctionComponent = observer(() => (
+  <div
+    data-testid="problems-check-status"
+    data-check-milliseconds={projectProblems.checkMilliseconds.toFixed(1)}
+    data-rules-timing={JSON.stringify(rulesFileProblems.timing)}
+  >
+    {rulesFileProblems.running && (
+      <div
+        css={css`
+          padding: 6px 12px;
+          border-top: solid 1px #ddd;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.6);
+        `}
+      >
+        <Trans>Checking…</Trans>
+      </div>
+    )}
+  </div>
+));
 
 // Problems in the rules file itself, which the user has to know about rather than
 // wonder why nothing is reported

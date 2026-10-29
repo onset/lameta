@@ -21,6 +21,8 @@ import {
   IRulesSandboxOutput,
 } from "./rulesSandboxMain";
 import { makeRulesSandboxScript } from "./rulesSandboxScript";
+import { keepIfSame } from "./problems";
+import { afterTyping } from "./whileTyping";
 
 // how long to wait after the last change to the project before running the rules again
 const kRerunDelayMilliseconds = 1500;
@@ -224,11 +226,14 @@ export class RulesFileProblems {
     const dueGenerations = new Set<() => void>();
     let sessionsGenerated = 0;
 
+    let cancelWait = () => {};
+
     const scheduleRun = (delay: number) => {
       if (stopped) return;
       if (runTimer) clearTimeout(runTimer);
+      cancelWait();
       // `run` is defined below; look it up when the timer fires
-      runTimer = setTimeout(() => run(), delay);
+      runTimer = setTimeout(() => (cancelWait = afterTyping(() => run())), delay);
     };
     const generateLater = (generate: () => void) => {
       dueGenerations.add(generate);
@@ -307,8 +312,8 @@ export class RulesFileProblems {
         const sandboxMilliseconds = performance.now() - sandboxStart;
         if (stopped) return;
         runInAction(() => {
-          this.problems = output.problems;
-          this.errors = output.errors;
+          this.problems = keepIfSame(this.problems, output.problems);
+          this.errors = keepIfSame(this.errors, output.errors);
           this.timing = {
             generateMilliseconds,
             sandboxMilliseconds,
@@ -342,6 +347,7 @@ export class RulesFileProblems {
     return () => {
       stopped = true;
       if (runTimer) clearTimeout(runTimer);
+      cancelWait();
       disposeConfigurationWatch();
       disposeMetadataLanguages();
       disposeCorpus();
