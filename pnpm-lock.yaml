@@ -197,6 +197,9 @@ importers:
       '@emotion/styled':
         specifier: 11.14.0
         version: 11.14.0(@emotion/react@11.11.3(@types/react@17.0.75)(react@17.0.2)(supports-color@8.1.1))(@types/react@17.0.75)(react@17.0.2)(supports-color@8.1.1)
+      '@fontsource/caveat':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@lingui/core':
         specifier: 6.10.0
         version: 6.10.0(@babel/core@7.29.0(supports-color@8.1.1))(babel-plugin-macros@3.1.0)
@@ -1101,6 +1104,9 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
+
+  '@fontsource/caveat@5.3.0':
+    resolution: {integrity: sha512-eHTfzQxFSW9ABERRLNruHoNJmKed2J7pqTUc5lp4a4POMgXGKpxmWj3d9Hz10kmAg6iuTTLe6UagbA4bnsmfQw==}
 
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
@@ -6212,6 +6218,8 @@ snapshots:
       react-dom: 17.0.2(react@17.0.2)
 
   '@floating-ui/utils@0.2.11': {}
+
+  '@fontsource/caveat@5.3.0': {}
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:

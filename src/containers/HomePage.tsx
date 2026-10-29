@@ -1,3 +1,4 @@
+import { AlphaWarning } from "./AlphaWarning";
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
@@ -272,9 +273,9 @@ class HomePage extends React.Component<IProps, IState> {
         switch (tag) {
           case "alpha":
             ShowMessageDialog({
-              title: `TESTING ONLY`,
-              text: "Thank you so much for testing this experimental version of lameta. Make sure you have a backup of your work.",
-              width: "300px",
+              iconPath: null,
+              content: <AlphaWarning version={version} />,
+              width: "540px",
               buttonText: "I understand",
               testId: "prerelease-warning-dialog",
             });
