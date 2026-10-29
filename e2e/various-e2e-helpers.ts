@@ -1,8 +1,37 @@
 import * as Path from "path";
+import * as fs from "fs";
+import { spawn, ChildProcess } from "child_process";
 import { Page } from "playwright-core";
 import { expect as expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 const { _electron: electron } = require("playwright");
+
+// Windows only. Holds a new file open with no sharing, as a program that has it open
+// does, so that the folder that holds it cannot be moved to the Trash. Kill the
+// returned process to let go of the file.
+export async function lockFile(path: string): Promise<ChildProcess> {
+  fs.writeFileSync(path, "in use");
+  const child = spawn("powershell", [
+    "-NoProfile",
+    "-Command",
+    `$f = [System.IO.File]::Open('${path}', 'Open', 'ReadWrite', 'None'); Start-Sleep 300`
+  ]);
+  await expect
+    .poll(
+      () => {
+        try {
+          fs.closeSync(fs.openSync(path, "r"));
+          return false;
+        } catch {
+          return true;
+        }
+      },
+      { timeout: 15000 }
+    )
+    .toBe(true);
+  return child;
+}
+
 export async function createNewProject(
   lameta: LametaE2ERunner,
   name: string
@@ -105,6 +134,12 @@ export class E2eProject {
   }
   public async addSession() {
     await this.page.getByTestId("new-session-button").click();
+  }
+  // the rows of the session list that show a session; the list pads itself with empty ones
+  public sessionRows() {
+    return this.page
+      .locator(".rt-tr-group")
+      .filter({ has: this.page.locator(".rt-td.id", { hasText: /\S/ }) });
   }
   public async addPerson(name?: string) {
     await this.page.getByTestId("new-person-button").click();
@@ -258,4 +293,3 @@ export async function launchWithProject(
   project.projectDirectory = lameta.projectDirectory;
   return project;
 }
-
