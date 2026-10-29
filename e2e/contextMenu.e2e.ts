@@ -137,7 +137,8 @@ test.describe("Context Menu Cut/Copy/Paste - Keyboard verification", () => {
 
   test("right-click on editable field triggers context menu", async () => {
     // This test ensures right-click asks for a menu and doesn't crash the app.
-    // The menu's items are tested in mainProcessIntegration.e2e.ts.
+    // The menu functionality is verified via the keyboard tests above,
+    // and the menu's items are tested in mainProcessIntegration.e2e.ts.
 
     // Wait for the session form to load
     await page.waitForSelector('[data-testid="field-id-edit"]', {
