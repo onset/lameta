@@ -26,7 +26,7 @@
     "build": "yarn vite build",
     "test:build-then-launch": "yarn build && yarn tsx ./scripts/test-launch.ts --electron=electron --main=./dist/src/mainProcess/main.js --runs=10 --timeout=30000 --app-arg=--launch-test-delay=1500",
     "test:launch-previous-build": "yarn tsx ./scripts/test-launch.ts --electron=electron --main=./dist/src/mainProcess/main.js --runs=10 --timeout=30000 --app-arg=--launch-test-delay=1500",
-    "test:launch-after-package": "yarn tsx ./scripts/test-launch.ts --exe=./release/win-unpacked/lameta.exe --runs=10 --timeout=30000 --app-arg=--launch-test-delay=1500",
+    "test:launch-after-package": "yarn tsx ./scripts/test-launch.ts --packaged --runs=10 --timeout=30000 --app-arg=--launch-test-delay=1500",
     "fullbuild": "yarn strings:extract && yarn strings:compile && tsc && yarn vite build",
     "e2ebuildwatch": "yarn vite build --config vite.config.nonminified.js --watch",
     "postinstall": "yarn patch-package && electron-builder install-app-deps",

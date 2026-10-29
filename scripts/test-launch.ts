@@ -25,23 +25,47 @@ const getBool = (name: string) => {
 const runsStr = getFlag("runs");
 const timeoutStr = getFlag("timeout");
 const verbose = getBool("verbose");
-const exe = getFlag("exe");
+const exe =
+  getFlag("exe") ?? (getBool("packaged") ? findPackagedApp() : undefined);
 const electron = getFlag("electron");
 const mainJs = getFlag("main");
 const appArgFlags = args
   .filter((a) => a.startsWith("--app-arg="))
   .map((a) => a.substring("--app-arg=".length));
 
+// --packaged means "whatever electron-builder just wrote into release/", so that one command
+// works on either platform. electron-builder names the Mac folder after the architecture it
+// built (mac-universal, mac-arm64, ...), so the .app is looked up rather than spelled out.
+function findPackagedApp(): string | undefined {
+  const releaseDir = path.resolve(process.cwd(), "release");
+  if (process.platform === "win32") {
+    return path.join(releaseDir, "win-unpacked", "lameta.exe");
+  }
+  if (process.platform === "darwin") {
+    if (!fs.existsSync(releaseDir)) return undefined;
+    for (const entry of fs.readdirSync(releaseDir)) {
+      const app = path.join(releaseDir, entry, "lameta.app");
+      const binary = path.join(app, "Contents", "MacOS", "lameta");
+      if (fs.existsSync(binary)) return binary;
+    }
+    return undefined;
+  }
+  return undefined;
+}
+
 const usage = () => {
   console.error(
     [
       "Usage:",
+      "  tsx scripts/smoke-launch.ts --packaged --runs=10 --timeout=30000 [--verbose]",
+      "  OR",
       "  tsx scripts/smoke-launch.ts --exe=./release/win-unpacked/lameta.exe --runs=10 --timeout=30000 [--verbose]",
       "  OR",
       "  tsx scripts/smoke-launch.ts --electron=./node_modules/.bin/electron --main=./dist/src/mainProcess/main.js --runs=10 --timeout=30000 [--verbose]",
       "",
       "Notes:",
-      "  - Exactly one of --exe or (--electron and --main) must be provided.",
+      "  - Exactly one of --packaged, --exe, or (--electron and --main) must be provided.",
+      "  - --packaged finds the app electron-builder wrote into release/, on either platform.",
       "  - There are no fallbacks or defaults; all required flags must be set."
     ].join("\n")
   );
