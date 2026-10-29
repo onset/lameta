@@ -553,18 +553,21 @@ export class Project extends Folder {
         customVocabularies
       );
       sCurrentProject = project;
+      const foldersLeftOut: string[] = [];
       const sesssionsDir = Path.join(directory, "Sessions");
       fs.ensureDirSync(sesssionsDir);
       fs.readdirSync(sesssionsDir, "utf8").forEach((childName) => {
         const dir = Path.join(sesssionsDir, childName);
         if (fs.lstatSync(dir).isDirectory()) {
           // console.log(dir);
-          const session = Session.fromDirectory(
-            dir,
-            project.customVocabularies
+          const session = this.loadFolderOrLeaveOut(
+            () => Session.fromDirectory(dir, project.customVocabularies),
+            foldersLeftOut
           );
-          project.sessions.items.push(session);
-          sessionCount++;
+          if (session) {
+            project.sessions.items.push(session);
+            sessionCount++;
+          }
         }
         // else ignore it
       });
@@ -574,19 +577,26 @@ export class Project extends Folder {
         const dir = Path.join(peopleDir, childName);
         if (fs.lstatSync(dir).isDirectory()) {
           //console.log(dir);
-          const person = Person.fromDirectory(
-            dir,
-            project.customVocabularies,
-            // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
-            (o, n) =>
-              project.updateSessionReferencesToPersonWhenIdChanges(o, n),
-            project.languageFinder
+          const person = this.loadFolderOrLeaveOut(
+            () =>
+              Person.fromDirectory(
+                dir,
+                project.customVocabularies,
+                // note: we have to use a fat arrow thing here in order to bind the project to the method, since we are in a static method at the moment
+                (o, n) =>
+                  project.updateSessionReferencesToPersonWhenIdChanges(o, n),
+                project.languageFinder
+              ),
+            foldersLeftOut
           );
-          project.persons.items.push(person);
-          personCount++;
+          if (person) {
+            project.persons.items.push(person);
+            personCount++;
+          }
         }
         // else ignore it
       });
+      this.notifyFoldersLeftOut(foldersLeftOut);
 
       project.sessions.selectedIndex =
         project.sessions.items.length > 0 ? 0 : -1;
@@ -619,6 +629,31 @@ export class Project extends Folder {
       // tslint:disable-next-line: no-object-literal-type-assertion
       return { loadingError: err.message } as Project;
     }
+  }
+
+  // A session or person folder whose files cannot be read (empty, damaged, locked, or
+  // from a newer lameta) stays out of the project, so lameta has nothing that could
+  // save over those files.
+  private static loadFolderOrLeaveOut<T>(
+    load: () => T,
+    foldersLeftOut: string[]
+  ): T | undefined {
+    try {
+      return load();
+    } catch (err) {
+      safeCaptureException(err);
+      console.error(err);
+      foldersLeftOut.push(err.message);
+      return undefined;
+    }
+  }
+
+  private static notifyFoldersLeftOut(foldersLeftOut: string[]) {
+    if (foldersLeftOut.length === 0) return;
+    NotifyError(
+      "lameta could not read some files in this project, so it left out the sessions or people that they belong to, and will not change those files. The reason for each file is below. If a file is empty or damaged, restore it from a backup or another copy of the project, then reopen the project.",
+      foldersLeftOut.join("\n")
+    );
   }
 
   // Count how many sessions and people folders exist without loading them
@@ -725,13 +760,17 @@ export class Project extends Folder {
       });
 
       const overallTotal = sessionDirs.length + peopleDirs.length;
+      const foldersLeftOut: string[] = [];
 
       for (let i = 0; i < sessionDirs.length; i++) {
         const childName = sessionDirs[i];
         const dir = Path.join(sessionsDir, childName);
 
-        const session = Session.fromDirectory(dir, project.customVocabularies);
-        project.sessions.items.push(session);
+        const session = this.loadFolderOrLeaveOut(
+          () => Session.fromDirectory(dir, project.customVocabularies),
+          foldersLeftOut
+        );
+        if (session) project.sessions.items.push(session);
 
         // Yield to event loop every YIELD_BATCH_SIZE items to allow UI updates
         if (
@@ -763,13 +802,18 @@ export class Project extends Folder {
         const childName = peopleDirs[i];
         const dir = Path.join(peopleDir, childName);
 
-        const person = Person.fromDirectory(
-          dir,
-          project.customVocabularies,
-          (o, n) => project.updateSessionReferencesToPersonWhenIdChanges(o, n),
-          project.languageFinder
+        const person = this.loadFolderOrLeaveOut(
+          () =>
+            Person.fromDirectory(
+              dir,
+              project.customVocabularies,
+              (o, n) =>
+                project.updateSessionReferencesToPersonWhenIdChanges(o, n),
+              project.languageFinder
+            ),
+          foldersLeftOut
         );
-        project.persons.items.push(person);
+        if (person) project.persons.items.push(person);
 
         // Yield to event loop every YIELD_BATCH_SIZE items to allow UI updates
         if (
@@ -786,6 +830,8 @@ export class Project extends Folder {
           await new Promise((resolve) => setTimeout(resolve, 0));
         }
       }
+
+      this.notifyFoldersLeftOut(foldersLeftOut);
 
       project.sessions.selectedIndex =
         project.sessions.items.length > 0 ? 0 : -1;

@@ -790,9 +790,10 @@ export /*babel doesn't like this: abstract*/ class File {
           }
         );
         if (!xmlAsObject) {
-          // there was a sentry error report that seemed to implicate this being null
+          // xml2js gives null when the file has no element at all, e.g. when it has zero
+          // bytes because a save was cut off between truncating the file and writing it
           throw new Error(
-            `Got null xmlAsObject in readMetadataFile ${this.metadataFilePath}`
+            `${this.metadataFilePath} is empty, so lameta cannot read it.`
           );
         }
         // that will have a root with one child, like "Session" or "Meta". Zoom in on that
