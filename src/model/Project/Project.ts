@@ -1513,6 +1513,12 @@ export class ProjectMetadataFile extends FolderMetadataFile {
     );
 
     this.finishLoading();
+    // Unlike a session or person, a project cannot open without its own file
+    if (this.metadataReadProblem !== undefined) {
+      throw new Error(
+        t`lameta could not read ${this.metadataFilePath}: ${this.metadataReadProblem}`
+      );
+    }
     this.migrate();
   }
 
