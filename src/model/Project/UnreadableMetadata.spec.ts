@@ -23,6 +23,7 @@ import ImdiBundler from "../../export/ImdiBundler";
 import { getRoCrate } from "../../export/ROCrate/RoCrateExporter";
 import { IMDIMode } from "../../export/ImdiGenerator";
 import * as NotifyModule from "../../components/Notify";
+import { getStatusOfFile } from "../file/FileStatus";
 import { setupLanguageFinderForTests } from "../../languageFinder/LanguageFinder";
 
 temp.track();
@@ -158,6 +159,22 @@ describe("a project with metadata files that lameta cannot read", () => {
     sessionInFolder(project, "Good").saveAllFilesInFolder();
     project.saveAllFilesInFolder();
     expect(fs.readFileSync(metaPath, "utf8")).toBe(corrupt);
+  });
+
+  it("still reports a media file as missing when its .meta is also unreadable", () => {
+    const dir = Path.join(projectDirectory, "Sessions", "Good");
+    const mediaPath = Path.join(dir, "gone.wav");
+    fs.writeFileSync(mediaPath, "pretend audio");
+    fs.writeFileSync(mediaPath + ".meta", `<MetaData><notes>unterminated`);
+
+    const project = open();
+    fs.removeSync(mediaPath);
+
+    const file = sessionInFolder(project, "Good").files.find((f) =>
+      f.pathInFolderToLinkFileOrLocalCopy.endsWith("gone.wav")
+    );
+    expect(file?.metadataReadProblem).toBeTruthy();
+    expect(getStatusOfFile(file!).missing).toBe(true);
   });
 
   it("shows no notification while loading", () => {
