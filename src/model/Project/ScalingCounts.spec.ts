@@ -167,9 +167,7 @@ describe("work per action as the project grows", () => {
   it("matching contributors to people grows no faster than the project", () => {
     const [small, large] = atBothSizes((n) => {
       const project = open(n);
-      return count(Person.prototype, "getIdToUseForReferences", () =>
-        checkProjectFolders(project),
-      );
+      return count(Person.prototype, "getIdToUseForReferences", () => checkProjectFolders(project));
     });
     expect(large).toBeLessThanOrEqual(small * (kLarge / kSmall) * 1.5);
   });
@@ -189,9 +187,7 @@ describe("work per action as the project grows", () => {
     }
   });
 
-  // finding 14: generating a session finds a person's file by scanning every folder, so each
-  // session's IMDI depends on the list of sessions
-  it.fails("adding a session generates IMDI for the new session only (finding 14)", async () => {
+  it("adding a session generates IMDI for the new session only (finding 14)", async () => {
     vi.useFakeTimers();
     const generated: number[] = [];
     for (const n of [kSmall, kLarge]) {

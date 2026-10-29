@@ -17,7 +17,7 @@ import {
 } from "../model/file/FileTypeInfo";
 import { titleCase } from "title-case";
 import { sanitizeForExport } from "../other/sanitizeForArchive";
-import { fileExportNames, sessionFolderExportNames } from "./exportNames";
+import { fileExportNames, sessionFolderExportName } from "./exportNames";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyWarning } from "../components/Notify";
@@ -1022,7 +1022,7 @@ export default class ImdiGenerator {
     // that two names that sanitize to the same one still get places of their own.
     const path = f.getRelativePathForExportingTheActualFile();
     this.exportFolderName ??= this.project
-      ? sessionFolderExportNames(this.project).get(this.folderInFocus)
+      ? sessionFolderExportName(this.project, this.folderInFocus)
       : undefined;
     const immediateParentDirectoryName =
       this.exportFolderName ?? sanitizeForExport(Path.basename(Path.dirname(path)));

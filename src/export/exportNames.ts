@@ -1,4 +1,5 @@
 import * as Path from "path";
+import { computed, IComputedValue } from "mobx";
 import { Project } from "../model/Project/Project";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
@@ -60,6 +61,30 @@ export function sessionFolderExportNames(project: Project): Map<Folder, string> 
     kMetadataExtensions,
   );
   return new Map(sessions.map((s, i) => [s, names[i]]));
+}
+
+const sessionFolderExportNamesOfProject = new WeakMap<
+  Project,
+  IComputedValue<Map<Folder, string>>
+>();
+const sessionFolderExportNameOfSession = new WeakMap<Folder, IComputedValue<string | undefined>>();
+
+// The name of one session's folder in an IMDI or OPEX export. The name depends on every
+// session of the project, but a reaction that reads it runs again only when this session's
+// name changes, so adding a session does not make every session's IMDI due again.
+export function sessionFolderExportName(project: Project, session: Folder): string | undefined {
+  let names = sessionFolderExportNamesOfProject.get(project);
+  if (!names) {
+    names = computed(() => sessionFolderExportNames(project));
+    sessionFolderExportNamesOfProject.set(project, names);
+  }
+  let name = sessionFolderExportNameOfSession.get(session);
+  if (!name) {
+    const namesOfProject = names;
+    name = computed(() => namesOfProject.get().get(session));
+    sessionFolderExportNameOfSession.set(session, name);
+  }
+  return name.get();
 }
 
 // The name of each of a folder's files in an IMDI or OPEX export. An OPEX export writes the
