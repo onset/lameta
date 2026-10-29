@@ -25,23 +25,66 @@ const getBool = (name: string) => {
 const runsStr = getFlag("runs");
 const timeoutStr = getFlag("timeout");
 const verbose = getBool("verbose");
-const exe = getFlag("exe");
+const exe = getFlag("exe") ?? (getBool("packaged") ? findPackagedApp() : undefined);
 const electron = getFlag("electron");
 const mainJs = getFlag("main");
 const appArgFlags = args
   .filter((a) => a.startsWith("--app-arg="))
   .map((a) => a.substring("--app-arg=".length));
 
+// --packaged means "whatever electron-builder just wrote into release/", so that one command
+// works on either platform. electron-builder names the Mac folder after the architecture it
+// built (mac-universal, mac-arm64, ...), and electron-builder.config.js names an alpha or beta
+// build "lameta alpha" or "lameta beta", so the app is looked up rather than spelled out.
+const packagedAppName = /^lameta( alpha| beta)?$/;
+function findPackagedApp(): string | undefined {
+  const releaseDir = path.resolve(process.cwd(), "release");
+  if (!fs.existsSync(releaseDir)) return undefined;
+  const binaries: string[] = [];
+  if (process.platform === "win32") {
+    const dir = path.join(releaseDir, "win-unpacked");
+    if (fs.existsSync(dir)) {
+      for (const entry of fs.readdirSync(dir)) {
+        if (entry.endsWith(".exe") && packagedAppName.test(entry.slice(0, -4))) {
+          binaries.push(path.join(dir, entry));
+        }
+      }
+    }
+  } else if (process.platform === "darwin") {
+    for (const entry of fs.readdirSync(releaseDir)) {
+      const dir = path.join(releaseDir, entry);
+      if (!fs.statSync(dir).isDirectory()) continue;
+      for (const app of fs.readdirSync(dir)) {
+        const name = app.slice(0, -".app".length);
+        if (app.endsWith(".app") && packagedAppName.test(name)) {
+          binaries.push(path.join(dir, app, "Contents", "MacOS", name));
+        }
+      }
+    }
+  }
+  // There can be several: building for one architecture or channel and later for another
+  // leaves both in release/. Take the most recently written, so a check never silently
+  // exercises a build from an earlier run.
+  const newest = binaries
+    .filter((binary) => fs.existsSync(binary))
+    .map((binary) => ({ binary, when: fs.statSync(binary).mtimeMs }))
+    .sort((a, b) => b.when - a.when);
+  return newest.length > 0 ? newest[0].binary : undefined;
+}
+
 const usage = () => {
   console.error(
     [
       "Usage:",
+      "  tsx scripts/test-launch.ts --packaged --runs=10 --timeout=30000 [--verbose]",
+      "  OR",
       "  tsx scripts/test-launch.ts --exe=./release/win-unpacked --runs=10 --timeout=30000 [--verbose]",
       "  OR",
       "  tsx scripts/test-launch.ts --electron=./node_modules/.bin/electron --main=./dist/src/mainProcess/main.js --runs=10 --timeout=30000 [--verbose]",
       "",
       "Notes:",
-      "  - Exactly one of --exe or (--electron and --main) must be provided.",
+      "  - Exactly one of --packaged, --exe, or (--electron and --main) must be provided.",
+      "  - --packaged finds the app electron-builder wrote into release/, on either platform.",
       "  - There are no fallbacks or defaults; all required flags must be set.",
     ].join("\n"),
   );
@@ -156,9 +199,8 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
     });
   });
 
-  if (result.code !== 0 && result.code !== null) {
-    throw new Error(`Electron exited with code ${result.code}`);
-  }
+  // The marker is read before the exit code, because the app reports *why* it failed there and
+  // a bare "exited with code 1" would hide it.
   if (!fs.existsSync(marker)) {
     throw new Error(
       [
@@ -180,12 +222,42 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
       ].join(" "),
     );
   }
+  // Only a packaged app can get the ffprobe path wrong, and this is the only check in the repo
+  // that runs one, so the failure message has to name the path the app actually resolved.
+  const ffprobe = parsed?.ffprobe;
+  if (ffprobe && ffprobe.ran !== true) {
+    throw new Error(
+      [
+        `The app could not run ffprobe, so selecting an audio or video file would fail.`,
+        `It resolved the path to ${ffprobe.path}, which ${
+          ffprobe.exists ? "exists but would not run" : "does not exist"
+        }.`,
+        ffprobe.error ? `error=${ffprobe.error}` : "",
+        parsed?.appPath ? `app.getAppPath()=${parsed.appPath}` : "",
+        `marker=${marker}`,
+      ]
+        .filter(Boolean)
+        .join(" "),
+    );
+  }
   if (!parsed || parsed.ok !== true) {
     const phase = parsed?.phase ? `phase=${parsed.phase}` : "phase=unknown";
     const detail = parsed?.error ? `error=${parsed.error}` : `contents=${raw}`;
     throw new Error(
       [`App reported a launch failure via marker.`, phase, detail, `marker=${marker}`].join(" "),
     );
+  }
+  if (!ffprobe) {
+    throw new Error(
+      [
+        `The app reported a successful launch but no ffprobe result, so the check did not run.`,
+        `Marker contents: ${raw}`,
+        `marker=${marker}`,
+      ].join(" "),
+    );
+  }
+  if (result.code !== 0 && result.code !== null) {
+    throw new Error(`Electron exited with code ${result.code}`);
   }
 }
 

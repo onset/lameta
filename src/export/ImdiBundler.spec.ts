@@ -9,6 +9,7 @@ import * as Path from "path";
 import { ExportSessionData } from "./ExportBundleTypes";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { MainProcessImdiExport } from "../mainProcess/MainProcessImdiExport";
+import { corpusExportName } from "./exportNames";
 
 let project: Project;
 const projectDir = temp.mkdirSync("lameta imdi bundler test");
@@ -561,4 +562,32 @@ describe("what export writes to disk", () => {
     );
     expect(forChecks).toMatch(/lameta-source/);
   });
+});
+
+describe("a project title that a file name cannot be", () => {
+  it.each([
+    ["IMDI", 'Kakabe: "stories" / songs?', IMDIMode.RAW_IMDI, ".imdi"],
+    ["OPEX", 'Kakabe: "stories" / songs?', IMDIMode.OPEX, ".opex"],
+    ["IMDI", "CON", IMDIMode.RAW_IMDI, ".imdi"],
+    ["OPEX", "CON", IMDIMode.OPEX, ".opex"],
+    ["IMDI", "???", IMDIMode.RAW_IMDI, ".imdi"],
+  ])(
+    "in %s mode, for the title %s, writes a corpus file that Windows accepts",
+    async (_, title, mode, extension) => {
+      const dir = temp.mkdirSync("lameta title");
+      const titled = Project.fromDirectory(dir);
+      titled.properties.setText("name", "");
+      titled.properties.setText("title", title);
+      titled.addSession();
+      const target = temp.mkdirSync("lameta title output");
+      await ImdiBundler.saveImdiBundleToFolder(titled, target, mode, false, () => true);
+      const written = (fs.readdirSync(target, { recursive: true }) as string[]).map((p) =>
+        Path.basename(p),
+      );
+      const name = corpusExportName(titled);
+      expect(name).toMatch(/^[^<>:"/\\|?*]+$/);
+      expect(name.toUpperCase()).not.toBe("CON");
+      expect(written).toContain(name + extension);
+    },
+  );
 });

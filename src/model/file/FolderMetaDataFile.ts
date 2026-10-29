@@ -61,7 +61,10 @@ export class FolderMetadataFile extends File {
         }
       } else {
         // ok, just make an empty one.
-        fs.writeFileSync(metadataPath, `<${xmlRootName}></${xmlRootName}>`); // NO: break SayMore Classic <${xmlRootName}/>
+        PatientFS.writeFileSyncWithNotifyThenRethrow(
+          metadataPath,
+          `<${xmlRootName}></${xmlRootName}>`, // NO: break SayMore Classic <${xmlRootName}/>
+        );
       }
     }
     super(

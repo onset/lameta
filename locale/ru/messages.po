@@ -49,7 +49,7 @@ msgid "About lameta"
 msgstr ""
 
 msgid "Access"
-msgstr ""
+msgstr "Доступ"
 
 msgid "Across sessions"
 msgstr ""
@@ -383,7 +383,7 @@ msgid "Found no file with a name containing 'Consent'"
 msgstr ""
 
 msgid "Full Name"
-msgstr ""
+msgstr "Полное имя"
 
 msgid "Generating CSV export..."
 msgstr ""
@@ -422,7 +422,7 @@ msgid "How are you using lameta?"
 msgstr ""
 
 msgid "ID"
-msgstr ""
+msgstr "Идентификатор сессии записи"
 
 msgid "IMDI Only"
 msgstr ""

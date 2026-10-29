@@ -8,6 +8,7 @@ import ffmpeg from "fluent-ffmpeg";
 import ExifReader from "exifreader";
 import fs from "fs";
 import * as Path from "path";
+import { getFfprobePath } from "../other/ffprobePath";
 
 //const imagesize = require("image-size");
 const humanizeDuration = require("humanize-duration");
@@ -175,6 +176,14 @@ function getStatsFromFileAsync(file: File): Promise<Stats> {
     case "Video":
       return new Promise((resolve, reject) => {
         try {
+          const ffprobePath = getFfprobePath();
+          if (!fs.existsSync(ffprobePath)) {
+            resolve({
+              error: `lameta could not find ffprobe, which it needs to read audio and video statistics. It looked in ${ffprobePath}.`,
+            });
+            return;
+          }
+          ffmpeg.setFfprobePath(ffprobePath);
           ffmpeg.ffprobe(file.getActualFilePath(), (err, result) => {
             if (err) {
               console.error(`error testing ffprobe on '${file.getActualFilePath()}'`);

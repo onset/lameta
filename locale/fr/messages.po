@@ -470,7 +470,7 @@ msgid "Language Code"
 msgstr "Code de la Langue"
 
 msgid "Languages"
-msgstr ""
+msgstr "Langues"
 
 msgid "Larger"
 msgstr "Plus grand"

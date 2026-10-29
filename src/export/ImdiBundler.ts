@@ -336,7 +336,7 @@ export default class ImdiBundler {
         imdiMode === IMDIMode.OPEX ? imdiFileName : undefined,
       );
       session.files.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+        if (!f.isDeletedLinkFile() && ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
             source: f.getActualFilePath(),
             destination: Path.join(targetDirectory, fileNames.get(f)!),
@@ -408,7 +408,7 @@ export default class ImdiBundler {
         imdiMode === IMDIMode.OPEX ? sanitizeForExport(imdiFileName) : undefined,
       );
       folder.files.forEach((f: File) => {
-        if (ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
+        if (!f.isDeletedLinkFile() && ImdiGenerator.shouldIncludeFile(f.getActualFilePath())) {
           filesToCopy.push({
             source: f.getActualFilePath(),
             destination: Path.join(destinationFolderPath, fileNames.get(f)!),
@@ -530,7 +530,11 @@ export default class ImdiBundler {
         imdiMode === IMDIMode.OPEX ? "ConsentDocuments" + extensionWithDot : undefined,
       );
       consentFileCopies.forEach(({ original, copy }) => {
-        if (ImdiGenerator.shouldIncludeFile(original.getActualFilePath())) {
+        // checked again here because a sync service may have deleted the .link file since
+        if (
+          !original.isDeletedLinkFile() &&
+          ImdiGenerator.shouldIncludeFile(original.getActualFilePath())
+        ) {
           filesToCopy.push({
             source: original.getActualFilePath(),
             destination: Path.join(destinationFolderPath, copyExportNames.get(copy)!),
@@ -671,7 +675,10 @@ export default class ImdiBundler {
         session.getAllContributionsToAllFiles().forEach((contribution) => {
           const p = findPersonToExport(project, contribution.personReference);
           if (p) {
-            const consentFiles = p.files.filter((f) => f.isLabeledAsConsent());
+            // a linked file whose .link file was deleted is not there to give consent
+            const consentFiles = p.files.filter(
+              (f) => f.isLabeledAsConsent() && !f.isDeletedLinkFile(),
+            );
             // only add if it has at least one consent file
             if (consentFiles && consentFiles.length > 0) {
               // only add each person once (or once for each unique role?)

@@ -128,10 +128,19 @@ export function sentryErrorFromString(message: string) {
     return; // Skip in E2E tests
   }
   if (userSettingsSingleton.SendErrors) {
+    let error: Error;
     try {
+      // thrown and caught only to give the error a stack trace
       throw new Error(message);
     } catch (err) {
-      Sentry.captureException(err);
+      error = err as Error;
+    }
+    try {
+      Sentry.captureException(error);
+    } catch (sentryError) {
+      // Callers report a problem they have already handled, so a failure inside
+      // Sentry must not become a second problem for them. See safeCaptureException.
+      console.error("Failed to capture exception with Sentry:", sentryError);
     }
   } else {
     console.log(`Skipping sending error: ${message}`);
