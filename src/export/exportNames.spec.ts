@@ -52,28 +52,33 @@ describe("sessionFolderExportName", () => {
     return dir;
   }
 
-  it("tells a reaction about a session's name only when that name changes", () => {
+  it.each([
+    ["Tape 1", "Tape_1"],
+    ["Récit 1", "Recit_1"],
+    ["故事 1", "XX_1"],
+  ])("tells a reaction about the name of %s only when that name changes", (folder, name) => {
     const projectDir = Path.join(temp.mkdirSync("lameta export name"), "Names");
-    makeSession(projectDir, "Tape 1");
+    makeSession(projectDir, folder);
     const project = Project.fromDirectory(projectDir);
-    const tape1 = project.sessions.items[0];
+    const first = project.sessions.items[0];
     const names: (string | undefined)[] = [];
-    const stop = autorun(() => names.push(sessionFolderExportName(project, tape1)));
-    const add = (folder: string) =>
+    const stop = autorun(() => names.push(sessionFolderExportName(project, first)));
+    const add = (other: string) =>
       runInAction(() =>
         project.sessions.items.push(
           Session.fromDirectory(
-            makeSession(projectDir, folder),
+            makeSession(projectDir, other),
             new EncounteredVocabularyRegistry(),
           ),
         ),
       );
 
     add("Interview");
-    expect(names).toEqual(["Tape_1"]);
-    // "Tape_1" keeps its name, so "Tape 1" is numbered
-    add("Tape_1");
-    expect(names).toEqual(["Tape_1", "Tape_1_2"]);
+    expect(names).toEqual([name]);
+    // a folder already named what the first one sanitizes to keeps its name, so the first
+    // one is numbered
+    add(name);
+    expect(names).toEqual([name, `${name}_2`]);
     stop();
   });
 });

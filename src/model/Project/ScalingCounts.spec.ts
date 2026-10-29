@@ -187,6 +187,8 @@ describe("work per action as the project grows", () => {
     }
   });
 
+  // finding 14: a session's IMDI reads its own export name, which depends on the list of
+  // sessions; it must be due again only when that name changes
   it("adding a session generates IMDI for the new session only (finding 14)", async () => {
     vi.useFakeTimers();
     const generated: number[] = [];
