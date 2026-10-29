@@ -144,7 +144,6 @@ describe("a project that loads", () => {
   });
 
   it("is saved by saveLoadedProject", () => {
-    fs.removeSync(Path.join(projectDir, "Sessions", "broken"));
     const project = Project.fromDirectory(projectDir);
     const holder = new ProjectHolder();
     holder.setProject(project);
