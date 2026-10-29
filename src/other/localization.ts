@@ -12,6 +12,8 @@ import { FieldDefinition } from "../model/field/FieldDefinition";
 import { IChoice } from "../model/field/Field";
 import { loadOLACRoles } from "../model/Project/AuthorityLists/AuthorityLists";
 import fs from "fs";
+import log from "./log";
+import { sentryErrorFromString } from "./errorHandling";
 
 const languages = ["en", "es", "zh-CN", "fa", "fr", "id", "ps", "ru", "pt-BR"];
 export const catalogs = {};
@@ -92,9 +94,14 @@ function loadOneCatalog(folder: string, localeCode: string, set: string) {
   const path = locateDependencyForFilesystemCall(`locale/${folder}/${set}.js`);
   // if it doesn't exist
   if (!fs.existsSync(path)) {
-    console.error(
-      `Could not locate ${path}. If you are running the dev server, make sure you have run "yarn strings:compile" at least once.`
-    );
+    const message = `Could not locate ${path}. If you are running the dev server, make sure you have run "yarn strings:compile" at least once.`;
+    console.error(message);
+    log.error(message);
+    sentryErrorFromString(message);
+    // Without this, require() below throws "Cannot find module" and takes down
+    // startup. A missing catalog has to leave the UI in its source language,
+    // not stop lameta from opening.
+    return;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
