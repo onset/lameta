@@ -154,9 +154,8 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
     });
   });
 
-  if (result.code !== 0 && result.code !== null) {
-    throw new Error(`Electron exited with code ${result.code}`);
-  }
+  // The marker is read before the exit code, because the app reports *why* it failed there and
+  // a bare "exited with code 1" would hide it.
   if (!fs.existsSync(marker)) {
     throw new Error(
       [
@@ -178,6 +177,26 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
       ].join(" ")
     );
   }
+  // Only a packaged app can get the ffprobe path wrong, and this is the only check in the repo
+  // that runs one, so the failure message has to name the path the app actually resolved.
+  const ffprobe = parsed?.ffprobe;
+  if (!ffprobe || ffprobe.ran !== true) {
+    throw new Error(
+      [
+        `The app could not run ffprobe, so selecting an audio or video file would fail.`,
+        ffprobe
+          ? `It resolved the path to ${ffprobe.path}, which ${
+              ffprobe.exists ? "exists but would not run" : "does not exist"
+            }.`
+          : `The marker carried no ffprobe result at all: ${raw}`,
+        ffprobe?.error ? `error=${ffprobe.error}` : "",
+        parsed?.appPath ? `app.getAppPath()=${parsed.appPath}` : "",
+        `marker=${marker}`
+      ]
+        .filter(Boolean)
+        .join(" ")
+    );
+  }
   if (!parsed || parsed.ok !== true) {
     const phase = parsed?.phase ? `phase=${parsed.phase}` : "phase=unknown";
     const detail = parsed?.error ? `error=${parsed.error}` : `contents=${raw}`;
@@ -189,6 +208,9 @@ async function runOnce(i: number, tmpDir: string): Promise<void> {
         `marker=${marker}`
       ].join(" ")
     );
+  }
+  if (result.code !== 0 && result.code !== null) {
+    throw new Error(`Electron exited with code ${result.code}`);
   }
 }
 

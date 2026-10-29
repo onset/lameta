@@ -1,6 +1,44 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import { writeFileSync } from "fs";
+import { execFileSync } from "child_process";
+import { existsSync, writeFileSync } from "fs";
 import * as path from "path";
+import { ffprobePathForAppPath } from "../other/ffprobePath";
+
+export const isLaunchTest = (): boolean =>
+  process.argv.some((a) => a.startsWith("--launch-test"));
+
+type FfprobeCheck = {
+  path: string;
+  exists: boolean;
+  ran: boolean;
+  version?: string;
+  error?: string;
+};
+
+// Checks that the app can find and run ffprobe where it is actually packaged. Only a packaged
+// app can get this wrong -- the paths differ inside app.asar -- so this runs where the only
+// test of a packaged app runs, and scripts/test-launch.ts fails the run on it.
+const checkFfprobe = (): FfprobeCheck => {
+  const ffprobePath = ffprobePathForAppPath(app.getAppPath());
+  if (!existsSync(ffprobePath)) {
+    return { path: ffprobePath, exists: false, ran: false };
+  }
+  try {
+    const version = execFileSync(ffprobePath, ["-version"], {
+      encoding: "utf8"
+    })
+      .split("\n")[0]
+      .trim();
+    return { path: ffprobePath, exists: true, ran: true, version };
+  } catch (e) {
+    return {
+      path: ffprobePath,
+      exists: true,
+      ran: false,
+      error: (e as Error).message
+    };
+  }
+};
 
 type LaunchTestOptions = {
   markerPath?: string;
@@ -45,14 +83,18 @@ export const initLaunchTest = (win: BrowserWindow | null) => {
   let readyToShow = win.isVisible();
 
   const completeAndQuit = () => {
+    const ffprobe = checkFfprobe();
+    const ok = !opts.simulateFail && ffprobe.ran;
     try {
       writeFileSync(
         opts.markerPath!,
         JSON.stringify({
-          ok: !opts.simulateFail,
-          phase: "renderer-ready",
+          ok,
+          phase: ffprobe.ran ? "renderer-ready" : "ffprobe",
           when: new Date().toISOString(),
           pid: process.pid,
+          appPath: app.getAppPath(),
+          ffprobe,
           reason: opts.simulateFail ? "simulate-launch-fail" : undefined
         })
       );
@@ -64,7 +106,7 @@ export const initLaunchTest = (win: BrowserWindow | null) => {
         win?.destroy();
       } catch {}
       app.quit();
-      setTimeout(() => app.exit(opts.simulateFail ? 1 : 0), 2000);
+      setTimeout(() => app.exit(ok ? 0 : 1), 2000);
     });
   };
 

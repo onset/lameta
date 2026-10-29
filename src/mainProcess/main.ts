@@ -14,7 +14,7 @@ import { mkdirSync } from "fs";
 import * as path from "path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
-import { initLaunchTest } from "./launchTest";
+import { initLaunchTest, isLaunchTest } from "./launchTest";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
 
 // Disable GPU Acceleration for Windows 7
@@ -106,6 +106,24 @@ async function createWindow() {
     y = 10000;
   }
 
+  // The launch test opens the app and quits again. Keep its window off the display the
+  // developer is working on, and (below) don't maximize it: nobody is meant to look at it.
+  const launchTest = isLaunchTest();
+  if (launchTest) {
+    const primaryId = screen.getPrimaryDisplay().id;
+    const others = screen
+      .getAllDisplays()
+      .filter((d) => d.id !== primaryId)
+      .sort(
+        (a, b) =>
+          a.bounds.width * a.bounds.height - b.bounds.width * b.bounds.height
+      );
+    if (others.length > 0) {
+      x = others[0].bounds.x + 40;
+      y = others[0].bounds.y + 40;
+    }
+  }
+
   win = new BrowserWindow({
     x: x,
     y: y,
@@ -138,14 +156,14 @@ async function createWindow() {
     win.loadFile(indexHtml);
   }
   win.on("ready-to-show", () => {
-    win!.maximize();
+    if (!launchTest) win!.maximize();
     win!.show();
   });
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on("did-finish-load", () => {
     win!.show();
-    win!.focus();
+    if (!launchTest) win!.focus();
     //fillLastMonitor();
     if (process.env.NODE_ENV === "development") {
       console.log(

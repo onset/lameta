@@ -1,8 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
-
-// the real module reaches for @electron/remote at import time, which is not available here
-vi.mock("@electron/remote", () => ({ app: { getAppPath: () => "" } }));
-
+import { describe, it, expect } from "vitest";
 import { ffprobePathForAppPath } from "./ffprobePath";
 
 const slashes = (path: string) => path.replace(/\\/g, "/");
