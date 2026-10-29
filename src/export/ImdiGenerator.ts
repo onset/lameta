@@ -1,3 +1,4 @@
+import { findPersonToExport } from "../model/Project/exportableFolders";
 import pkg from "package.json";
 import assert from "assert";
 import { Session } from "../model/Project/Session/Session";
@@ -421,7 +422,7 @@ export default class ImdiGenerator {
       if (trimmedName.length === 0) {
         return;
       }
-      const person = this.project.findPerson(trimmedName);
+      const person = findPersonToExport(this.project, trimmedName);
       if (person) {
         const referenceDate = session.properties.getDateField("date").asDate();
         this.actor(

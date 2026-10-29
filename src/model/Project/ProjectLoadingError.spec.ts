@@ -5,13 +5,13 @@ import * as Path from "path";
 import { Project, ProjectHolder } from "./Project";
 import { setupLanguageFinderForTests } from "../../languageFinder/LanguageFinder";
 
-// A project that fails to load (here, because one session file is empty, which
-// makes readMetadataFile throw "Got null xmlAsObject") comes back from
+// A project that fails to load (here, because its .sprj file is empty) comes back from
 // Project.fromDirectory as a stub that has only `loadingError`. HomePage hands
 // that stub to ProjectHolder.setProject and then builds the main menu, which
 // asks Project for its metadata language slots. Sentry LAMETA-2RM.
 
 let projectDir: string;
+let sprjPath: string;
 
 beforeAll(() => {
   setupLanguageFinderForTests();
@@ -21,7 +21,7 @@ beforeEach(() => {
   projectDir = fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-loading-error-"));
   fs.copySync("sample data/Edolo sample", projectDir);
   // lameta finds the project file by the folder name
-  const sprjPath = Path.join(projectDir, Path.basename(projectDir) + ".sprj");
+  sprjPath = Path.join(projectDir, Path.basename(projectDir) + ".sprj");
   fs.renameSync(Path.join(projectDir, "Edolo sample.sprj"), sprjPath);
   fs.writeFileSync(
     sprjPath,
@@ -32,9 +32,6 @@ beforeEach(() => {
         "<Project>\n\t<metadataLanguages>spa:Spanish;eng:English</metadataLanguages>"
       )
   );
-  const brokenSessionDir = Path.join(projectDir, "Sessions", "broken");
-  fs.ensureDirSync(brokenSessionDir);
-  fs.writeFileSync(Path.join(brokenSessionDir, "broken.session"), "");
 });
 
 afterEach(() => {
@@ -43,20 +40,24 @@ afterEach(() => {
 });
 
 describe("a project that fails to load", () => {
+  beforeEach(() => {
+    fs.writeFileSync(sprjPath, "");
+  });
+
   it("is reported through loadingError", () => {
     const project = Project.fromDirectory(projectDir);
-    expect(project.loadingError).toContain("broken.session");
+    expect(project.loadingError).toContain(".sprj");
   });
 
   it("is reported through loadingError when loaded asynchronously", async () => {
     const project = await Project.fromDirectoryAsync(projectDir);
-    expect(project.loadingError).toContain("broken.session");
+    expect(project.loadingError).toContain(".sprj");
   });
 
   it("keeps its loadingError on the ProjectHolder so HomePage can show it", () => {
     const holder = new ProjectHolder();
     holder.setProject(Project.fromDirectory(projectDir));
-    expect(holder.project?.loadingError).toContain("broken.session");
+    expect(holder.project?.loadingError).toContain(".sprj");
   });
 
   it("is not the ProjectHolder's loadedProject, so nothing tries to save it", () => {
@@ -99,7 +100,6 @@ describe("a project that fails to load", () => {
 
 describe("a project that loads", () => {
   it("is the current project that the language accessors read", () => {
-    fs.removeSync(Path.join(projectDir, "Sessions", "broken"));
     const project = Project.fromDirectory(projectDir);
     expect(project.loadingError).toBeUndefined();
     const holder = new ProjectHolder();

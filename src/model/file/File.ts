@@ -21,7 +21,6 @@ import {
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
 import {
   NotifyError,
-  NotifyException,
   NotifyFileAccessProblem,
   NotifyRenameProblem,
   NotifySuccess,
@@ -99,6 +98,14 @@ export /*babel doesn't like this: abstract*/ class File {
   public properties = new FieldSet();
 
   public contributions = new Array<Contribution>();
+
+  // Why readMetadataFile() could not read the metadata file (0-byte file,
+  // truncated write from an interrupted cloud sync, another encoding, a file
+  // from a newer lameta, etc.), or undefined when it could. The in-memory
+  // properties are then empty/default, so save() must refuse to write --
+  // otherwise it would overwrite the user's real (possibly recoverable) bytes
+  // with an empty template.
+  public metadataReadProblem: string | undefined = undefined;
 
   public encounteredVocabularyRegistry: EncounteredVocabularyRegistry;
 
@@ -380,7 +387,8 @@ export /*babel doesn't like this: abstract*/ class File {
       copyInProgress: observable,
       copyProgress: observable,
       properties: observable,
-      contributions: observable
+      contributions: observable,
+      metadataReadProblem: observable
     });
 
     this.canDelete = canDelete;
@@ -752,7 +760,7 @@ export /*babel doesn't like this: abstract*/ class File {
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
       if (fs.existsSync(this.metadataFilePath)) {
-        const xml: string = PatientFS.readFileSyncWithNotifyAndRethrow(
+        const xml: string = PatientFS.readFileSyncNoNotify(
           this.metadataFilePath
         );
 
@@ -767,18 +775,14 @@ export /*babel doesn't like this: abstract*/ class File {
           },
           (err, result) => {
             if (err) {
-              throw Error(
-                `There was a problem reading the XML in ${this.metadataFilePath}: ${err.message}`
-              );
+              throw err;
             }
             xmlAsObject = result;
           }
         );
         if (!xmlAsObject) {
-          // there was a sentry error report that seemed to implicate this being null
-          throw new Error(
-            `Got null xmlAsObject in readMetadataFile ${this.metadataFilePath}`
-          );
+          // xml2js gives null for an empty file (Sentry LAMETA-2RM)
+          throw new Error(t`The file is empty.`);
         }
         // that will have a root with one child, like "Session" or "Meta". Zoom in on that
         // so that we just have the object with its properties.
@@ -794,7 +798,7 @@ export /*babel doesn't like this: abstract*/ class File {
           const current = pkg.version;
           if (compareVersions(minimumVersion, current) === 1) {
             throw Error(
-              `The file ${this.metadataFilePath} is from a later version of lameta. It claims to require at least lameta version ${minimumVersion}. Please upgrade.`
+              t`It is from a later version of lameta and needs lameta ${minimumVersion} or later.`
             );
           }
         }
@@ -812,11 +816,13 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.recomputedChangeWatcher();
     } catch (err) {
-      NotifyException(
-        err,
-        `There was a problem reading ${this.metadataFilePath}`
-      );
-      throw err;
+      // The read or parse failed (0-byte or truncated file, corrupt XML, a
+      // file from a newer lameta, ...). The properties are empty/default, so
+      // save() refuses to write this file. The rest of the project still
+      // loads, and the file's list row and pane say what went wrong, so there
+      // is no notification here.
+      this.metadataReadProblem =
+        err instanceof Error ? err.message : String(err);
     } finally {
       sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
     }
@@ -850,6 +856,17 @@ export /*babel doesn't like this: abstract*/ class File {
     // DEBUG: Allow disabling saves for testing migration without affecting files
     if (userSettings.DisableSavingProjectData) {
       console.log(`[SAVE DISABLED] Would save ${this.metadataFilePath}`);
+      return;
+    }
+
+    // Never overwrite a file whose metadata we could not read. The in-memory
+    // properties are empty/default in that case (see readMetadataFile's
+    // catch), so writing them would destroy the user's real, possibly still
+    // recoverable, bytes on disk.
+    if (this.metadataReadProblem !== undefined) {
+      console.warn(
+        `Refusing to save ${this.metadataFilePath} because lameta could not read it; the file on disk was left untouched.`
+      );
       return;
     }
 

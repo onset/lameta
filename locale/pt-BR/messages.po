@@ -380,6 +380,9 @@ msgstr "Indica que esta é a língua principal do pai ou da mãe."
 msgid "Interface Language"
 msgstr "Idioma da Interface"
 
+msgid "It is from a later version of lameta and needs lameta {minimumVersion} or later."
+msgstr ""
+
 msgid "Items"
 msgstr ""
 
@@ -701,6 +704,9 @@ msgstr ""
 msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
+msgid "The file is empty."
+msgstr ""
+
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "O arquivo está ausente do local esperado na pasta de mídia. A pasta de mídia está definida como {m} e esse arquivo deveria estar em {e}"
 
@@ -850,6 +856,12 @@ msgstr "o lameta não consegue localizar a pasta de mídia {m}. Veja o arquivo: 
 
 msgid "lameta could not find a matching Person for the following contributors:"
 msgstr "lameta não conseguiu encontrar uma pessoa correspondente para os seguintes colaboradores:"
+
+msgid "lameta could not read {0}: {1}"
+msgstr ""
+
+msgid "lameta could not read {fileName}: {reason}"
+msgstr ""
 
 msgid "lameta could not rename the directory."
 msgstr "lameta não conseguiu renomear o diretório."

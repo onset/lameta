@@ -383,6 +383,9 @@ msgstr "表明这是父亲或母亲的主要语言。"
 msgid "Interface Language"
 msgstr "界面语言"
 
+msgid "It is from a later version of lameta and needs lameta {minimumVersion} or later."
+msgstr ""
+
 msgid "Items"
 msgstr ""
 
@@ -704,6 +707,9 @@ msgstr ""
 msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
+msgid "The file is empty."
+msgstr ""
+
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "媒体文件夹中的预期位置没有该文件。媒体文件夹设置为 {m} ，而该文件应位于 {e}"
 
@@ -853,6 +859,12 @@ msgstr "lameta无法找到媒体文件夹{m}。请参阅文件：媒体文件夹
 
 msgid "lameta could not find a matching Person for the following contributors:"
 msgstr "lameta无法在人员中匹配以下贡献者："
+
+msgid "lameta could not read {0}: {1}"
+msgstr ""
+
+msgid "lameta could not read {fileName}: {reason}"
+msgstr ""
 
 msgid "lameta could not rename the directory."
 msgstr "lameta无法重命名目录。"

@@ -39,6 +39,11 @@ export class PatientFS {
       throw err;
     }
   }
+  public static readFileSyncNoNotify(path: string): string {
+    return PatientFS.patientFileOperationSync(() =>
+      fs.readFileSync(path, "utf8")
+    );
+  }
   public static writeFileSyncWithNotifyThenRethrow(
     path: string,
     contents: string

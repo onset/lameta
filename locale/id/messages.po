@@ -385,6 +385,9 @@ msgstr "Menunjukkan bahwa ini adalah bahasa utama ayah atau ibu."
 msgid "Interface Language"
 msgstr "Bahasa Antarmuka"
 
+msgid "It is from a later version of lameta and needs lameta {minimumVersion} or later."
+msgstr ""
+
 msgid "Items"
 msgstr ""
 
@@ -706,6 +709,9 @@ msgstr ""
 msgid "The columns here are based on your project's metadata languages."
 msgstr ""
 
+msgid "The file is empty."
+msgstr ""
+
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr "File tersebut tidak ada di lokasi yang diharapkan di Folder Media. Folder Media diatur ke {m} dan fili ini seharusnya berada di {e}"
 
@@ -855,6 +861,12 @@ msgstr "lameta tidak dapat menemukan Folder Media {m}. Lihat Berkas: Pengaturan 
 
 msgid "lameta could not find a matching Person for the following contributors:"
 msgstr "lameta tidak dapat menemukan Orang yang sesuai dengan kontributor berikut:"
+
+msgid "lameta could not read {0}: {1}"
+msgstr ""
+
+msgid "lameta could not read {fileName}: {reason}"
+msgstr ""
 
 msgid "lameta could not rename the directory."
 msgstr "lameta tidak bisa mengubah nama direktori tersebut."
