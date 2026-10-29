@@ -7,6 +7,7 @@ import * as React from "react";
 import { observable, makeObservable } from "mobx";
 import { observer } from "mobx-react";
 import { Project, ProjectHolder } from "../model/Project/Project";
+import { Folder } from "../model/Folder/Folder";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import { OpenDialogOptions, ipcRenderer } from "electron";
@@ -95,6 +96,9 @@ class HomePage extends React.Component<IProps, IState> {
       }
     };
 
+    Folder.onDirectoryMissingWhenSaving = (folder) =>
+      this.closeProjectWhoseFolderIsMissing(folder);
+
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
     //const test = require("@electron/remote").getCurrentWebContents();
@@ -169,6 +173,34 @@ class HomePage extends React.Component<IProps, IState> {
 
     this.setState({ showLoadingDialog: false });
     this.projectHolder.setProject(project);
+  }
+
+  private closeProjectWhoseFolderIsMissing(folder: Folder) {
+    if (this.projectHolder.closeProjectWhoseFolderIsMissing()) {
+      ShowMessageDialog({
+        title: t`lameta cannot find a folder of this project`,
+        content: (
+          <div>
+            <p>{folder.directory}</p>
+            <p>
+              <Trans>
+                The folder may have been moved, renamed or deleted, or the drive
+                it is on may have been disconnected. lameta cannot save changes
+                into a folder that is not there, so it has closed the project.
+                Changes that lameta had not yet saved are lost.
+              </Trans>
+            </p>
+            <p>
+              <Trans>
+                To keep working, open the project again from where it is now.
+              </Trans>
+            </p>
+          </div>
+        ),
+        width: "450px",
+        testId: "folder-missing-dialog"
+      });
+    }
   }
 
   // for e2e (but not entirely?)
