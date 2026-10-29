@@ -71,13 +71,19 @@ export class ProjectHolder {
     });
   }
 
+  // After a failed load this is a { loadingError } stub, kept so HomePage can show the error.
   public get project(): Project | null {
     return this.projectInternal;
   }
+  // The project, or null when there is none or it is only a { loadingError } stub,
+  // which has no properties, files or methods.
+  public get loadedProject(): Project | null {
+    return !this.projectInternal || this.projectInternal.loadingError
+      ? null
+      : this.projectInternal;
+  }
   public setProject(p: Project | null) {
-    if (this.projectInternal && !this.projectInternal.loadingError) {
-      this.projectInternal.saveAllFilesInFolder();
-    }
+    this.loadedProject?.saveAllFilesInFolder();
     if (p == null) {
       //console.log("setting project to null");
       // removed Apri 2024 but not sure userSettings.PreviousProjectDirectory = null;
@@ -85,9 +91,8 @@ export class ProjectHolder {
       //console.log("setting project to " + p.directory);
     }
     this.projectInternal = p;
-    // A project that failed to load is only a { loadingError } stub with no
-    // properties, so it must not become the project that static accessors read.
-    sCurrentProject = p?.loadingError ? null : p;
+    // the static accessors read sCurrentProject, so it must never hold a stub
+    sCurrentProject = this.loadedProject;
   }
 }
 

@@ -59,6 +59,14 @@ describe("a project that fails to load", () => {
     expect(holder.project?.loadingError).toContain("broken.session");
   });
 
+  it("is not the ProjectHolder's loadedProject, so nothing tries to save it", () => {
+    const holder = new ProjectHolder();
+    holder.setProject(Project.fromDirectory(projectDir));
+    expect(holder.loadedProject).toBeNull();
+    // replacing the stub must not try to save it
+    expect(() => holder.setProject(null)).not.toThrow();
+  });
+
   it("still lets the main menu get metadata language slots", () => {
     new ProjectHolder().setProject(Project.fromDirectory(projectDir));
     const slots = Project.getMetadataLanguageSlots();
@@ -94,7 +102,9 @@ describe("a project that loads", () => {
     fs.removeSync(Path.join(projectDir, "Sessions", "broken"));
     const project = Project.fromDirectory(projectDir);
     expect(project.loadingError).toBeUndefined();
-    new ProjectHolder().setProject(project);
+    const holder = new ProjectHolder();
+    holder.setProject(project);
+    expect(holder.loadedProject).toBe(project);
     expect(Project.getMetadataLanguageSlots().map((s) => s.tag)).toEqual([
       "es",
       "en"
