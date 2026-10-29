@@ -528,8 +528,28 @@ export abstract class Folder {
     return false;
   }
 
+  // Called instead of saving when this folder's directory is no longer on disk, because
+  // the user moved, renamed or deleted it (or disconnected its drive) while the project
+  // was open. HomePage sets this to close the project and tell the user.
+  public static onDirectoryMissingWhenSaving: (folder: Folder) => void =
+    () => {};
+
+  // Returns true, after reporting it, if this folder's directory is no longer on disk.
+  // Saving into it would throw, or would write files into a folder the user removed.
+  public reportIfDirectoryIsMissing(): boolean {
+    if (fs.existsSync(this.directory)) {
+      return false;
+    }
+    sentryBreadCrumb(`Not saving because ${this.directory} is missing`);
+    Folder.onDirectoryMissingWhenSaving(this);
+    return true;
+  }
+
   public saveFolderMetaData() {
     assert.ok(this.metadataFile);
+    if (this.reportIfDirectoryIsMissing()) {
+      return;
+    }
 
     if (this.metadataFile) {
       this.detectAndRepairMisnamedMetadataFile(
@@ -589,6 +609,11 @@ export abstract class Folder {
       console.error(
         ` called on ${this.displayName} which was already deleted.`
       );
+      return;
+    }
+    // A project's DescriptionDocuments or OtherDocuments folder may never have been
+    // created; with no files, there is nothing to save into it.
+    if (this.files.length > 0 && this.reportIfDirectoryIsMissing()) {
       return;
     }
     for (const f of this.files) {

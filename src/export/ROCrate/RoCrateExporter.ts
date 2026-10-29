@@ -1,3 +1,4 @@
+import { exportableSessions } from "../../model/Project/exportableFolders";
 import { Folder } from "../../model/Folder/Folder";
 import { Session } from "../../model/Project/Session/Session";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
@@ -316,7 +317,7 @@ async function getRoCrateInternal(
     }
 
     const sessionEntries = await Promise.all(
-      project.sessions.items.map(async (session) => {
+      exportableSessions(project).map(async (session) => {
         return await createSessionEntry(
           project,
           session as Session,
@@ -330,7 +331,7 @@ async function getRoCrateInternal(
     const flattenedSessionEntries = sessionEntries.flat();
 
     // Link to session events in the root dataset using pcdm:hasMember
-    project.sessions.items.forEach((session) => {
+    exportableSessions(project).forEach((session) => {
       entry["pcdm:hasMember"].push({
         "@id": createSessionId(session)
       });
@@ -450,7 +451,7 @@ async function getRoCrateInternal(
     ]);
 
     const uniqueLicenses = createDistinctLicenses(
-      project.sessions.items as Session[],
+      exportableSessions(project),
       project,
       documentAccessValues
     );
@@ -996,7 +997,7 @@ function createSessionsDatasetHierarchy(
   flattenedSessionEntries: any[],
   license?: any
 ): RoCrateEntity[] {
-  if (project.sessions.items.length === 0) {
+  if (exportableSessions(project).length === 0) {
     return [];
   }
 

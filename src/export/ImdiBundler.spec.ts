@@ -213,3 +213,34 @@ describe("generateExportData async generator", () => {
     expect(jobInfo.secondLevelDirectory).toBe(Path.basename(generatorProjectDir));
   });
 });
+
+describe("a project title that a file name cannot be", () => {
+  it.each([
+    ["IMDI", 'Kakabe: "stories" / songs?', "Kakabe stories  songs", IMDIMode.RAW_IMDI, ".imdi"],
+    ["OPEX", 'Kakabe: "stories" / songs?', "Kakabe stories  songs", IMDIMode.OPEX, ".opex"],
+    ["IMDI", "CON", "corpus", IMDIMode.RAW_IMDI, ".imdi"],
+    ["OPEX", "CON", "corpus", IMDIMode.OPEX, ".opex"],
+    ["IMDI", "???", "corpus", IMDIMode.RAW_IMDI, ".imdi"]
+  ])(
+    "in %s mode, for the title %s, names the corpus file %s",
+    async (_, title, expected, mode, extension) => {
+      const dir = temp.mkdirSync("lameta title");
+      const titled = Project.fromDirectory(dir);
+      titled.properties.setText("name", "");
+      titled.properties.setText("title", title);
+      titled.addSession();
+      const target = temp.mkdirSync("lameta title output");
+      await ImdiBundler.saveImdiBundleToFolder(
+        titled,
+        target,
+        mode,
+        false,
+        () => true
+      );
+      const written = (fs.readdirSync(target, {
+        recursive: true
+      }) as string[]).map((p) => Path.basename(p));
+      expect(written).toContain(expected + extension);
+    }
+  );
+});

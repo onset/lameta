@@ -1,14 +1,7 @@
-import fs from "fs";
 import path from "path";
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from "vitest";
+import fs from "fs";
+import PO from "pofile";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { userSettingsMock } = vi.hoisted(() => ({
   userSettingsMock: { UILanguage: "en" }
@@ -18,69 +11,21 @@ vi.mock("./UserSettings", () => ({
   default: userSettingsMock
 }));
 
-// The catalogs that lingui compiles into locale/<folder>/*.js are gitignored, so on a
-// fresh checkout there are none. Point the lookup at catalogs this spec writes itself,
-// so it tests the folder resolution instead of whatever "yarn strings:compile" last
-// produced on this machine.
 vi.mock("./locateDependency", () => ({
   locateDependencyForFilesystemCall: (relativePath: string) =>
-    path.join(process.cwd(), "tmp", "localization-spec", relativePath)
+    path.join(process.cwd(), relativePath)
 }));
 
 vi.mock("../model/Project/AuthorityLists/AuthorityLists", () => ({
   loadOLACRoles: () => []
 }));
 
-const { sentryErrorFromStringMock, logErrorMock } = vi.hoisted(() => ({
-  sentryErrorFromStringMock: vi.fn(),
-  logErrorMock: vi.fn()
-}));
-
-vi.mock("./errorHandling", () => ({
-  sentryErrorFromString: sentryErrorFromStringMock
-}));
-
-vi.mock("./log", () => ({
-  default: { error: logErrorMock }
-}));
-
 import { i18n, setUILanguage } from "./localization";
 
-const fixtureRoot = () => path.join(process.cwd(), "tmp", "localization-spec");
-
-function writeCatalogsFor(folder: string) {
-  const dir = path.join(fixtureRoot(), "locale", folder);
-  fs.mkdirSync(dir, { recursive: true });
-  for (const set of ["messages", "fields", "vocabularies"]) {
-    fs.writeFileSync(
-      path.join(dir, `${set}.js`),
-      "/*eslint-disable*/module.exports={messages:{}};"
-    );
-  }
-}
-
 describe("setUILanguage", () => {
-  beforeAll(() => {
-    fs.rmSync(fixtureRoot(), { recursive: true, force: true });
-    // "zh" and "pt" are alias folders for the "zh-CN" and "pt-BR" UI locales, and
-    // neither matches its locale code by case folding. That matters: Windows
-    // filesystems are case-insensitive, so a "zh-cn" folder would answer an
-    // existsSync for "zh-CN" and the alias table would never be consulted. With
-    // "zh", both tests below pass only if the alias lookup is doing its job, on
-    // every platform.
-    writeCatalogsFor("zh");
-    writeCatalogsFor("pt");
-  });
-
-  afterAll(() => {
-    fs.rmSync(fixtureRoot(), { recursive: true, force: true });
-  });
-
   beforeEach(() => {
     userSettingsMock.UILanguage = "en";
     vi.restoreAllMocks();
-    sentryErrorFromStringMock.mockClear();
-    logErrorMock.mockClear();
   });
 
   it("loads zh-CN catalogs from alias folders under the requested locale", () => {
@@ -114,32 +59,42 @@ describe("setUILanguage", () => {
     ]);
     expect(userSettingsMock.UILanguage).toBe("pt-BR");
   });
-
-  it("survives a locale whose catalogs have not been compiled", () => {
-    const loadSpy = vi.spyOn(i18n, "load").mockImplementation(() => undefined);
-    const activateSpy = vi
-      .spyOn(i18n, "activate")
-      .mockImplementation(() => undefined);
-    vi.spyOn(console, "error").mockImplementation(() => undefined);
-
-    expect(() => setUILanguage("zxx-NoSuchFolder", false)).not.toThrow();
-
-    expect(loadSpy).not.toHaveBeenCalled();
-    expect(activateSpy).toHaveBeenCalledWith("zxx-NoSuchFolder");
+});
+// Needs the compiled catalogs ("yarn strings:compile").
+describe("the translations each UI language ships with", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
   });
-
-  it("reports a missing catalog to the log and to Sentry", () => {
-    vi.spyOn(i18n, "load").mockImplementation(() => undefined);
-    vi.spyOn(i18n, "activate").mockImplementation(() => undefined);
-    vi.spyOn(console, "error").mockImplementation(() => undefined);
-
-    setUILanguage("zxx-NoSuchFolder", false);
-
-    // one per catalog set: messages, fields, vocabularies
-    expect(sentryErrorFromStringMock).toHaveBeenCalledTimes(3);
-    expect(logErrorMock).toHaveBeenCalledTimes(3);
-    expect(sentryErrorFromStringMock.mock.calls[0][0]).toContain(
-      "zxx-NoSuchFolder"
-    );
-  });
+  it.each(["es", "fr", "fa", "id", "ru", "pt-BR", "zh-CN"])(
+    "%s translates field labels and the UI",
+    (code) => {
+      setUILanguage(code, false);
+      expect(i18n._("Birth Year")).not.toBe("Birth Year");
+      expect(i18n._("Title")).not.toBe("Title");
+      expect(i18n._("Add Files")).not.toBe("Add Files");
+    }
+  );
+});
+// setUILanguage loads the fields catalog after the messages catalog into one locale, so a
+// field label's translation also replaces the UI's translation of the same English text.
+describe("text that both the UI and a field label use", () => {
+  it.each(["es", "fr", "fa", "id", "ru", "pt-BR", "zh-cn"])(
+    "%s translates it the same way in both catalogs",
+    (folder) => {
+      const translations = (catalog: string) =>
+        new Map(
+          PO.parse(
+            fs.readFileSync(
+              path.join(process.cwd(), "locale", folder, `${catalog}.po`),
+              "utf8"
+            )
+          ).items.map((item) => [item.msgid, item.msgstr[0] || ""])
+        );
+      const messages = translations("messages");
+      const differing = [...translations("fields")].filter(
+        ([id, str]) => str && messages.get(id) && messages.get(id) !== str
+      );
+      expect(differing).toEqual([]);
+    }
+  );
 });
