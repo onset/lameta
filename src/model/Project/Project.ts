@@ -1254,12 +1254,10 @@ export class Project extends Folder {
             .filter((s) => s.marked)
             .filter((s) =>
               deletionPromiseResults.some(
-                (r) => isFilled(r) && r.value.path === s.directory
-              )
-            )
-            .filter((s) =>
-              deletionPromiseResults.some(
-                (r) => isFilled(r) && r.value.succeeded
+                (r) =>
+                  isFilled(r) &&
+                  r.value.path === s.directory &&
+                  r.value.succeeded
               )
             )
             .forEach((folder) => {
