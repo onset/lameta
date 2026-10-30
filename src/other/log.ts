@@ -1,6 +1,7 @@
 import * as Winston from "winston";
 import * as fs from "fs-extra";
 import * as Path from "path";
+import { format } from "date-fns";
 import pkg from "package.json";
 import { getPath } from "./windowIpc";
 
@@ -67,6 +68,7 @@ const log = Winston.createLogger({
       ],
 });
 
-log.info(`---- lameta ${pkg.version} started ${new Date().toISOString().slice(0, 10)}`);
+// local date, to match the local time that starts each line
+log.info(`---- lameta ${pkg.version} started ${format(new Date(), "yyyy-MM-dd")}`);
 
 export default log;

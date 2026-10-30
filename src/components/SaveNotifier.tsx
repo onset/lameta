@@ -20,7 +20,7 @@ export function ShowSavingNotifier(filename: string, beforeRename: boolean) {
     staticBeforeRename(beforeRename);
   }
 }
-// This is in the upper right corner of the screen.
+// This is in the lower right corner of the screen, where it covers no controls.
 export const SaveNotifier: React.FunctionComponent<{}> = () => {
   const [beforeRename, setBeforeRename] = useState(false);
   const [showSaving, setShowSaving] = useState(false);
@@ -41,8 +41,10 @@ export const SaveNotifier: React.FunctionComponent<{}> = () => {
     <div
       id="saveNotifier"
       css={css`
-        position: absolute;
-        top: 10px;
+        position: fixed;
+        // it can sit over the last rows of the problems sidebar, which must stay clickable
+        pointer-events: none;
+        bottom: 10px;
         right: 10px;
         color: white;
         background-color: ${lameta_blue};
