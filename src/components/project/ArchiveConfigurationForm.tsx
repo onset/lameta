@@ -48,11 +48,13 @@ const ArchiveConfigurationForm: React.FunctionComponent<
     <div
       css={css`
         padding-left: 20px;
+        max-width: 680px;
       `}
     >
       <h1
         css={css`
-          margin-bottom: 5px;
+          margin: 0;
+          line-height: 1.2;
         `}
       >
         <Trans>Archive Configuration</Trans>
@@ -65,7 +67,8 @@ const ArchiveConfigurationForm: React.FunctionComponent<
             color: ${textPrimary} !important;
             border-color: transparent !important;
             background-color: #f6dbcb !important;
-            margin-bottom: 10px;
+            // inside the Collapse, so that the space goes away with the message
+            margin-top: 16px;
 
             .MuiAlert-icon {
               color: ${textPrimary} !important;
@@ -85,6 +88,7 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           display: flex;
           flex-direction: row;
           gap: 10px;
+          margin-top: 16px;
         `}
       >
         <ReactSelect
@@ -156,21 +160,18 @@ const ArchiveConfigurationForm: React.FunctionComponent<
           <Trans>Change</Trans>
         </Button>
       </div>
-      <h2>{choices.find((c) => c.value === archiveConfigurationKey)?.configurationFullName}</h2>
+      {archiveConfigurationChoice?.description && (
+        <h2
+          css={css`
+            margin: 16px 0 0;
+          `}
+        >
+          {archiveConfigurationChoice.description}
+        </h2>
+      )}
       <div
         css={css`
-          h2,
-          h3 {
-            margin-block-end: 0;
-          }
-          h3 {
-            padding-left: 0;
-            margin-block-start: 0;
-          }
-          ul {
-            padding-left: 0;
-            margin-block-start: 0;
-          }
+          margin-top: 16px;
         `}
       >
         {archiveConfigurationKey === "default" ? (
@@ -193,15 +194,9 @@ const CustomArchiveConfiguration: React.FunctionComponent<{
   customChoicesField: Field;
 }> = (props) => {
   return (
-    <div
-      css={css`
-        margin-top: 1em;
-      `}
-    >
-      <TextFieldEdit
-        field={props.customChoicesField}
-        visibleInstructions={t`Enter each choice, separated by commas`}
-      />
-    </div>
+    <TextFieldEdit
+      field={props.customChoicesField}
+      visibleInstructions={t`Enter each choice, separated by commas`}
+    />
   );
 };

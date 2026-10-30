@@ -11,8 +11,6 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
     authorityLists: AuthorityLists;
   } & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
-  console.log("****", props.configurationName);
-
   const currentConfiguration: { choices: IChoice[] } | undefined =
     props.authorityLists.accessProtocolLists.find(
       (p) => p.archiveConfigurationName == props.configurationName,
@@ -43,15 +41,17 @@ const ArchiveConfigurationSummary: React.FunctionComponent<
       <div css={sectionBoxStyle}>
         <h3
           css={css`
-            margin-block-end: 1em;
+            margin: 0 0 8px;
           `}
         >
           Available Access Levels
         </h3>
         <ul
           css={css`
-            li {
-              margin-bottom: 1em;
+            margin: 0;
+            padding-left: 0;
+            li + li {
+              margin-top: 1em;
             }
           `}
         >
