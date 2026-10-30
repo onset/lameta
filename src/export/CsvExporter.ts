@@ -47,7 +47,8 @@ export async function asyncMakeZipFile(
   synchronousExportFunction: (archive: nodeArchiver.Archiver) => void,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const archive = nodeArchiver.create("zip");
+    // without forceLocalTime, the files in the zip are stamped with UTC times
+    const archive = nodeArchiver.create("zip", { forceLocalTime: true });
 
     archive.on("warning", (err) => {
       console.log("makeGenericCsvZipFile warning:" + err.code);
