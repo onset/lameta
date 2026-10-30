@@ -306,6 +306,19 @@ class Home extends React.Component<IProps> {
           <CopyingStatus /> <RegistrationReminder />
           <div
             css={css`
+              // the same vertical placement as the Problems button beside it
+              && {
+                margin: 5px 0 15px;
+              }
+              && * {
+                margin: 0;
+              }
+            `}
+          >
+            <SaveNotifier />
+          </div>
+          <div
+            css={css`
               // #registrationReminder has 10px less margin above than below, so its
               // text is 5px above the middle; this puts the indicator's middle there
               // too, without changing the height of the strip
@@ -320,7 +333,6 @@ class Home extends React.Component<IProps> {
             <ProblemsIndicator />
           </div>
         </div>
-        <SaveNotifier />
         {/* MediaFolderDialog belongs here instead of at app because it relies on there being a current project */}
         <MediaFolderDialog />
         <div
