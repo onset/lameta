@@ -42,6 +42,8 @@ export const SaveNotifier: React.FunctionComponent<{}> = () => {
       id="saveNotifier"
       css={css`
         position: fixed;
+        // it can sit over the last rows of the problems sidebar, which must stay clickable
+        pointer-events: none;
         bottom: 10px;
         right: 10px;
         color: white;
