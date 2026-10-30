@@ -1,5 +1,5 @@
 import { app, BrowserWindow, session, shell } from "electron";
-import { execFile, spawn } from "child_process";
+import { execFile, execFileSync, spawn } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import {
@@ -13,11 +13,12 @@ import {
   readPlistString,
   splitCommandLine
 } from "./oldBeta";
+import { claimSprjFiles } from "./fileAssociation";
 
-// When a beta starts for the first time, it looks for a beta that is still installed under the
-// old name "lameta" (see oldBeta.ts). If there is one, it takes over that beta's settings and
-// removes it, without asking, while a small window shows what it is doing. A release that is
-// installed as "lameta" is never touched.
+// When a beta starts for the first time, it looks for betas that are still installed under the
+// old app id (see oldBeta.ts). If there are any, it takes over their settings and removes them,
+// without asking, while a small window shows what it is doing. A release, which has the same
+// app id, is never touched.
 //
 // The progress window stays open until the caller closes it with the returned function: closing
 // lameta's only window would quit lameta, so the caller does that once the main window exists.
@@ -27,6 +28,8 @@ import {
 // the next start.
 
 const kDoneFileName = "replaced-old-beta.json";
+// lameta_orange in src/containers/theme.ts, which the main process cannot import (it loads MUI)
+const kLametaOrange = "#e69664";
 
 type OldBeta = {
   version: string;
@@ -46,27 +49,32 @@ export async function replaceOldBetaIfAny(
   const doneFile = path.join(app.getPath("userData"), kDoneFileName);
   if (fs.existsSync(doneFile)) return nothingToClose;
 
-  let oldBeta: OldBeta | undefined;
+  let oldBetas: OldBeta[] = [];
   try {
-    oldBeta = await findOldBeta();
+    oldBetas = await findOldBetas();
   } catch (e) {
     console.error("replaceOldBeta: could not look for an old beta", e);
   }
-  if (!oldBeta) {
+  if (oldBetas.length === 0) {
     writeDone(doneFile, { result: "none found" });
     return nothingToClose;
   }
 
+  const names = oldBetas.map((b) => `lameta ${b.version}`).join(", ");
   const progress = await ProgressWindow.open(
-    `Replacing lameta ${oldBeta.version} with lameta beta`
+    `Replacing ${names} with lameta beta`
   );
   try {
-    await progress.show(`Copying settings from lameta ${oldBeta.version}…`, 20);
+    await progress.show(`Copying settings from ${names}…`, 15);
     copySettings();
 
-    if (await oldBeta.isRunning()) {
+    const running: string[] = [];
+    for (const b of oldBetas) {
+      if (await b.isRunning()) running.push(`lameta ${b.version}`);
+    }
+    if (running.length) {
       await progress.show(
-        `lameta ${oldBeta.version} is running, so it will be removed next time.`,
+        `${running.join(", ")} is running, so it will be removed next time.`,
         100
       );
       await wait(2500);
@@ -74,27 +82,34 @@ export async function replaceOldBetaIfAny(
       return () => progress.close();
     }
 
-    await progress.show(`Removing lameta ${oldBeta.version}…`, 50);
-    await oldBeta.remove();
-    let percent = 50;
-    const removed = await waitUntil(
-      () => !oldBeta!.isStillInstalled(),
-      60000,
-      () => {
-        percent = Math.min(95, percent + 3);
-        void progress.show(`Removing lameta ${oldBeta!.version}…`, percent);
-      }
-    );
-    if (removed) {
-      await progress.show(`Removed lameta ${oldBeta.version}.`, 100);
-      writeDone(doneFile, { result: "removed", version: oldBeta.version });
-    } else {
-      await progress.show(`Could not remove lameta ${oldBeta.version}.`, 100);
-      writeDone(doneFile, {
-        result: "could not remove",
-        version: oldBeta.version
-      });
+    const results: { version: string; removed: boolean }[] = [];
+    let percent = 30;
+    for (const b of oldBetas) {
+      const status = `Removing lameta ${b.version}…`;
+      await progress.show(status, percent);
+      await b.remove();
+      const removed = await waitUntil(
+        () => !b.isStillInstalled(),
+        60000,
+        () => {
+          percent = Math.min(95, percent + 3);
+          void progress.show(status, percent);
+        }
+      );
+      results.push({ version: b.version, removed });
     }
+    const failed = results.filter((r) => !r.removed);
+    await progress.show(
+      failed.length
+        ? `Could not remove ${failed
+            .map((r) => `lameta ${r.version}`)
+            .join(", ")}.`
+        : `Removed ${names}.`,
+      100
+    );
+    writeDone(doneFile, { result: "removed", results });
+    // the old beta's uninstaller removed the .sprj registration that this beta made at startup
+    if (process.platform === "win32") claimSprjFiles(app.getPath("exe"));
     await wait(1200);
   } catch (e) {
     console.error("replaceOldBeta: failed", e);
@@ -103,10 +118,13 @@ export async function replaceOldBetaIfAny(
   return () => progress.close();
 }
 
-async function findOldBeta(): Promise<OldBeta | undefined> {
-  if (process.platform === "win32") return findOldBetaOnWindows();
-  if (process.platform === "darwin") return findOldBetaOnMac();
-  return undefined;
+async function findOldBetas(): Promise<OldBeta[]> {
+  if (process.platform === "win32") {
+    const b = await findOldBetaOnWindows();
+    return b ? [b] : [];
+  }
+  if (process.platform === "darwin") return findOldBetasOnMac();
+  return [];
 }
 
 async function findOldBetaOnWindows(): Promise<OldBeta | undefined> {
@@ -120,7 +138,9 @@ async function findOldBetaOnWindows(): Promise<OldBeta | undefined> {
     if (!command) continue;
     return {
       version: entry.displayVersion,
-      isStillInstalled: () => fs.existsSync(entry.exePath),
+      // the uninstaller deletes its registry entry last
+      isStillInstalled: () =>
+        fs.existsSync(entry.exePath) || registryKeyExists(key),
       isRunning: async () => {
         const list = await run("tasklist", [
           "/FI",
@@ -150,32 +170,48 @@ async function findOldBetaOnWindows(): Promise<OldBeta | undefined> {
   return undefined;
 }
 
-async function findOldBetaOnMac(): Promise<OldBeta | undefined> {
-  const places = [
-    "/Applications/lameta.app",
-    path.join(app.getPath("home"), "Applications", "lameta.app")
+// An old beta can be under any name, such as "lameta 2.3 beta.app", so look at every app that
+// has the old app id
+async function findOldBetasOnMac(): Promise<OldBeta[]> {
+  const folders = [
+    "/Applications",
+    path.join(app.getPath("home"), "Applications")
   ];
-  for (const appPath of places) {
-    const plistPath = path.join(appPath, "Contents", "Info.plist");
-    if (!fs.existsSync(plistPath)) continue;
-    const plist = fs.readFileSync(plistPath, "utf8");
-    const version = readPlistString(plist, "CFBundleShortVersionString");
-    if (readPlistString(plist, "CFBundleIdentifier") !== kOldAppId) continue;
-    if (!isBetaVersion(version)) continue;
-    return {
-      version: version!,
-      isStillInstalled: () => fs.existsSync(appPath),
-      isRunning: async () => {
-        const list = await run("pgrep", [
-          "-f",
-          `${appPath}/Contents/MacOS/`
-        ]).catch(() => "");
-        return list.trim().length > 0;
-      },
-      remove: () => shell.trashItem(appPath)
-    };
+  const found: OldBeta[] = [];
+  for (const folder of folders) {
+    let names: string[] = [];
+    try {
+      names = fs.readdirSync(folder).filter((n) => n.endsWith(".app"));
+    } catch {
+      continue;
+    }
+    for (const name of names) {
+      const appPath = path.join(folder, name);
+      const plistPath = path.join(appPath, "Contents", "Info.plist");
+      let plist: string;
+      try {
+        plist = fs.readFileSync(plistPath, "utf8");
+      } catch {
+        continue;
+      }
+      const version = readPlistString(plist, "CFBundleShortVersionString");
+      if (readPlistString(plist, "CFBundleIdentifier") !== kOldAppId) continue;
+      if (!isBetaVersion(version)) continue;
+      found.push({
+        version: version!,
+        isStillInstalled: () => fs.existsSync(appPath),
+        isRunning: async () => {
+          const list = await run("pgrep", [
+            "-f",
+            `${appPath}/Contents/MacOS/`
+          ]).catch(() => "");
+          return list.trim().length > 0;
+        },
+        remove: () => shell.trashItem(appPath)
+      });
+    }
   }
-  return undefined;
+  return found;
 }
 
 // The old beta kept its settings in the folder named after it, which nothing removes
@@ -211,6 +247,15 @@ function writeDone(doneFile: string, details: object) {
   }
 }
 
+function registryKeyExists(key: string): boolean {
+  try {
+    execFileSync("reg", ["query", key], { windowsHide: true, stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function run(file: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
     execFile(file, args, { windowsHide: true }, (error, stdout) =>
@@ -240,21 +285,26 @@ class ProgressWindow {
 
   public static async open(title: string): Promise<ProgressWindow> {
     const window = new BrowserWindow({
-      width: 460,
+      // the size of the page itself, not counting the title bar, so that nothing scrolls
+      useContentSize: true,
+      width: 480,
       height: 150,
       resizable: false,
       minimizable: false,
       maximizable: false,
       fullscreenable: false,
       title: "lameta beta",
+      // in front even when another program has the focus, so the user sees what is happening
+      alwaysOnTop: true,
+      center: true,
       show: false,
       webPreferences: { contextIsolation: true, sandbox: true }
     });
     window.setMenu(null);
     const html = `<!doctype html><html><head><meta charset="utf-8"><style>
-      body { font-family: system-ui, sans-serif; margin: 20px; color: #222; }
+      body { font-family: system-ui, sans-serif; margin: 20px; color: #222; overflow: hidden; }
       h1 { font-size: 15px; margin: 0 0 14px; }
-      progress { width: 100%; height: 14px; }
+      progress { width: 100%; height: 14px; accent-color: ${kLametaOrange}; }
       #status { font-size: 13px; margin-top: 10px; color: #444; }
     </style></head><body>
       <h1>${escapeHtml(title)}</h1>
