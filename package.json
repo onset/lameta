@@ -1,7 +1,7 @@
 {
   "main": "dist/src/mainProcess/main.js",
   "name": "lameta",
-  "version": "3.0.24-beta",
+  "version": "3.0.25-beta",
   "description": "File & metadata organization for language documentation projects.",
   "license": "MIT",
   "author": {
