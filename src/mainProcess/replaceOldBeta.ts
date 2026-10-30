@@ -24,11 +24,14 @@ import { claimSprjFiles } from "./fileAssociation";
 // The progress window stays open until the caller closes it with the returned function: closing
 // lameta's only window would quit lameta, so the caller does that once the main window exists.
 //
-// It runs once: a file in the settings folder records that it has. The one exception is an old
-// beta that is running at the time; then it copies the settings and tries the removal again at
-// the next start.
+// A file in the settings folder records the outcome. Once there was nothing to remove, or the
+// removal worked, it never runs again. If an old beta is running, it copies the settings and
+// tries the removal again at the next start. If the removal fails, it tries again at the next
+// starts, up to kMaxAttempts in all, so that a beta it cannot remove does not show the window
+// at every start.
 
 const kDoneFileName = "replaced-old-beta.json";
+const kMaxAttempts = 3;
 // lameta_orange in src/containers/theme.ts, which the main process cannot import (it loads MUI)
 const kLametaOrange = "#e69664";
 
@@ -48,7 +51,15 @@ export async function replaceOldBetaIfAny(
   if (!app.isPackaged || process.env.E2E || !isBetaVersion(currentVersion))
     return nothingToClose;
   const doneFile = path.join(app.getPath("userData"), kDoneFileName);
-  if (fs.existsSync(doneFile)) return nothingToClose;
+  const previous = readDone(doneFile);
+  if (previous?.finished) return nothingToClose;
+  const attempts = (previous?.attempts ?? 0) + 1;
+  const recordFailure = (details: object) =>
+    writeDone(doneFile, {
+      finished: attempts >= kMaxAttempts,
+      attempts,
+      ...details
+    });
 
   let oldBetas: OldBeta[] = [];
   try {
@@ -57,7 +68,7 @@ export async function replaceOldBetaIfAny(
     console.error("replaceOldBeta: could not look for an old beta", e);
   }
   if (oldBetas.length === 0) {
-    writeDone(doneFile, { result: "none found" });
+    writeDone(doneFile, { finished: true, result: "none found" });
     return nothingToClose;
   }
 
@@ -108,13 +119,14 @@ export async function replaceOldBetaIfAny(
         : `Removed ${names}.`,
       100
     );
-    writeDone(doneFile, { result: "removed", results });
+    if (failed.length) recordFailure({ result: "could not remove", results });
+    else writeDone(doneFile, { finished: true, result: "removed", results });
     // the old beta's uninstaller removed the .sprj registration that this beta made at startup
     if (process.platform === "win32") claimSprjFiles(app.getPath("exe"));
     await wait(1200);
   } catch (e) {
     console.error("replaceOldBeta: failed", e);
-    writeDone(doneFile, { result: "failed", error: String(e) });
+    recordFailure({ result: "failed", error: String(e) });
   }
   return () => progress.close();
 }
@@ -236,6 +248,16 @@ function copySettings() {
     for (const word of parseSpellingWords(fs.readFileSync(oldWords, "utf8"))) {
       session.defaultSession.addWordToSpellCheckerDictionary(word);
     }
+  }
+}
+
+function readDone(
+  doneFile: string
+): { finished?: boolean; attempts?: number } | undefined {
+  try {
+    return JSON.parse(fs.readFileSync(doneFile, "utf8"));
+  } catch {
+    return undefined;
   }
 }
 
