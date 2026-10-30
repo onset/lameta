@@ -318,7 +318,7 @@ class ProgressWindow {
     await window.loadURL(
       "data:text/html;charset=utf-8," + encodeURIComponent(html)
     );
-    window.show();
+    // shown by the first show(), so that it never appears without its status
     return new ProgressWindow(window);
   }
 
@@ -329,6 +329,7 @@ class ProgressWindow {
         status
       )}; document.getElementById("bar").value = ${percent};`
     );
+    if (!this.window.isVisible()) this.window.show();
   }
 
   public close() {
