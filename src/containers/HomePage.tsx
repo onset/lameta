@@ -256,42 +256,49 @@ class HomePage extends React.Component<IProps, IState> {
       // Skip registration and other dialogs, but still set up window event handlers below
     }
 
-    // Handle async loading of large projects with progress dialog
-    if (this.pendingProjectDirectory) {
-      this.loadProjectWithProgress(this.pendingProjectDirectory).catch((err) =>
-        NotifyException(err as Error),
-      );
-      this.pendingProjectDirectory = null;
-    }
+    // An alpha or beta could change the project, so it opens the project only after the user
+    // has closed the notice about this version
+    const openPendingProject = () => {
+      if (this.pendingProjectDirectory) {
+        this.loadProjectWithProgress(this.pendingProjectDirectory).catch((err) =>
+          NotifyException(err as Error),
+        );
+        this.pendingProjectDirectory = null;
+      }
+    };
+    const version = pkg.version as string;
+    const match = version.match(/-(alpha|beta)(?:\.|$)/);
+    const tag =
+      shouldUseE2EFastProjectCreation() || this.isRunningFromSource()
+        ? undefined
+        : ((match && match[1]) as "alpha" | "beta" | undefined);
+    if (!tag) openPendingProject();
 
     // Skip dialogs in E2E fast path mode
     if (!shouldUseE2EFastProjectCreation()) {
-      if (!this.isRunningFromSource()) {
-        const version = pkg.version as string;
-        const match = version.match(/-(alpha|beta)(?:\.|$)/);
-        const tag = (match && match[1]) as "alpha" | "beta" | undefined;
-        switch (tag) {
-          case "alpha":
-            ShowMessageDialog({
-              iconPath: null,
-              content: <AlphaWarning version={version} />,
-              width: "540px",
-              buttonText: "I understand",
-              testId: "prerelease-warning-dialog",
-            });
-            break;
-          case "beta":
-            ShowMessageDialog({
-              title: `Warning`,
-              text: "This is a beta test version, so make sure you have a backup of your work.",
-              width: "300px",
-              buttonText: "I understand",
-              testId: "prerelease-warning-dialog",
-            });
-            break;
-          default:
-          // release build: no prerelease tag, show nothing
-        }
+      switch (tag) {
+        case "alpha":
+          ShowMessageDialog({
+            iconPath: null,
+            content: <AlphaWarning version={version} />,
+            width: "540px",
+            buttonText: "I understand",
+            testId: "prerelease-warning-dialog",
+            onClose: openPendingProject,
+          });
+          break;
+        case "beta":
+          ShowMessageDialog({
+            title: `Warning`,
+            text: "This is a beta test version, so make sure you have a backup of your work.",
+            width: "300px",
+            buttonText: "I understand",
+            testId: "prerelease-warning-dialog",
+            onClose: openPendingProject,
+          });
+          break;
+        default:
+        // release build: no prerelease tag, show nothing
       }
 
       if (userSettings.HowUsing === "") {
