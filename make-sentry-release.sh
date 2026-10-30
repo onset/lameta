@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Makes the Sentry release for the version in package.json and uploads the source maps that
-# `vp run build` left in dist/. CI runs this on each publish, once per platform; running it twice
+# `yarn build` left in dist/. CI runs this on each publish, once per platform; running it twice
 # for one version is harmless.
 
 # Needs SENTRY_AUTH_TOKEN, or LAMETA_SENTRY_AUTH_TOKEN, holding a Sentry auth token with
@@ -16,7 +16,7 @@ export SENTRY_PROJECT=lameta
 
 VERSION=$(node -p "require('./package.json').version")
 COMMIT=$(git rev-parse HEAD)
-sentry() { vp dlx @sentry/cli@2.39.1 "$@"; }
+sentry() { npx --yes @sentry/cli@2.39.1 "$@"; }
 
 echo "VERSION: $VERSION"
 echo "COMMIT: $COMMIT"

@@ -15,6 +15,7 @@ import * as path from "path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { claimSprjFiles } from "./fileAssociation";
+import { replaceOldBetaIfAny } from "./replaceOldBeta";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
 
 // --launch-test opens the app, checks it came up, and quits again (scripts/test-launch.ts).
@@ -262,7 +263,12 @@ async function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async () => {
+  // a beta's first start may replace an old beta; its progress window closes once ours is open
+  const closeProgress = await replaceOldBetaIfAny(app.getVersion());
+  await createWindow();
+  closeProgress();
+});
 
 if (process.platform === "win32" && app.isPackaged && !process.env.E2E) {
   claimSprjFiles(app.getPath("exe"));
