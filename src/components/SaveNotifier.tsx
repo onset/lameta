@@ -41,13 +41,12 @@ export const SaveNotifier: React.FunctionComponent<{}> = () => {
   return getTestEnvironment().E2E ? null : (
     <span
       id="saveNotifier"
-      title={filename}
+      title={showSaving ? filename : undefined}
       css={css`
         color: ${lameta_dark_blue};
         font-weight: bold;
         padding: 5px;
         white-space: nowrap;
-        pointer-events: none;
         //  https://css-tricks.com/ease-out-in-ease-in-out/ "ease-out" refers to the acceleration curve
         opacity: ${showSaving ? 1 : 0};
         transition: opacity 0.5s ${showSaving ? "ease-out" : "ease-in"};
