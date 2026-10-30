@@ -5,7 +5,7 @@ import { Trans } from "@lingui/react/macro";
 import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState, useEffect } from "react";
-import { lameta_blue } from "../containers/theme";
+import { lameta_dark_blue } from "../containers/theme";
 import { getTestEnvironment } from "../getTestEnvironment";
 
 let staticSetShowSaving: (b: boolean) => void;
@@ -20,7 +20,8 @@ export function ShowSavingNotifier(filename: string, beforeRename: boolean) {
     staticBeforeRename(beforeRename);
   }
 }
-// This is in the lower right corner of the screen, where it covers no controls.
+// This sits in the strip at the top right, just left of the Problems button. It keeps
+// its space while hidden, so the controls beside it do not shift when it appears.
 export const SaveNotifier: React.FunctionComponent<{}> = () => {
   const [beforeRename, setBeforeRename] = useState(false);
   const [showSaving, setShowSaving] = useState(false);
@@ -38,36 +39,20 @@ export const SaveNotifier: React.FunctionComponent<{}> = () => {
   }, [showSaving]);
   // in e2e testing, this covers up buttons that we need to click, maybe because the fading is just done by changing opacity?
   return getTestEnvironment().E2E ? null : (
-    <div
+    <span
       id="saveNotifier"
+      title={showSaving ? filename : undefined}
       css={css`
-        position: fixed;
-        // it can sit over the last rows of the problems sidebar, which must stay clickable
-        pointer-events: none;
-        bottom: 10px;
-        right: 10px;
-        color: white;
-        background-color: ${lameta_blue};
+        color: ${lameta_dark_blue};
+        font-weight: bold;
         padding: 5px;
-        z-index: -1;
-        opacity: 0;
-        // after fading out, also hide it so it doesn't cover up buttons
-        ${
-          !showSaving &&
-          "z-index:-1; opacity: 0; transition: z-index 0.5s step-end, opacity 0.5s ease-in;"
-        }
+        white-space: nowrap;
         //  https://css-tricks.com/ease-out-in-ease-in-out/ "ease-out" refers to the acceleration curve
-        ${showSaving && "z-index: 100; opacity: 1; transition: opacity 0.5s ease-out;"}
+        opacity: ${showSaving ? 1 : 0};
+        transition: opacity 0.5s ${showSaving ? "ease-out" : "ease-in"};
       `}
     >
-      {beforeRename && (
-        <div>
-          <Trans>Saving before rename...</Trans>
-        </div>
-      )}
-      <Trans>Saving</Trans>&nbsp;
-      <br />
-      {filename}
-    </div>
+      {beforeRename ? <Trans>Saving before rename...</Trans> : <Trans>Saving</Trans>}
+    </span>
   );
 };
