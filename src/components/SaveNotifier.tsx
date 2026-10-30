@@ -44,6 +44,7 @@ export const SaveNotifier: React.FunctionComponent<{}> = () => {
       title={filename}
       css={css`
         color: ${lameta_dark_blue};
+        font-weight: bold;
         padding: 5px;
         white-space: nowrap;
         pointer-events: none;
