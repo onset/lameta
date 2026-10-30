@@ -22,6 +22,9 @@ export default defineConfig({
   },
   build: {
     emptyOutDir: true,
+    // Maps without a sourceMappingURL comment; CI uploads them to Sentry (make-sentry-release.sh)
+    // and electron-builder.json5 leaves them out of the installer.
+    sourcemap: "hidden",
     rollupOptions: {
       external: ["ts-node"]
     }
@@ -57,6 +60,7 @@ export default defineConfig({
       include: [
         "src/mainProcess/main",
         "src/mainProcess/launchTest.ts",
+        "src/mainProcess/fileAssociation.ts",
         "src/other/locateDependency.ts",
         // the main process reaches this through src/mainProcess/launchTest.ts; files this
         // plugin does not list are not emitted, and the require fails at runtime

@@ -1,8 +1,9 @@
 {
   "main": "dist/src/mainProcess/main.js",
   "name": "lameta",
-  "productName": "lameta",
   "version": "3.0.24-beta",
+  "description": "File & metadata organization for language documentation projects.",
+  "license": "MIT",
   "author": {
     "name": "lameta",
     "email": "sorryno@email.org"
@@ -33,10 +34,10 @@
     "//----dev": "this is the normal day-to-day way of running while developing, with compiling of main, preload, and render",
     "dev": "yarn check-node && vite",
     "check-node": "yarn check-node-version --package",
-    "//----packaging": "The electron-builder configuration is in the unfortunately named 'build' section below",
+    "//----packaging": "The electron-builder configuration is in electron-builder.json5, with per-channel settings added by electron-builder.config.js",
     "clean": "node clean.js",
     "make-sentry-release": "./make-sentry-release.sh",
-    "package": "npm run fullbuild && electron-builder",
+    "package": "yarn fullbuild && electron-builder --config electron-builder.config.js",
     "cleanup": "mop -v",
     "lingui-add": "lingui add-locale",
     "##note": "lingui extract will overwrite the fields.po so stringsaextract-json must be run afterwards",
