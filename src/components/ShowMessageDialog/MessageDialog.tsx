@@ -21,6 +21,9 @@ interface IConfig {
   content?: React.ReactNode;
   width?: string;
   testId?: string;
+  buttonColor?: string;
+  // called once the user closes the dialog
+  onClose?: () => void;
 }
 
 let staticShowMessageDialog: (config: IConfig) => void = () => {};
@@ -38,10 +41,14 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
     setConfig(c);
     setIsOpen(true);
   };
+  const close = () => {
+    setIsOpen(false);
+    config.onClose?.();
+  };
   return (
     <LametaDialog
       open={isOpen}
-      requestClose={() => setIsOpen(false)}
+      requestClose={close}
       data-testid={config.testId}
     >
       <div className={"dialogTitle "}>
@@ -76,7 +83,11 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
         {config.content}
       </div>
       <DialogBottomButtons>
-        <DialogButton onClick={() => setIsOpen(false)} default={true}>
+        <DialogButton
+          onClick={close}
+          default={true}
+          backgroundColor={config.buttonColor}
+        >
           {config.buttonText || <Trans>OK</Trans>}
         </DialogButton>
       </DialogBottomButtons>
