@@ -242,9 +242,23 @@ export const DialogButton: React.FunctionComponent<{
   onClick: () => void;
   default?: boolean;
   disabled?: boolean;
+  // instead of the theme's color, for a contained button
+  backgroundColor?: string;
 }> = (props) => (
   <Button
     className={props.default ? "defaultButton" : ""}
+    css={
+      props.backgroundColor &&
+      css`
+        && {
+          background-color: ${props.backgroundColor};
+        }
+        &&:hover {
+          background-color: ${props.backgroundColor};
+          filter: brightness(0.92);
+        }
+      `
+    }
     disabled={props.disabled}
     color="secondary"
     variant={props.default ? "contained" : "outlined"}

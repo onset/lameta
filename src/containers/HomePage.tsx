@@ -1,4 +1,5 @@
 import { BetaWarning } from "./BetaWarning";
+import { lameta_orange } from "./theme";
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
@@ -129,7 +130,12 @@ class HomePage extends React.Component<IProps, IState> {
     // Check if we should use async loading with progress dialog
     // for projects with more than 10 sessions
     if (expectedProjectDirectory && fs.existsSync(expectedProjectDirectory)) {
-      if (shouldUseAsyncLoading(expectedProjectDirectory)) {
+      if (this.prereleaseNoticeTag()) {
+        // An alpha or beta could change the project, so it opens only after the user has
+        // read the notice about this version (componentDidMount)
+        this.projectToOpenAfterNotice = expectedProjectDirectory;
+        this.projectHolder.setProject(null);
+      } else if (shouldUseAsyncLoading(expectedProjectDirectory)) {
         // Defer to async loading with progress - will be done in componentDidMount
         this.pendingProjectDirectory = expectedProjectDirectory;
       } else {
@@ -150,6 +156,27 @@ class HomePage extends React.Component<IProps, IState> {
 
   // Directory to load asynchronously (set in constructor if project has > 10 sessions)
   private pendingProjectDirectory: string | null = null;
+  // Directory to open once the user closes the alpha or beta notice
+  private projectToOpenAfterNotice: string | null = null;
+
+  // "alpha" or "beta" when this version shows a notice at startup, otherwise undefined
+  private prereleaseNoticeTag(): "alpha" | "beta" | undefined {
+    if (shouldUseE2EFastProjectCreation() || this.isRunningFromSource())
+      return undefined;
+    const match = (pkg.version as string).match(/-(alpha|beta)(?:\.|$)/);
+    return (match && match[1]) as "alpha" | "beta" | undefined;
+  }
+
+  private openProjectAfterNotice = () => {
+    const directory = this.projectToOpenAfterNotice;
+    this.projectToOpenAfterNotice = null;
+    if (!directory || !fs.existsSync(directory)) return;
+    if (shouldUseAsyncLoading(directory)) {
+      this.loadProjectWithProgress(directory);
+    } else {
+      this.projectHolder.setProject(Project.fromDirectory(directory));
+    }
+  };
   public createProject(useSample: boolean) {
     this.setState({
       showCreateProjectDialog: true,
@@ -249,27 +276,28 @@ class HomePage extends React.Component<IProps, IState> {
 
     // Skip dialogs in E2E fast path mode
     if (!shouldUseE2EFastProjectCreation()) {
-      if (!this.isRunningFromSource()) {
+      {
         const version = pkg.version as string;
-        const match = version.match(/-(alpha|beta)(?:\.|$)/);
-        const tag = (match && match[1]) as "alpha" | "beta" | undefined;
-        switch (tag) {
+        switch (this.prereleaseNoticeTag()) {
           case "alpha":
             ShowMessageDialog({
               title: `TESTING ONLY`,
               text: "Thank you so much for testing this experimental version of lameta. Make sure you have a backup of your work.",
               width: "300px",
               buttonText: "I understand",
-              testId: "prerelease-warning-dialog"
+              testId: "prerelease-warning-dialog",
+              onClose: this.openProjectAfterNotice
             });
             break;
           case "beta":
             ShowMessageDialog({
               iconPath: null,
               content: <BetaWarning version={version} />,
+              buttonColor: lameta_orange,
               width: "540px",
               buttonText: "I understand",
-              testId: "prerelease-warning-dialog"
+              testId: "prerelease-warning-dialog",
+              onClose: this.openProjectAfterNotice
             });
             break;
           default:

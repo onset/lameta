@@ -11,6 +11,7 @@ import {
   parseSpellingWords,
   parseUninstallEntry,
   readPlistString,
+  settingsWithoutLastProject,
   splitCommandLine
 } from "./oldBeta";
 import { claimSprjFiles } from "./fileAssociation";
@@ -223,7 +224,10 @@ function copySettings() {
   const newSettings = path.join(newFolder, kSettingsFileName);
   if (fs.existsSync(oldSettings) && !fs.existsSync(newSettings)) {
     fs.mkdirSync(newFolder, { recursive: true });
-    fs.copyFileSync(oldSettings, newSettings);
+    fs.writeFileSync(
+      newSettings,
+      settingsWithoutLastProject(fs.readFileSync(oldSettings, "utf8"))
+    );
   }
 
   // Chromium already has its own copy of this file open, so add the words through it

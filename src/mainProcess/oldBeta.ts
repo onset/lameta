@@ -64,6 +64,15 @@ export function readPlistString(
   return match ? match[1] : undefined;
 }
 
+// The old beta's settings, minus the project it had open last. Those settings are in the
+// folder that a release of lameta also uses, so that project may be one opened in a release,
+// and a beta should not open it by itself.
+export function settingsWithoutLastProject(settingsJson: string): string {
+  const settings = JSON.parse(settingsJson);
+  delete settings.previousDirectory;
+  return JSON.stringify(settings, null, "\t");
+}
+
 // The words someone added to the spell checker, from Chromium's "Custom Dictionary.txt",
 // whose last line is a checksum
 export function parseSpellingWords(dictionaryText: string): string[] {

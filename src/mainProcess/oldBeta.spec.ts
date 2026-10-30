@@ -4,6 +4,7 @@ import {
   parseSpellingWords,
   parseUninstallEntry,
   readPlistString,
+  settingsWithoutLastProject,
   splitCommandLine
 } from "./oldBeta";
 
@@ -104,5 +105,20 @@ describe("parseSpellingWords", () => {
         "racorrding\r\nNgarrindjeri\r\n\r\nchecksum_v1 = 04ac\r\n"
       )
     ).toEqual(["racorrding", "Ngarrindjeri"]);
+  });
+});
+
+describe("settingsWithoutLastProject", () => {
+  it("keeps the settings but not the last project", () => {
+    const result = JSON.parse(
+      settingsWithoutLastProject(
+        JSON.stringify({
+          previousDirectory: "/Users/someone/Documents/lameta/x",
+          email: "a@b.org",
+          howUsing: "research"
+        })
+      )
+    );
+    expect(result).toEqual({ email: "a@b.org", howUsing: "research" });
   });
 });
