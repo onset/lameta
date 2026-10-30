@@ -197,6 +197,12 @@ async function createWindow() {
   });
 
   forwardWindowEvents(win);
+  // The rules sandbox's hidden window keeps "window-all-closed" from firing, so quit
+  // when the main window closes.
+  win.on("closed", () => {
+    win = null;
+    app.quit();
+  });
 
   // Enable spell checking for multiple languages
   session.defaultSession.setSpellCheckerLanguages(spellCheckLanguages);
@@ -275,7 +281,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("second-instance", () => {
-  if (win) {
+  if (win && !win.isDestroyed()) {
     // Focus on the main window if the user tried to open another
     if (win.isMinimized()) win.restore();
     win.focus();
