@@ -41,6 +41,7 @@ release
 # --config.directories.output=release-check, which is handy when a previous build's app.asar
 # is still locked
 release-*
+!release-notes/
 *-bundle.*
 app/style.css
 app/style.css.map
