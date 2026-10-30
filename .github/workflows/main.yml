@@ -88,9 +88,10 @@ jobs:
           # Skip building since we already did it in fullbuild step
           skip_build: true
         env:
-          # on macOS these stay empty, so electron-builder signs from the keychain made above
-          CSC_LINK: ${{ !startsWith(matrix.os, 'macos') && secrets.PROD_MACOS_CERTIFICATE || '' }}
-          CSC_KEY_PASSWORD: ${{ !startsWith(matrix.os, 'macos') && secrets.PROD_MACOS_CERTIFICATE_PWD || '' }}
+          # Only the Windows build reads these. No CSC_LINK, not even an empty one, so that the
+          # macOS build signs from the keychain made above.
+          WIN_CSC_LINK: ${{ secrets.PROD_MACOS_CERTIFICATE }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}
           # it's not clear which of these are used I see both in other people's yml
           APPLEID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID}}
           APPLEIDPASS: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD }} # this is the "app-specific password", not the account password
