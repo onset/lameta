@@ -9,4 +9,7 @@
   // ELAR does not want an IMDI or OPEX export that has known problems; warnings
   // are allowed
   exportFormatsBlockedByProblems: ["imdi", "opex-plus-files"],
+  // ELAR does not accept one language code written with different names in
+  // different sessions, which lameta's checks report as a warning
+  checkSeverities: { languageNameVariations: "error" },
 }

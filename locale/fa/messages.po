@@ -326,6 +326,9 @@ msgstr "خروجی گرفتن از پروژه"
 msgid "Export failed"
 msgstr ""
 
+msgid "Export leaves out a file that is missing from this computer and a file whose name ends in \".skip\"."
+msgstr ""
+
 msgid "Export renames it to \"{exportedName}\"."
 msgstr ""
 
@@ -469,6 +472,10 @@ msgstr ""
 
 msgid "Language Code"
 msgstr "کد زبانی"
+
+#. A language code follows "Language", as in "Language etr"
+msgid "Language {code}"
+msgstr ""
 
 msgid "Languages"
 msgstr "زبانها"
@@ -849,6 +856,9 @@ msgstr ""
 msgid "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}"
 msgstr ""
 
+msgid "The folder may have been moved, renamed or deleted, or the drive it is on may have been disconnected. lameta cannot save changes into a folder that is not there, so it has closed the project. Changes that lameta had not yet saved are lost."
+msgstr ""
+
 msgid "The name cannot contain a semicolon."
 msgstr ""
 
@@ -910,6 +920,9 @@ msgid "This setting is unique to the account you are using on this computer. A c
 msgstr ""
 
 msgid "This will not be consumed by the archive. It is only for the use of the researcher."
+msgstr ""
+
+msgid "To keep working, open the project again from where it is now."
 msgstr ""
 
 msgid "Translations"
@@ -1023,6 +1036,26 @@ msgstr ""
 msgid "has characters that the archive doesn't allow."
 msgstr ""
 
+#. Follows "Language" and a language code, as in "Language etr has different names in different sessions: "Edolo", "Etoro"."
+msgid "has different names in different sessions: {names}."
+msgstr ""
+
+#. Follows a person's name, as in "Awi Heole has no consent on record."
+msgid "has no consent on record."
+msgstr ""
+
+#. Follows "Session", as in "Session has no contributors." Contributors are the people listed on the Contributors tab of the session or of its files.
+msgid "has no contributors."
+msgstr ""
+
+#. Follows "Session", as in "Session has no files that export can include."
+msgid "has no files that export can include."
+msgstr ""
+
+#. Follows "Session", as in "Session has no files."
+msgid "has no files."
+msgstr ""
+
 #. Follows a contributor's name, as in "Awi Heole has no matching Person."
 msgid "has no matching Person."
 msgstr ""
@@ -1053,6 +1086,9 @@ msgstr "فایلهای پروژه لمتا و سیمور"
 
 msgid "lameta cannot export files while files are still being copied in."
 msgstr "لمتا نمی تواند از فایلهای در حال کپی شدن خروجی بگیرد."
+
+msgid "lameta cannot find a folder of this project"
+msgstr ""
 
 msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
 msgstr ""
@@ -1088,6 +1124,10 @@ msgid "lameta found no problems."
 msgstr ""
 
 msgid "lameta must be able to check everything before {archiveName} will accept this export."
+msgstr ""
+
+#. Do not translate "Consent": lameta looks for that English word in the names of the person's files.
+msgid "lameta recognises a consent file by \"Consent\" in its file name."
 msgstr ""
 
 msgid "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name."

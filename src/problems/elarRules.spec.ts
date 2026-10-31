@@ -147,7 +147,7 @@ describe("ELAR rules.js", () => {
     ]);
     // a resource of type "Sound"
     expect(found("checkResourceTypes")).toEqual([["ETR010", "error"]]);
-    expect(found("checkForResources")).toEqual([["ETR011", "error"]]);
+    expect(found("checkForResources")).toEqual([]);
   });
 
   it("reports an MP3 or FLExText file only when the session has the better version", () => {
@@ -174,6 +174,30 @@ describe("ELAR rules.js", () => {
       ["ETR010", "warning"],
     ]);
     expect(found("checkForActors")).toEqual([]);
+  });
+
+  it("reports a session whose actors have no full name, but not a session with no actors", async () => {
+    const rules = await import("../../archive-configurations/ELAR/rules.js");
+    const withActors = (actors: string) =>
+      session("ETR030", `<MDGroup><Actors>${actors}</Actors></MDGroup>`);
+    const check = (xml: string) =>
+      rulesSandboxMain(
+        {
+          rulesSource: "(the module is passed in directly)",
+          sessions: [{ sessionId: "ETR030", xml }],
+          metadataLanguages: ["en"],
+          maxProblems: 1000,
+        },
+        makeLametaSourceReader,
+        async () => rules,
+      ).then((o) => o.problems.filter((p) => p.checkId === "checkForActors").length);
+    expect(
+      await check(
+        withActors("<Actor><Role>Speaker</Role><Name>Awi</Name><FullName></FullName></Actor>"),
+      ),
+    ).toBe(1);
+    // lameta's own checks report a session that has no contributors
+    expect(await check(withActors(""))).toBe(0);
   });
 
   it("warns about a genre that is not in ELAR's list", () => {
@@ -219,13 +243,6 @@ describe("ELAR rules.js", () => {
     expect(found("checkCorpusFolderName")).toEqual([["", "error"]]);
     // the field rules report a missing steward or depositor
     expect(found("checkResponsibles")).toEqual([]);
-  });
-
-  it("finds a language spelled differently across sessions, and points at the less common one", () => {
-    // "Etoro" in ETR010, "Edolo" elsewhere
-    expect(found("languageNameVariations")).toEqual([["ETR010", "error"]]);
-    // the field rules require ELAR's capitalisation in each session instead
-    expect(found("capitalisationVariations")).toEqual([]);
   });
 
   it("reports a missing translation as a warning, and everything else that it is sure of as an error", () => {
