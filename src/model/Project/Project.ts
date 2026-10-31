@@ -49,8 +49,10 @@ import { IChoice } from "../field/Field";
 import { locateDependencyForFilesystemCall } from "../../other/locateDependency";
 import {
   GetOtherConfigurationSettings,
+  mergeConfigurationSettings,
   SetOtherConfigurationSettings,
 } from "./OtherConfigurationSettings";
+import { problemsWithChecks } from "../../problems/checkSettings";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { initializeSanitizeForArchive } from "../../other/sanitizeForArchive";
 import { VocabularyTranslations } from "./VocabularyTranslations";
@@ -1473,10 +1475,13 @@ export class Project extends Folder {
     }
     // read in these settings and merge them with the defaults
     const settings = JSON5.parse(fs.readFileSync(path, "utf8"));
-    SetOtherConfigurationSettings({
-      ...GetOtherConfigurationSettings(),
-      ...settings,
-    });
+    SetOtherConfigurationSettings(
+      mergeConfigurationSettings(GetOtherConfigurationSettings(), settings),
+    );
+    // a unit test (checkSettings.spec.ts) stops these for the configurations that come
+    // with lameta
+    for (const problem of problemsWithChecks(GetOtherConfigurationSettings().checks ?? {}))
+      console.error(`The checks of the ${configurationName} configuration: ${problem}`);
   }
 }
 

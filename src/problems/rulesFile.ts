@@ -5,6 +5,12 @@ import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 // A rules file checks the metadata that lameta exports for an archive and reports
 // problems for the problems sidebar. Any archive configuration can have one, at
 // archive-configurations/<configuration name>/rules.js; it is optional.
+//
+// A rules file is for checks that belong to one archive or are about the shape of the
+// IMDI. A check that another archive could use with its own values belongs in
+// lametaChecks.ts instead, where a configuration turns it on in the `checks` of its
+// settings.json5 (see checkSettings.ts and archive-configurations/readme.md): its
+// messages are translated, and it reads the project directly.
 // It runs in a sandbox with no Node and no network (see rulesSandbox.ts), so it can
 // use nothing but the standard DOM.
 //
