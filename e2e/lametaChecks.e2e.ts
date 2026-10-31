@@ -64,6 +64,34 @@ test.describe("lameta's checks for every configuration", () => {
     await new ContributorsHelper(page, project).addContributor("Dami Asan");
     await expect(noContributors).toHaveCount(0, { timeout: 15000 });
   });
+
+  test("a contributor who has no consent on record is a problem that a click goes to, and a consent file fixes it", async () => {
+    await project.goToPeople();
+    // a name without "Consent", which in the name of the person's own file would count
+    await project.addPerson("Ilse Varo");
+    await page.keyboard.press("Tab");
+    await openSidebar(page);
+    const noConsent = entries(page, "contributorWithoutConsent");
+    // a person who contributes to no session is not reported
+    await expect(groupOf(page, "person:Ilse Varo").getByTestId("problems-looks-good")).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(noConsent).toHaveCount(0);
+
+    await newSession(project, page, "WITH-CONSENT");
+    const contributors = new ContributorsHelper(page, project);
+    await contributors.goToContributorsTab();
+    await contributors.addContributor("Ilse Varo", false);
+    const personsProblem = groupOf(page, "person:Ilse Varo").locator(noConsent);
+    await expect(personsProblem).toBeVisible({ timeout: 15000 });
+
+    await personsProblem.click();
+    await expect(page.getByTestId("people-tab")).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".fileList .rt-tr.selected")).toContainText(/Ilse.Varo\.person/);
+
+    await addFile(lameta, page, "Consent.txt");
+    await expect(personsProblem).toHaveCount(0, { timeout: 15000 });
+  });
 });
 
 // The lameta UI cannot give one language code two names: a name that the user types is

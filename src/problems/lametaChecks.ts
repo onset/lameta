@@ -7,6 +7,7 @@ import { Folder } from "../model/Folder/Folder";
 import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { IFieldProblem, wordProblem } from "./fieldRules";
 import { File } from "../model/file/File";
+import { HasConsentField } from "../model/field/Field";
 import { NavigationTarget } from "../navigation/NavigationTarget";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import {
@@ -23,7 +24,8 @@ import {
 // single fields: metadata files that lameta could not read, file names against the
 // configuration's fileNameRules, contributors who have no matching person, and
 // sessions that have no files or no contributors, and one language code with
-// different names in different sessions. A configuration can give any of these
+// different names in different sessions, and contributors who have no consent on
+// record. A configuration can give any of these
 // checks another severity (checkSeverities in its settings.json5). Like
 // the field rules, they read only the project's own data, so they are cheap enough
 // to run after each edit.
@@ -93,6 +95,8 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
     }
   };
 
+  // the people who contribute to at least one session
+  const contributingPeople = new Set<Person>();
   for (const session of project.sessions.items as Session[]) {
     checkFiles(session, "session", session.id);
     if (session.files.every((f) => f === session.metadataFile)) {
@@ -136,7 +140,11 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       }
       for (const name of contributors.values()) {
         // a contribution may name a person by name or by code, as the export allows
-        if (project.findPerson(name)) continue;
+        const person = project.findPerson(name);
+        if (person) {
+          contributingPeople.add(person);
+          continue;
+        }
         problems.push({
           checkId: "contributorWithoutPerson",
           severity: "error",
@@ -162,6 +170,30 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
   checkLanguageNames(project, problems);
   for (const person of project.persons.items as Person[]) {
     checkFiles(person, "person", person.getIdToUseForReferences());
+    const consent = person.properties.getValue("hasConsent");
+    if (
+      contributingPeople.has(person) &&
+      consent instanceof HasConsentField &&
+      !consent.hasConsent()
+    ) {
+      problems.push({
+        checkId: "contributorWithoutConsent",
+        severity: "warning",
+        ...wordProblem(
+          person.displayName,
+          t({
+            message: "has no consent on record.",
+            comment: 'Follows a person\'s name, as in "Awi Heole has no consent on record."',
+          }),
+          t({
+            message: 'lameta recognises a consent file by "Consent" in its file name.',
+            comment:
+              'Do not translate "Consent": lameta looks for that English word in the names of the person\'s files.',
+          }),
+        ),
+        target: { folderType: "person", folderId: person.getIdToUseForReferences() },
+      });
+    }
   }
   if (project.metadataFile) {
     checkReadable(project.metadataFile, { folderType: "project" }, couldNotBeRead());

@@ -499,6 +499,7 @@ test.describe("A brand-new project with no problems at all", () => {
     await project.goToPeople();
     await project.addPerson("Looks Good");
     await page.keyboard.press("Tab");
+    await addFile(lameta, page, "Consent.txt");
     await project.goToSessions();
     await project.addSession();
     await addFile(lameta, page, "notes.txt");

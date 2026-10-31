@@ -5,6 +5,7 @@ import temp from "temp";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
+import { Person } from "../model/Project/Person/Person";
 import { Contribution } from "../model/file/File";
 import { checkProjectFolders } from "./lametaChecks";
 import { combineProblems } from "./problems";
@@ -288,6 +289,57 @@ describe("checkProjectFolders", () => {
       } finally {
         resetOtherConfigurationSettings();
       }
+    });
+  });
+
+  describe("a contributor who has no consent on record", () => {
+    // Awi Heole and Ilawi Amosa contribute to ETR009 and have a consent file. Igali
+    // Sagali has none, and contributes to no session.
+    const igaliIn = (project: Project) =>
+      (project.persons.items as Person[]).find((p) => p.displayName === "Igali Sagali")!;
+
+    it("does not report a person who contributes to no session", () => {
+      expect(found(loadEdolo(), "contributorWithoutConsent")).toEqual([]);
+    });
+
+    it("reports a contributor who has no file with Consent in its name, as a warning", () => {
+      const project = loadEdolo();
+      const igali = igaliIn(project);
+      (project.sessions.items[0] as Session).metadataFile!.contributions.push(
+        new Contribution("Igali Sagali", "speaker", ""),
+      );
+      const problems = checkProjectFolders(project).filter(
+        (p) => p.checkId === "contributorWithoutConsent",
+      );
+      expect(problems.map((p) => [p.severity, p.subject, p.target])).toEqual([
+        [
+          "warning",
+          "Igali Sagali",
+          { folderType: "person", folderId: igali.getIdToUseForReferences() },
+        ],
+      ]);
+      expect(problems[0].reason).toBeTruthy();
+    });
+
+    it("finds a contributor named by code, on a media file", () => {
+      const project = loadEdolo();
+      igaliIn(project).properties.setText("code", "IGS");
+      const mp3 = (project.sessions.items[0] as Session).files.find(
+        (f) => f.getTextProperty("filename") === "ETR009_Careful.mp3",
+      )!;
+      mp3.contributions.push(new Contribution("igs", "speaker", ""));
+      expect(found(project, "contributorWithoutConsent")).toHaveLength(1);
+    });
+
+    it("reports a contributor whose consent file is gone", () => {
+      const project = loadEdolo(undefined, (dir) =>
+        fs.removeSync(Path.join(dir, "People", "Awi_Heole", "Awi_Heole_Consent.JPG")),
+      );
+      expect(
+        checkProjectFolders(project)
+          .filter((p) => p.checkId === "contributorWithoutConsent")
+          .map((p) => p.subject),
+      ).toEqual(["Awi Heole"]);
     });
   });
 
