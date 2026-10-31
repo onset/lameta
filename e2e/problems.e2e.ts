@@ -496,9 +496,16 @@ test.describe("A brand-new project with no problems at all", () => {
   test("a selected session with no problems says it looks good", async () => {
     await openSidebar(page);
     // a session with nothing missing
+    await project.goToPeople();
+    await project.addPerson("Looks Good");
+    await page.keyboard.press("Tab");
     await project.goToSessions();
     await project.addSession();
     await addFile(lameta, page, "notes.txt");
+    await page.locator(".fileList .rt-tr", { hasText: ".session" }).first().click();
+    const contributors = new ContributorsHelper(page, project);
+    await contributors.goToContributorsTab();
+    await contributors.addContributor("Looks Good", false);
     const looksGood = page.getByTestId("problems-looks-good");
     await expect(looksGood).toBeVisible({ timeout: 15000 });
     await expect(page.getByTestId("problem-entry")).toHaveCount(0);

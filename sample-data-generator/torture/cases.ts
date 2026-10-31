@@ -1246,7 +1246,7 @@ function writeElarRuleSessions(ctx: Context) {
     "ELAR_no_contributors",
     { title: "The anonymous retrospective", date: "2024-10-03", genre: "narrative", access: "O" },
     "A session with no contributors.",
-    "rules.js checkActors, fields.json5",
+    "lametaChecks.ts sessionWithoutContributors, fields.json5",
   );
   w.file(`${S}/ELAR_no_contributors/ELAR_no_contributors_20241003.wav`, m.wav(0.1));
   session(

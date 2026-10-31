@@ -176,6 +176,30 @@ describe("ELAR rules.js", () => {
     expect(found("checkForActors")).toEqual([]);
   });
 
+  it("reports a session whose actors have no full name, but not a session with no actors", async () => {
+    const rules = await import("../../archive-configurations/ELAR/rules.js");
+    const withActors = (actors: string) =>
+      session("ETR030", `<MDGroup><Actors>${actors}</Actors></MDGroup>`);
+    const check = (xml: string) =>
+      rulesSandboxMain(
+        {
+          rulesSource: "(the module is passed in directly)",
+          sessions: [{ sessionId: "ETR030", xml }],
+          metadataLanguages: ["en"],
+          maxProblems: 1000,
+        },
+        makeLametaSourceReader,
+        async () => rules,
+      ).then((o) => o.problems.filter((p) => p.checkId === "checkForActors").length);
+    expect(
+      await check(
+        withActors("<Actor><Role>Speaker</Role><Name>Awi</Name><FullName></FullName></Actor>"),
+      ),
+    ).toBe(1);
+    // lameta's own checks report a session that has no contributors
+    expect(await check(withActors(""))).toBe(0);
+  });
+
   it("warns about a genre that is not in ELAR's list", () => {
     // "Story" and "Relato"
     expect(found("genreMapping")).toEqual([

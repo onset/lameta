@@ -2,6 +2,7 @@ import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { addFile, entries, groupOf, newSession, openSidebar } from "./problems-e2e-helpers";
+import { ContributorsHelper } from "./contributors-e2e-helpers";
 
 // The checks in src/problems/lametaChecks.ts, which run for every archive
 // configuration. These use lameta's own configuration, with no archive chosen.
@@ -35,5 +36,30 @@ test.describe("lameta's checks for every configuration", () => {
 
     await addFile(lameta, page, "notes.txt");
     await expect(noFiles).toHaveCount(0, { timeout: 15000 });
+  });
+
+  test("a session that has no contributors is a problem that a click takes to its Contributors tab, and a contributor fixes it", async () => {
+    await newSession(project, page, "NO-CONTRIBUTORS");
+    await addFile(lameta, page, "notes.txt");
+    await openSidebar(page);
+    const noContributors = groupOf(page, "session:NO-CONTRIBUTORS").locator(
+      entries(page, "sessionWithoutContributors", "contributions"),
+    );
+    await expect(noContributors).toBeVisible({ timeout: 15000 });
+
+    await project.goToPeople();
+    await noContributors.click();
+    const contributorsTab = page.getByRole("tab", { name: /Contributors/i });
+    await expect(contributorsTab).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".navigation-highlight")).toHaveAttribute(
+      "data-field-key",
+      "contributions",
+    );
+    await expect(page.locator(".fileList .rt-tr.selected")).toContainText(
+      "NO-CONTRIBUTORS.session",
+    );
+
+    await new ContributorsHelper(page, project).addContributor("Dami Asan");
+    await expect(noContributors).toHaveCount(0, { timeout: 15000 });
   });
 });

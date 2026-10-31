@@ -276,7 +276,9 @@ function checkActors(session, expectTranslations, expectEnglish, report) {
   const actorsElement = first(session, "Actors");
   if (!actorsElement) return;
   const actors = all(actorsElement, "Actor");
-  if (!actors.some((a) => text(children(a, "FullName")[0]))) {
+  // A session that has no actors is reported by lameta's own checks
+  // (lametaChecks.ts), for every configuration, so not here
+  if (actors.length > 0 && !actors.some((a) => text(children(a, "FullName")[0]))) {
     report_(
       report,
       "checkForActors",

@@ -12,7 +12,7 @@ import { NavigationTarget } from "../navigation/NavigationTarget";
 // Checks that lameta makes for every archive configuration, beyond the rules of
 // single fields: metadata files that lameta could not read, file names against the
 // configuration's fileNameRules, contributors who have no matching person, and
-// sessions that have no files. Like
+// sessions that have no files or no contributors. Like
 // the field rules, they read only the project's own data, so they are cheap enough
 // to run after each edit.
 export function checkProjectFolders(project: Project): IFieldProblem[] {
@@ -95,6 +95,21 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
           }),
         ),
         target: { folderType: "session", folderId: session.id },
+      });
+    }
+    if (!session.files.some((f) => f.contributions.some((c) => c.personReference?.trim()))) {
+      problems.push({
+        checkId: "sessionWithoutContributors",
+        severity: "error",
+        ...wordProblem(
+          t`Session`,
+          t({
+            message: "has no contributors.",
+            comment:
+              'Follows "Session", as in "Session has no contributors." Contributors are the people listed on the Contributors tab of the session or of its files.',
+          }),
+        ),
+        target: { folderType: "session", folderId: session.id, fieldKey: "contributions" },
       });
     }
     // reported once for each file that lists the contributor, so that the problem

@@ -133,6 +133,41 @@ describe("checkProjectFolders", () => {
     });
   });
 
+  describe("a session that has no contributors", () => {
+    const withNotes = (dir: string) => {
+      addSession(dir, "ETR010");
+      fs.writeFileSync(Path.join(dir, "Sessions", "ETR010", "ETR010_notes.txt"), "x");
+    };
+    const etr010 = (project: Project) =>
+      (project.sessions.items as Session[]).find((s) => s.id === "ETR010")!;
+
+    it("reports a session in which no file has a contributor", () => {
+      const project = loadEdolo(undefined, withNotes);
+      expect(found(project, "sessionWithoutContributors")).toEqual([
+        ["error", { folderType: "session", folderId: "ETR010", fieldKey: "contributions" }],
+      ]);
+    });
+
+    it("reports a session whose only contribution has no name", () => {
+      const project = loadEdolo(undefined, withNotes);
+      etr010(project).metadataFile!.contributions.push(new Contribution(" ", "speaker", ""));
+      expect(found(project, "sessionWithoutContributors")).toHaveLength(1);
+    });
+
+    it("does not report a session whose contributor is only on one of its other files", () => {
+      const project = loadEdolo(undefined, withNotes);
+      const notes = etr010(project).files.find(
+        (f) => f.getTextProperty("filename") === "ETR010_notes.txt",
+      )!;
+      notes.contributions.push(new Contribution("Awi Heole", "speaker", ""));
+      expect(found(project, "sessionWithoutContributors")).toEqual([]);
+    });
+
+    it("does not report the Edolo sample's session", () => {
+      expect(found(loadEdolo(), "sessionWithoutContributors")).toEqual([]);
+    });
+  });
+
   describe("metadata files that lameta could not read", () => {
     const unreadable = (project: Project) =>
       checkProjectFolders(project)
