@@ -6,6 +6,16 @@ import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { ContributorsHelper } from "./contributors-e2e-helpers";
 import {
+  addFile,
+  closeSidebar,
+  counts,
+  editorOf,
+  entries,
+  groupOf,
+  newSession,
+  openSidebar,
+} from "./problems-e2e-helpers";
+import {
   MultilingualTestContext,
   setupMultilingualTestContextFast,
   teardownMultilingualTestContext,
@@ -15,66 +25,12 @@ import {
 // in a brand-new project: under ELAR, which finds problems at once, and under
 // lameta's own configuration, which finds none.
 
-// the numbers of problems and warnings that the indicator in the top bar shows
-async function counts(page: Page): Promise<[number, number]> {
-  const text = await page.getByTestId("problems-indicator").innerText();
-  const [errors, warnings] = (text.match(/\d+/g) ?? []).map(Number);
-  return [errors, warnings];
-}
-
-async function openSidebar(page: Page) {
-  const sidebar = page.getByTestId("problems-sidebar");
-  if (!(await sidebar.isVisible())) {
-    await page.getByTestId("problems-indicator").click();
-  }
-  await expect(sidebar).toBeVisible();
-}
-
-async function closeSidebar(page: Page) {
-  if (await page.getByTestId("problems-sidebar").isVisible()) {
-    await page.getByTestId("hide-problems").click();
-  }
-  await expect(page.getByTestId("problems-sidebar")).toBeHidden();
-}
-
-// The sidebar's entries for one check, optionally only those at one field. These
-// tests find problems by what found them, not by their wording.
-function entries(page: Page, checkId: string, fieldKey?: string): Locator {
-  const field = fieldKey ? `[data-field-key='${fieldKey}']` : "";
-  return page.locator(`[data-testid='problem-entry'][data-check-id='${checkId}']${field}`);
-}
-
 // No message may still show a placeholder such as {archiveName}: that means its
 // translation catalog lacked it or a value was not passed.
 async function expectNoPlaceholders(locator: Locator) {
   for (const text of await locator.allInnerTexts()) {
     expect(text).not.toMatch(/\{\w+\}/);
   }
-}
-
-// the text editor of a field on the visible form, found by the field's CSS class
-function editorOf(page: Page, fieldKey: string): Locator {
-  return page
-    .locator(`.autoForm .${fieldKey} [contenteditable='true'], .autoForm .${fieldKey} input`)
-    .first();
-}
-
-// the sidebar's section for one folder, such as "session:ETR009" or "person:Awi Heole"
-function groupOf(page: Page, folderKey: string): Locator {
-  return page.locator(`[data-testid='problem-group'][data-folder-key='${folderKey}']`);
-}
-
-// adds a session and gives it `id`, so that its section in the sidebar can be found
-async function newSession(project: E2eProject, page: Page, id: string) {
-  await project.goToSessions();
-  await project.addSession();
-  // a new session opens on the tab that the last one was on
-  await page.getByRole("tab", { name: /^Session$/ }).click();
-  await editorOf(page, "id").click();
-  await page.keyboard.press("ControlOrMeta+A");
-  await page.keyboard.type(id);
-  await page.keyboard.press("Tab");
-  await expect(page.locator(".fileList .rt-tr", { hasText: `${id}.session` })).toBeVisible();
 }
 
 // adds an MP3 named song.mp3 to the selected session, and selects it
@@ -539,8 +495,10 @@ test.describe("A brand-new project with no problems at all", () => {
 
   test("a selected session with no problems says it looks good", async () => {
     await openSidebar(page);
+    // a session with nothing missing
     await project.goToSessions();
     await project.addSession();
+    await addFile(lameta, page, "notes.txt");
     const looksGood = page.getByTestId("problems-looks-good");
     await expect(looksGood).toBeVisible({ timeout: 15000 });
     await expect(page.getByTestId("problem-entry")).toHaveCount(0);

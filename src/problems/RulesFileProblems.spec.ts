@@ -374,7 +374,6 @@ describe("RulesFileProblems", () => {
         "Access Explanation",
         etr009At({ fieldKey: "accessDescription" }),
       ],
-      ["checkForResources", "Session", { folderType: "session", folderId: "ETR010" }],
       [
         "checkForActors",
         "Session",

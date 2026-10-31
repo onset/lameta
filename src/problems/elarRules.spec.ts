@@ -147,7 +147,7 @@ describe("ELAR rules.js", () => {
     ]);
     // a resource of type "Sound"
     expect(found("checkResourceTypes")).toEqual([["ETR010", "error"]]);
-    expect(found("checkForResources")).toEqual([["ETR011", "error"]]);
+    expect(found("checkForResources")).toEqual([]);
   });
 
   it("reports an MP3 or FLExText file only when the session has the better version", () => {

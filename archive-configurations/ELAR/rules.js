@@ -161,9 +161,8 @@ function checkResources(session, sessionName, isConsent, report) {
   const resources = first(session, "Resources");
   const media = resources ? all(resources, "MediaFile") : [];
   const written = resources ? all(resources, "WrittenResource") : [];
-  if (media.length === 0 && written.length === 0) {
-    report_(report, "checkForResources", resources ?? session, "Session", "has no files.");
-  }
+  // A session that has no files is reported by lameta's own checks (lametaChecks.ts),
+  // for every configuration, so not here
   const fileNames = [...media, ...written]
     .map((r) => text(children(r, "ResourceLink")[0]).split("/").pop())
     .filter((n) => n);

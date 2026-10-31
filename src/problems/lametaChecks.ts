@@ -11,7 +11,8 @@ import { NavigationTarget } from "../navigation/NavigationTarget";
 
 // Checks that lameta makes for every archive configuration, beyond the rules of
 // single fields: metadata files that lameta could not read, file names against the
-// configuration's fileNameRules, and contributors who have no matching person. Like
+// configuration's fileNameRules, contributors who have no matching person, and
+// sessions that have no files. Like
 // the field rules, they read only the project's own data, so they are cheap enough
 // to run after each edit.
 export function checkProjectFolders(project: Project): IFieldProblem[] {
@@ -82,6 +83,20 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
 
   for (const session of project.sessions.items as Session[]) {
     checkFiles(session, "session", session.id);
+    if (session.files.every((f) => f === session.metadataFile)) {
+      problems.push({
+        checkId: "sessionWithoutFiles",
+        severity: "error",
+        ...wordProblem(
+          t`Session`,
+          t({
+            message: "has no files.",
+            comment: 'Follows "Session", as in "Session has no files."',
+          }),
+        ),
+        target: { folderType: "session", folderId: session.id },
+      });
+    }
     // reported once for each file that lists the contributor, so that the problem
     // goes to the Contributors tab of that file
     for (const file of session.files) {

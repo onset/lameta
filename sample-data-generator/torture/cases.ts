@@ -1238,8 +1238,8 @@ function writeElarRuleSessions(ctx: Context) {
       access: "O",
       contributions: [speaker("Nɔkɔ Ɛsi")],
     },
-    "A session with no files: ELAR's checkForResources.",
-    "rules.js checkResources",
+    "A session with no files.",
+    "lametaChecks.ts sessionWithoutFiles",
   );
   session(
     ctx,

@@ -25,6 +25,16 @@ function loadEdolo(addToEtr009?: string, change?: (dir: string) => void): Projec
 }
 // the sample's own problem: Hatton, a contributor that no person record matches
 const notHatton = (p: { subject?: string }) => p.subject !== "Hatton";
+// adds a session folder that holds only its .session, with this XML in it
+function addSession(dir: string, id: string, xml = "<Session></Session>") {
+  fs.mkdirSync(Path.join(dir, "Sessions", id));
+  fs.writeFileSync(Path.join(dir, "Sessions", id, id + ".session"), xml);
+}
+// the severity and target of each problem that one check found
+const found = (project: Project, checkId: string) =>
+  checkProjectFolders(project)
+    .filter((p) => p.checkId === checkId)
+    .map((p) => [p.severity, p.target]);
 
 describe("checkProjectFolders", () => {
   it("finds the Edolo sample's contributor who has no person record", () => {
@@ -104,6 +114,23 @@ describe("checkProjectFolders", () => {
       sessionId: session.id,
     };
     expect(combineProblems(problems, [fromRules]).map((p) => p.checkId)).toEqual(["fileName"]);
+  });
+
+  describe("a session that has no files", () => {
+    it("reports a session that has only its .session", () => {
+      const project = loadEdolo(undefined, (dir) => addSession(dir, "ETR010"));
+      expect(found(project, "sessionWithoutFiles")).toEqual([
+        ["error", { folderType: "session", folderId: "ETR010" }],
+      ]);
+    });
+
+    it("does not report a session that has one file", () => {
+      const project = loadEdolo(undefined, (dir) => {
+        addSession(dir, "ETR010");
+        fs.writeFileSync(Path.join(dir, "Sessions", "ETR010", "ETR010_notes.txt"), "x");
+      });
+      expect(found(project, "sessionWithoutFiles")).toEqual([]);
+    });
   });
 
   describe("metadata files that lameta could not read", () => {
