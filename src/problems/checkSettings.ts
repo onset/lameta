@@ -69,7 +69,9 @@ export function mergeChecks(
   const merged: ChecksOfConfiguration = { ...base };
   for (const [id, settings] of Object.entries(overrides ?? {})) {
     const before = merged[id];
-    merged[id] = settings === false ? false : { ...before, ...settings };
+    // anything else, such as null, is kept so that problemsWithChecks() reports it
+    merged[id] =
+      typeof settings === "object" && settings !== null ? { ...before, ...settings } : settings;
   }
   return merged;
 }

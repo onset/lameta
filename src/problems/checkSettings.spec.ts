@@ -89,6 +89,8 @@ describe("mergeChecks", () => {
 });
 
 describe("problemsWithChecks", () => {
+  const base = (): ChecksOfConfiguration => ({ sessionWithoutFiles: { severity: "error" } });
+
   it("reports a name that is not a check", () => {
     expect(problemsWithChecks({ sessionWithoutFile: { severity: "error" } })).toEqual([
       '"sessionWithoutFile" is not one of lameta\'s checks.',
@@ -122,6 +124,12 @@ describe("problemsWithChecks", () => {
     ).toEqual(['"fileNameDateStamp" needs "appliesTo" to be a list of "media" and "written".']);
   });
 
+  it("reports a value that is neither false nor settings, after merging", () => {
+    expect(problemsWithChecks(mergeChecks(base(), { sessionWithoutFiles: null as never }))).toEqual(
+      ['"sessionWithoutFiles" must be false or an object of settings.'],
+    );
+  });
+
   it("refuses to turn off a check that is always on", () => {
     expect(problemsWithChecks({ metadataUnreadable: false })).toEqual([
       '"metadataUnreadable" cannot be turned off.',
@@ -137,6 +145,12 @@ describe("enabledChecks", () => {
     });
     expect([...enabled.keys()].sort()).toEqual(["metadataUnreadable", "sessionWithoutFiles"]);
     expect(enabled.get("sessionWithoutFiles")!.severity).toBe("warning");
+  });
+
+  it("keeps a check that is always on, even when the configuration turns it off", () => {
+    expect(enabledChecks({ metadataUnreadable: false }).get("metadataUnreadable")).toEqual({
+      severity: "error",
+    });
   });
 
   it("leaves out a check whose settings do not fit", () => {

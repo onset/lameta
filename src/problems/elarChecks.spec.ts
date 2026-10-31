@@ -132,6 +132,13 @@ describe("ELAR's file checks", () => {
     ]);
   });
 
+  it("asks a session named ConsentDocuments for neither its ID nor a date stamp, as ELAR's validator does", () => {
+    const project = loadEdoloUnderElar();
+    etr009(project).properties.setText("id", "ConsentDocuments");
+    expect(found(project, "fileNameContainsSessionId")).toEqual([]);
+    expect(found(project, "fileNameDateStamp")).toEqual([]);
+  });
+
   it("reports a file over ELAR's size limits, at its size field", () => {
     const project = loadEdoloUnderElar();
     const file = (name: string) =>
