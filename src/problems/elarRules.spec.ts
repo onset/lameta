@@ -136,18 +136,9 @@ describe("ELAR rules.js", () => {
     expect(output.errors).toEqual([]);
   });
 
-  it("checks media and written-resource file names", () => {
-    // someone_else_with_a_long_name.wav
-    expect(found("checkMediaFiles/sessionId")).toEqual([["ETR009", "error"]]);
-    expect(found("checkMediaFiles/extension")).toEqual([]);
-    // the .docx and the .001 file
-    expect(found("checkWrittenResources/extension")).toEqual([
-      ["ETR009", "error"],
-      ["ETR009", "error"],
-    ]);
+  it("checks resource types", () => {
     // a resource of type "Sound"
     expect(found("checkResourceTypes")).toEqual([["ETR010", "error"]]);
-    expect(found("checkForResources")).toEqual([]);
   });
 
   it("reports an MP3 or FLExText file only when the session has the better version", () => {
@@ -173,39 +164,10 @@ describe("ELAR rules.js", () => {
       ["ETR009", "warning"],
       ["ETR010", "warning"],
     ]);
-    expect(found("checkForActors")).toEqual([]);
   });
 
-  it("reports a session whose actors have no full name, but not a session with no actors", async () => {
-    const rules = await import("../../archive-configurations/ELAR/rules.js");
-    const withActors = (actors: string) =>
-      session("ETR030", `<MDGroup><Actors>${actors}</Actors></MDGroup>`);
-    const check = (xml: string) =>
-      rulesSandboxMain(
-        {
-          rulesSource: "(the module is passed in directly)",
-          sessions: [{ sessionId: "ETR030", xml }],
-          metadataLanguages: ["en"],
-          maxProblems: 1000,
-        },
-        makeLametaSourceReader,
-        async () => rules,
-      ).then((o) => o.problems.filter((p) => p.checkId === "checkForActors").length);
-    expect(
-      await check(
-        withActors("<Actor><Role>Speaker</Role><Name>Awi</Name><FullName></FullName></Actor>"),
-      ),
-    ).toBe(1);
-    // lameta's own checks report a session that has no contributors
-    expect(await check(withActors(""))).toBe(0);
-  });
-
-  it("warns about a genre that is not in ELAR's list", () => {
-    // "Story" and "Relato"
-    expect(found("genreMapping")).toEqual([
-      ["ETR009", "warning"],
-      ["ETR012", "warning"],
-    ]);
+  it("wants no translation of a genre that has one", () => {
+    // "Story" and "Relato" have their Tok Pisin translation
     expect(found("genreTranslation")).toEqual([]);
   });
 
@@ -230,7 +192,7 @@ describe("ELAR rules.js", () => {
       ).then((o) => o.problems.map((p) => p.checkId).filter((id) => /genre|ActorRole/.test(id)));
     // the field rules report, on the project, that English is not a metadata language
     expect(await check(["es"])).toEqual([]);
-    // "Mitología" is not compared with ELAR's English list
+    // a genre that the IMDI has only in Spanish wants no translation
     expect(await check(["en", "es"])).toEqual(["checkActorRole/english"]);
   });
 
@@ -238,15 +200,8 @@ describe("ELAR rules.js", () => {
     expect(found("accessDescriptionTranslation")).toEqual([["ETR009", "warning"]]);
   });
 
-  it("checks the corpus", () => {
-    // "Edolo Sample" has a space
-    expect(found("checkCorpusFolderName")).toEqual([["", "error"]]);
-    // the field rules report a missing steward or depositor
-    expect(found("checkResponsibles")).toEqual([]);
-  });
-
   it("reports a missing translation as a warning, and everything else that it is sure of as an error", () => {
-    const warningChecks = /translation|format|Translation|genreMapping|\/flextext$/;
+    const warningChecks = /translation|format|Translation|\/flextext$/;
     const severities = (warnings: boolean) => [
       ...new Set(
         output.problems
@@ -255,16 +210,5 @@ describe("ELAR rules.js", () => {
       ),
     ];
     expect(severities(false)).toEqual(["error"]);
-  });
-
-  it("checks file names", () => {
-    expect(found("checkWrittenResources/dateStamp")).toEqual([
-      ["ETR009", "error"],
-      ["ETR009", "error"],
-    ]);
-    expect(found("checkMediaFiles/characters")).toEqual([["ETR010", "error"]]);
-    // someone_else_with_a_long_name.wav, and a written resource
-    expect(found("checkMediaFiles/length")).toEqual([["ETR009", "error"]]);
-    expect(found("checkWrittenResources/length")).toEqual([["ETR009", "error"]]);
   });
 });

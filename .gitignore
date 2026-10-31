@@ -79,3 +79,6 @@ rocrate-export-review-*.md
 
 Large Sample/
 scripts/crowdin/staging/
+
+# a configuration that configuredChecks.e2e.ts copies in while it runs
+/archive-configurations/e2e-*/

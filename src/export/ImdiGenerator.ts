@@ -19,6 +19,7 @@ import { titleCase } from "title-case";
 import { sanitizeForExport } from "../other/sanitizeForArchive";
 import { fileExportNames, sessionFolderExportName } from "./exportNames";
 import { shouldIncludeFile } from "./shouldIncludeFile";
+import { vocabularyElementValues } from "./vocabularyElementValues";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyWarning } from "../components/Notify";
@@ -1742,72 +1743,15 @@ export default class ImdiGenerator {
     translationKey: string,
     definition?: FieldDefinition,
   ) {
-    const inCase = (value: string, sentenceCaseIt: boolean) =>
-      definition?.capitalization
-        ? applyCapitalization(definition, value)
-        : sentenceCaseIt
-          ? sentenceCase(value)
-          : value;
-    if (!englishValue || englishValue.trim().length === 0) {
-      // Output empty element with attributes if value is empty
-      const newElement = textElement(this.tail, elementName, "");
-      newElement.attribute("Link", vocabularyUrl);
-      newElement.attribute("Type", "OpenVocabulary");
-      this.mostRecentElement = newElement;
-      this.tail = newElement.up();
-      return;
-    }
-
-    // Check if we're using the ELAR extended schema which supports multilingual vocabulary
-    const imdiSchema = GetOtherConfigurationSettings().imdiSchema;
-    const supportsMultilingualVocab = imdiSchema === "IMDI_3.0_elar.xsd";
-
-    if (!supportsMultilingualVocab) {
-      // Standard IMDI 3.0: output single element without LanguageId
-      // Apply sentenceCase only if the value starts with a lowercase letter
-      // (e.g., user typed "myth" should become "Myth", but "MixedCase" should stay as-is)
-      const outputValue = inCase(
-        englishValue,
-        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase(),
-      );
-      const newElement = textElement(this.tail, elementName, outputValue);
-      newElement.attribute("Link", vocabularyUrl);
-      newElement.attribute("Type", "OpenVocabulary");
-      this.mostRecentElement = newElement;
-      this.tail = newElement.up();
-      return;
-    }
-
-    // ELAR schema: output multiple elements with LanguageId attributes
-    const metadataSlots = Project.getMetadataLanguageSlots();
-    let outputCount = 0;
-
-    for (const slot of metadataSlots) {
-      const translation = translateFn(translationKey, slot.tag);
-      if (translation) {
-        // Normalize to sentence case for consistent IMDI output
-        // (ELAR prefers "Careful speech speaker" not "Careful Speech Speaker")
-        const normalizedTranslation = inCase(translation, true);
-        const newElement = textElement(this.tail, elementName, normalizedTranslation);
-        // Always use ISO639-3 (3-letter) codes - archives can't handle 2-letter ISO639-1 codes
-        const iso639_3 = this.iso639_3ForExport(slot.tag);
-        newElement.attribute("LanguageId", "ISO639-3:" + iso639_3);
-        newElement.attribute("Link", vocabularyUrl);
-        newElement.attribute("Type", "OpenVocabulary");
-        this.mostRecentElement = newElement;
-        this.tail = newElement.up();
-        outputCount++;
-      }
-    }
-
-    // If no translations were output, fall back to English
-    // Apply sentenceCase only if the value starts with a lowercase letter
-    if (outputCount === 0) {
-      const outputValue = inCase(
-        englishValue,
-        englishValue.length > 0 && englishValue[0] === englishValue[0].toLowerCase(),
-      );
-      const newElement = textElement(this.tail, elementName, outputValue);
+    for (const value of vocabularyElementValues(
+      englishValue,
+      translateFn,
+      translationKey,
+      definition,
+      (tag) => this.iso639_3ForExport(tag),
+    )) {
+      const newElement = textElement(this.tail, elementName, value.text);
+      if (value.languageId) newElement.attribute("LanguageId", value.languageId);
       newElement.attribute("Link", vocabularyUrl);
       newElement.attribute("Type", "OpenVocabulary");
       this.mostRecentElement = newElement;

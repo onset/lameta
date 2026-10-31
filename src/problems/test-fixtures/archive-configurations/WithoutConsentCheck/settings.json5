@@ -1,0 +1,6 @@
+{
+  configurationFullName: "A configuration that turns off one of the checks in lameta's list",
+  checks: {
+    contributorWithoutConsent: false,
+  },
+}

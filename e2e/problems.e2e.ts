@@ -89,10 +89,10 @@ test.describe("Problems in a brand-new ELAR project", () => {
     await expect(page.getByTestId("hide-problems")).toBeVisible();
   });
 
-  test("ELAR's rules file reports the project name", async () => {
+  test("ELAR's check of the project name reports it", async () => {
     await openSidebar(page);
     // the project's name has spaces, which ELAR does not allow
-    await expect(entries(page, "checkCorpusFolderName")).toBeVisible({
+    await expect(entries(page, "projectName")).toBeVisible({
       timeout: 15000,
     });
   });
