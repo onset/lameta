@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import { reaction, untracked } from "mobx";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
+import { useLingui } from "@lingui/react";
 import { SeverityIcon } from "./SeverityIcon";
 import { ProblemWording } from "./ProblemWording";
 import IconButton from "@mui/material/IconButton";
@@ -32,6 +33,7 @@ import { projectProblems } from "../../problems/ProjectProblems";
 import { rulesFileProblems } from "../../problems/RulesFileProblems";
 import { IRulesFileError, IRulesFileProblem } from "../../problems/rulesSandboxMain";
 import { isTyping } from "../../problems/whileTyping";
+import { checksHeading } from "../../problems/checksHeading";
 
 export const kProblemsSidebarWidth = 300;
 
@@ -450,6 +452,7 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
         overflow: hidden;
       `}
     >
+      <ChecksHeading project={props.project} />
       {rulesFileProblems.errors.length > 0 && (
         <div
           css={css`
@@ -483,6 +486,27 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
     </div>
   );
 });
+
+// Which set of checks is running. useLingui renders it again when the user changes the
+// UI language, which does not reload the project.
+const ChecksHeading: React.FunctionComponent<{ project: Project }> = (props) => {
+  useLingui();
+  return (
+    <h3
+      data-testid="problems-checks-heading"
+      css={css`
+        margin: 0;
+        padding: 8px 12px 6px 12px;
+        font-size: 13px;
+        font-weight: bold;
+        color: ${lameta_dark_blue};
+        border-bottom: solid 1px #ddd;
+      `}
+    >
+      {checksHeading(props.project.checksConfigurationName)}
+    </h3>
+  );
+};
 
 // These read what changes on every run of the checks, so they are observers of their
 // own: a run that finds the same problems then re-renders only them, not the list.
