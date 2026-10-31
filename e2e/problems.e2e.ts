@@ -447,7 +447,7 @@ test.describe("A role that lacks a translation, in an ELAR project", () => {
     await openSidebar(page);
     // the problem is the session's, though its translation is entered on the Project tab
     const roleTranslation = groupOf(page, "session:ROLE-TRANSLATION").locator(
-      entries(page, "checkActorRole/translation"),
+      entries(page, "roleTranslation"),
     );
     await expect(roleTranslation).toBeVisible({ timeout: 15000 });
 
@@ -479,7 +479,7 @@ test.describe("A brand-new project with no problems at all", () => {
 
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    // lameta's own configuration has no field rules and no rules file
+    // lameta's own configuration has no field rules
     project = await launchWithProject(lameta, "NoProblems");
     page = lameta.page;
   });

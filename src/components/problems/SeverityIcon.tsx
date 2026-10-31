@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import * as React from "react";
 import CancelIcon from "@mui/icons-material/Cancel";
 import WarningIcon from "@mui/icons-material/Warning";
-import { ProblemSeverity } from "../../problems/rulesFile";
+import { ProblemSeverity } from "../../problems/problemSeverity";
 
 // The colour of each severity on a white background, as in the Problems sidebar
 export const kSeverityColors: Record<ProblemSeverity, string> = {

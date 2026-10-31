@@ -3,7 +3,7 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Field } from "../../model/field/Field";
 import { projectProblems } from "../../problems/ProjectProblems";
-import { ProblemSeverity } from "../../problems/rulesFile";
+import { ProblemSeverity } from "../../problems/problemSeverity";
 import { SeverityIcon } from "./SeverityIcon";
 import { ProblemWording } from "./ProblemWording";
 import userSettings from "../../other/UserSettings";

@@ -30,7 +30,6 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import { lameta_blue, lameta_green, lameta_orange } from "../containers/theme";
 import { navigationState, TopTab } from "../navigation/NavigationState";
 import { projectProblems } from "../problems/ProjectProblems";
-import { rulesFileProblems } from "../problems/RulesFileProblems";
 import {
   ProblemsSidebar,
   ProblemsIndicator,
@@ -57,7 +56,6 @@ class Home extends React.Component<IProps> {
   private disposeShowProblemsReaction: mobx.IReactionDisposer;
   private stopRebuildingMenusOnLanguageChange: () => void;
   private stopWatchingProblems: () => void;
-  private stopRunningRulesFile: () => void;
 
   // If multilingualConversionPending is true, open to Project tab (0) to show Languages sub-tab
   // Otherwise, default to Project tab (index 0 regardless of DeveloperMode now)
@@ -118,8 +116,6 @@ class Home extends React.Component<IProps> {
       navigationState.setTopTab(kTopTabs[this.kFirstTabToOpen]);
       this.stopWatchingProblems();
       this.stopWatchingProblems = projectProblems.watch(this.props.project);
-      this.stopRunningRulesFile();
-      this.stopRunningRulesFile = rulesFileProblems.watch(this.props.project);
     }
   }
 
@@ -128,7 +124,6 @@ class Home extends React.Component<IProps> {
     this.disposeShowProblemsReaction();
     this.stopRebuildingMenusOnLanguageChange();
     this.stopWatchingProblems();
-    this.stopRunningRulesFile();
   }
 
   // NB: we have to actually reload menus because (as of this writing) electron menus
@@ -264,7 +259,6 @@ class Home extends React.Component<IProps> {
   // on another tab and come back
   public componentDidMount() {
     this.stopWatchingProblems = projectProblems.watch(this.props.project);
-    this.stopRunningRulesFile = rulesFileProblems.watch(this.props.project);
     this.UpdateMenus(this.kFirstTabToOpen);
   }
   public render() {

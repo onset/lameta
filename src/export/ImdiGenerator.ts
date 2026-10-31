@@ -19,7 +19,7 @@ import { titleCase } from "title-case";
 import { sanitizeForExport } from "../other/sanitizeForArchive";
 import { fileExportNames, sessionFolderExportName } from "./exportNames";
 import { shouldIncludeFile } from "./shouldIncludeFile";
-import { vocabularyElementValues } from "./vocabularyElementValues";
+import { roleForExport, vocabularyElementValues } from "./vocabularyElementValues";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyWarning } from "../components/Notify";
@@ -136,8 +136,8 @@ export default class ImdiGenerator {
 
   //We enable this when we want to keep unit test xpaths simple
   private omitNamespaces: boolean;
-  // Whether to put lameta-source and lameta-translations comments in the IMDI. The
-  // checks and the IMDI view need them; what export writes to disk leaves them out.
+  // Whether to put lameta-source and lameta-translations comments in the IMDI. The IMDI
+  // view shows them; what export writes to disk leaves them out.
   public writeLametaComments = true;
 
   private keysThatHaveBeenOutput = new Set<string>();
@@ -318,7 +318,7 @@ export default class ImdiGenerator {
       this.tail.comment(comment);
     }
     if (translateRole) {
-      const roleOutput = this.getRoleOutput(role);
+      const roleOutput = roleForExport(role);
       this.multilingualVocabularyElement(
         "Role",
         roleOutput,
@@ -1233,16 +1233,6 @@ export default class ImdiGenerator {
     //}
   }
 
-  private getRoleOutput(role: string): string {
-    let roleOutput = "Unspecified";
-    if (role && role.length > 0) {
-      // replace underscores with spaces
-      roleOutput = role.replace(/_/g, " ");
-      // upper case the first letter of the first word only (per ELAR's Hanna)
-      roleOutput = roleOutput.charAt(0).toUpperCase() + roleOutput.slice(1);
-    }
-    return roleOutput;
-  }
   // See https://tla.mpi.nl/wp-content/uploads/2012/06/IMDI_MetaData_3.0.4.pdf for details
   public actor(
     person: Person,
@@ -1254,7 +1244,7 @@ export default class ImdiGenerator {
   ): string | null {
     return this.group("Actor", () => {
       // Role is a multilingual vocabulary field
-      const roleOutput = this.getRoleOutput(role);
+      const roleOutput = roleForExport(role);
       this.withSource(roleSource, () =>
         this.multilingualVocabularyElement(
           "Role",

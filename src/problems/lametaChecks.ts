@@ -17,8 +17,11 @@ import {
 import { CheckSettings, enabledChecks } from "./checkSettings";
 import { checkExportedFiles, isExported } from "./exportedFileChecks";
 import { findPersonToExport, hasReadableMetadata } from "../model/Project/exportableFolders";
-import { ImdiVocabularyTranslator } from "../export/ImdiVocabularyTranslator";
-import { vocabularyElementValues } from "../export/vocabularyElementValues";
+import {
+  checkSessionResourcesAndTranslations,
+  genreElements,
+  readMultilingual,
+} from "./translationAndResourceChecks";
 import {
   isLanguageName,
   iso639_3ForExport,
@@ -114,6 +117,7 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       checkExportedFiles(session, checks, add);
       checkContributorsHaveFullNames(project, session, checks, add);
       checkGenreInList(project, session, checks, add, genresInEnglish);
+      checkSessionResourcesAndTranslations(project, session, checks, add);
     }
     const otherFiles = session.files.filter((f) => f !== session.metadataFile);
     if (checks.has("sessionWithoutFiles") && !otherFiles.some(isExported)) {
@@ -372,7 +376,7 @@ function checkGenreInList(
   // for each value
   let english = genresInEnglish.get(value);
   if (english === undefined) {
-    english = genreInEnglish(project, session, value);
+    english = genreInEnglish(project, session);
     genresInEnglish.set(value, english);
   }
   if (!english || english === "Unknown" || english === "Unspecified") return;
@@ -394,22 +398,9 @@ function checkGenreInList(
 
 // A genre in English, as the IMDI export writes it, or "" if the IMDI has it only in
 // other languages
-function genreInEnglish(project: Project, session: Session, value: string): string {
-  const label = session.properties.getLabelOfValue("genre").replace(/_/g, " ");
-  const elements = vocabularyElementValues(
-    label || value,
-    new ImdiVocabularyTranslator(project).getGenreTranslator(),
-    value,
-    session.properties.getFieldDefinition("genre"),
-    (tag) => iso639_3ForExport(tag, project.privateUseCodes, project),
-  );
-  const withLanguage = elements.filter((e) => e.languageId);
-  return (
-    withLanguage.length > 0
-      ? (withLanguage.find((e) => e.languageId === "ISO639-3:eng" && e.text.trim())?.text ?? "")
-      : // a value with its translation, as "English / Translation"
-        elements[0].text.trim().split(" / ")[0]
-  ).trim();
+function genreInEnglish(project: Project, session: Session): string {
+  const genre = readMultilingual(genreElements(project, session));
+  return genre.hasEnglish ? genre.english : "";
 }
 
 // The project's name, which the IMDI export writes as the corpus's name

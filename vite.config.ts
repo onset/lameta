@@ -66,16 +66,6 @@ export default defineConfig({
         rules: { "typescript/unbound-method": "off" },
       },
       {
-        // Rules files load from a data: URL through `new Function("url", "return import(url)")`
-        // so that no bundler rewrites the import(); vitest cannot import data: URLs either
-        files: [
-          "src/problems/rulesSandboxMain.ts",
-          "src/problems/rulesSandboxMain.spec.ts",
-          "src/problems/RulesFileProblems.spec.ts",
-        ],
-        rules: { "typescript/no-implied-eval": "off" },
-      },
-      {
         // the constructor registers the instance as the module-wide finder
         files: ["src/languageFinder/LanguageFinder.ts"],
         rules: { "typescript/no-this-alias": "off" },
@@ -156,7 +146,6 @@ export default defineConfig({
         "src/mainProcess/MainProcessImdiExport.ts",
         "src/mainProcess/preload/index.ts",
         "src/mainProcess/validateImdi.ts",
-        "src/mainProcess/rulesSandbox.ts",
         "src/getTestEnvironment.ts",
       ],
       transformOptions: {

@@ -565,28 +565,6 @@ test.describe("Quitting", () => {
     await closed;
   });
 
-  test("closing the window quits while the hidden rules sandbox window is open", async () => {
-    lameta = new LametaE2ERunner();
-    await launchWithProject(lameta, "QuitWithSandboxTest");
-    // asking for the sandbox's process id creates its hidden window
-    await lameta.page.evaluate(() =>
-      require("electron").ipcRenderer.invoke("rules-sandbox-process-id"),
-    );
-    expect(
-      await lameta.electronApp.evaluate(
-        ({ BrowserWindow }) => BrowserWindow.getAllWindows().length,
-      ),
-    ).toBe(2);
-
-    const closed = lameta.electronApp.waitForEvent("close", { timeout: 20000 });
-    await lameta.electronApp.evaluate(({ BrowserWindow }) =>
-      BrowserWindow.getAllWindows()
-        .find((w) => w.isVisible())!
-        .close(),
-    );
-    await closed;
-  });
-
   test("closing while a file is copying asks first, then abandons the copy and quits", async () => {
     lameta = new LametaE2ERunner();
     const project = await launchWithProject(lameta, "QuitWhileCopyingTest");

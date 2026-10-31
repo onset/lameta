@@ -22,16 +22,8 @@ import { PeopleIcon } from "../people/PeopleIcon";
 import { lameta_dark_blue, lameta_dark_green } from "../../containers/theme";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { IFieldProblem } from "../../problems/fieldRules";
-import {
-  combineProblems,
-  fromFieldProblem,
-  fromRulesFileProblem,
-  IProblem,
-  withoutRulesFileDuplicates,
-} from "../../problems/problems";
+import { fromFieldProblem, IProblem } from "../../problems/problems";
 import { projectProblems } from "../../problems/ProjectProblems";
-import { rulesFileProblems } from "../../problems/RulesFileProblems";
-import { IRulesFileError, IRulesFileProblem } from "../../problems/rulesSandboxMain";
 import { isTyping } from "../../problems/whileTyping";
 import { checksHeading } from "../../problems/checksHeading";
 
@@ -66,7 +58,7 @@ export const ProblemsIndicator: React.FunctionComponent = observer(() => (
 ));
 
 const ProblemsCountButton: React.FunctionComponent = observer(() => {
-  const all = combineProblems(projectProblems.problems, rulesFileProblems.problems);
+  const all = projectProblems.problems;
   const errors = all.filter((p) => p.severity === "error").length;
   const warnings = all.filter((p) => p.severity === "warning").length;
   return (
@@ -185,12 +177,10 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
   // typing redraws none of it. It catches up once the user leaves the field, and
   // whenever the checks, which wait until then, find new problems.
   const fieldProblems = projectProblems.problems;
-  const rulesProblems = rulesFileProblems.problems;
   const shown = React.useRef<{
     selectedKey?: string;
     groups: IGroup[];
     fieldProblems: IFieldProblem[];
-    rulesProblems: IRulesFileProblem[];
   }>();
   const [, catchUp] = React.useReducer((n: number) => n + 1, 0);
   React.useEffect(
@@ -203,18 +193,12 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
       ),
     [],
   );
-  if (
-    !shown.current ||
-    !untracked(isTyping) ||
-    shown.current.fieldProblems !== fieldProblems ||
-    shown.current.rulesProblems !== rulesProblems
-  ) {
+  if (!shown.current || !untracked(isTyping) || shown.current.fieldProblems !== fieldProblems) {
     const selected = selectedFolder(props.project);
     shown.current = {
       selectedKey: selected && folderKeyOf(selected.folderType, selected.folderId),
-      groups: groupProblems(props.project, fieldProblems, rulesProblems, selected),
+      groups: groupProblems(props.project, fieldProblems, selected),
       fieldProblems,
-      rulesProblems,
     };
   }
   const { selectedKey, groups } = shown.current;
@@ -453,16 +437,6 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
       `}
     >
       <ChecksHeading project={props.project} />
-      {rulesFileProblems.errors.length > 0 && (
-        <div
-          css={css`
-            padding: 6px 12px;
-            border-bottom: solid 1px #ddd;
-          `}
-        >
-          <RulesFileErrors errors={rulesFileProblems.errors} />
-        </div>
-      )}
       <div
         ref={scrollArea}
         css={css`
@@ -510,70 +484,25 @@ const ChecksHeading: React.FunctionComponent<{ project: Project }> = (props) => 
 
 // These read what changes on every run of the checks, so they are observers of their
 // own: a run that finds the same problems then re-renders only them, not the list.
-const NoProblemsFound: React.FunctionComponent = observer(() =>
-  rulesFileProblems.running ? null : (
-    <div
-      css={css`
-        padding: 12px;
-        color: rgba(0, 0, 0, 0.6);
-      `}
-    >
-      <Trans>No problems found.</Trans>
-    </div>
-  ),
+const NoProblemsFound: React.FunctionComponent = () => (
+  <div
+    css={css`
+      padding: 12px;
+      color: rgba(0, 0, 0, 0.6);
+    `}
+  >
+    <Trans>No problems found.</Trans>
+  </div>
 );
 
 const CheckStatus: React.FunctionComponent = observer(() => (
   <div
     data-testid="problems-check-status"
     data-check-milliseconds={projectProblems.checkMilliseconds.toFixed(1)}
-    data-rules-timing={JSON.stringify(rulesFileProblems.timing)}
-  >
-    {rulesFileProblems.running && (
-      <div
-        css={css`
-          padding: 6px 12px;
-          border-top: solid 1px #ddd;
-          font-size: 12px;
-          color: rgba(0, 0, 0, 0.6);
-        `}
-      >
-        <Trans>Checking…</Trans>
-      </div>
-    )}
-  </div>
+  />
 ));
 
-// Problems in the rules file itself, which the user has to know about rather than
-// wonder why nothing is reported
-const RulesFileErrors: React.FunctionComponent<{
-  errors: IRulesFileError[];
-}> = (props) =>
-  props.errors.length === 0 ? null : (
-    <div
-      data-testid="rules-file-errors"
-      css={css`
-        margin-top: 6px;
-        padding: 6px 8px;
-        border-radius: 4px;
-        background-color: #fdecea;
-        color: #8a1c1c;
-        font-size: 12px;
-      `}
-    >
-      {props.errors.map((e, i) => (
-        <div key={i}>
-          {e.check && <strong>{e.check}</strong>}
-          {e.check && e.sessionId && " "}
-          {e.sessionId && <span>({e.sessionId})</span>}
-          {e.check && ": "}
-          {e.message}
-        </div>
-      ))}
-    </div>
-  );
-
-// Whether the field rules or the rules file still report a problem at the target.
+// Whether lameta's checks still report a problem at the target.
 // Reads MobX observables, so a reaction re-runs it after each check.
 function hasProblemAt(target: NavigationTarget): boolean {
   const same = (t?: NavigationTarget) =>
@@ -587,18 +516,13 @@ function hasProblemAt(target: NavigationTarget): boolean {
         t.vocabularyTranslation?.fieldKey === target.vocabularyTranslation?.fieldKey &&
         t.vocabularyTranslation?.value === target.vocabularyTranslation?.value
       : target.folderType !== "project" && t.folderId === target.folderId);
-  return (
-    projectProblems.problems.some((p) => same(p.target)) ||
-    rulesFileProblems.problems.some((p) => same(p.target))
-  );
+  return projectProblems.problems.some((p) => same(p.target));
 }
 
-// The project, then each session and each person in the project's order, then the
-// problems that the rules file found across sessions
+// The project, then each session and each person in the project's order
 function groupProblems(
   project: Project,
   fieldProblems: IFieldProblem[],
-  rulesProblems: IRulesFileProblem[],
   // listed even when it has no problems
   selected?: ISelectedFolder,
 ): IGroup[] {
@@ -643,15 +567,7 @@ function groupProblems(
         target.folderId,
       );
   };
-  for (const p of withoutRulesFileDuplicates(fieldProblems, rulesProblems))
-    addAtTarget(p.target, fromFieldProblem(p));
-  for (const p of rulesProblems) {
-    const problem = fromRulesFileProblem(p);
-    if (p.from === "checkAcrossSessions") add(t`Across sessions`, 2_000_000, problem);
-    else if (p.target) addAtTarget(p.target, problem);
-    else if (p.from === "checkCorpus") add(t`Project`, 0, problem, "project");
-    else addToSession(p.sessionId ?? "", problem);
-  }
+  for (const p of fieldProblems) addAtTarget(p.target, fromFieldProblem(p));
   if (selected) addAtTarget(selected, undefined);
   return Array.from(groups.values()).sort((a, b) => a.rank - b.rank);
 }

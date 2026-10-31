@@ -8,8 +8,6 @@ import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { Contribution } from "../model/file/File";
 import { checkProjectFolders } from "./lametaChecks";
-import { combineProblems } from "./problems";
-import { IRulesFileProblem } from "./rulesSandboxMain";
 import { languageNameForExport } from "../export/languageNameForExport";
 import { resetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
@@ -105,18 +103,6 @@ describe("checkProjectFolders", () => {
     ]);
     // it says what name export gives the file
     expect(problems[0].reason).toContain("a_file_with_spaces.txt");
-
-    // a rules file reporting the same thing at the same place shows it once
-    const fromRules: IRulesFileProblem = {
-      checkId: "fileName",
-      severity: "warning",
-      subject: problems[0].subject,
-      message: problems[0].text,
-      target: problems[0].target,
-      from: "checkSession",
-      sessionId: session.id,
-    };
-    expect(combineProblems(problems, [fromRules]).map((p) => p.checkId)).toEqual(["fileName"]);
   });
 
   describe("a session that has no files", () => {

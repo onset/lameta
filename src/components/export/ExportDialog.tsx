@@ -145,7 +145,7 @@ export const ExportDialog: React.FunctionComponent<{
         (e) =>
           setProjectCheck({
             problems: [],
-            rulesFileErrors: [{ kind: "check", message: String(e?.message ?? e) }],
+            checkErrors: [{ message: String(e?.message ?? e) }],
           }),
       );
     resetCategoryColors(); // Reset warning color assignments for fresh dialog

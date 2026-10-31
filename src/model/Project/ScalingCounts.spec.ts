@@ -16,15 +16,7 @@ import { Person } from "./Person/Person";
 import { File } from "../file/File";
 import { FieldSet } from "../field/FieldSet";
 import { FolderSearchTermsIndex } from "../Folder/FolderSearchTermsIndex";
-import ImdiGenerator from "../../export/ImdiGenerator";
 import { ProjectProblems } from "../../problems/ProjectProblems";
-import {
-  RulesFileProblems,
-  RulesSandboxExecutor,
-  rulesFileProblems,
-} from "../../problems/RulesFileProblems";
-import { IRulesSandboxOutput } from "../../problems/rulesSandboxMain";
-import { checkProject } from "../../problems/checkProject";
 import { checkProjectFolders } from "../../problems/lametaChecks";
 import { ProjectWriter } from "../../../sample-data-generator/torture/writer";
 import { ContentMaker } from "../../../sample-data-generator/torture/content";
@@ -171,115 +163,6 @@ describe("work per action as the project grows", () => {
     });
     expect(large).toBeLessThanOrEqual(small * (kLarge / kSmall) * 1.5);
   });
-
-  it("the rules recheck after one edit generates IMDI for that session only", async () => {
-    vi.useFakeTimers();
-    for (const n of [kSmall, kLarge]) {
-      const project = open(n);
-      const { runner } = rulesRunner();
-      const stop = runner.watch(project);
-      await vi.advanceTimersByTimeAsync(10);
-      expect(runner.timing.sessionsGenerated).toBe(n);
-      (project.sessions.items[0] as Session).properties.setText("title", "changed");
-      await vi.advanceTimersByTimeAsync(2000);
-      expect(runner.timing.sessionsGenerated).toBe(1);
-      stop();
-    }
-  });
-
-  // finding 14: a session's IMDI reads its own export name, which depends on the list of
-  // sessions; it must be due again only when that name changes
-  it("adding a session generates IMDI for the new session only (finding 14)", async () => {
-    vi.useFakeTimers();
-    const generated: number[] = [];
-    for (const n of [kSmall, kLarge]) {
-      const project = open(n);
-      const { runner } = rulesRunner();
-      const stop = runner.watch(project);
-      await vi.advanceTimersByTimeAsync(10);
-      project.addSession();
-      await vi.advanceTimersByTimeAsync(2000);
-      generated.push(runner.timing.sessionsGenerated);
-      stop();
-    }
-    expect(generated).toEqual([1, 1]);
-  });
-
-  // finding 4: every rules run sends the IMDI of every session to the sandbox
-  it.fails("the rules recheck after one edit checks only that session (finding 4)", async () => {
-    vi.useFakeTimers();
-    const sent: number[] = [];
-    for (const n of [kSmall, kLarge]) {
-      const project = open(n);
-      const { runner, inputs } = rulesRunner();
-      const stop = runner.watch(project);
-      await vi.advanceTimersByTimeAsync(10);
-      (project.sessions.items[0] as Session).properties.setText("title", "changed");
-      await vi.advanceTimersByTimeAsync(2000);
-      sent.push(inputs[inputs.length - 1]);
-      stop();
-    }
-    expect(sent[1]).toBe(sent[0]);
-  });
-
-  // finding 12: the first run generates the IMDI of every session in one synchronous block
-  it.fails("the first rules run gives the UI thread back between batches of sessions (finding 12)", () => {
-    vi.useFakeTimers();
-    const [small, large] = atBothSizes((n) => {
-      const project = open(n);
-      const { runner } = rulesRunner();
-      let stop = () => {};
-      const generated = count(ImdiGenerator, "generateSession", () => {
-        stop = runner.watch(project);
-        // fires the first run, which goes on synchronously until its first await
-        vi.advanceTimersByTime(0);
-      });
-      stop();
-      return generated;
-    });
-    // a fix that yields after any batch smaller than the whole project passes this
-    expect(small).toBeLessThanOrEqual(kSmall);
-    expect(large).toBeLessThan(kLarge);
-  });
-
-  // finding 5: opening the export dialog generates the IMDI of every session again,
-  // although the background check already holds it
-  it.fails("opening the export dialog after the background check generates nothing (finding 5)", async () => {
-    vi.useFakeTimers();
-    const project = open(kLarge);
-    // the check that the app runs in the background, whose results the dialog could use;
-    // in a test it cannot reach the sandbox, but it generates the IMDI all the same
-    const stop = rulesFileProblems.watch(project);
-    await vi.advanceTimersByTimeAsync(10);
-    expect(rulesFileProblems.timing.sessionsGenerated).toBe(kLarge);
-    const spy = vi.spyOn(ImdiGenerator, "generateSession");
-    await checkProject(project);
-    const generated = spy.mock.calls.length;
-    spy.mockRestore();
-    stop();
-    expect(generated).toBe(0);
-  });
-
-  // finding 6: a rules run that was in flight when the data changed still applies its results
-  it.fails("a rules result about a session renamed meanwhile is not shown (finding 6)", async () => {
-    vi.useFakeTimers();
-    const project = open(kSmall);
-    let release: () => void = () => {};
-    const executor: RulesSandboxExecutor = (input) =>
-      new Promise((resolve) => {
-        release = () => resolve({ value: oneProblemPerSession(input.sessions) });
-      });
-    const runner = new RulesFileProblems(executor, () => rulesFile());
-    const stop = runner.watch(project);
-    await vi.advanceTimersByTimeAsync(10);
-    const session = project.sessions.items[0] as Session;
-    const oldId = session.id;
-    session.properties.setText("id", `${oldId}_renamed`);
-    release();
-    await vi.advanceTimersByTimeAsync(0);
-    expect(runner.problems.map((p) => p.sessionId)).not.toContain(oldId);
-    stop();
-  });
 });
 
 // every file in a session or person folder except a .meta, which describes another file
@@ -295,38 +178,4 @@ function countFilesWithMetadata(dir: string): number {
   walk(Path.join(dir, "Sessions"));
   walk(Path.join(dir, "People"));
   return n;
-}
-
-let rulesPath: string | undefined;
-function rulesFile(): string {
-  if (!rulesPath) {
-    rulesPath = Path.join(temp.mkdirSync("scaling rules"), "rules.js");
-    fs.writeFileSync(rulesPath, "export const interfaceVersion = 1;");
-  }
-  return rulesPath;
-}
-
-function oneProblemPerSession(sessions: Array<{ sessionId: string }>): IRulesSandboxOutput {
-  return {
-    problems: sessions.map((s) => ({
-      checkId: "title",
-      severity: "error",
-      message: "m",
-      from: "checkSession",
-      sessionId: s.sessionId,
-    })),
-    errors: [],
-    milliseconds: 0,
-  } as IRulesSandboxOutput;
-}
-
-// a runner whose sandbox reports one problem per session and records how many
-// sessions each run sent it
-function rulesRunner() {
-  const inputs: number[] = [];
-  const runner = new RulesFileProblems(async (input) => {
-    inputs.push(input.sessions.length);
-    return { value: oneProblemPerSession(input.sessions) };
-  }, rulesFile);
-  return { runner, inputs };
 }

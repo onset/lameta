@@ -56,3 +56,15 @@ export function vocabularyElementValues(
   }
   return values.length > 0 ? values : english();
 }
+
+// The English of a role, as the IMDI export writes it
+export function roleForExport(role: string): string {
+  let roleOutput = "Unspecified";
+  if (role && role.length > 0) {
+    // replace underscores with spaces
+    roleOutput = role.replace(/_/g, " ");
+    // upper case the first letter of the first word only (per ELAR's Hanna)
+    roleOutput = roleOutput.charAt(0).toUpperCase() + roleOutput.slice(1);
+  }
+  return roleOutput;
+}

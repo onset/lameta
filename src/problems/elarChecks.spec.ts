@@ -18,8 +18,7 @@ mobx.configure({ enforceActions: "never" });
 temp.track();
 
 // The checks of lameta's own that ELAR's settings.json5 turns on with ELAR's values,
-// on the Edolo sample under ELAR. ELAR's rules.js checks the rest; see
-// elarRules.spec.ts.
+// on the Edolo sample under ELAR.
 
 // `files`: names of files to put in ETR009's folder first. lameta renames a file that
 // the user adds, so a name that breaks the rules can only come from a file that was
@@ -64,7 +63,7 @@ describe("ELAR's file checks", () => {
     ]);
   });
 
-  it("allows an MP3, which rules.js checks against a WAV of the same name", () => {
+  it("allows an MP3, which mp3WithWavOfSameName checks against a WAV of the same name", () => {
     const project = loadEdoloUnderElar();
     expect(found(project, "fileExtension").filter((p) => p[2] === ".mp3 is not allowed.")).toEqual(
       [],
@@ -230,6 +229,150 @@ describe("ELAR's other checks of lameta's own", () => {
       "fileNameContainsSessionId",
       "fileNameDateStamp",
       "projectName",
+    ])
+      expect(ids.has(id)).toBe(false);
+  });
+});
+
+describe("ELAR's checks of the values that the IMDI export writes", () => {
+  afterAll(() => resetOtherConfigurationSettings());
+  const file = (project: Project, name: string) =>
+    etr009(project).files.find((f) => f.getTextProperty("filename") === name)!;
+  // the project with English and Spanish as its metadata languages, so that ELAR
+  // expects translations
+  const bilingual = (files: string[] = []) => {
+    const project = loadEdoloUnderElar(files);
+    project.properties.setText("metadataLanguages", "en;es");
+    return project;
+  };
+
+  it("reports an MP3 only when the session has a WAV of the same name", () => {
+    expect(found(loadEdoloUnderElar(), "mp3WithWavOfSameName")).toEqual([]);
+    expect(
+      found(loadEdoloUnderElar(["ETR009_Careful_20100606.wav"]), "mp3WithWavOfSameName"),
+    ).toEqual([
+      [
+        "error",
+        "MP3 files",
+        "are not allowed if there is a WAV recording with the same name.",
+        inEtr009("ETR009_Careful.mp3"),
+      ],
+    ]);
+  });
+
+  it("reports a FLExText file next to an EAF of the same name, and warns about one next to other EAFs", () => {
+    const project = loadEdoloUnderElar([
+      "ETR009_t_20110101.flextext",
+      "ETR009_t_20100606.eaf",
+      "ETR009_u_20100606.flextext",
+    ]);
+    expect(found(project, "flextextWithEafOfSameName").map((p) => [p[0], p[3]])).toEqual([
+      ["error", inEtr009("ETR009_t_20110101.flextext")],
+    ]);
+    // only the depositor knows whether one of the other EAF files is of this text
+    expect(found(project, "flextextWithOtherEaf").map((p) => [p[0], p[3]])).toEqual([
+      ["warning", inEtr009("ETR009_u_20100606.flextext")],
+    ]);
+  });
+
+  it("reports a resource type that ELAR does not allow, at the file", () => {
+    const project = loadEdoloUnderElar(["ETR009_data_20100606.xyz"]);
+    const types = found(project, "resourceType");
+    expect(types.map((p) => [p[0], p[1], p[3]])).toEqual([
+      ["error", "Resource type", inEtr009("ETR009_data_20100606.xyz")],
+    ]);
+  });
+
+  it("reports a contributor who has no role, at the Contributors tab of the file that lists them", () => {
+    const project = loadEdoloUnderElar();
+    etr009(project).metadataFile!.contributions.push(new Contribution("Ilawi Amosa", "", ""));
+    file(project, "ETR009_Careful.mp3").contributions.push(new Contribution("Awi Heole", "", ""));
+    expect(found(project, "contributorWithoutRole")).toEqual([
+      [
+        "error",
+        "Ilawi Amosa",
+        "has no role.",
+        { folderType: "session", folderId: "ETR009", fieldKey: "contributions" },
+      ],
+      ["error", "Awi Heole", "has no role.", inEtr009("ETR009_Careful.mp3", "contributions")],
+    ]);
+  });
+
+  it("wants a translation of a role, at its row on the Translations tab, only when there is a metadata language besides English", () => {
+    const project = loadEdoloUnderElar();
+    etr009(project).metadataFile!.contributions.push(new Contribution("Awi Heole", "dancer", ""));
+    expect(found(project, "roleTranslation")).toEqual([]);
+    project.properties.setText("metadataLanguages", "en;es");
+    const translation = checkProjectFolders(project).filter((p) => p.checkId === "roleTranslation");
+    expect(translation.map((p) => [p.severity, p.subject, p.text, p.target, p.sessionId])).toEqual([
+      [
+        "warning",
+        "Awi Heole's role",
+        "needs a translation.",
+        { folderType: "project", vocabularyTranslation: { fieldKey: "role", value: "dancer" } },
+        "ETR009",
+      ],
+    ]);
+  });
+
+  it("wants a translation of a genre that has none, and of none that has one", () => {
+    const project = bilingual();
+    // lameta translates "narrative"
+    expect(found(project, "genreTranslation")).toEqual([]);
+    etr009(project).properties.setText("genre", "weird stuff");
+    expect(found(project, "genreTranslation")).toEqual([
+      [
+        "warning",
+        "Genre",
+        "needs a translation.",
+        {
+          folderType: "project",
+          vocabularyTranslation: { fieldKey: "genre", value: "weird stuff" },
+        },
+      ],
+    ]);
+  });
+
+  it("wants a translated access explanation for each file of access level S", () => {
+    const project = bilingual();
+    const session = etr009(project);
+    session.properties.setText("access", "S");
+    session.properties.setText("accessDescription", "asked");
+    // a file with an access level of its own
+    file(project, "ETR009_Careful.mp3").properties.setText("access", "U");
+    const explanations = found(project, "accessDescriptionTranslation");
+    const exported = session.files.filter(
+      (f) => f !== session.metadataFile && f.getTextProperty("filename") !== "ETR009_Careful.mp3",
+    );
+    expect(explanations).toHaveLength(exported.length);
+    expect(explanations[0]).toEqual([
+      "warning",
+      "Access Explanation",
+      "needs a translation.",
+      { folderType: "session", folderId: "ETR009", fieldKey: "accessDescription" },
+    ]);
+    expect(
+      checkProjectFolders(project).find((p) => p.checkId === "accessDescriptionTranslation")!
+        .reason,
+    ).toBe("Required for access level S.");
+    project.properties.setText("metadataLanguages", "en");
+    expect(found(project, "accessDescriptionTranslation")).toEqual([]);
+  });
+
+  it("makes none of these checks in a project with no archive", () => {
+    const project = loadEdoloUnderElar(
+      ["ETR009_Careful_20100606.wav", "ETR009_data_20100606.xyz"],
+      "",
+    );
+    project.properties.setText("metadataLanguages", "en;es");
+    etr009(project).metadataFile!.contributions.push(new Contribution("Ilawi Amosa", "", ""));
+    const ids = new Set(checkProjectFolders(project).map((p) => p.checkId));
+    for (const id of [
+      "mp3WithWavOfSameName",
+      "resourceType",
+      "contributorWithoutRole",
+      "roleTranslation",
+      "genreTranslation",
     ])
       expect(ids.has(id)).toBe(false);
   });
