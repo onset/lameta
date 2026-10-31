@@ -27,6 +27,10 @@ msgstr ""
 msgid "+ Add Language"
 msgstr ""
 
+#. Follows "File format", as in "File format .docx is not allowed."
+msgid ".{extension} is not allowed."
+msgstr ""
+
 msgid "A file with the same name already exists at that location."
 msgstr ""
 
@@ -346,6 +350,9 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+msgid "File format"
+msgstr ""
+
 msgid "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again."
 msgstr ""
 
@@ -395,6 +402,10 @@ msgid "Generating PARADISEC CSV..."
 msgstr ""
 
 msgid "Generating RO-Crate metadata..."
+msgstr ""
+
+#. The first value is a genre, the second the name of an archive, as in: Genre "Story" is not in the ELAR genre list.
+msgid "Genre \"{english}\" is not in the {archive} genre list. Please consider using a standardised genre."
 msgstr ""
 
 msgid "Genres"
@@ -662,6 +673,9 @@ msgstr ""
 
 msgid "Project"
 msgstr "Проект"
+
+msgid "Project name"
+msgstr ""
 
 msgid "Project will be created in: {path}."
 msgstr "Проект будет создан в: {path}."
@@ -1031,6 +1045,15 @@ msgstr ""
 msgid "could not be read."
 msgstr ""
 
+#. Follows "File name", as in "File name doesn't contain the session ID "ETR009"."
+msgid "doesn't contain the session ID \"{id}\"."
+msgstr ""
+
+#. Follows "File name", as in "File name has characters that aren't allowed."
+#. Follows "Project name", as in "Project name has characters that aren't allowed."
+msgid "has characters that aren't allowed."
+msgstr ""
+
 #. Follows "File name", as in "File name has characters…"
 msgid "has characters that the archive doesn't allow."
 msgstr ""
@@ -1043,8 +1066,16 @@ msgstr ""
 msgid "has no consent on record."
 msgstr ""
 
+#. Follows "Session", as in "Session has no contributor with a full name."
+msgid "has no contributor with a full name."
+msgstr ""
+
 #. Follows "Session", as in "Session has no contributors." Contributors are the people listed on the Contributors tab of the session or of its files.
 msgid "has no contributors."
+msgstr ""
+
+#. Follows "File name", as in "File name has no date stamp (_YYYYMMDD)." Keep _YYYYMMDD as it is.
+msgid "has no date stamp (_YYYYMMDD)."
 msgstr ""
 
 #. Follows "Session", as in "Session has no files that export can include."
@@ -1059,8 +1090,16 @@ msgstr ""
 msgid "has no matching Person."
 msgstr ""
 
+#. Follows "Project name", as in "Project name is empty."
+msgid "is empty."
+msgstr ""
+
 #. Follows a field's name, as in "ID is not in the expected form."
 msgid "is not in the expected form."
+msgstr ""
+
+#. Follows "File", as in "File is over 20 GB (23 GB)."
+msgid "is over {limit} GB ({n} GB)."
 msgstr ""
 
 #. Follows a field's name, as in "Access Explanation is required when Access is S."
@@ -1069,6 +1108,11 @@ msgstr ""
 
 #. Follows a field's name, as in "Access is required."
 msgid "is required."
+msgstr ""
+
+#. Follows "File name", as in "File name is too long (23 characters)." Counts the characters before the first "."
+#. Follows "Project name", as in "Project name is too long (40 characters)."
+msgid "is too long ({0} characters)."
 msgstr ""
 
 msgid "lameta"
