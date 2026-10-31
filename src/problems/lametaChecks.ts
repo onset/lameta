@@ -8,11 +8,23 @@ import { sanitizeForArchive } from "../other/sanitizeForArchive";
 import { IFieldProblem, wordProblem } from "./fieldRules";
 import { File } from "../model/file/File";
 import { NavigationTarget } from "../navigation/NavigationTarget";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
+import {
+  ILanguageCodeAndName,
+  splitLanguageFieldValue,
+} from "../languageFinder/languageTagFieldValue";
+import {
+  isLanguageName,
+  iso639_3ForExport,
+  languageEntryNameForExport,
+} from "../export/languageNameForExport";
 
 // Checks that lameta makes for every archive configuration, beyond the rules of
 // single fields: metadata files that lameta could not read, file names against the
 // configuration's fileNameRules, contributors who have no matching person, and
-// sessions that have no files or no contributors. Like
+// sessions that have no files or no contributors, and one language code with
+// different names in different sessions. A configuration can give any of these
+// checks another severity (checkSeverities in its settings.json5). Like
 // the field rules, they read only the project's own data, so they are cheap enough
 // to run after each edit.
 export function checkProjectFolders(project: Project): IFieldProblem[] {
@@ -147,6 +159,7 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       }
     }
   }
+  checkLanguageNames(project, problems);
   for (const person of project.persons.items as Person[]) {
     checkFiles(person, "person", person.getIdToUseForReferences());
   }
@@ -166,5 +179,94 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       );
     }
   }
-  return problems;
+  const severities = GetOtherConfigurationSettings().checkSeverities ?? {};
+  return problems.map((p) =>
+    severities[p.checkId] ? { ...p, severity: severities[p.checkId] } : p,
+  );
+}
+
+// One language code that sessions give different names, compared as the IMDI writes
+// them. Only a session's language field can do this, through an entry that carries its
+// own name, such as "etr:Edolo".
+// A person's languages cannot: export names them from their code alone.
+// Names that differ only in capitalisation count as one. The sessions that use a name
+// other than the one that most use are reported; when two names are equally common,
+// every session is.
+function checkLanguageNames(project: Project, problems: IFieldProblem[]) {
+  type Entry = { entry: ILanguageCodeAndName; sessionId: string; fieldKey: string };
+  // Grouped by the ISO 639-3 code that export writes, so that "en" and "eng" are one
+  // language. Looking up a code or a name searches the language index, and this runs after
+  // each edit, so each tag is looked up once.
+  const codes = new Map<string, string>();
+  const codeOf = (tag: string) => {
+    if (!codes.has(tag))
+      codes.set(tag, iso639_3ForExport(tag, project.privateUseCodes, project).toLowerCase());
+    return codes.get(tag)!;
+  };
+  const entriesByCode = new Map<string, Entry[]>();
+  for (const session of project.sessions.items as Session[]) {
+    for (const fieldKey of ["languages", "workingLanguages"]) {
+      const value = session.properties.getTextStringOrEmpty(fieldKey);
+      for (const entry of splitLanguageFieldValue(value)) {
+        // a SayMore-era name in place of a code has no code to compare
+        if (!entry.code.trim() || isLanguageName(entry.code)) continue;
+        const code = codeOf(entry.code);
+        if (!entriesByCode.has(code)) entriesByCode.set(code, []);
+        entriesByCode.get(code)!.push({ entry, sessionId: session.id, fieldKey });
+      }
+    }
+  }
+  const lookedUp = new Map<string, string>();
+  const nameOf = (entry: ILanguageCodeAndName) => {
+    if (entry.name) return languageEntryNameForExport(entry, project).trim();
+    if (!lookedUp.has(entry.code))
+      lookedUp.set(entry.code, languageEntryNameForExport(entry, project).trim());
+    return lookedUp.get(entry.code)!;
+  };
+  for (const [code, entries] of entriesByCode) {
+    // entries that carry no name of their own all get the one name that export looks up
+    if (!entries.some((e) => e.entry.name)) continue;
+    const uses = entries
+      .map((e) => ({ ...e, name: nameOf(e.entry) }))
+      .filter((use) => use.name.length > 0);
+    // the sessions that use each name; a session that names the language in both of
+    // its fields counts once
+    const sessionsByName = new Map<string, Set<string>>();
+    for (const use of uses) {
+      const key = use.name.toLowerCase();
+      if (!sessionsByName.has(key)) sessionsByName.set(key, new Set());
+      sessionsByName.get(key)!.add(use.sessionId);
+    }
+    if (sessionsByName.size < 2) continue;
+    const ranked = [...sessionsByName.entries()]
+      .map(([name, sessions]) => [name, sessions.size] as const)
+      .sort((a, b) => b[1] - a[1]);
+    const tie = ranked[0][1] === ranked[1][1];
+    const names = [...new Map(uses.map((u) => [u.name.toLowerCase(), u.name])).values()]
+      .map((n) => `"${n}"`)
+      .join(", ");
+    const reported = new Set<string>();
+    for (const use of uses) {
+      if (!tie && use.name.toLowerCase() === ranked[0][0]) continue;
+      const place = use.sessionId + "|" + use.fieldKey;
+      if (reported.has(place)) continue;
+      reported.add(place);
+      problems.push({
+        checkId: "languageNameVariations",
+        severity: "warning",
+        ...wordProblem(
+          t({
+            message: `Language ${code}`,
+            comment: 'A language code follows "Language", as in "Language etr"',
+          }),
+          t({
+            message: `has different names in different sessions: ${names}.`,
+            comment:
+              'Follows "Language" and a language code, as in "Language etr has different names in different sessions: "Edolo", "Etoro"."',
+          }),
+        ),
+        target: { folderType: "session", folderId: use.sessionId, fieldKey: use.fieldKey },
+      });
+    }
+  }
 }

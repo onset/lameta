@@ -1,3 +1,5 @@
+import type { ProblemSeverity } from "../../problems/rulesFile";
+
 export type OtherConfigurationSettings = {
   configurationFullName: string;
   archiveUsesImdi: boolean;
@@ -11,6 +13,10 @@ export type OtherConfigurationSettings = {
   // Export dialog names them: "csv", "paradisec", "imdi", "opex-plus-files",
   // "ro-crate". Warnings do not refuse an export.
   exportFormatsBlockedByProblems?: string[];
+  // The severity of a check in src/problems/lametaChecks.ts, by its check id, where this
+  // configuration wants a different severity from the check's own, e.g.
+  // { languageNameVariations: "error" }
+  checkSeverities?: Record<string, ProblemSeverity>;
 };
 
 let otherConfigurationSettings: OtherConfigurationSettings = {

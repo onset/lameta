@@ -1,4 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
+import * as fs from "fs";
+import * as Path from "path";
 import { LametaE2ERunner } from "./lametaE2ERunner";
 import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { addFile, entries, groupOf, newSession, openSidebar } from "./problems-e2e-helpers";
@@ -61,5 +63,66 @@ test.describe("lameta's checks for every configuration", () => {
 
     await new ContributorsHelper(page, project).addContributor("Dami Asan");
     await expect(noContributors).toHaveCount(0, { timeout: 15000 });
+  });
+});
+
+// The lameta UI cannot give one language code two names: a name that the user types is
+// stored only for a language from the Add an Unlisted Language dialog, which gives it a
+// code of its own. So these sessions are written to disk, as a SayMore project or a
+// hand-edited file would have them, and the project is opened again.
+test.describe("one language code with different names in different sessions", () => {
+  let second: LametaE2ERunner;
+  let secondPage: Page;
+  let secondProject: E2eProject;
+
+  test.beforeAll(async () => {
+    const first = new LametaE2ERunner();
+    const created = await launchWithProject(first, "LanguageNames");
+    await first.quit();
+    const sessions = { "LANG-A": "etr:Edolo", "LANG-B": "etr:Etoro;eng", "LANG-C": "etr:Edolo" };
+    for (const [id, languages] of Object.entries(sessions)) {
+      const folder = Path.join(created.projectDirectory, "Sessions", id);
+      fs.mkdirSync(folder, { recursive: true });
+      fs.writeFileSync(
+        Path.join(folder, id + ".session"),
+        `<Session><id type="string">${id}</id><languages type="string">${languages}</languages></Session>`,
+      );
+    }
+
+    second = new LametaE2ERunner();
+    secondPage = await second.launch({
+      extraArgs: [
+        Path.join(created.projectDirectory, Path.basename(created.projectDirectory) + ".sprj"),
+      ],
+    });
+    await second.cancelRegistration();
+    secondProject = Object.assign(new E2eProject(second), {
+      projectDirectory: created.projectDirectory,
+    });
+    await secondPage.getByTestId("project-tab").waitFor({ state: "visible", timeout: 15000 });
+  });
+  test.afterAll(async () => {
+    await second?.quit();
+  });
+
+  test("is a problem in the session with the less common name, a click goes to its languages, and removing the name fixes it", async () => {
+    const page = secondPage;
+    await openSidebar(page);
+    const variation = entries(page, "languageNameVariations", "languages");
+    await expect(variation).toHaveCount(1, { timeout: 15000 });
+    await expect(groupOf(page, "session:LANG-B").locator(variation)).toBeVisible();
+
+    await secondProject.goToPeople();
+    await variation.click();
+    await expect(page.getByTestId("sessions-tab")).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".fileList .rt-tr.selected")).toContainText("LANG-B.session");
+    const highlighted = page.locator(".navigation-highlight");
+    await expect(highlighted).toHaveAttribute("data-field-key", "languages");
+
+    await page
+      .locator("[data-field-key='languages']")
+      .getByRole("button", { name: /Remove.*Etoro/i })
+      .click();
+    await expect(variation).toHaveCount(0, { timeout: 15000 });
   });
 });

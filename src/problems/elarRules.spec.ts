@@ -245,13 +245,6 @@ describe("ELAR rules.js", () => {
     expect(found("checkResponsibles")).toEqual([]);
   });
 
-  it("finds a language spelled differently across sessions, and points at the less common one", () => {
-    // "Etoro" in ETR010, "Edolo" elsewhere
-    expect(found("languageNameVariations")).toEqual([["ETR010", "error"]]);
-    // the field rules require ELAR's capitalisation in each session instead
-    expect(found("capitalisationVariations")).toEqual([]);
-  });
-
   it("reports a missing translation as a warning, and everything else that it is sure of as an error", () => {
     const warningChecks = /translation|format|Translation|genreMapping|\/flextext$/;
     const severities = (warnings: boolean) => [
