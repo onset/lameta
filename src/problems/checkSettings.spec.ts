@@ -120,7 +120,9 @@ describe("problemsWithChecks", () => {
       problemsWithChecks({ fileNameCharacters: { severity: "error", pattern: "[a-" } }),
     ).toEqual(['"fileNameCharacters" needs "pattern" to be a regular expression.']);
     expect(
-      problemsWithChecks({ fileNameDateStamp: { severity: "error", appliesTo: ["text"] } }),
+      problemsWithChecks({
+        fileNameDateStamp: { severity: "error", appliesTo: ["text"], exceptSessions: [] },
+      }),
     ).toEqual(['"fileNameDateStamp" needs "appliesTo" to be a list of "media" and "written".']);
   });
 

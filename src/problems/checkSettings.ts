@@ -49,9 +49,11 @@ export const kChecks: Record<string, ICheckDefinition> = {
   fileNameLength: { settings: { maxLength: "number" } },
   // a regular expression that the part of a file name before its first "." must match
   fileNameCharacters: { settings: { pattern: "pattern" } },
-  fileNameContainsSessionId: { settings: {} },
-  // which files need a _YYYYMMDD date stamp before their extension: "media", "written"
-  fileNameDateStamp: { settings: { appliesTo: "fileKinds" } },
+  // the ids of sessions whose files need not contain the id
+  fileNameContainsSessionId: { settings: { exceptSessions: "string[]" } },
+  // which files need a _YYYYMMDD date stamp before their extension: "media", "written";
+  // and the ids of sessions whose files need none
+  fileNameDateStamp: { settings: { appliesTo: "fileKinds", exceptSessions: "string[]" } },
   // The sizes, in GB, that a file may not reach. A file is reported with the largest
   // one that it reaches.
   fileSize: { settings: { limitsInGigabytes: "number[]" } },

@@ -42,8 +42,13 @@
     },
     fileNameLength: { severity: "error", maxLength: 20 },
     fileNameCharacters: { severity: "error", pattern: "^[A-Za-z0-9_-]*$" },
-    fileNameContainsSessionId: { severity: "error" },
-    fileNameDateStamp: { severity: "error", appliesTo: ["written"] },
+    // ELAR's validator asks neither of the consent session's files
+    fileNameContainsSessionId: { severity: "error", exceptSessions: ["ConsentDocuments"] },
+    fileNameDateStamp: {
+      severity: "error",
+      appliesTo: ["written"],
+      exceptSessions: ["ConsentDocuments"],
+    },
     fileSize: { severity: "error", limitsInGigabytes: [20, 30, 40, 50] },
     projectName: { severity: "error", pattern: "^[A-Za-z0-9-]*$", maxLength: 34 },
     sessionContributorsWithoutFullName: { severity: "error" },

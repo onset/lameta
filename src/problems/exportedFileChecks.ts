@@ -27,9 +27,11 @@ export function checkExportedFiles(
   const characters = checks.get("fileNameCharacters") as
     | (CheckSettings & { pattern: string })
     | undefined;
-  const sessionId = checks.get("fileNameContainsSessionId");
+  const sessionId = checks.get("fileNameContainsSessionId") as
+    | (CheckSettings & { exceptSessions: string[] })
+    | undefined;
   const dateStamp = checks.get("fileNameDateStamp") as
-    | (CheckSettings & { appliesTo: ("media" | "written")[] })
+    | (CheckSettings & { appliesTo: ("media" | "written")[]; exceptSessions: string[] })
     | undefined;
   const size = checks.get("fileSize") as
     | (CheckSettings & { limitsInGigabytes: number[] })
@@ -39,9 +41,6 @@ export function checkExportedFiles(
   const allowedCharacters = characters && new RegExp(characters.pattern);
   // the session's id as the IMDI names the session, with each space made "_"
   const id = session.properties.getTextStringOrEmpty("id").replace(/ /g, "_").trim();
-  // ELAR's validator does not ask the consent session's files for the session's ID
-  // or a date stamp
-  const isConsent = id === "ConsentDocuments";
   const exportNames = fileExportNames(session.files);
   for (const file of session.files) {
     if (file === session.metadataFile) continue;
@@ -62,7 +61,7 @@ export function checkExportedFiles(
     const extension = fileName.includes(".") ? fileName.split(".").pop()!.toLowerCase() : "";
     const isMedia = !!GetFileFormatInfoForPath(file.getActualFilePath())?.isMediaType;
 
-    if (sessionId && !isConsent && !fileName.includes(id)) {
+    if (sessionId && !sessionId.exceptSessions.includes(id) && !fileName.includes(id)) {
       report({
         checkId: "fileNameContainsSessionId",
         ...wordProblem(
@@ -121,7 +120,7 @@ export function checkExportedFiles(
     }
     if (
       dateStamp &&
-      !isConsent &&
+      !dateStamp.exceptSessions.includes(id) &&
       dateStamp.appliesTo.includes(isMedia ? "media" : "written") &&
       !/_[0-9]{8}\./.test(fileName)
     ) {
