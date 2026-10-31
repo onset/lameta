@@ -128,6 +128,10 @@ msgstr ""
 msgid "Available on this device. {providerName} may free up this space if the file goes unused."
 msgstr ""
 
+#. Heading of the Problems sidebar when the project has no archive configuration, so lameta runs only its own basic checks
+msgid "Baseline Checks"
+msgstr ""
+
 msgid "CSV export complete"
 msgstr ""
 
@@ -1230,6 +1234,10 @@ msgid "{0} Marked Sessions"
 msgstr "{0} Sessions Cochées"
 
 msgid "{0} of {1} items processed"
+msgstr ""
+
+#. Heading of the Problems sidebar. The value is the short name of an archive, as in "ELAR Checks": the checks that this archive asks for
+msgid "{configurationName} Checks"
 msgstr ""
 
 msgid "{descriptionOfWhatWillBeDeleted} will be moved to the Trash"
