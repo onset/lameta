@@ -18,6 +18,7 @@ import {
 import { titleCase } from "title-case";
 import { sanitizeForExport } from "../other/sanitizeForArchive";
 import { fileExportNames, sessionFolderExportName } from "./exportNames";
+import { shouldIncludeFile } from "./shouldIncludeFile";
 import { IPersonLanguage } from "../model/PersonLanguage";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyWarning } from "../components/Notify";
@@ -948,8 +949,7 @@ export default class ImdiGenerator {
     }
   }
   public static shouldIncludeFile(path: string): boolean {
-    // skip these, on advice of ELAR
-    return [".sprj", ".session", ".person", ".skip"].indexOf(Path.extname(path)) === -1;
+    return shouldIncludeFile(path);
   }
 
   // when testing/developing, it has proved helpful to generate small portions

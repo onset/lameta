@@ -320,6 +320,9 @@ msgstr ""
 msgid "Export failed"
 msgstr ""
 
+msgid "Export leaves out a file that is missing from this computer and a file whose name ends in \".skip\"."
+msgstr ""
+
 msgid "Export renames it to \"{exportedName}\"."
 msgstr ""
 
@@ -1037,6 +1040,10 @@ msgstr ""
 
 #. Follows "Session", as in "Session has no contributors." Contributors are the people listed on the Contributors tab of the session or of its files.
 msgid "has no contributors."
+msgstr ""
+
+#. Follows "Session", as in "Session has no files that export can include."
+msgid "has no files that export can include."
 msgstr ""
 
 #. Follows "Session", as in "Session has no files."

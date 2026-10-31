@@ -134,6 +134,30 @@ describe("checkProjectFolders", () => {
       });
       expect(found(project, "sessionWithoutFiles")).toEqual([]);
     });
+
+    it("reports a session whose only file is a .skip file, which export leaves out", () => {
+      const project = loadEdolo(undefined, (dir) => {
+        addSession(dir, "ETR010");
+        fs.writeFileSync(Path.join(dir, "Sessions", "ETR010", "ETR010_notes.txt.skip"), "x");
+      });
+      expect(found(project, "sessionWithoutFiles")).toEqual([
+        ["error", { folderType: "session", folderId: "ETR010" }],
+      ]);
+    });
+
+    it("reports a session whose only file is gone from the disk", () => {
+      let notes = "";
+      const project = loadEdolo(undefined, (dir) => {
+        addSession(dir, "ETR010");
+        notes = Path.join(dir, "Sessions", "ETR010", "ETR010_notes.txt");
+        fs.writeFileSync(notes, "x");
+      });
+      expect(found(project, "sessionWithoutFiles")).toEqual([]);
+      fs.rmSync(notes);
+      expect(found(project, "sessionWithoutFiles")).toEqual([
+        ["error", { folderType: "session", folderId: "ETR010" }],
+      ]);
+    });
   });
 
   describe("a session that has no contributors", () => {

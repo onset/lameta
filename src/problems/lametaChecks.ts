@@ -14,6 +14,8 @@ import {
   ILanguageCodeAndName,
   splitLanguageFieldValue,
 } from "../languageFinder/languageTagFieldValue";
+import { shouldIncludeFile } from "../export/shouldIncludeFile";
+import { getStatusOfFile } from "../model/file/FileStatus";
 import {
   isLanguageName,
   iso639_3ForExport,
@@ -99,17 +101,28 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
   const contributingPeople = new Set<Person>();
   for (const session of project.sessions.items as Session[]) {
     checkFiles(session, "session", session.id);
-    if (session.files.every((f) => f === session.metadataFile)) {
+    const otherFiles = session.files.filter((f) => f !== session.metadataFile);
+    if (!otherFiles.some(isExported)) {
       problems.push({
         checkId: "sessionWithoutFiles",
         severity: "error",
-        ...wordProblem(
-          t`Session`,
-          t({
-            message: "has no files.",
-            comment: 'Follows "Session", as in "Session has no files."',
-          }),
-        ),
+        ...(otherFiles.length === 0
+          ? wordProblem(
+              t`Session`,
+              t({
+                message: "has no files.",
+                comment: 'Follows "Session", as in "Session has no files."',
+              }),
+            )
+          : wordProblem(
+              t`Session`,
+              t({
+                message: "has no files that export can include.",
+                comment:
+                  'Follows "Session", as in "Session has no files that export can include."',
+              }),
+              t`Export leaves out a file that is missing from this computer and a file whose name ends in ".skip".`,
+            )),
         target: { folderType: "session", folderId: session.id },
       });
     }
@@ -215,6 +228,15 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
   return problems.map((p) =>
     severities[p.checkId] ? { ...p, severity: severities[p.checkId] } : p,
   );
+}
+
+// Whether the IMDI export includes this file of a session, as
+// ImdiGenerator.resourcesOfType decides. A file that is only in the cloud counts,
+// because export downloads it.
+function isExported(file: File): boolean {
+  if (file.isDeletedLinkFile()) return false;
+  if (!shouldIncludeFile(file.getActualFilePath())) return false;
+  return !getStatusOfFile(file).missing;
 }
 
 // One language code that sessions give different names, compared as the IMDI writes
