@@ -130,6 +130,9 @@ export class Project extends Folder {
   public authorityLists: AuthorityLists;
   public languageFinder: LanguageFinder;
   public vocabularyTranslations: VocabularyTranslations;
+  // The archive configuration whose settings, and so whose checks, are in use, by its
+  // folder name, such as "ELAR". Undefined when only lameta's own settings are.
+  public checksConfigurationName: string | undefined;
 
   /**
    * Returns true if the project has slash-syntax multilingual fields
@@ -1450,6 +1453,7 @@ export class Project extends Folder {
   }
 
   private loadSettingsFromConfiguration() {
+    this.checksConfigurationName = undefined;
     const factoryPath = locateDependencyForFilesystemCall(
       `archive-configurations/lameta/settings.json5`,
     );
@@ -1478,6 +1482,7 @@ export class Project extends Folder {
     SetOtherConfigurationSettings(
       mergeConfigurationSettings(GetOtherConfigurationSettings(), settings),
     );
+    if (configurationName !== "lameta") this.checksConfigurationName = configurationName;
     // a unit test (checkSettings.spec.ts) stops these for the configurations that come
     // with lameta
     for (const problem of problemsWithChecks(GetOtherConfigurationSettings().checks ?? {}))

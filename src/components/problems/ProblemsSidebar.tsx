@@ -32,6 +32,7 @@ import { projectProblems } from "../../problems/ProjectProblems";
 import { rulesFileProblems } from "../../problems/RulesFileProblems";
 import { IRulesFileError, IRulesFileProblem } from "../../problems/rulesSandboxMain";
 import { isTyping } from "../../problems/whileTyping";
+import { checksHeading } from "../../problems/checksHeading";
 
 export const kProblemsSidebarWidth = 300;
 
@@ -450,6 +451,19 @@ export const ProblemsSidebar: React.FunctionComponent<{ project: Project }> = ob
         overflow: hidden;
       `}
     >
+      <h3
+        data-testid="problems-checks-heading"
+        css={css`
+          margin: 0;
+          padding: 8px 12px 6px 12px;
+          font-size: 13px;
+          font-weight: bold;
+          color: ${lameta_dark_blue};
+          border-bottom: solid 1px #ddd;
+        `}
+      >
+        {checksHeading(props.project.checksConfigurationName)}
+      </h3>
       {rulesFileProblems.errors.length > 0 && (
         <div
           css={css`
