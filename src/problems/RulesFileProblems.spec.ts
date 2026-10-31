@@ -328,26 +328,9 @@ describe("RulesFileProblems", () => {
       ...new Set(problems.map((p) => JSON.stringify([p.checkId, p.subject, p.target]))),
     ].map((t) => JSON.parse(t));
     const etr009At = (fields: object) => ({ folderType: "session", folderId: "ETR009", ...fields });
+    // the checks of file names, the genre list and the project name are lameta's own,
+    // which ELAR turns on in its settings.json5 (see lametaChecks.spec.ts)
     expect(targets).toEqual([
-      ["checkMediaFiles/sessionId", "File name", etr009At({ fileName: "SceneAroundCamera.JPG" })],
-      ["checkMediaFiles/sessionId", "File name", etr009At({ fileName: "SceneHouse.JPG" })],
-      ["checkWrittenResources/dateStamp", "File name", etr009At({ fileName: "ETR009_AText.txt" })],
-      [
-        "checkWrittenResources/length",
-        "File name",
-        etr009At({ fileName: "ETR009_Tiny_StandardAudio.wav.annotations.eaf" }),
-      ],
-      [
-        "checkWrittenResources/dateStamp",
-        "File name",
-        etr009At({ fileName: "ETR009_Tiny_StandardAudio.wav.annotations.eaf" }),
-      ],
-      [
-        "checkWrittenResources/extension",
-        "File format",
-        etr009At({ fileName: "ETR009_XDoc.docx" }),
-      ],
-      ["checkWrittenResources/dateStamp", "File name", etr009At({ fileName: "ETR009_XDoc.docx" })],
       ["checkActorRole", "Ilawi Amosa", etr009At({ fieldKey: "contributions" })],
       // a missing translation of a vocabulary value goes to its row on the Translations tab
       [
@@ -360,7 +343,6 @@ describe("RulesFileProblems", () => {
         "Awi Heole",
         etr009At({ fileName: "ETR009_Careful.mp3", fieldKey: "contributions" }),
       ],
-      ["genreMapping", null, etr009At({ fieldKey: "genre" })],
       [
         "genreTranslation",
         "Genre",
@@ -374,7 +356,6 @@ describe("RulesFileProblems", () => {
         "Access Explanation",
         etr009At({ fieldKey: "accessDescription" }),
       ],
-      ["checkCorpusFolderName", "Project name", { folderType: "project", fieldKey: "name" }],
     ]);
   });
 });

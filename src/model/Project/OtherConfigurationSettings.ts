@@ -1,4 +1,4 @@
-import type { ProblemSeverity } from "../../problems/rulesFile";
+import { ChecksOfConfiguration, mergeChecks } from "../../problems/checkSettings";
 
 export type OtherConfigurationSettings = {
   configurationFullName: string;
@@ -13,11 +13,19 @@ export type OtherConfigurationSettings = {
   // Export dialog names them: "csv", "paradisec", "imdi", "opex-plus-files",
   // "ro-crate". Warnings do not refuse an export.
   exportFormatsBlockedByProblems?: string[];
-  // The severity of a check in src/problems/lametaChecks.ts, by its check id, where this
-  // configuration wants a different severity from the check's own, e.g.
-  // { languageNameVariations: "error" }
-  checkSeverities?: Record<string, ProblemSeverity>;
+  // The checks of src/problems/lametaChecks.ts that are on, with their settings; see
+  // src/problems/checkSettings.ts
+  checks?: ChecksOfConfiguration;
 };
+
+// A configuration's settings over lameta's own (archive-configurations/lameta). Its
+// `checks` add to lameta's list of checks instead of replacing it.
+export function mergeConfigurationSettings(
+  base: OtherConfigurationSettings,
+  settings: Partial<OtherConfigurationSettings>,
+): OtherConfigurationSettings {
+  return { ...base, ...settings, checks: mergeChecks(base.checks, settings.checks) };
+}
 
 let otherConfigurationSettings: OtherConfigurationSettings = {
   configurationFullName: "",

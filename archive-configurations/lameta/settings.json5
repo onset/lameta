@@ -4,4 +4,23 @@
   archiveUsesParadisec: false,
   fileNameRules: "ASCII",
   imdiSchema: "IMDI_3.0.xsd",
+  // lameta's checks of a whole project, by name, with each one's severity. Every
+  // configuration starts from this list; its own `checks` can add a check, change a
+  // check's severity or settings, or turn one off with false. The checks and their
+  // settings are listed in src/problems/checkSettings.ts. metadataUnreadable is always
+  // on, so it is not listed.
+  checks: {
+    // a file whose name export changes to one that the archive allows (see fileNameRules)
+    fileNameNotAllowed: { severity: "warning" },
+    // a session that has no file that export includes
+    sessionWithoutFiles: { severity: "error" },
+    // a session in which no file lists a contributor
+    sessionWithoutContributors: { severity: "error" },
+    // a contributor whose name or code matches no person
+    contributorWithoutPerson: { severity: "error" },
+    // a person who contributes to a session and has no file with "Consent" in its name
+    contributorWithoutConsent: { severity: "warning" },
+    // one language code with different names in different sessions
+    languageNameVariations: { severity: "warning" },
+  },
 }

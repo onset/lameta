@@ -1,5 +1,7 @@
-// ELAR's checks of lameta's IMDI export that are not about a single field.
-// (Checks about a single field are in fields.json5.)
+// ELAR's checks of lameta's IMDI export that are ELAR's own or about the IMDI's shape.
+// Checks about a single field are in fields.json5. lameta's general checks, which
+// ELAR turns on with its own values, such as the allowed file extensions and ELAR's
+// genre list, are in settings.json5.
 //
 // Started as a port of ELAR's metadata validator 2.0.9, and has since diverged from
 // it in which problems it reports and how severe they are. The messages simplify
@@ -26,10 +28,6 @@ function first(parent, tag) {
 function children(parent, tag) {
   // compared without case, as getElementsByTagName does in an HTML-mode parser
   return Array.from(parent.children).filter((c) => c.localName.toLowerCase() === tag.toLowerCase());
-}
-function sessionNameOf(doc) {
-  const session = first(doc, "Session");
-  return session ? text(children(session, "Name")[0]) : "";
 }
 function actorNameOf(actor) {
   return text(children(actor, "FullName")[0]) || text(children(actor, "Name")[0]) || "unknown";
@@ -107,24 +105,6 @@ function readMultilingual(elements) {
 
 // ---------------------------------------------------------------- checkSession
 
-const kMediaExtensions = ["wav", "mp4", "jpg", "jpeg", "png", "tif", "tiff"];
-const kWrittenExtensions = [
-  "eaf",
-  "csv",
-  "pdf",
-  "txt",
-  "flextext",
-  "fwbackup",
-  "textgrid",
-  "trs",
-  "exb",
-  "exs",
-  "coma",
-  "srt",
-  "vtt",
-  "apk",
-  "exe",
-];
 const kResourceTypes = [
   "ELAN",
   "FLEx",
@@ -143,26 +123,22 @@ const kResourceTypes = [
 export function checkSession(doc, report, project) {
   const session = first(doc, "Session");
   if (!session) return;
-  const sessionName = sessionNameOf(doc);
-  const isConsent = sessionName === "ConsentDocuments";
   // ELAR: if there is no second metadata language, do not expect a translation
   const expectTranslations = project.metadataLanguages.some((tag) => tag !== "en");
   // The IMDI has English only when it is a metadata language. When it is not, the
   // field rules report that once, on the project's Metadata Languages.
   const expectEnglish = project.metadataLanguages.includes("en");
 
-  checkResources(session, sessionName, isConsent, report);
+  checkResources(session, report);
   checkActors(session, expectTranslations, expectEnglish, report);
   checkGenres(session, expectTranslations, report);
   if (expectTranslations) checkAccessDescriptionTranslations(session, report);
 }
 
-function checkResources(session, sessionName, isConsent, report) {
+function checkResources(session, report) {
   const resources = first(session, "Resources");
   const media = resources ? all(resources, "MediaFile") : [];
   const written = resources ? all(resources, "WrittenResource") : [];
-  // A session that has no files is reported by lameta's own checks (lametaChecks.ts),
-  // for every configuration, so not here
   const fileNames = [...media, ...written]
     .map((r) => text(children(r, "ResourceLink")[0]).split("/").pop())
     .filter((n) => n);
@@ -177,24 +153,6 @@ function checkResources(session, sessionName, isConsent, report) {
       const namePart = filename.split(".")[0];
       const ext = filename.includes(".") ? filename.split(".").pop().toLowerCase() : "";
       const id = isMedia ? "checkMediaFiles" : "checkWrittenResources";
-      if (!isConsent && !filename.includes(sessionName) && !namePart.includes(sessionName)) {
-        report_(
-          report,
-          id + "/sessionId",
-          link,
-          "File name",
-          `doesn't contain the session ID "${sessionName}".`,
-        );
-      }
-      if (namePart.replace(/[a-zA-Z0-9_-]+/g, "").length >= 1) {
-        report_(
-          report,
-          id + "/characters",
-          link,
-          "File name",
-          "has characters that aren't allowed.",
-        );
-      }
       // An MP3 or FLExText file is accepted only when there is no better version of
       // it. A WAV or EAF in the session with the same name, apart from the datestamp,
       // is one for certain, so that is an error. Whether there is an original WAV
@@ -232,23 +190,6 @@ function checkResources(session, sessionName, isConsent, report) {
           );
         }
       }
-      const allowed = isMedia ? kMediaExtensions : kWrittenExtensions;
-      // the MP3 check above says when an MP3 is accepted
-      if (ext && ext !== "mp3" && !allowed.includes(ext)) {
-        report_(report, id + "/extension", link, "File format", `.${ext} is not allowed.`);
-      }
-      if (namePart.length >= 21) {
-        report_(
-          report,
-          id + "/length",
-          link,
-          "File name",
-          `is too long (${namePart.length} characters).`,
-        );
-      }
-      if (!isMedia && !isConsent && !/_[0-9]{8}\./.test(filename)) {
-        report_(report, id + "/dateStamp", link, "File name", "has no date stamp (_YYYYMMDD).");
-      }
     }
     const type = children(resource, "Type")[0];
     if (type && !kResourceTypes.includes(text(type))) {
@@ -260,34 +201,13 @@ function checkResources(session, sessionName, isConsent, report) {
         `"${text(type)}" isn't allowed.`,
       );
     }
-    const size = children(resource, "Size")[0];
-    const gb = text(size).match(/(\d+)\s*GB/i);
-    if (gb) {
-      const n = parseInt(gb[1], 10);
-      const limit = n >= 50 ? 50 : n >= 40 ? 40 : n >= 30 ? 30 : n >= 20 ? 20 : 0;
-      if (limit) {
-        report_(report, "checkFileSize", size, "File", `is over ${limit} GB (${n} GB).`);
-      }
-    }
   }
 }
 
 function checkActors(session, expectTranslations, expectEnglish, report) {
   const actorsElement = first(session, "Actors");
   if (!actorsElement) return;
-  const actors = all(actorsElement, "Actor");
-  // A session that has no actors is reported by lameta's own checks
-  // (lametaChecks.ts), for every configuration, so not here
-  if (actors.length > 0 && !actors.some((a) => text(children(a, "FullName")[0]))) {
-    report_(
-      report,
-      "checkForActors",
-      actorsElement,
-      "Session",
-      "has no contributor with a full name.",
-    );
-  }
-  for (const actor of actors) {
+  for (const actor of all(actorsElement, "Actor")) {
     const roles = children(actor, "Role");
     if (roles.length === 0) continue;
     const actorName = actorNameOf(actor);
@@ -340,19 +260,9 @@ function checkGenres(session, expectTranslations, report) {
   const genres = children(content, "Genre");
   if (genres.length === 0) return;
   const genre = readMultilingual(genres);
-  // a genre in other languages alone has nothing to compare with ELAR's English list
+  // a genre that the IMDI has only in other languages is not checked
   const english = genre.hasEnglish ? genre.english : "";
   if (!english || english === "Unknown" || english === "Unspecified") return;
-  // ELAR's validator reports this as a warning
-  if (!kElarGenresLowerCase.includes(english.toLowerCase())) {
-    reportWarning(
-      report,
-      "genreMapping",
-      genre.node,
-      undefined,
-      `Genre "${english}" is not in the ELAR genre list. Please consider using a standardised genre.`,
-    );
-  }
   if (expectTranslations && !genre.hasTranslation) {
     reportMissingTranslation(report, "genreTranslation", genre.node, "Genre");
   }
@@ -379,133 +289,3 @@ function checkAccessDescriptionTranslations(session, report) {
     }
   }
 }
-
-// ---------------------------------------------------------------- checkCorpus
-
-export function checkCorpus(doc, report) {
-  const corpus = first(doc, "Corpus");
-  if (!corpus) return;
-  const name = children(corpus, "Name")[0];
-  const folderName = text(name);
-  if (!folderName) {
-    report_(report, "checkCorpusFolderName", name ?? corpus, "Project name", "is empty.");
-  } else {
-    if (folderName.replace(/[a-zA-Z0-9-]+/g, "").length >= 1) {
-      report_(
-        report,
-        "checkCorpusFolderName",
-        name,
-        "Project name",
-        "has characters that aren't allowed.",
-      );
-    }
-    if (folderName.length >= 35) {
-      report_(
-        report,
-        "checkCorpusFolderName",
-        name,
-        "Project name",
-        `is too long (${folderName.length} characters).`,
-      );
-    }
-  }
-}
-
-// ---------------------------------------------------------------- ELAR's genre list
-
-// From ELAR's metadata validator 2.0.9
-const kElarGenres = [
-  "Academic output",
-  "Anecdote",
-  "Art",
-  "Audiobook",
-  "Autobiography",
-  "Biography",
-  "Brochure",
-  "Catalog",
-  "Chant",
-  "Collection description",
-  "Commentary",
-  "Community materials",
-  "Consent",
-  "Conversation",
-  "Dance",
-  "Description",
-  "Dialogue",
-  "Dictionary",
-  "Dissertation",
-  "Drama",
-  "Elicitation",
-  "Ethnobiological description",
-  "Ethnography",
-  "Fable",
-  "Fairy tale",
-  "Field note",
-  "Folk song",
-  "Folktale",
-  "Folklore",
-  "Formulaic discourse",
-  "Glossary",
-  "Gossip",
-  "Grammar",
-  "History",
-  "Hymn",
-  "Incantation",
-  "Instrumental music",
-  "Interactive discourse",
-  "Interview",
-  "Joke",
-  "Landscape description",
-  "Language play",
-  "Lecture",
-  "Legend",
-  "Letter",
-  "Lexical database",
-  "Ludic discourse",
-  "Lullaby",
-  "Manual",
-  "Map",
-  "Metadata",
-  "Metadocumentation",
-  "Monologue",
-  "Music",
-  "Myth",
-  "Mythology",
-  "Narrative",
-  "Notebook",
-  "Notes",
-  "Novel",
-  "Oral history",
-  "Oral literature",
-  "Oratory",
-  "Orthography",
-  "Personal narrative",
-  "Photograph",
-  "Poetry",
-  "Poster",
-  "Prayer",
-  "Primer",
-  "Procedural discourse",
-  "Proverb",
-  "Questionnaire",
-  "Recipe",
-  "Recitation",
-  "Report",
-  "Riddle",
-  "Ritual",
-  "Sand drawing",
-  "Sermon",
-  "Short story",
-  "Singing",
-  "Song",
-  "Speech",
-  "Stimuli",
-  "Textbook",
-  "Traditional game",
-  "Translation",
-  "Unintelligible speech",
-  "Verbal art",
-  "Video",
-  "Word list",
-];
-const kElarGenresLowerCase = kElarGenres.map((g) => g.toLowerCase());

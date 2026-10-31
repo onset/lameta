@@ -473,7 +473,7 @@ export function writeSessions(ctx: Context) {
         contributions: [speaker("Nɔkɔ Ɛsi")],
       },
       `Genre "${g.id}".`,
-      "genres.json, IMDI genre, RO-Crate genre mapping, ELAR genreMapping",
+      "genres.json, IMDI genre, RO-Crate genre mapping, ELAR's genreInList",
     );
     w.file(`${S}/${id}/${id}_20240201.wav`, tinyWav());
   }

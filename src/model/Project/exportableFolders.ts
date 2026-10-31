@@ -21,6 +21,6 @@ export function findPersonToExport(project: Project, name: string): Person | und
   return person && hasReadableMetadata(person) ? person : undefined;
 }
 
-function hasReadableMetadata(folder: Folder): boolean {
+export function hasReadableMetadata(folder: Folder): boolean {
   return folder.metadataFile?.metadataReadProblem === undefined;
 }

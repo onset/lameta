@@ -14,30 +14,37 @@ import {
   ILanguageCodeAndName,
   splitLanguageFieldValue,
 } from "../languageFinder/languageTagFieldValue";
-import { shouldIncludeFile } from "../export/shouldIncludeFile";
-import { getStatusOfFile } from "../model/file/FileStatus";
+import { CheckSettings, enabledChecks } from "./checkSettings";
+import { checkExportedFiles, isExported } from "./exportedFileChecks";
+import { findPersonToExport, hasReadableMetadata } from "../model/Project/exportableFolders";
+import { ImdiVocabularyTranslator } from "../export/ImdiVocabularyTranslator";
+import { vocabularyElementValues } from "../export/vocabularyElementValues";
 import {
   isLanguageName,
   iso639_3ForExport,
   languageEntryNameForExport,
 } from "../export/languageNameForExport";
 
-// Checks that lameta makes for every archive configuration, beyond the rules of
-// single fields: metadata files that lameta could not read, file names against the
-// configuration's fileNameRules, contributors who have no matching person, and
-// sessions that have no files or no contributors, and one language code with
-// different names in different sessions, and contributors who have no consent on
-// record. A configuration can give any of these
-// checks another severity (checkSeverities in its settings.json5). Like
-// the field rules, they read only the project's own data, so they are cheap enough
-// to run after each edit.
+// lameta's checks of a whole project, beyond the rules of single fields. Each has a
+// name, its checkId, and a configuration turns it on in its settings.json5, with a
+// severity and any settings that it needs (see checkSettings.ts). Like the field rules,
+// they read only the project's own data, so they are cheap enough to run after each
+// edit.
+
+// adds a problem, if its check is on, with the severity that the configuration gives it
+export type Report = (problem: Omit<IFieldProblem, "severity">) => void;
+
 export function checkProjectFolders(project: Project): IFieldProblem[] {
   const problems: IFieldProblem[] = [];
+  const checks = enabledChecks(GetOtherConfigurationSettings().checks);
+  const add: Report = (problem) => {
+    const settings = checks.get(problem.checkId);
+    if (settings) problems.push({ ...problem, severity: settings.severity });
+  };
   const checkReadable = (file: File, target: NavigationTarget, text: string) => {
     if (file.metadataReadProblem === undefined) return;
-    problems.push({
+    add({
       checkId: "metadataUnreadable",
-      severity: "error",
       ...wordProblem(Path.basename(file.metadataFilePath), text, file.metadataReadProblem),
       target,
     });
@@ -76,9 +83,8 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       // Export renames the file, so the archive gets a name that it allows; the
       // user may want to rename it first
       if (fileName !== exportedName) {
-        problems.push({
+        add({
           checkId: "fileNameNotAllowed",
-          severity: "warning",
           ...wordProblem(
             t`File name`,
             t({
@@ -99,13 +105,20 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
 
   // the people who contribute to at least one session
   const contributingPeople = new Set<Person>();
+  // each genre's English, by the value that sessions store
+  const genresInEnglish = new Map<string, string>();
   for (const session of project.sessions.items as Session[]) {
     checkFiles(session, "session", session.id);
+    // export leaves out a session whose metadata lameta could not read
+    if (hasReadableMetadata(session)) {
+      checkExportedFiles(session, checks, add);
+      checkContributorsHaveFullNames(project, session, checks, add);
+      checkGenreInList(project, session, checks, add, genresInEnglish);
+    }
     const otherFiles = session.files.filter((f) => f !== session.metadataFile);
-    if (!otherFiles.some(isExported)) {
-      problems.push({
+    if (checks.has("sessionWithoutFiles") && !otherFiles.some(isExported)) {
+      add({
         checkId: "sessionWithoutFiles",
-        severity: "error",
         ...(otherFiles.length === 0
           ? wordProblem(
               t`Session`,
@@ -118,8 +131,7 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
               t`Session`,
               t({
                 message: "has no files that export can include.",
-                comment:
-                  'Follows "Session", as in "Session has no files that export can include."',
+                comment: 'Follows "Session", as in "Session has no files that export can include."',
               }),
               t`Export leaves out a file that is missing from this computer and a file whose name ends in ".skip".`,
             )),
@@ -127,9 +139,8 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       });
     }
     if (!session.files.some((f) => f.contributions.some((c) => c.personReference?.trim()))) {
-      problems.push({
+      add({
         checkId: "sessionWithoutContributors",
-        severity: "error",
         ...wordProblem(
           t`Session`,
           t({
@@ -158,9 +169,8 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
           contributingPeople.add(person);
           continue;
         }
-        problems.push({
+        add({
           checkId: "contributorWithoutPerson",
-          severity: "error",
           ...wordProblem(
             name,
             t({
@@ -180,7 +190,7 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       }
     }
   }
-  checkLanguageNames(project, problems);
+  if (checks.has("languageNameVariations")) checkLanguageNames(project, add);
   for (const person of project.persons.items as Person[]) {
     checkFiles(person, "person", person.getIdToUseForReferences());
     const consent = person.properties.getValue("hasConsent");
@@ -189,9 +199,8 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       consent instanceof HasConsentField &&
       !consent.hasConsent()
     ) {
-      problems.push({
+      add({
         checkId: "contributorWithoutConsent",
-        severity: "warning",
         ...wordProblem(
           person.displayName,
           t({
@@ -211,6 +220,7 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
   if (project.metadataFile) {
     checkReadable(project.metadataFile, { folderType: "project" }, couldNotBeRead());
   }
+  checkProjectName(project, checks, add);
   const documentFolders = [
     ["description", project.descriptionFolder],
     ["other", project.otherDocsFolder],
@@ -224,19 +234,7 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
       );
     }
   }
-  const severities = GetOtherConfigurationSettings().checkSeverities ?? {};
-  return problems.map((p) =>
-    severities[p.checkId] ? { ...p, severity: severities[p.checkId] } : p,
-  );
-}
-
-// Whether the IMDI export includes this file of a session, as
-// ImdiGenerator.resourcesOfType decides. A file that is only in the cloud counts,
-// because export downloads it.
-function isExported(file: File): boolean {
-  if (file.isDeletedLinkFile()) return false;
-  if (!shouldIncludeFile(file.getActualFilePath())) return false;
-  return !getStatusOfFile(file).missing;
+  return problems;
 }
 
 // One language code that sessions give different names, compared as the IMDI writes
@@ -246,7 +244,7 @@ function isExported(file: File): boolean {
 // Names that differ only in capitalisation count as one. The sessions that use a name
 // other than the one that most use are reported; when two names are equally common,
 // every session is.
-function checkLanguageNames(project: Project, problems: IFieldProblem[]) {
+function checkLanguageNames(project: Project, add: Report) {
   type Entry = { entry: ILanguageCodeAndName; sessionId: string; fieldKey: string };
   // Grouped by the ISO 639-3 code that export writes, so that "en" and "eng" are one
   // language. Looking up a code or a name searches the language index, and this runs after
@@ -305,9 +303,8 @@ function checkLanguageNames(project: Project, problems: IFieldProblem[]) {
       const place = use.sessionId + "|" + use.fieldKey;
       if (reported.has(place)) continue;
       reported.add(place);
-      problems.push({
+      add({
         checkId: "languageNameVariations",
-        severity: "warning",
         ...wordProblem(
           t({
             message: `Language ${code}`,
@@ -323,4 +320,133 @@ function checkLanguageNames(project: Project, problems: IFieldProblem[]) {
       });
     }
   }
+}
+
+// A session with contributors, none of whom has a full name in the IMDI: the name of
+// the person they are, or for a contributor who matches no person, the name that the
+// contribution gives
+function checkContributorsHaveFullNames(
+  project: Project,
+  session: Session,
+  checks: Map<string, CheckSettings>,
+  add: Report,
+) {
+  if (!checks.has("sessionContributorsWithoutFullName")) return;
+  const fullNames = session
+    .getAllContributionsToAllFiles()
+    .map((c) => c.personReference.trim())
+    .filter((name) => name.length > 0)
+    .map((name) => {
+      const person = findPersonToExport(project, name);
+      return person ? person.properties.getTextStringOrEmpty("name").trim() : name;
+    });
+  if (fullNames.length > 0 && !fullNames.some((name) => name)) {
+    add({
+      checkId: "sessionContributorsWithoutFullName",
+      ...wordProblem(
+        t`Session`,
+        t({
+          message: "has no contributor with a full name.",
+          comment: 'Follows "Session", as in "Session has no contributor with a full name."',
+        }),
+      ),
+      target: { folderType: "session", folderId: session.id, fieldKey: "contributions" },
+    });
+  }
+}
+
+// A genre that is not in the configuration's list. The genre is compared in English, as
+// the IMDI export writes it; a genre that the IMDI has only in other languages is not
+// compared.
+function checkGenreInList(
+  project: Project,
+  session: Session,
+  checks: Map<string, CheckSettings>,
+  add: Report,
+  genresInEnglish: Map<string, string>,
+) {
+  const settings = checks.get("genreInList") as (CheckSettings & { genres: string[] }) | undefined;
+  if (!settings) return;
+  const value = session.properties.getTextStringOrEmpty("genre");
+  // Working out the English looks at the translations of the genre, so it is done once
+  // for each value
+  let english = genresInEnglish.get(value);
+  if (english === undefined) {
+    english = genreInEnglish(project, session, value);
+    genresInEnglish.set(value, english);
+  }
+  if (!english || english === "Unknown" || english === "Unspecified") return;
+  if (settings.genres.some((g) => g.toLowerCase() === english.toLowerCase())) return;
+  const archive = project.properties.getTextStringOrEmpty("archiveConfigurationName");
+  add({
+    checkId: "genreInList",
+    ...wordProblem(
+      undefined,
+      t({
+        message: `Genre "${english}" is not in the ${archive} genre list. Please consider using a standardised genre.`,
+        comment:
+          'The first value is a genre, the second the name of an archive, as in: Genre "Story" is not in the ELAR genre list.',
+      }),
+    ),
+    target: { folderType: "session", folderId: session.id, fieldKey: "genre" },
+  });
+}
+
+// A genre in English, as the IMDI export writes it, or "" if the IMDI has it only in
+// other languages
+function genreInEnglish(project: Project, session: Session, value: string): string {
+  const label = session.properties.getLabelOfValue("genre").replace(/_/g, " ");
+  const elements = vocabularyElementValues(
+    label || value,
+    new ImdiVocabularyTranslator(project).getGenreTranslator(),
+    value,
+    session.properties.getFieldDefinition("genre"),
+    (tag) => iso639_3ForExport(tag, project.privateUseCodes, project),
+  );
+  const withLanguage = elements.filter((e) => e.languageId);
+  return (
+    withLanguage.length > 0
+      ? (withLanguage.find((e) => e.languageId === "ISO639-3:eng" && e.text.trim())?.text ?? "")
+      : // a value with its translation, as "English / Translation"
+        elements[0].text.trim().split(" / ")[0]
+  ).trim();
+}
+
+// The project's name, which the IMDI export writes as the corpus's name
+function checkProjectName(project: Project, checks: Map<string, CheckSettings>, add: Report) {
+  const settings = checks.get("projectName") as
+    | (CheckSettings & { pattern: string; maxLength: number })
+    | undefined;
+  if (!settings) return;
+  const name = project.properties.getTextStringOrEmpty("name").trim();
+  const report = (text: string) =>
+    add({
+      checkId: "projectName",
+      ...wordProblem(t`Project name`, text),
+      target: { folderType: "project", fieldKey: "name" },
+    });
+  if (!name) {
+    report(
+      t({
+        message: "is empty.",
+        comment: 'Follows "Project name", as in "Project name is empty."',
+      }),
+    );
+    return;
+  }
+  if (!new RegExp(settings.pattern).test(name))
+    report(
+      t({
+        message: "has characters that aren't allowed.",
+        comment:
+          'Follows "Project name", as in "Project name has characters that aren\'t allowed."',
+      }),
+    );
+  if (name.length > settings.maxLength)
+    report(
+      t({
+        message: `is too long (${name.length} characters).`,
+        comment: 'Follows "Project name", as in "Project name is too long (40 characters)."',
+      }),
+    );
 }
