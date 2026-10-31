@@ -16,6 +16,10 @@ msgstr ""
 msgid "\"{0}\" has one or more characters that are not allowed. To fix this, first fix the name of this folder."
 msgstr ""
 
+#. Follows "Resource type", as in "Resource type "Sound" isn't allowed."
+msgid "\"{type}\" isn't allowed."
+msgstr ""
+
 msgid "(scanned {sessionsScanned} sessions and {peopleScanned} people)"
 msgstr ""
 
@@ -50,7 +54,7 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-msgid "Across sessions"
+msgid "Access Explanation"
 msgstr ""
 
 msgid "Add \"{inputValue}\" as an unlisted language"
@@ -152,9 +156,6 @@ msgid "Change..."
 msgstr ""
 
 msgid "Checking the project…"
-msgstr ""
-
-msgid "Checking…"
 msgstr ""
 
 msgid "Choose File"
@@ -403,6 +404,9 @@ msgstr ""
 msgid "Generating RO-Crate metadata..."
 msgstr ""
 
+msgid "Genre"
+msgstr ""
+
 #. The first value is a genre, the second the name of an archive, as in: Genre "Story" is not in the ELAR genre list.
 msgid "Genre \"{english}\" is not in the {archive} genre list. Please consider using a standardised genre."
 msgstr ""
@@ -507,6 +511,9 @@ msgstr ""
 msgid "Looks good"
 msgstr ""
 
+msgid "MP3 files"
+msgstr ""
+
 msgid "Mark as a primary language of the mother."
 msgstr ""
 
@@ -545,6 +552,10 @@ msgid "Modified"
 msgstr ""
 
 msgid "More Fields"
+msgstr ""
+
+#. Keep English / Translation as it is: it shows the format to use.
+msgid "Multilingual metadata available but incorrect format in Role for Actor \"{actorName}\": \"{value}\" (expected format: \"English / Translation\" with spaces around /)"
 msgstr ""
 
 msgid "Name"
@@ -724,6 +735,13 @@ msgstr ""
 msgid "Report a problem"
 msgstr ""
 
+#. The value is an access level, as in "Required for access level S."
+msgid "Required for access level {0}."
+msgstr ""
+
+msgid "Resource type"
+msgstr ""
+
 msgid "Restart lameta and do the rename before playing the video again."
 msgstr ""
 
@@ -848,9 +866,6 @@ msgid "That name would lead to an empty filename."
 msgstr ""
 
 msgid "The IMDI files were validated."
-msgstr ""
-
-msgid "The archive's rules file could not check everything:"
 msgstr ""
 
 msgid "The code must be between qaa and qtz."
@@ -1029,6 +1044,10 @@ msgstr ""
 msgid "add at least {minItems}."
 msgstr ""
 
+#. Follows "MP3 files", as in "MP3 files are not allowed if…"
+msgid "are not allowed if there is a WAV recording with the same name."
+msgstr ""
+
 msgid "choose..."
 msgstr ""
 
@@ -1061,6 +1080,10 @@ msgstr ""
 msgid "has different names in different sessions: {names}."
 msgstr ""
 
+#. Follows a contributor's role, as in "Awi Heole's role has no English."
+msgid "has no English."
+msgstr ""
+
 #. Follows a person's name, as in "Awi Heole has no consent on record."
 msgid "has no consent on record."
 msgstr ""
@@ -1089,12 +1112,20 @@ msgstr ""
 msgid "has no matching Person."
 msgstr ""
 
+#. Follows a contributor's name, as in "Awi Heole has no role."
+msgid "has no role."
+msgstr ""
+
 #. Follows "Project name", as in "Project name is empty."
 msgid "is empty."
 msgstr ""
 
 #. Follows a field's name, as in "ID is not in the expected form."
 msgid "is not in the expected form."
+msgstr ""
+
+#. Follows "FLExText", the name of a file format, as in "FLExText is only accepted…"
+msgid "is only accepted if there is no time-aligned EAF of it."
 msgstr ""
 
 #. Follows "File", as in "File is over 20 GB (23 GB)."
@@ -1112,6 +1143,10 @@ msgstr ""
 #. Follows "File name", as in "File name is too long (23 characters)." Counts the characters before the first "."
 #. Follows "Project name", as in "Project name is too long (40 characters)."
 msgid "is too long ({0} characters)."
+msgstr ""
+
+#. Follows "FLExText", the name of a file format, as in "FLExText isn't accepted…"
+msgid "isn't accepted when a time-aligned EAF of it is also present."
 msgstr ""
 
 msgid "lameta"
@@ -1133,6 +1168,9 @@ msgid "lameta cannot find a folder of this project"
 msgstr ""
 
 msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
+msgstr ""
+
+msgid "lameta could not check everything:"
 msgstr ""
 
 msgid "lameta could not find a matching Person for the following contributors:"
@@ -1212,6 +1250,10 @@ msgstr ""
 msgid "needs English."
 msgstr ""
 
+#. Follows the name of a value, as in "Genre needs a translation."
+msgid "needs a translation."
+msgstr ""
+
 #. Follows a field's name, as in "Title needs a Spanish or Tok Pisin translation."
 msgid "needs a {languages} translation."
 msgstr ""
@@ -1229,6 +1271,10 @@ msgid "{0} Marked Sessions"
 msgstr ""
 
 msgid "{0} of {1} items processed"
+msgstr ""
+
+#. A contributor's name, as in "Awi Heole's role needs a translation."
+msgid "{actorName}'s role"
 msgstr ""
 
 #. Heading of the Problems sidebar. The value is the short name of an archive, as in "ELAR Checks": the checks that this archive asks for
