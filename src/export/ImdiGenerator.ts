@@ -57,6 +57,10 @@ let hasEmittedTildeBirthYearWarning = false;
 /**
  * Reset the tilde birth year warning flag. Call this at the start of an export.
  */
+// whether the warning has been given since the last reset
+export function tildeBirthYearWarningGiven(): boolean {
+  return hasEmittedTildeBirthYearWarning;
+}
 export function resetTildeBirthYearWarning(): void {
   hasEmittedTildeBirthYearWarning = false;
 }

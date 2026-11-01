@@ -7,6 +7,8 @@ import { Project } from "../model/Project/Project";
 import { checkOfSessions, checkProject, IProjectCheck, whyExportIsBlocked } from "./checkProject";
 import { IProblem } from "./problems";
 import * as lametaChecks from "./lametaChecks";
+import { Person } from "../model/Project/Person/Person";
+import { resetTildeBirthYearWarning, tildeBirthYearWarningGiven } from "../export/ImdiGenerator";
 import { resetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 mobx.configure({ enforceActions: "never" });
@@ -50,6 +52,27 @@ describe("checkProject in an ELAR project", () => {
     expect(check.checkErrors.map((e) => e.sessionId)).toEqual(["ETR009"]);
     expect(check.checkErrors[0].message).toContain("could not generate the IMDI of session ETR009");
     expect(whyExportIsBlocked("imdi", ["imdi"], check)).toContain("incompleteCheck");
+    resetOtherConfigurationSettings();
+  });
+
+  it("leaves the warning about an approximate birth year for the IMDI that the user sees", async () => {
+    resetTildeBirthYearWarning();
+    const dir = Path.join(temp.mkdirSync("check project"), "Edolo sample");
+    fs.copySync("sample data/Edolo sample", dir);
+    const sprj = Path.join(dir, "Edolo sample.sprj");
+    fs.writeFileSync(
+      sprj,
+      fs
+        .readFileSync(sprj, "utf8")
+        .replace(
+          "<ArchiveConfigurationName>custom</ArchiveConfigurationName>",
+          "<ArchiveConfigurationName>ELAR</ArchiveConfigurationName>",
+        ),
+    );
+    const project = Project.fromDirectory(dir);
+    (project.persons.items[0] as Person).properties.setText("birthYear", "~1964");
+    await checkProject(project);
+    expect(tildeBirthYearWarningGiven()).toBe(false);
     resetOtherConfigurationSettings();
   });
 

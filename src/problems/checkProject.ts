@@ -2,7 +2,11 @@ import { Project } from "../model/Project/Project";
 import { checkProjectFields } from "./fieldRules";
 import { checkProjectFolders } from "./lametaChecks";
 import { fromFieldProblem, IProblem } from "./problems";
-import ImdiGenerator, { IMDIMode } from "../export/ImdiGenerator";
+import ImdiGenerator, {
+  IMDIMode,
+  resetTildeBirthYearWarning,
+  tildeBirthYearWarningGiven,
+} from "../export/ImdiGenerator";
 import { withWarningsDiscarded } from "../export/ExportWarningCollector";
 import { exportableSessions } from "../model/Project/exportableFolders";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
@@ -70,6 +74,9 @@ export async function checkProject(project: Project): Promise<IProjectCheck> {
 // The sessions, and the corpus, whose IMDI lameta cannot generate
 function imdiErrors(project: Project): ICheckError[] {
   const errors: ICheckError[] = [];
+  // generating IMDI gives a warning about an approximate birth year once; keep it for
+  // the IMDI that the user sees or exports
+  const warningGiven = tildeBirthYearWarningGiven();
   const generate = (sessionId: string | undefined, makeXml: () => string) => {
     try {
       withWarningsDiscarded(makeXml);
@@ -92,5 +99,6 @@ function imdiErrors(project: Project): ICheckError[] {
       sessions.map((s) => `${s.id}.imdi`),
     ),
   );
+  if (!warningGiven) resetTildeBirthYearWarning();
   return errors;
 }
