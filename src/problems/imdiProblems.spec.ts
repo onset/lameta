@@ -67,6 +67,15 @@ describe("watchImdiGeneration", () => {
     expect(problems[0].reason).toBeTruthy();
   });
 
+  it("does not generate while the project opens, only after a pause", async () => {
+    const project = projectWithBadSession("ELAR");
+    const generate = vi.spyOn(ImdiGenerator, "generateSession");
+    const stop = watchImdiGeneration(project, () => {});
+    expect(generate).not.toHaveBeenCalled();
+    await vi.waitFor(() => expect(generate).toHaveBeenCalledTimes(2), { timeout: 10000 });
+    stop();
+  });
+
   it("generates nothing for an archive that does not take IMDI", async () => {
     const generate = vi.spyOn(ImdiGenerator, "generateSession");
     const watching = await watch(projectWithBadSession("PARADISEC"));
