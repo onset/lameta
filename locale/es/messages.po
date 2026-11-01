@@ -1184,6 +1184,9 @@ msgstr ""
 msgid "lameta cannot generate the IMDI of this session."
 msgstr ""
 
+msgid "lameta cannot save \"{name}\" because its folder is no longer on disk. It may have been moved, renamed or deleted outside lameta, for example by OneDrive or Dropbox. To see the project as it is on disk now, close it and open it again."
+msgstr ""
+
 msgid "lameta could not check everything:"
 msgstr ""
 

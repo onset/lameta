@@ -29,7 +29,7 @@ import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
 import { MessageDialog, ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../other/errorHandling";
-import { NotifyError, NotifyException } from "../components/Notify";
+import { NotifyError, NotifyException, NotifyWarning } from "../components/Notify";
 import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
@@ -184,7 +184,14 @@ class HomePage extends React.Component<IProps, IState> {
   }
 
   private closeProjectWhoseFolderIsMissing = (folder: Folder) => {
-    if (this.projectHolder.closeProjectWhoseFolderIsMissing()) {
+    const outcome = this.projectHolder.handleMissingFolder(folder);
+    if (outcome === "warn") {
+      const name = folder.displayName;
+      NotifyWarning(
+        t`lameta cannot save "${name}" because its folder is no longer on disk. It may have been moved, renamed or deleted outside lameta, for example by OneDrive or Dropbox. To see the project as it is on disk now, close it and open it again.`,
+      );
+    }
+    if (outcome === "close") {
       ShowMessageDialog({
         title: t`lameta cannot find a folder of this project`,
         content: (

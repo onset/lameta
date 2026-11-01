@@ -122,17 +122,21 @@ describe("saving a project whose folder has gone", () => {
   });
 });
 
-// HomePage wires Folder.onDirectoryMissingWhenSaving to
-// ProjectHolder.closeProjectWhoseFolderIsMissing and shows a dialog when it returns true.
+// HomePage wires Folder.onDirectoryMissingWhenSaving to ProjectHolder.handleMissingFolder,
+// and shows a dialog when it says "close" and a warning when it says "warn".
 describe("closing a project whose folder has gone", () => {
   let holder: ProjectHolder;
   let timesToldUser: number;
+  let warned: Folder[];
 
   beforeEach(() => {
     holder = new ProjectHolder();
     timesToldUser = 0;
-    Folder.onDirectoryMissingWhenSaving = () => {
-      if (holder.closeProjectWhoseFolderIsMissing()) timesToldUser++;
+    warned = [];
+    Folder.onDirectoryMissingWhenSaving = (folder) => {
+      const outcome = holder.handleMissingFolder(folder);
+      if (outcome === "close") timesToldUser++;
+      if (outcome === "warn") warned.push(folder);
     };
     holder.setProject(Project.fromDirectory(projectDir));
   });
@@ -145,21 +149,27 @@ describe("closing a project whose folder has gone", () => {
     expect(timesToldUser).toBe(1);
   });
 
-  it("closes the project and tells the user once when a session folder has gone", () => {
+  it("keeps the project open and warns once when only a session folder has gone", () => {
     const session = holder.loadedProject!.sessions.items[0];
     fs.moveSync(session.directory, session.directory + "-renamed");
     session.properties.setText("title", "changed");
     session.saveAllFilesInFolder();
-    expect(holder.project).toBeNull();
-    expect(timesToldUser).toBe(1);
+    session.saveAllFilesInFolder();
+    expect(holder.project).not.toBeNull();
+    expect(timesToldUser).toBe(0);
+    expect(warned).toEqual([session]);
+    // nothing was written into a new folder of the old name
+    expect(fs.existsSync(session.directory)).toBe(false);
   });
 
-  it("saves the rest of the project while closing when only a session folder has gone", () => {
+  it("saves the rest of the project when only a session folder has gone", () => {
     const project = holder.loadedProject!;
     const session = project.sessions.items[0];
     fs.moveSync(session.directory, session.directory + "-renamed");
     project.properties.setText("title", "kept");
     session.saveAllFilesInFolder();
+    // the project's own folder is still there, so its next save writes it
+    project.saveAllFilesInFolder();
     expect(fs.readFileSync(Path.join(projectDir, "TestProject.sprj"), "utf8")).toContain("kept");
   });
 

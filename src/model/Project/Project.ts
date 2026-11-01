@@ -97,6 +97,24 @@ export class ProjectHolder {
   }
 
   private closingProjectWhoseFolderIsMissing = false;
+  private foldersWarnedMissing = new WeakSet<Folder>();
+
+  // What to do after a save found `folder`'s directory missing from disk:
+  //  - "close" when the project's own folder has gone (moved, renamed, deleted, or on a
+  //    drive that was disconnected): see closeProjectWhoseFolderIsMissing.
+  //  - "warn" when only a session's or person's folder has gone, as when a sync service
+  //    applies a rename or deletion made on another machine. The project stays open and
+  //    that folder is not saved; the user is told once for each such folder.
+  //  - undefined when the user has already been told.
+  public handleMissingFolder(folder: Folder): "close" | "warn" | undefined {
+    const project = this.loadedProject;
+    if (project && folder !== project && fs.existsSync(project.directory)) {
+      if (this.foldersWarnedMissing.has(folder)) return undefined;
+      this.foldersWarnedMissing.add(folder);
+      return "warn";
+    }
+    return this.closeProjectWhoseFolderIsMissing() ? "close" : undefined;
+  }
 
   // Closes the project after a save found one of its folders missing from disk, so the
   // user stops making edits that cannot be saved. Every folder that fails to save reports,
