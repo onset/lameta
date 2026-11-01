@@ -11,14 +11,13 @@
   exportFormatsBlockedByProblems: ["imdi", "opex-plus-files"],
   // lameta's checks that ELAR turns on or changes, over lameta's list in
   // ../lameta/settings.json5. The checks and their settings are listed in lameta's
-  // src/problems/checkSettings.ts. ELAR's own checks, which are about the IMDI, are in
-  // rules.js.
+  // src/problems/checkSettings.ts.
   checks: {
     // ELAR does not accept one language code written with different names in
     // different sessions
     languageNameVariations: { severity: "error" },
-    // A session's files. MP3 is listed so that this check passes it; rules.js says
-    // when ELAR accepts one.
+    // A session's files. MP3 is listed so that this check passes it;
+    // mp3WithWavOfSameName says when ELAR accepts one.
     fileExtension: {
       severity: "error",
       mediaExtensions: ["wav", "mp4", "jpg", "jpeg", "png", "tif", "tiff", "mp3"],
@@ -52,6 +51,34 @@
     fileSize: { severity: "error", limitsInGigabytes: [20, 30, 40, 50] },
     projectName: { severity: "error", pattern: "^[A-Za-z0-9-]*$", maxLength: 34 },
     sessionContributorsWithoutFullName: { severity: "error" },
+    // ELAR accepts an MP3 or a FLExText file only when there is no better version of it
+    mp3WithWavOfSameName: { severity: "error" },
+    flextextWithEafOfSameName: { severity: "error" },
+    flextextWithOtherEaf: { severity: "warning" },
+    resourceType: {
+      severity: "error",
+      allowedTypes: [
+        "ELAN",
+        "FLEx",
+        "Document",
+        "Audio",
+        "Video",
+        "Image",
+        "Settings",
+        "Transcriber",
+        "Subtitles",
+        "Praat",
+        "Toolbox",
+        "Spreadsheet",
+      ],
+    },
+    contributorWithoutRole: { severity: "error" },
+    roleWithoutEnglish: { severity: "error" },
+    roleFormat: { severity: "warning" },
+    // a missing translation, and what only the depositor can judge, are warnings
+    roleTranslation: { severity: "warning" },
+    genreTranslation: { severity: "warning" },
+    accessDescriptionTranslation: { severity: "warning", accessLevels: ["S"] },
     // From ELAR's metadata validator 2.0.9. ELAR's validator reports a genre that is
     // not in it as a warning.
     genreInList: {

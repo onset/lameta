@@ -70,8 +70,7 @@ test.describe("rendering as the project grows", () => {
     if (!(await page.getByTestId("problems-sidebar").isVisible()))
       await page.getByTestId("problems-indicator").click();
     await page.getByTestId("problems-sidebar").waitFor({ state: "visible" });
-    // the rules file's problems arrive after the first check; the indicator in the top
-    // bar counts them all, whatever the panel renders
+    // the indicator in the top bar counts every problem, whatever the panel renders
     await expect
       .poll(
         async () => {

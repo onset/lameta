@@ -42,8 +42,7 @@ test.describe("A project with no archive", () => {
       "fileNameDateStamp",
       "fileNameContainsSessionId",
       "projectName",
-      // ELAR's rules.js
-      "checkActorRole",
+      "contributorWithoutRole",
     ])
       await expect(entries(page, elarCheck)).toHaveCount(0);
   });

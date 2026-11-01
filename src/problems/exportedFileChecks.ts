@@ -17,6 +17,7 @@ export function checkExportedFiles(
   session: Session,
   checks: Map<string, CheckSettings>,
   add: Report,
+  isExported: (file: File) => boolean,
 ) {
   const extensions = checks.get("fileExtension") as
     | (CheckSettings & { mediaExtensions: string[]; writtenExtensions: string[] })

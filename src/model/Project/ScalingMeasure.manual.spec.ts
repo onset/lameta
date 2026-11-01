@@ -17,16 +17,7 @@ import { Session } from "./Session/Session";
 import { File } from "../file/File";
 import { FieldSet } from "../field/FieldSet";
 import { FolderSearchTermsIndex } from "../Folder/FolderSearchTermsIndex";
-import ImdiGenerator, { IMDIMode } from "../../export/ImdiGenerator";
 import { ProjectProblems } from "../../problems/ProjectProblems";
-import { RulesFileProblems } from "../../problems/RulesFileProblems";
-import {
-  IRulesSandboxInput,
-  IRulesSandboxOutput,
-  rulesSandboxMain,
-} from "../../problems/rulesSandboxMain";
-import { makeLametaSourceReader } from "../../export/lametaSourceComment";
-import { findBuiltInRulesFile } from "../../problems/rulesFile";
 import { checkProjectFields } from "../../problems/fieldRules";
 import { checkProjectFolders } from "../../problems/lametaChecks";
 
@@ -81,19 +72,6 @@ function calls<T extends object>(owner: T, method: keyof T, action: () => void):
   }
 }
 
-// vitest cannot import a data: URL, which is how the sandbox loads a rules file; the
-// measured projects are all under ELAR, so load ELAR's rules directly
-const loadElarRules = async () => await import("../../../archive-configurations/ELAR/rules.js");
-
-// Runs the ELAR rules as the sandbox would. LAMETA_SCALING_NO_RULES=1 leaves them out, for
-// projects too large for this process to hold every session's Document (finding 13).
-async function checkWithElarRules(input: IRulesSandboxInput): Promise<IRulesSandboxOutput> {
-  if (process.env.LAMETA_SCALING_NO_RULES === "1")
-    return { problems: [], errors: [], milliseconds: 0 };
-  return rulesSandboxMain(input, makeLametaSourceReader, loadElarRules);
-}
-
-// a writable copy, so that saving and renaming do not change the measured project
 function copyOf(dir: string): string {
   const copy = Path.join(temp.mkdirSync("scaling measure"), Path.basename(dir));
   fs.cpSync(dir, copy, { recursive: true });
@@ -190,112 +168,33 @@ describe.skipIf(dirs.length === 0)("scaling measurements", () => {
       );
       results.push({ action: "field and lameta problems found", count: fieldProblemCount, ms: [] });
 
-      // the IMDI that the background check holds and sends to the sandbox, and what
-      // checking it costs, before the background check does both at once
-      progress("generate every session's IMDI");
-      const generateStart = performance.now();
-      const sessionItems = project.sessions.items as Session[];
-      const imdi = sessionItems.map((s) => ({
-        sessionId: s.id,
-        xml: ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, s, project),
-      }));
-      // as RulesFileProblems.checkNow() does
-      const corpusXml = ImdiGenerator.generateCorpus(
-        IMDIMode.RAW_IMDI,
-        project,
-        sessionItems.map((s) => `${s.id}.imdi`),
-      );
-      results.push({
-        action: "generate every session's IMDI",
-        count: Math.round(imdi.reduce((n, s) => n + s.xml.length, 0) / 1024 / 1024),
-        unit: "MB of IMDI",
-        ms: [performance.now() - generateStart],
-      });
-      progress("run the ELAR rules once on every session");
-      const rulesStart = performance.now();
-      const once = await checkWithElarRules({
-        rulesSource: fs.readFileSync(findBuiltInRulesFile("ELAR")!, "utf8"),
-        sessions: imdi,
-        corpusXml,
-        metadataLanguages: Project.parseLanguagesToSlots(
-          project.properties.getTextStringOrEmpty("metadataLanguages"),
-        ).map((slot) => slot.tag),
-        maxProblems: 2000,
-      });
-      results.push({
-        action: "run the ELAR rules once on every session",
-        count: once.problems.length,
-        unit: "problems",
-        ms: [performance.now() - rulesStart],
-      });
-      imdi.length = 0;
-      progress("after the ELAR rules");
-
-      // the background check, with the ELAR rules run in this process as the sandbox would
+      // the background check, which runs the field rules and lametaChecks.ts after an edit
       // only the timers: a faked performance.now() would make every time 0
       vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-      let sent = 0;
-      const runner = new RulesFileProblems(async (input) => {
-        sent = input.sessions.length;
-        return {
-          value: await checkWithElarRules(input),
-        };
-      });
       const watcher = new ProjectProblems();
-      let stopRules = () => {};
-      let stopFields = () => {};
       progress("first background check");
       const start = performance.now();
-      stopFields = watcher.watch(project);
-      stopRules = runner.watch(project);
+      const stopFields = watcher.watch(project);
       await vi.advanceTimersByTimeAsync(10);
       results.push({
-        action: "first background check (fields + ELAR rules)",
-        count: runner.problems.length,
-        unit: "rules problems",
+        action: "first background check",
+        count: watcher.problems.length,
+        unit: "problems",
         ms: [performance.now() - start],
       });
-      results.push({
-        action: "  of which: generating IMDI (main thread)",
-        count: runner.timing.sessionsGenerated,
-        unit: "sessions generated",
-        ms: [runner.timing.generateMilliseconds],
-      });
-      results.push({
-        action: "  of which: running the rules (sandbox)",
-        count: sent,
-        unit: "sessions sent",
-        ms: [runner.timing.sandboxMilliseconds],
-      });
       const recheck: number[] = [];
-      const generated: number[] = [];
       for (let i = 0; i < 3; i++) {
         progress(`background recheck ${i}`);
         target.properties.setText("title", `r${k++}`);
         await vi.advanceTimersByTimeAsync(2000);
-        recheck.push(runner.timing.generateMilliseconds + runner.timing.sandboxMilliseconds);
-        generated.push(runner.timing.sessionsGenerated);
+        recheck.push(watcher.checkMilliseconds);
       }
-      results.push({
-        action: "background recheck after one edit (generate + rules)",
-        count: sent,
-        unit: `sessions sent (generated ${generated.join(",")})`,
-        ms: recheck,
-      });
-      results.push({
-        action: "  field check after the same edit",
-        ms: [watcher.checkMilliseconds],
-      });
-      stopRules();
+      results.push({ action: "background recheck after one edit", ms: recheck });
       stopFields();
       vi.useRealTimers();
 
-      measure(
-        results,
-        "export dialog: checkProject",
-        "sessions generated",
-        () => calls(ImdiGenerator, "generateSession", () => checkProjectNowSync(project)),
-        3,
+      measure(results, "export dialog: checkProject", undefined, () =>
+        checkProjectNowSync(project),
       );
 
       measure(results, "add a session", undefined, () => void project.addSession(), 3);
@@ -315,12 +214,10 @@ describe.skipIf(dirs.length === 0)("scaling measurements", () => {
   }, 3_600_000);
 });
 
-// the synchronous part of checkProject(): what runs before the export dialog shows
+// what checkProject() runs before the export dialog shows
 function checkProjectNowSync(project: Project) {
   checkProjectFields(project);
   checkProjectFolders(project);
-  for (const s of project.sessions.items as Session[])
-    ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, s, project);
 }
 
 function table(report: Record<string, { results: Measurement[] }>): string {

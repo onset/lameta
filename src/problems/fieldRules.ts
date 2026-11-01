@@ -9,7 +9,7 @@ import { FieldSet } from "../model/field/FieldSet";
 import { FieldRule } from "../model/field/FieldDefinition";
 import { LanguageSlot } from "../model/field/TextHolder";
 import { NavigationTarget } from "../navigation/NavigationTarget";
-import { ProblemSeverity } from "./rulesFile";
+import { ProblemSeverity } from "./problemSeverity";
 import {
   isTranslatedOnTranslationsTab,
   translateVocabularyValue,

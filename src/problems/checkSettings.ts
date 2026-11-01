@@ -1,4 +1,4 @@
-import type { ProblemSeverity } from "./rulesFile";
+import type { ProblemSeverity } from "./problemSeverity";
 
 // lameta's checks of a whole project (see lametaChecks.ts) are turned on by name in the
 // `checks` of a configuration's settings.json5, each with its severity and whatever
@@ -61,6 +61,24 @@ export const kChecks: Record<string, ICheckDefinition> = {
   projectName: { settings: { pattern: "pattern", maxLength: "number" } },
   // the genres that the archive lists, in English; case does not matter
   genreInList: { settings: { genres: "string[]" } },
+  // An MP3 next to a WAV of the same name, apart from a _YYYYMMDD date stamp
+  mp3WithWavOfSameName: { settings: {} },
+  // A FLExText file next to an EAF of the same name, apart from a date stamp, and next
+  // to other EAF files, which only the depositor knows whether are of the same text
+  flextextWithEafOfSameName: { settings: {} },
+  flextextWithOtherEaf: { settings: {} },
+  // the resource types that the IMDI may give a file, such as "Audio" or "ELAN"
+  resourceType: { settings: { allowedTypes: "string[]" } },
+  // a contributor with no role, or one whose role the IMDI has without English, in a
+  // wrong "English / Translation" form, or with no translation
+  contributorWithoutRole: { settings: {} },
+  roleWithoutEnglish: { settings: {} },
+  roleFormat: { settings: {} },
+  roleTranslation: { settings: {} },
+  // a genre with no translation
+  genreTranslation: { settings: {} },
+  // the access levels whose access explanation needs a translation, such as ["S"]
+  accessDescriptionTranslation: { settings: { accessLevels: "string[]" } },
 };
 
 // lameta's list of checks with a configuration's own `checks` over it

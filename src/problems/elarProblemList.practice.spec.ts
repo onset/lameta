@@ -5,13 +5,10 @@ import temp from "temp";
 import * as mobx from "mobx";
 import { Project } from "../model/Project/Project";
 import { Session } from "../model/Project/Session/Session";
-import { makeLametaSourceReader } from "../export/lametaSourceComment";
-import { RulesFileProblems } from "./RulesFileProblems";
-import { rulesSandboxMain } from "./rulesSandboxMain";
-import { findBuiltInRulesFile } from "./rulesFile";
+import { Contribution } from "../model/file/File";
 import { checkProjectFields } from "./fieldRules";
 import { checkProjectFolders } from "./lametaChecks";
-import { combineProblems } from "./problems";
+import { fromFieldProblem } from "./problems";
 
 mobx.configure({ enforceActions: "never" });
 temp.track();
@@ -29,17 +26,6 @@ temp.track();
 // ELAR's rules, plus each project folder in LAMETA_PROBLEM_LIST_PROJECTS, such as a
 // torture project made with --archive-config ELAR.
 const out = process.env.LAMETA_PROBLEM_LIST_OUT;
-
-// vitest cannot import a data: URL, which is how the sandbox loads a rules file
-async function loadWithoutImport(source: string) {
-  const names = [
-    ...source.matchAll(/export\s+(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/g),
-  ].map((m) => m[1]);
-  return new Function(
-    source.replace(/export\s+(?=const|let|var|function|class)/g, "") +
-      `\nreturn { ${names.join(", ")} };`,
-  )();
-}
 
 function useElar(dir: string) {
   const sprj = fs.readdirSync(dir).find((f) => f.endsWith(".sprj"))!;
@@ -100,10 +86,42 @@ function makeEdoloWithProblems(): { dir: string; afterLoad: (project: Project) =
   };
 }
 
+// The Edolo sample under ELAR with English and Spanish as its metadata languages, so
+// that translations are expected, and with roles, a genre and an access level that
+// break ELAR's rules
+function makeBilingualEdolo(): { dir: string; afterLoad: (project: Project) => void } {
+  const dir = Path.join(temp.mkdirSync("problem list"), "Edolo bilingual");
+  fs.copySync("sample data/Edolo sample", dir);
+  fs.renameSync(Path.join(dir, "Edolo sample.sprj"), Path.join(dir, "Edolo bilingual.sprj"));
+  useElar(dir);
+  const etr009 = Path.join(dir, "Sessions", "ETR009");
+  for (const name of ["ETR009_text_20100606.flextext", "ETR009_other_20100606.eaf"])
+    fs.writeFileSync(Path.join(etr009, name), "x");
+  return {
+    dir,
+    afterLoad: (project) => {
+      project.properties.setText("metadataLanguages", "en;es");
+      const session = (project.sessions.items as Session[]).find((s) => s.id === "ETR009")!;
+      session.properties.setText("genre", "weird stuff");
+      session.properties.setText("access", "S");
+      session.properties.setText("accessDescription", "asked");
+      session.metadataFile!.contributions.push(new Contribution("Ilawi Amosa", "", ""));
+      session.metadataFile!.contributions.push(new Contribution("Awi Heole", "dancer", ""));
+      session.metadataFile!.contributions.push(new Contribution("Nobody Known", "en/es", ""));
+      const mp3 = session.files.find(
+        (f) => f.getTextProperty("filename") === "ETR009_Careful.mp3",
+      )!;
+      mp3.contributions.push(new Contribution("Awi Heole", "", ""));
+      mp3.properties.setText("access", "U");
+    },
+  };
+}
+
 describe.skipIf(!out)("every problem in ELAR projects", () => {
   it("lists them", async () => {
     const projects: { dir: string; afterLoad?: (project: Project) => void }[] = [
       makeEdoloWithProblems(),
+      makeBilingualEdolo(),
       ...(process.env.LAMETA_PROBLEM_LIST_PROJECTS ?? "")
         .split(";")
         .filter((d) => d)
@@ -118,16 +136,8 @@ describe.skipIf(!out)("every problem in ELAR projects", () => {
     for (const { dir, afterLoad } of projects) {
       const project = Project.fromDirectory(dir);
       afterLoad?.(project);
-      const runner = new RulesFileProblems(
-        async (input) => ({
-          value: await rulesSandboxMain(input, makeLametaSourceReader, loadWithoutImport),
-        }),
-        (name) => findBuiltInRulesFile(name, "archive-configurations"),
-      );
-      const rules = await runner.checkNow(project);
-      const problems = combineProblems(
-        [...checkProjectFields(project), ...checkProjectFolders(project)],
-        rules.problems,
+      const problems = [...checkProjectFields(project), ...checkProjectFolders(project)].map(
+        fromFieldProblem,
       );
       lists[Path.basename(dir)] = problems
         .map((p) =>
@@ -141,8 +151,6 @@ describe.skipIf(!out)("every problem in ELAR projects", () => {
         )
         .sort()
         .map((s) => JSON.parse(s));
-      // what the rules file could not check, which the comparison must also keep
-      lists[Path.basename(dir) + " (rules file errors)"] = rules.errors;
     }
     fs.writeFileSync(out!, JSON.stringify(lists, null, 1));
   }, 600000);

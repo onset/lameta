@@ -27,7 +27,6 @@ test.describe("Project form layout", () => {
 
   test("keeps the fields in one column that scrolls when the window is short", async () => {
     // too short for the Project form's fields
-    // the rules sandbox has a hidden window of its own
     await lameta.electronApp.evaluate(({ BrowserWindow }) => {
       const window = BrowserWindow.getAllWindows().find((w) => w.isVisible())!;
       window.unmaximize();

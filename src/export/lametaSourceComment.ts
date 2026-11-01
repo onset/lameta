@@ -26,9 +26,7 @@ function escapedJson(target: NavigationTarget): string {
   return JSON.stringify(target).replace(/-/g, "\\u002d");
 }
 
-// Reads lameta-source and lameta-translations comments back. This function must not
-// refer to anything outside its own body, because the rules sandbox gets its source
-// text (see rulesSandboxScript.ts).
+// Reads lameta-source and lameta-translations comments back
 export function makeLametaSourceReader() {
   const sourcePrefix = "lameta-source";
   const translationsPrefix = "lameta-translations";

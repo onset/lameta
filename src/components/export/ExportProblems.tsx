@@ -10,7 +10,6 @@ import { ProblemWording } from "../problems/ProblemWording";
 
 // Where a problem is, as the export dialog lists it, e.g. "Session ETR009"
 export function placeOfProblem(p: IProblem): string {
-  if (p.acrossSessions) return t`Across sessions`;
   const target = p.target;
   if (target?.folderType === "person") return t`Person ${target.folderId}`;
   if (p.sessionId) return t`Session ${p.sessionId}`;
@@ -128,7 +127,7 @@ export const ExportProblemsSummary: React.FunctionComponent<{
         `}
       >
         {props.problems.length === 0 ? (
-          props.check.rulesFileErrors.length > 0 ? (
+          props.check.checkErrors.length > 0 ? (
             <Trans>lameta found no problems in what it could check.</Trans>
           ) : (
             <Trans>lameta found no problems.</Trans>
@@ -158,14 +157,14 @@ export const ExportProblemsSummary: React.FunctionComponent<{
           </>
         )}
       </div>
-      {props.check.rulesFileErrors.length > 0 && (
+      {props.check.checkErrors.length > 0 && (
         <div
           css={css`
             color: #9b1c1c;
           `}
         >
-          {t`The archive's rules file could not check everything:`}{" "}
-          {props.check.rulesFileErrors.map((e) => e.message).join(" ")}
+          {t`lameta could not check everything:`}{" "}
+          {props.check.checkErrors.map((e) => e.message).join(" ")}
         </div>
       )}
     </div>

@@ -197,8 +197,7 @@ async function createWindow() {
   });
 
   forwardWindowEvents(win);
-  // The rules sandbox's hidden window keeps "window-all-closed" from firing, so quit
-  // when the main window closes.
+  // quit when the main window closes
   win.on("closed", () => {
     win = null;
     app.quit();
@@ -372,5 +371,3 @@ ipcMain.handle("showMessageBox", (event, options) => {
 
 // this instaniates the MainProcessApi class and makes it available to the render process
 import "./MainProcessApi";
-import { registerRulesSandbox } from "./rulesSandbox";
-registerRulesSandbox();

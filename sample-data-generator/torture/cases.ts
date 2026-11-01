@@ -149,7 +149,7 @@ export function writeProject(ctx: Context, projectName: string) {
   w.note(
     `${projectName}.sprj`,
     "Project file: metadata languages English, Spanish and Arabic (right-to-left, with Latin names inside it); a colon in the title (Windows forbids it in file names), a title and description in all three languages with CRLF in the English description, a language list mixing `code: Name` and bare codes, an impossible DateAvailable, custom access choices with blanks and duplicates, XML specials. The project name (the folder name) has spaces and non-ASCII and the ELAR rules want it to be 35 characters or fewer of [A-Za-z0-9-].",
-    "ProjectMetadataFile, Project.getMetadataLanguageSlots, TextHolder, ImdiBundler corpus name, ELAR rules.js checkCorpus",
+    "ProjectMetadataFile, Project.getMetadataLanguageSlots, TextHolder, ImdiBundler corpus name, ELAR's projectName check",
   );
 
   // project documents
@@ -1214,7 +1214,7 @@ function writeElarRuleSessions(ctx: Context) {
       contributions: [{ name: "Nɔkɔ Ɛsi", role: "" }],
     },
     "Values ELAR's rules report: an MP3 next to a WAV of the same name, FLExText next to an EAF of the same name, a file name of 21 or more characters, written resources without _YYYYMMDD, disallowed extensions, characters outside [A-Za-z0-9_-], a file not named after the session, a genre not in ELAR's list, an empty role, access S with an untranslated explanation.",
-    "archive-configurations/ELAR/rules.js, fields.json5",
+    "archive-configurations/ELAR/settings.json5, fields.json5",
   );
   w.file(`${S}/${e}/${e}_20241001.wav`, m.wav(0.1));
   w.file(`${S}/${e}/${e}_20241001.mp3`, ctx.content.make("mp3", ""));

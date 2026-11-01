@@ -86,6 +86,56 @@ function addElementWithMonolingualStringContentIfNotEmpty(
   } else return tail;
 }
 
+// The elements that addElementsFromFieldContent writes for a field that is not blank:
+// their text, and for each of several languages, its LanguageId
+export function fieldElementValues(
+  field: Field,
+  imdiSupportsMultipleElements: boolean,
+  metadataSlotTags?: string[],
+): { text: string; languageId?: string }[] {
+  if (field.definition?.imdiRange) {
+    // wer're assuming at this point that we don't have mulilingual vocabularies
+    return [{ text: field.text }];
+  }
+  // Spreadsheet import can leave multilingual fields in slash syntax until a user
+  // edits them. Export needs to honor that virtual multilingual view as well as
+  // already-committed tagged text.
+  const shouldUseVirtualMultilingual =
+    field.definition?.multilingual === true &&
+    metadataSlotTags !== undefined &&
+    metadataSlotTags.length > 0;
+  const axes = shouldUseVirtualMultilingual
+    ? field
+        .getEffectiveSlotTags(metadataSlotTags)
+        .filter((language) => field.getTextAxisVirtual(language, metadataSlotTags).trim() !== "")
+    : field.getAllNonEmptyTextAxes();
+  const getTextForLanguage = (language: string) =>
+    applyCapitalization(
+      field.definition,
+      shouldUseVirtualMultilingual
+        ? field.getTextAxisVirtual(language, metadataSlotTags)
+        : field.getTextAxis(language),
+    );
+
+  // If IMDI doesn't support multiple elements with LanguageId (e.g., String_Type),
+  // just use the first language's value
+  if (axes.length === 0) {
+    return [{ text: applyCapitalization(field.definition, field.text) }];
+  }
+  if (!imdiSupportsMultipleElements || axes.length === 1) {
+    return [{ text: getTextForLanguage(axes[0]) }];
+  }
+  // Multiple languages and IMDI supports LanguageId attributes
+  return axes.map((language) => ({
+    text: getTextForLanguage(language),
+    // Always use ISO639-3 (3-letter) codes for IMDI export
+    // Archives require 3-letter codes, they can't handle 2-letter ISO639-1 codes
+    languageId:
+      "ISO639-3:" +
+      (staticLanguageFinder ? staticLanguageFinder.getIso639_3Code(language) : language),
+  }));
+}
+
 function addElementsFromFieldContent(
   elementName: string,
   field: Field,
@@ -95,56 +145,15 @@ function addElementsFromFieldContent(
   metadataSlotTags?: string[],
 ) {
   let element;
-  if (field.definition?.imdiRange) {
-    // wer're assuming at this point that we don't have mulilingual vocabularies
-    element = textElement(tail, elementName, field.text);
-    element.attribute("Link", field.definition.imdiRange);
-    const type = field.definition.imdiIsClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
-    element.attribute("Type", type);
-    addExtraAttributes(element, extraAttributes);
-  } else {
-    // Spreadsheet import can leave multilingual fields in slash syntax until a user
-    // edits them. Export needs to honor that virtual multilingual view as well as
-    // already-committed tagged text.
-    const shouldUseVirtualMultilingual =
-      field.definition?.multilingual === true &&
-      metadataSlotTags !== undefined &&
-      metadataSlotTags.length > 0;
-    const axes = shouldUseVirtualMultilingual
-      ? field
-          .getEffectiveSlotTags(metadataSlotTags)
-          .filter((language) => field.getTextAxisVirtual(language, metadataSlotTags).trim() !== "")
-      : field.getAllNonEmptyTextAxes();
-    const getTextForLanguage = (language: string) =>
-      applyCapitalization(
-        field.definition,
-        shouldUseVirtualMultilingual
-          ? field.getTextAxisVirtual(language, metadataSlotTags)
-          : field.getTextAxis(language),
-      );
-
-    // If IMDI doesn't support multiple elements with LanguageId (e.g., String_Type),
-    // just use the first language's value
-    if (axes.length === 0) {
-      element = textElement(tail, elementName, applyCapitalization(field.definition, field.text));
-      addExtraAttributes(element, extraAttributes);
-    } else if (!imdiSupportsMultipleElements || axes.length === 1) {
-      const firstLanguage = axes[0];
-      element = textElement(tail, elementName, getTextForLanguage(firstLanguage));
-      addExtraAttributes(element, extraAttributes);
-    } else {
-      // Multiple languages and IMDI supports LanguageId attributes
-      axes.forEach((language) => {
-        element = textElement(tail, elementName, getTextForLanguage(language));
-        // Always use ISO639-3 (3-letter) codes for IMDI export
-        // Archives require 3-letter codes, they can't handle 2-letter ISO639-1 codes
-        const iso639_3 = staticLanguageFinder
-          ? staticLanguageFinder.getIso639_3Code(language)
-          : language;
-        element.attribute("LanguageId", "ISO639-3:" + iso639_3);
-        addExtraAttributes(element, extraAttributes);
-      });
+  for (const value of fieldElementValues(field, imdiSupportsMultipleElements, metadataSlotTags)) {
+    element = textElement(tail, elementName, value.text);
+    if (field.definition?.imdiRange) {
+      element.attribute("Link", field.definition.imdiRange);
+      const type = field.definition.imdiIsClosedVocabulary ? "ClosedVocabulary" : "OpenVocabulary";
+      element.attribute("Type", type);
     }
+    if (value.languageId) element.attribute("LanguageId", value.languageId);
+    addExtraAttributes(element, extraAttributes);
   }
   return element;
 }

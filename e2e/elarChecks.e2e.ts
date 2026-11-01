@@ -4,23 +4,22 @@ import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { addFile, entries, groupOf, newSession, openSidebar } from "./problems-e2e-helpers";
 import { ContributorsHelper } from "./contributors-e2e-helpers";
 
-// The archive's rules file runs in a separate hidden window (mainProcess/rulesSandbox.ts).
-// These tests go through that real path: the main process, the sandbox and back. ELAR
-// has a rules file, and also turns on checks of lameta's own in its settings.json5.
+// ELAR turns on checks of lameta's own in its settings.json5, among them the ones that
+// were in ELAR's rules file. A problem that they find goes where the user can fix it.
 
 let lameta: LametaE2ERunner;
 let page: Page;
 let project: E2eProject;
 
-test.describe("Rules file", () => {
+test.describe("ELAR's checks", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    project = await launchWithProject(lameta, "RulesFile", "ELAR");
+    project = await launchWithProject(lameta, "ElarChecks", "ELAR");
     page = lameta.page;
     await newSession(project, page, "ELAR-CHECKS");
     // a format that ELAR does not allow
     await addFile(lameta, page, "notes.docx");
-    // a contributor with no role, which ELAR's rules.js reports
+    // a contributor with no role
     await page.locator(".fileList .rt-tr", { hasText: "ELAR-CHECKS.session" }).click();
     const contributors = new ContributorsHelper(page, project);
     await contributors.goToContributorsTab();
@@ -31,10 +30,22 @@ test.describe("Rules file", () => {
     await lameta.quit();
   });
 
-  test("ELAR's built-in rules file reports a problem", async () => {
-    await expect(
-      groupOf(page, "session:ELAR-CHECKS").locator(entries(page, "checkActorRole")),
-    ).toBeVisible({ timeout: 20000 });
+  test("a contributor with no role is a problem that a click takes to the Contributors tab", async () => {
+    const noRole = groupOf(page, "session:ELAR-CHECKS").locator(
+      entries(page, "contributorWithoutRole", "contributions"),
+    );
+    await expect(noRole).toBeVisible({ timeout: 20000 });
+    await project.goToPeople();
+    await noRole.click();
+    await expect(page.getByRole("tab", { name: /Contributors/i })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await expect(page.locator(".navigation-highlight")).toHaveAttribute(
+      "data-field-key",
+      "contributions",
+    );
+    await expect(page.locator(".fileList .rt-tr.selected")).toContainText("ELAR-CHECKS.session");
   });
 
   test("a check of lameta's own that ELAR's settings turn on reports a problem, which a click takes to the file", async () => {
