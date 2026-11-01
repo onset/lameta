@@ -250,13 +250,7 @@ export default class ImdiBundler {
     }
 
     // --- Corpus IMDI (final return value) ---
-    const corpusImdi = ImdiGenerator.generateCorpus(
-      imdiMode,
-      project,
-      childrenSubpaths,
-      false,
-      false, // no lameta comments in a deposit
-    );
+    const corpusImdi = ImdiGenerator.generateCorpus(imdiMode, project, childrenSubpaths, false);
     await validateImdiOrThrow(corpusImdi, project.displayName);
 
     const targetDirForProjectFile = Path.join(
@@ -306,13 +300,7 @@ export default class ImdiBundler {
     const extensionWithDot = imdiMode === IMDIMode.OPEX ? ".opex" : ".imdi";
     const imdiFileName = `${sessionDirName}${extensionWithDot}`;
 
-    const sessionImdi = ImdiGenerator.generateSession(
-      imdiMode,
-      session,
-      project,
-      undefined,
-      false, // no lameta comments in a deposit
-    );
+    const sessionImdi = ImdiGenerator.generateSession(imdiMode, session, project);
     await validateImdiOrThrow(sessionImdi, session.displayName);
 
     const directoriesToCreate: string[] = [];
@@ -375,7 +363,6 @@ export default class ImdiBundler {
     }
 
     const generator = new ImdiGenerator(imdiMode, folder, project);
-    generator.writeLametaComments = false; // none in a deposit
     const imdiXml = generator.makePseudoSessionImdiForOtherFolder(
       name,
       folder,
@@ -551,13 +538,7 @@ export default class ImdiBundler {
 
     let imdiXml: string;
     try {
-      imdiXml = ImdiGenerator.generateSession(
-        imdiMode,
-        dummySession,
-        project,
-        omitNamespaces,
-        false, // no lameta comments in a deposit
-      );
+      imdiXml = ImdiGenerator.generateSession(imdiMode, dummySession, project, omitNamespaces);
       await validateImdiOrThrow(imdiXml, dummySession.displayName);
     } finally {
       ImdiBundler.cleanupConsentBundleTempDir(dir);

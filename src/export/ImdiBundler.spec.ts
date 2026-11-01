@@ -2,8 +2,7 @@ import { describe, it, beforeAll, expect, afterAll } from "vite-plus/test";
 import * as temp from "temp";
 import { Project } from "../model/Project/Project";
 import ImdiBundler from "./ImdiBundler";
-import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
-import { Session } from "../model/Project/Session/Session";
+import { IMDIMode } from "./ImdiGenerator";
 import fs from "fs";
 import * as Path from "path";
 import { ExportSessionData } from "./ExportBundleTypes";
@@ -527,8 +526,6 @@ describe("consent files of the same name", () => {
 });
 
 describe("what export writes to disk", () => {
-  // The lameta-source and lameta-translations comments lead a problem in the IMDI back
-  // to its field. The checks and the IMDI view need them; a deposit does not.
   it.each([
     ["IMDI", IMDIMode.RAW_IMDI],
     ["OPEX", IMDIMode.OPEX],
@@ -554,13 +551,6 @@ describe("what export writes to disk", () => {
     for (const xml of written) {
       expect(xml).not.toMatch(/lameta-source|lameta-translations/);
     }
-    // the same project's IMDI for the checks has them
-    const forChecks = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      project.sessions.items[0] as Session,
-      project,
-    );
-    expect(forChecks).toMatch(/lameta-source/);
   });
 });
 
