@@ -2,12 +2,7 @@ import { Project } from "../model/Project/Project";
 import { checkProjectFields } from "./fieldRules";
 import { checkProjectFolders } from "./lametaChecks";
 import { fromFieldProblem, IProblem } from "./problems";
-import ImdiGenerator, {
-  IMDIMode,
-  resetTildeBirthYearWarning,
-  tildeBirthYearWarningGiven,
-} from "../export/ImdiGenerator";
-import { withWarningsDiscarded } from "../export/ExportWarningCollector";
+import { corpusImdiError, sessionImdiError } from "./imdiGeneration";
 import { exportableSessions } from "../model/Project/exportableFolders";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
@@ -74,31 +69,15 @@ export async function checkProject(project: Project): Promise<IProjectCheck> {
 // The sessions, and the corpus, whose IMDI lameta cannot generate
 function imdiErrors(project: Project): ICheckError[] {
   const errors: ICheckError[] = [];
-  // generating IMDI gives a warning about an approximate birth year once; keep it for
-  // the IMDI that the user sees or exports
-  const warningGiven = tildeBirthYearWarningGiven();
-  const generate = (sessionId: string | undefined, makeXml: () => string) => {
-    try {
-      withWarningsDiscarded(makeXml);
-    } catch (e) {
+  for (const session of exportableSessions(project)) {
+    const error = sessionImdiError(session, project);
+    if (error)
       errors.push({
-        message: `lameta could not generate the IMDI ${
-          sessionId ? `of session ${sessionId}` : "of the corpus"
-        }: ${e instanceof Error ? e.message : String(e)}`,
-        sessionId,
+        message: `lameta could not generate the IMDI of session ${session.id}: ${error}`,
+        sessionId: session.id,
       });
-    }
-  };
-  const sessions = exportableSessions(project);
-  for (const session of sessions)
-    generate(session.id, () => ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project));
-  generate(undefined, () =>
-    ImdiGenerator.generateCorpus(
-      IMDIMode.RAW_IMDI,
-      project,
-      sessions.map((s) => `${s.id}.imdi`),
-    ),
-  );
-  if (!warningGiven) resetTildeBirthYearWarning();
+  }
+  const error = corpusImdiError(project);
+  if (error) errors.push({ message: `lameta could not generate the IMDI of the corpus: ${error}` });
   return errors;
 }
