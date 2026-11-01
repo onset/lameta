@@ -99,11 +99,13 @@ export type FieldRuleSeverity = "error" | "warning";
 // upper, lower: the whole text
 export type Capitalization = "sentence" | "ELARTerm" | "title" | "upper" | "lower";
 // the names of the rule properties of FieldDefinition
-export type FieldRule =
-  | "required"
-  | "requiredWhen"
-  | "pattern"
-  | "maxLength"
-  | "minItems"
-  | "englishRequired"
-  | "translationRequired";
+export const kFieldRules = [
+  "required",
+  "requiredWhen",
+  "pattern",
+  "maxLength",
+  "minItems",
+  "englishRequired",
+  "translationRequired",
+] as const;
+export type FieldRule = (typeof kFieldRules)[number];

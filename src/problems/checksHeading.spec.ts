@@ -4,7 +4,7 @@ import * as Path from "path";
 import temp from "temp";
 import { Project } from "../model/Project/Project";
 import { resetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
-import { checksHeading } from "./checksHeading";
+import { checksHeading, configurationChangesChecks } from "./checksHeading";
 
 temp.track();
 
@@ -25,6 +25,50 @@ function loadEdolo(configuration: string): Project {
   return Project.fromDirectory(dir);
 }
 
+describe("configurationChangesChecks", () => {
+  it("is true for checks of the configuration's own", () => {
+    expect(
+      configurationChangesChecks({ checks: { fileNameLength: {} } }, undefined, undefined),
+    ).toBe(true);
+    expect(configurationChangesChecks({ checks: {} }, undefined, undefined)).toBe(false);
+  });
+
+  it("is true for a field rule in the configuration's fields.json5", () => {
+    expect(
+      configurationChangesChecks({}, { session: [{ key: "title", required: true }] }, undefined),
+    ).toBe(true);
+    // a field that only changes how it looks adds no check
+    expect(
+      configurationChangesChecks(
+        {},
+        { session: [{ key: "title", multilingual: true }] },
+        undefined,
+      ),
+    ).toBe(false);
+  });
+
+  it("counts a rule that is off only where lameta's own fields turn it on", () => {
+    const off = { session: [{ key: "title", required: false }] };
+    expect(configurationChangesChecks({}, off, undefined)).toBe(false);
+    expect(configurationChangesChecks({}, off, { session: [{ key: "title" }] })).toBe(false);
+    expect(
+      configurationChangesChecks({}, off, { session: [{ key: "title", required: true }] }),
+    ).toBe(true);
+  });
+
+  it("does not count a rule that is the same as lameta's own", () => {
+    const rule = { session: [{ key: "id", maxLength: 20 }] };
+    expect(configurationChangesChecks({}, rule, rule)).toBe(false);
+    expect(configurationChangesChecks({}, rule, { session: [{ key: "id", maxLength: 30 }] })).toBe(
+      true,
+    );
+  });
+
+  it("is false with no settings and no fields", () => {
+    expect(configurationChangesChecks(undefined, undefined, undefined)).toBe(false);
+  });
+});
+
 describe("checksHeading", () => {
   afterAll(() => resetOtherConfigurationSettings());
 
@@ -36,9 +80,22 @@ describe("checksHeading", () => {
     expect(checksHeading(undefined)).toBe("Baseline Checks");
   });
 
-  it("is the configuration's folder name for a project with an archive", () => {
+  it("is the configuration's folder name when the configuration adds to lameta's checks", () => {
     expect(checksHeading(loadEdolo("ELAR").checksConfigurationName)).toBe("ELAR Checks");
-    expect(checksHeading(loadEdolo("PARADISEC").checksConfigurationName)).toBe("PARADISEC Checks");
+  });
+
+  it("is Baseline for a configuration that adds nothing to lameta's checks", () => {
+    expect(checksHeading(loadEdolo("PARADISEC").checksConfigurationName)).toBe("Baseline Checks");
+  });
+
+  // every configuration that comes with lameta, decided by its own files
+  it("names exactly the configurations that have checks or field rules of their own", () => {
+    const named = fs
+      .readdirSync("archive-configurations", { withFileTypes: true })
+      .filter((d) => d.isDirectory() && d.name !== "lameta")
+      .map((d) => d.name)
+      .filter((name) => loadEdolo(name).checksConfigurationName === name);
+    expect(named).toEqual(["ELAR"]);
   });
 
   it("is Baseline for a project with no archive, Other, or a configuration that lameta lacks", () => {
