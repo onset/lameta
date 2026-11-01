@@ -8,6 +8,8 @@
 
 - The Problems panel
   - lameta now checks your metadata against your archive's rules while you work, and again when you export. The Problems panel lists anything that the archive would reject. ELAR is the first archive whose rules lameta checks.
+  - Besides your archive's rules, lameta now checks every project for a session that has no files to export, a session that has no contributors, a language that sessions call by different names, and a contributor who has no consent file.
+  - The top of the Problems panel now says which checks are running: "ELAR Checks" when your archive adds checks of its own, and "Baseline Checks" when lameta runs only its own.
   - Clicking a problem now takes you to the file and the field that it is about. For a missing translation of a role or a genre, it takes you to its row on Project > Translations.
   - ELAR's requirement for English among the metadata languages is now reported once, on the project.
   - If lameta couldn't check everything that your archive requires, and the archive would reject the project, export now stops.
@@ -42,3 +44,4 @@
   - The files inside a CSV export zip now have your local time, not UTC.
   - Each run in the log file now starts with your local date.
 - On Windows, you can now copy a file into a project even when its path is long or its name ends in a dot.
+- lameta no longer closes the project when the folder of a session or a person disappears while the project is open, as when OneDrive applies a rename that someone made on another computer. lameta tells you once that it can't save that folder, and you can keep working on the rest of the project.
