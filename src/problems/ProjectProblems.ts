@@ -5,12 +5,14 @@ import { checkProjectFields, IFieldProblem } from "./fieldRules";
 import { checkProjectFolders } from "./lametaChecks";
 import { keepIfSame } from "./problems";
 import { afterTyping } from "./whileTyping";
+import { watchImdiGeneration } from "./imdiProblems";
 
 // how long to wait after the last change before checking again
 const kRecheckDelayMilliseconds = 400;
 
-// The problems that the field rules and lametaChecks.ts find in the open project,
-// kept up to date while it is open.
+// The problems that the field rules and lametaChecks.ts find in the open project, and
+// for an archive that takes IMDI, the sessions whose IMDI lameta cannot generate, kept
+// up to date while it is open.
 // The Problems sidebar lists them and each field's editor shows its own, so the two
 // always agree.
 export class ProjectProblems {
@@ -38,27 +40,32 @@ export class ProjectProblems {
     let timer: ReturnType<typeof setTimeout> | undefined;
     let cancelWait = () => {};
     let first = true;
+    let checked: IFieldProblem[] = [];
+    let imdi: IFieldProblem[] = [];
+    const show = () => {
+      // untracked, or each new list would make the check due again
+      const problems = keepIfSame(
+        untracked(() => this.problems),
+        [...checked, ...imdi],
+      );
+      runInAction(() => {
+        if (problems === this.problems) return;
+        const byField = new Map<Field, IFieldProblem[]>();
+        for (const p of problems) {
+          if (!p.field) continue;
+          byField.set(p.field, [...(byField.get(p.field) ?? []), p]);
+        }
+        this.problemsByField = byField;
+        this.problems = problems;
+      });
+    };
     const dispose = autorun(
       () => {
         const start = performance.now();
-        const found = [...checkProjectFields(project), ...checkProjectFolders(project)];
+        checked = [...checkProjectFields(project), ...checkProjectFolders(project)];
         const elapsed = performance.now() - start;
-        // untracked, or each new list would make the check due again
-        const problems = keepIfSame(
-          untracked(() => this.problems),
-          found,
-        );
-        runInAction(() => {
-          this.checkMilliseconds = elapsed;
-          if (problems === this.problems) return;
-          const byField = new Map<Field, IFieldProblem[]>();
-          for (const p of problems) {
-            if (!p.field) continue;
-            byField.set(p.field, [...(byField.get(p.field) ?? []), p]);
-          }
-          this.problemsByField = byField;
-          this.problems = problems;
-        });
+        runInAction(() => (this.checkMilliseconds = elapsed));
+        show();
       },
       {
         scheduler: (run) => {
@@ -73,10 +80,15 @@ export class ProjectProblems {
         },
       },
     );
+    const stopWatchingImdi = watchImdiGeneration(project, (problems) => {
+      imdi = problems;
+      show();
+    });
     return () => {
       if (timer) clearTimeout(timer);
       cancelWait();
       dispose();
+      stopWatchingImdi();
       runInAction(() => {
         this.problemsByField = new Map();
         this.problems = [];
