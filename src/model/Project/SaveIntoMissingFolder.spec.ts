@@ -4,6 +4,7 @@ import * as os from "os";
 import * as Path from "path";
 import { Project, ProjectHolder } from "./Project";
 import { Folder } from "../Folder/Folder";
+import { Person } from "./Person/Person";
 import { setupLanguageFinderForTests } from "../../languageFinder/LanguageFinder";
 
 // The user moves, renames or deletes the project folder while lameta has the
@@ -225,6 +226,19 @@ describe("closing a project whose folder has gone", () => {
     session.saveAllFilesInFolder();
     expect(warned).toEqual([session, session]);
     expect(holder.project).not.toBeNull();
+  });
+
+  it("keeps a person's photo when their folder has gone and a new photo is chosen", async () => {
+    const person = holder.loadedProject!.persons.items[0] as Person;
+    const photo = person.mugshotPath;
+    expect(photo).toBeTruthy();
+    fs.moveSync(person.directory, person.directory + "-renamed");
+    const source = Path.join(parentDir, "new photo.jpg");
+    fs.writeFileSync(source, "x");
+    await expect(person.copyInMugshot(source)).rejects.toThrow();
+    expect(person.mugshotPath).toBe(photo);
+    expect(fs.existsSync(person.directory)).toBe(false);
+    expect(warned).toEqual([person]);
   });
 
   it("does nothing while the folder is still there", () => {
