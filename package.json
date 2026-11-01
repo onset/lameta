@@ -218,7 +218,7 @@
     "fswin": "^3.25.1108"
   },
   "engines": {
-    "node": "^24.15.0",
+    "node": "^26.13.0",
     "pnpm": "12.14.0"
   },
   "packageManager": "pnpm@12.14.0",

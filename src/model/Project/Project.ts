@@ -1266,7 +1266,7 @@ export class Project extends Folder {
       folder.beingDeleted = true; // prevent trying to save if lameta loses focus
       let didDelete = false;
       if (immediateWithoutTrash) {
-        fs.rmdirSync(folder.directory, { recursive: true });
+        fs.rmSync(folder.directory, { recursive: true });
         didDelete = true;
       }
 

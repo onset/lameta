@@ -359,7 +359,7 @@ beforeAll(() => {
 });
 afterAll(() => {
   project = undefined;
-  fs.rmdirSync(projectDir, { recursive: true });
+  fs.rmSync(projectDir, { recursive: true, force: true });
 });
 
 describe("csv importer", () => {
