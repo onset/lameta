@@ -27,22 +27,45 @@ function loadEdolo(configuration: string): Project {
 
 describe("configurationChangesChecks", () => {
   it("is true for checks of the configuration's own", () => {
-    expect(configurationChangesChecks({ checks: { fileNameLength: {} } }, undefined)).toBe(true);
-    expect(configurationChangesChecks({ checks: {} }, undefined)).toBe(false);
+    expect(
+      configurationChangesChecks({ checks: { fileNameLength: {} } }, undefined, undefined),
+    ).toBe(true);
+    expect(configurationChangesChecks({ checks: {} }, undefined, undefined)).toBe(false);
   });
 
   it("is true for a field rule in the configuration's fields.json5", () => {
-    expect(configurationChangesChecks({}, { session: [{ key: "title", required: true }] })).toBe(
-      true,
-    );
+    expect(
+      configurationChangesChecks({}, { session: [{ key: "title", required: true }] }, undefined),
+    ).toBe(true);
     // a field that only changes how it looks adds no check
     expect(
-      configurationChangesChecks({}, { session: [{ key: "title", multilingual: true }] }),
+      configurationChangesChecks(
+        {},
+        { session: [{ key: "title", multilingual: true }] },
+        undefined,
+      ),
     ).toBe(false);
   });
 
+  it("counts a rule that is off only where lameta's own fields turn it on", () => {
+    const off = { session: [{ key: "title", required: false }] };
+    expect(configurationChangesChecks({}, off, undefined)).toBe(false);
+    expect(configurationChangesChecks({}, off, { session: [{ key: "title" }] })).toBe(false);
+    expect(
+      configurationChangesChecks({}, off, { session: [{ key: "title", required: true }] }),
+    ).toBe(true);
+  });
+
+  it("does not count a rule that is the same as lameta's own", () => {
+    const rule = { session: [{ key: "id", maxLength: 20 }] };
+    expect(configurationChangesChecks({}, rule, rule)).toBe(false);
+    expect(configurationChangesChecks({}, rule, { session: [{ key: "id", maxLength: 30 }] })).toBe(
+      true,
+    );
+  });
+
   it("is false with no settings and no fields", () => {
-    expect(configurationChangesChecks(undefined, undefined)).toBe(false);
+    expect(configurationChangesChecks(undefined, undefined, undefined)).toBe(false);
   });
 });
 

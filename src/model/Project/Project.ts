@@ -1483,13 +1483,18 @@ export class Project extends Folder {
     SetOtherConfigurationSettings(
       mergeConfigurationSettings(GetOtherConfigurationSettings(), settings),
     );
-    const fieldsPath = locateDependencyForFilesystemCall(
-      `archive-configurations/${configurationName}/fields.json5`,
-    );
-    const fields = fs.existsSync(fieldsPath)
-      ? JSON5.parse(fs.readFileSync(fieldsPath, "utf8"))
-      : undefined;
-    if (configurationName !== "lameta" && configurationChangesChecks(settings, fields))
+    const readFields = (name: string) => {
+      const fieldsPath = locateDependencyForFilesystemCall(
+        `archive-configurations/${name}/fields.json5`,
+      );
+      return fs.existsSync(fieldsPath)
+        ? JSON5.parse(fs.readFileSync(fieldsPath, "utf8"))
+        : undefined;
+    };
+    if (
+      configurationName !== "lameta" &&
+      configurationChangesChecks(settings, readFields(configurationName), readFields("lameta"))
+    )
       this.checksConfigurationName = configurationName;
     // a unit test (checkSettings.spec.ts) stops these for the configurations that come
     // with lameta

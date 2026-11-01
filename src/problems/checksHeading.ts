@@ -21,21 +21,35 @@ export function checksHeading(configurationName: string | undefined): string {
 
 // Whether an archive configuration adds to or changes lameta's own checks: its
 // settings.json5 has `checks` of its own, or its fields.json5 gives a field a rule,
-// such as `required` or `pattern`
+// such as `required` or `pattern`, that lameta's own fields.json5 does not give it. A
+// rule that is off, such as `required: false`, counts only where lameta's turns it on.
 export function configurationChangesChecks(
   settings: { checks?: object } | undefined,
-  // the parsed fields.json5, if the configuration has one
+  // the parsed fields.json5 of the configuration, and of lameta, if they have one
   fields: Record<string, unknown> | undefined,
+  lametaFields: Record<string, unknown> | undefined,
 ): boolean {
   if (Object.keys(settings?.checks ?? {}).length > 0) return true;
-  return Object.values(fields ?? {}).some(
-    (definitions) =>
-      Array.isArray(definitions) &&
-      definitions.some(
-        (definition) =>
-          typeof definition === "object" &&
-          definition !== null &&
-          kFieldRules.some((rule) => rule in definition),
-      ),
+  const definitionsOf = (catalog: Record<string, unknown> | undefined, section: string) => {
+    const definitions = catalog?.[section];
+    return Array.isArray(definitions)
+      ? (definitions.filter((d) => typeof d === "object" && d !== null) as Record<
+          string,
+          unknown
+        >[])
+      : [];
+  };
+  const isOff = (value: unknown) =>
+    value === undefined || value === null || value === false || value === "";
+  return Object.keys(fields ?? {}).some((section) =>
+    definitionsOf(fields, section).some((definition) => {
+      const lameta = definitionsOf(lametaFields, section).find((d) => d.key === definition.key);
+      return kFieldRules.some((rule) => {
+        const value = definition[rule];
+        const lametaValue = lameta?.[rule];
+        if (isOff(value) && isOff(lametaValue)) return false;
+        return rule in definition && JSON.stringify(value) !== JSON.stringify(lametaValue);
+      });
+    }),
   );
 }
