@@ -2,6 +2,10 @@ import { Project } from "../model/Project/Project";
 import { checkProjectFields } from "./fieldRules";
 import { checkProjectFolders } from "./lametaChecks";
 import { fromFieldProblem, IProblem } from "./problems";
+import ImdiGenerator, { IMDIMode } from "../export/ImdiGenerator";
+import { withWarningsDiscarded } from "../export/ExportWarningCollector";
+import { exportableSessions } from "../model/Project/exportableFolders";
+import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 export interface ICheckError {
   message: string;
@@ -41,13 +45,15 @@ export function whyExportIsBlocked(
 
 // Runs all of lameta's checks on the whole project now, without waiting for the
 // checks that run after an edit: the field rules and the checks in lametaChecks.ts.
+// For an archive that takes IMDI, it also generates the IMDI of each session and of the
+// corpus, so that a session whose IMDI lameta cannot generate stops the export.
 export async function checkProject(project: Project): Promise<IProjectCheck> {
   try {
     return {
       problems: [...checkProjectFields(project), ...checkProjectFolders(project)].map(
         fromFieldProblem,
       ),
-      checkErrors: [],
+      checkErrors: GetOtherConfigurationSettings().archiveUsesImdi ? imdiErrors(project) : [],
     };
   } catch (e) {
     return {
@@ -59,4 +65,32 @@ export async function checkProject(project: Project): Promise<IProjectCheck> {
       ],
     };
   }
+}
+
+// The sessions, and the corpus, whose IMDI lameta cannot generate
+function imdiErrors(project: Project): ICheckError[] {
+  const errors: ICheckError[] = [];
+  const generate = (sessionId: string | undefined, makeXml: () => string) => {
+    try {
+      withWarningsDiscarded(makeXml);
+    } catch (e) {
+      errors.push({
+        message: `lameta could not generate the IMDI ${
+          sessionId ? `of session ${sessionId}` : "of the corpus"
+        }: ${e instanceof Error ? e.message : String(e)}`,
+        sessionId,
+      });
+    }
+  };
+  const sessions = exportableSessions(project);
+  for (const session of sessions)
+    generate(session.id, () => ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project));
+  generate(undefined, () =>
+    ImdiGenerator.generateCorpus(
+      IMDIMode.RAW_IMDI,
+      project,
+      sessions.map((s) => `${s.id}.imdi`),
+    ),
+  );
+  return errors;
 }

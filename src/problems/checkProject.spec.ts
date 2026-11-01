@@ -7,6 +7,7 @@ import { Project } from "../model/Project/Project";
 import { checkOfSessions, checkProject, IProjectCheck, whyExportIsBlocked } from "./checkProject";
 import { IProblem } from "./problems";
 import * as lametaChecks from "./lametaChecks";
+import { resetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 
 mobx.configure({ enforceActions: "never" });
 temp.track();
@@ -26,6 +27,37 @@ describe("checkProject", () => {
 
     expect(check.checkErrors).toHaveLength(1);
     expect(whyExportIsBlocked("imdi", ["imdi"], check)).toEqual(["incompleteCheck"]);
+  });
+});
+
+describe("checkProject in an ELAR project", () => {
+  it("reports a session whose IMDI lameta cannot generate, which blocks the export", async () => {
+    const dir = Path.join(temp.mkdirSync("check project"), "Edolo sample");
+    fs.copySync("sample data/Edolo sample", dir);
+    // a file with no name before its extension has no type, which the IMDI needs
+    fs.writeFileSync(Path.join(dir, "Sessions", "ETR009", ".wav"), "x");
+    const sprj = Path.join(dir, "Edolo sample.sprj");
+    fs.writeFileSync(
+      sprj,
+      fs
+        .readFileSync(sprj, "utf8")
+        .replace(
+          "<ArchiveConfigurationName>custom</ArchiveConfigurationName>",
+          "<ArchiveConfigurationName>ELAR</ArchiveConfigurationName>",
+        ),
+    );
+    const check = await checkProject(Project.fromDirectory(dir));
+    expect(check.checkErrors.map((e) => e.sessionId)).toEqual(["ETR009"]);
+    expect(check.checkErrors[0].message).toContain("could not generate the IMDI of session ETR009");
+    expect(whyExportIsBlocked("imdi", ["imdi"], check)).toContain("incompleteCheck");
+    resetOtherConfigurationSettings();
+  });
+
+  it("generates no IMDI for a project with no archive", async () => {
+    const dir = Path.join(temp.mkdirSync("check project"), "Edolo sample");
+    fs.copySync("sample data/Edolo sample", dir);
+    fs.writeFileSync(Path.join(dir, "Sessions", "ETR009", ".wav"), "x");
+    expect((await checkProject(Project.fromDirectory(dir))).checkErrors).toEqual([]);
   });
 });
 

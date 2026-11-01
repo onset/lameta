@@ -20,7 +20,6 @@ import { NavigationTarget } from "../navigation/NavigationTarget";
 import { titleCase } from "title-case";
 import { wordProblem } from "./fieldRules";
 import { CheckSettings } from "./checkSettings";
-import { isExported } from "./exportedFileChecks";
 import type { Report } from "./lametaChecks";
 
 // Checks of the values that the IMDI export writes for a session, worked out from the
@@ -69,11 +68,14 @@ const needsATranslation = () =>
     comment: 'Follows the name of a value, as in "Genre needs a translation."',
   });
 
+// Reports in the order of the IMDI: the files, then the roles, the genre and the access
+// explanations
 export function checkSessionResourcesAndTranslations(
   project: Project,
   session: Session,
   checks: Map<string, CheckSettings>,
   add: Report,
+  isExported: (file: File) => boolean,
 ) {
   const tags = metadataLanguageTags(project);
   // a translation is expected only when there is a metadata language besides English
@@ -81,11 +83,23 @@ export function checkSessionResourcesAndTranslations(
   // When English is not a metadata language, the field rules report that once, on the
   // project's Metadata Languages
   const expectEnglish = tags.includes("en");
-  checkResources(session, checks, add);
-  if (checks.has("accessDescriptionTranslation") && expectTranslations)
-    checkAccessDescriptions(session, checks, add);
+  // the session's files that export includes, media files first, each kind in the
+  // order of its path, as ImdiGenerator.resourcesOfType writes them
+  const isMedia = (f: File) => !!GetFileFormatInfoForPath(f.getActualFilePath())?.isMediaType;
+  const byPath = (a: File, b: File) =>
+    a.getRelativePathForExportingTheActualFile() < b.getRelativePathForExportingTheActualFile()
+      ? -1
+      : 1;
+  const exported = session.files.filter((f) => f !== session.metadataFile && isExported(f));
+  const resources = [
+    ...exported.filter(isMedia).sort(byPath),
+    ...exported.filter((f) => !isMedia(f)).sort(byPath),
+  ];
+  checkResources(session, resources, checks, add);
   checkRoles(project, session, checks, add, expectTranslations, expectEnglish);
   checkGenreTranslation(project, session, checks, add, expectTranslations);
+  if (checks.has("accessDescriptionTranslation") && expectTranslations)
+    checkAccessDescriptions(session, resources, checks, add);
 }
 
 // Whether a file name, before its first ".", is `namePart` once any _YYYYMMDD
@@ -101,7 +115,12 @@ function sameNameApartFromDate(fileName: string, namePart: string): boolean {
 // so an MP3 without one is not reported. A FLExText file in a session with other EAF
 // files is only a warning, because only the depositor knows whether one of them is this
 // text.
-function checkResources(session: Session, checks: Map<string, CheckSettings>, add: Report) {
+function checkResources(
+  session: Session,
+  files: File[],
+  checks: Map<string, CheckSettings>,
+  add: Report,
+) {
   const resourceType = checks.get("resourceType") as
     | (CheckSettings & { allowedTypes: string[] })
     | undefined;
@@ -113,9 +132,7 @@ function checkResources(session: Session, checks: Map<string, CheckSettings>, ad
   )
     return;
   const exportNames = fileExportNames(session.files);
-  const resources = session.files
-    .filter((f) => f !== session.metadataFile && isExported(f))
-    .map((file) => ({ file, name: exportNames.get(file) ?? "" }));
+  const resources = files.map((file) => ({ file, name: exportNames.get(file) ?? "" }));
   const withExtension = (extension: string) =>
     resources.map((r) => r.name).filter((n) => n.toLowerCase().endsWith("." + extension));
   for (const { file, name } of resources) {
@@ -199,6 +216,7 @@ function checkResources(session: Session, checks: Map<string, CheckSettings>, ad
 // else the session's, when its access level is one that needs it translated
 function checkAccessDescriptions(
   session: Session,
+  files: File[],
   checks: Map<string, CheckSettings>,
   add: Report,
 ) {
@@ -207,10 +225,9 @@ function checkAccessDescriptions(
   };
   const levels = settings.accessLevels.map((l) => l.toLowerCase());
   const tags = Project.getMetadataLanguageSlots().map((slot) => slot.tag);
-  for (const file of session.files) {
-    if (file === session.metadataFile || !isExported(file)) continue;
+  for (const file of files) {
     const ownAccess = file.properties.getTextStringOrEmpty("access");
-    const access = ownAccess || session.properties.getTextStringOrEmpty("access");
+    const access = (ownAccess || session.properties.getTextStringOrEmpty("access")).trim();
     if (!levels.includes(access.toLowerCase())) continue;
     const owner: Session | File = file.properties.getTextStringOrEmpty("accessDescription")
       ? file

@@ -19,7 +19,9 @@ export interface IProblem extends IProblemWording {
 
 export function fromFieldProblem(p: IFieldProblem): IProblem {
   return {
-    key: "field|" + JSON.stringify(p.target) + "|" + p.message,
+    // a problem whose target is on the Project tab, such as a missing translation, can be
+    // in several sessions
+    key: "field|" + JSON.stringify(p.target) + "|" + (p.sessionId ?? "") + "|" + p.message,
     checkId: p.checkId,
     severity: p.severity,
     ...wordProblem(p.subject, p.text, p.reason),

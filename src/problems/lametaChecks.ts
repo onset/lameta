@@ -44,6 +44,12 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
     const settings = checks.get(problem.checkId);
     if (settings) problems.push({ ...problem, severity: settings.severity });
   };
+  // Whether export includes a file looks at the disk, so each file is looked at once
+  const exported = new Map<File, boolean>();
+  const isExportedFile = (file: File) => {
+    if (!exported.has(file)) exported.set(file, isExported(file));
+    return exported.get(file)!;
+  };
   const checkReadable = (file: File, target: NavigationTarget, text: string) => {
     if (file.metadataReadProblem === undefined) return;
     add({
@@ -114,13 +120,12 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
     checkFiles(session, "session", session.id);
     // export leaves out a session whose metadata lameta could not read
     if (hasReadableMetadata(session)) {
-      checkExportedFiles(session, checks, add);
+      checkExportedFiles(session, checks, add, isExportedFile);
       checkContributorsHaveFullNames(project, session, checks, add);
       checkGenreInList(project, session, checks, add, genresInEnglish);
-      checkSessionResourcesAndTranslations(project, session, checks, add);
     }
     const otherFiles = session.files.filter((f) => f !== session.metadataFile);
-    if (checks.has("sessionWithoutFiles") && !otherFiles.some(isExported)) {
+    if (checks.has("sessionWithoutFiles") && !otherFiles.some(isExportedFile)) {
       add({
         checkId: "sessionWithoutFiles",
         ...(otherFiles.length === 0
@@ -225,6 +230,11 @@ export function checkProjectFolders(project: Project): IFieldProblem[] {
     checkReadable(project.metadataFile, { folderType: "project" }, couldNotBeRead());
   }
   checkProjectName(project, checks, add);
+  // the checks of what the IMDI says, after the others, as the IMDI is a session's last
+  for (const session of project.sessions.items as Session[]) {
+    if (hasReadableMetadata(session))
+      checkSessionResourcesAndTranslations(project, session, checks, add, isExportedFile);
+  }
   const documentFolders = [
     ["description", project.descriptionFolder],
     ["other", project.otherDocsFolder],
