@@ -4,6 +4,7 @@ import * as os from "os";
 import * as Path from "path";
 import { Project, ProjectHolder } from "./Project";
 import { Folder } from "../Folder/Folder";
+import { Person } from "./Person/Person";
 import { setupLanguageFinderForTests } from "../../languageFinder/LanguageFinder";
 
 // The user moves, renames or deletes the project folder while lameta has the
@@ -122,17 +123,21 @@ describe("saving a project whose folder has gone", () => {
   });
 });
 
-// HomePage wires Folder.onDirectoryMissingWhenSaving to
-// ProjectHolder.closeProjectWhoseFolderIsMissing and shows a dialog when it returns true.
+// HomePage wires Folder.onDirectoryMissingWhenSaving to ProjectHolder.handleMissingFolder,
+// and shows a dialog when it says "close" and a warning when it says "warn".
 describe("closing a project whose folder has gone", () => {
   let holder: ProjectHolder;
   let timesToldUser: number;
+  let warned: Folder[];
 
   beforeEach(() => {
     holder = new ProjectHolder();
     timesToldUser = 0;
-    Folder.onDirectoryMissingWhenSaving = () => {
-      if (holder.closeProjectWhoseFolderIsMissing()) timesToldUser++;
+    warned = [];
+    Folder.onDirectoryMissingWhenSaving = (folder) => {
+      const outcome = holder.handleMissingFolder(folder);
+      if (outcome === "close") timesToldUser++;
+      if (outcome === "warn") warned.push(folder);
     };
     holder.setProject(Project.fromDirectory(projectDir));
   });
@@ -145,21 +150,27 @@ describe("closing a project whose folder has gone", () => {
     expect(timesToldUser).toBe(1);
   });
 
-  it("closes the project and tells the user once when a session folder has gone", () => {
+  it("keeps the project open and warns once when only a session folder has gone", () => {
     const session = holder.loadedProject!.sessions.items[0];
     fs.moveSync(session.directory, session.directory + "-renamed");
     session.properties.setText("title", "changed");
     session.saveAllFilesInFolder();
-    expect(holder.project).toBeNull();
-    expect(timesToldUser).toBe(1);
+    session.saveAllFilesInFolder();
+    expect(holder.project).not.toBeNull();
+    expect(timesToldUser).toBe(0);
+    expect(warned).toEqual([session]);
+    // nothing was written into a new folder of the old name
+    expect(fs.existsSync(session.directory)).toBe(false);
   });
 
-  it("saves the rest of the project while closing when only a session folder has gone", () => {
+  it("saves the rest of the project when only a session folder has gone", () => {
     const project = holder.loadedProject!;
     const session = project.sessions.items[0];
     fs.moveSync(session.directory, session.directory + "-renamed");
     project.properties.setText("title", "kept");
     session.saveAllFilesInFolder();
+    // the project's own folder is still there, so its next save writes it
+    project.saveAllFilesInFolder();
     expect(fs.readFileSync(Path.join(projectDir, "TestProject.sprj"), "utf8")).toContain("kept");
   });
 
@@ -190,6 +201,44 @@ describe("closing a project whose folder has gone", () => {
     project.saveAllFilesInFolder();
     expect(holder.project).not.toBeNull();
     expect(timesToldUser).toBe(0);
+  });
+
+  it("does not create a session folder that has gone again when a file is added to it", async () => {
+    const session = holder.loadedProject!.sessions.items[0];
+    fs.moveSync(session.directory, session.directory + "-renamed");
+    const source = Path.join(parentDir, "added.txt");
+    fs.writeFileSync(source, "x");
+    await expect(session.copyInOneFileAsync(source)).rejects.toThrow();
+    expect(fs.existsSync(session.directory)).toBe(false);
+    expect(holder.project).not.toBeNull();
+    expect(warned).toEqual([session]);
+  });
+
+  it("warns again when a session folder that came back goes again", () => {
+    const session = holder.loadedProject!.sessions.items[0];
+    const renamed = session.directory + "-renamed";
+    fs.moveSync(session.directory, renamed);
+    session.saveAllFilesInFolder();
+    fs.moveSync(renamed, session.directory);
+    session.saveAllFilesInFolder();
+    fs.moveSync(session.directory, renamed);
+    session.saveAllFilesInFolder();
+    session.saveAllFilesInFolder();
+    expect(warned).toEqual([session, session]);
+    expect(holder.project).not.toBeNull();
+  });
+
+  it("keeps a person's photo when their folder has gone and a new photo is chosen", async () => {
+    const person = holder.loadedProject!.persons.items[0] as Person;
+    const photo = person.mugshotPath;
+    expect(photo).toBeTruthy();
+    fs.moveSync(person.directory, person.directory + "-renamed");
+    const source = Path.join(parentDir, "new photo.jpg");
+    fs.writeFileSync(source, "x");
+    await expect(person.copyInMugshot(source)).rejects.toThrow();
+    expect(person.mugshotPath).toBe(photo);
+    expect(fs.existsSync(person.directory)).toBe(false);
+    expect(warned).toEqual([person]);
   });
 
   it("does nothing while the folder is still there", () => {

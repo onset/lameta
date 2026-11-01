@@ -69,6 +69,10 @@ export class Person extends Folder {
   public copyInMugshot(path: string): Promise<void> {
     //console.log("photopath " + path);
 
+    // with the folder gone, leave the current photo in the list; adding the new one
+    // would fail anyway
+    if (this.reportIfDirectoryIsMissing())
+      return Promise.reject(new Error(`${this.directory} is missing`));
     const f = this.getMugshotFile();
     if (f) {
       fs.removeSync(f.pathInFolderToLinkFileOrLocalCopy);
