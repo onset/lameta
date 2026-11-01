@@ -1176,6 +1176,14 @@ msgstr ""
 msgid "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings."
 msgstr "Lameta no puede encontrar la carpeta de medios {m}. Vea Archivo: Configuración de carpeta de medios."
 
+#. IMDI is the metadata format that some archives take
+msgid "lameta cannot generate the IMDI of the corpus."
+msgstr ""
+
+#. IMDI is the metadata format that some archives take
+msgid "lameta cannot generate the IMDI of this session."
+msgstr ""
+
 msgid "lameta could not check everything:"
 msgstr ""
 
