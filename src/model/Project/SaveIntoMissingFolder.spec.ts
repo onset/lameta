@@ -213,6 +213,20 @@ describe("closing a project whose folder has gone", () => {
     expect(warned).toEqual([session]);
   });
 
+  it("warns again when a session folder that came back goes again", () => {
+    const session = holder.loadedProject!.sessions.items[0];
+    const renamed = session.directory + "-renamed";
+    fs.moveSync(session.directory, renamed);
+    session.saveAllFilesInFolder();
+    fs.moveSync(renamed, session.directory);
+    session.saveAllFilesInFolder();
+    fs.moveSync(session.directory, renamed);
+    session.saveAllFilesInFolder();
+    session.saveAllFilesInFolder();
+    expect(warned).toEqual([session, session]);
+    expect(holder.project).not.toBeNull();
+  });
+
   it("does nothing while the folder is still there", () => {
     holder.loadedProject!.saveAllFilesInFolder();
     expect(holder.project).not.toBeNull();

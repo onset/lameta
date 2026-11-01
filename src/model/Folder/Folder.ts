@@ -522,14 +522,20 @@ export abstract class Folder {
   // was open. HomePage sets this to close the project and tell the user.
   public static onDirectoryMissingWhenSaving: (folder: Folder) => void = () => {};
 
+  // True from when a save finds this folder's directory missing until a save finds it
+  // there again, so that the user is told once each time it goes
+  public directoryReportedMissing = false;
+
   // Returns true, after reporting it, if this folder's directory is no longer on disk.
   // Saving into it would throw, or would write files into a folder the user removed.
   public reportIfDirectoryIsMissing(): boolean {
     if (fs.existsSync(this.directory)) {
+      this.directoryReportedMissing = false;
       return false;
     }
     sentryBreadCrumb(`Not saving because ${this.directory} is missing`);
     Folder.onDirectoryMissingWhenSaving(this);
+    this.directoryReportedMissing = true;
     return true;
   }
 

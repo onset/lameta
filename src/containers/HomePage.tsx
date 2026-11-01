@@ -186,7 +186,8 @@ class HomePage extends React.Component<IProps, IState> {
   private closeProjectWhoseFolderIsMissing = (folder: Folder) => {
     const outcome = this.projectHolder.handleMissingFolder(folder);
     if (outcome === "warn") {
-      const name = folder.displayName;
+      // the folder's own name, which tells DescriptionDocuments from OtherDocuments
+      const name = Path.basename(folder.directory);
       NotifyWarning(
         t`lameta cannot save "${name}" because its folder is no longer on disk. It may have been moved, renamed or deleted outside lameta, for example by OneDrive or Dropbox. To see the project as it is on disk now, close it and open it again.`,
       );
