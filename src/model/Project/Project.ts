@@ -53,6 +53,7 @@ import {
   SetOtherConfigurationSettings,
 } from "./OtherConfigurationSettings";
 import { problemsWithChecks } from "../../problems/checkSettings";
+import { configurationChangesChecks } from "../../problems/checksHeading";
 import { sanitizeForArchive } from "../../other/sanitizeForArchive";
 import { initializeSanitizeForArchive } from "../../other/sanitizeForArchive";
 import { VocabularyTranslations } from "./VocabularyTranslations";
@@ -130,8 +131,8 @@ export class Project extends Folder {
   public authorityLists: AuthorityLists;
   public languageFinder: LanguageFinder;
   public vocabularyTranslations: VocabularyTranslations;
-  // The archive configuration whose settings, and so whose checks, are in use, by its
-  // folder name, such as "ELAR". Undefined when only lameta's own settings are.
+  // The archive configuration that adds to or changes lameta's own checks, by its folder
+  // name, such as "ELAR". Undefined when the project's checks are only lameta's own.
   public checksConfigurationName: string | undefined;
 
   /**
@@ -1482,7 +1483,14 @@ export class Project extends Folder {
     SetOtherConfigurationSettings(
       mergeConfigurationSettings(GetOtherConfigurationSettings(), settings),
     );
-    if (configurationName !== "lameta") this.checksConfigurationName = configurationName;
+    const fieldsPath = locateDependencyForFilesystemCall(
+      `archive-configurations/${configurationName}/fields.json5`,
+    );
+    const fields = fs.existsSync(fieldsPath)
+      ? JSON5.parse(fs.readFileSync(fieldsPath, "utf8"))
+      : undefined;
+    if (configurationName !== "lameta" && configurationChangesChecks(settings, fields))
+      this.checksConfigurationName = configurationName;
     // a unit test (checkSettings.spec.ts) stops these for the configurations that come
     // with lameta
     for (const problem of problemsWithChecks(GetOtherConfigurationSettings().checks ?? {}))
