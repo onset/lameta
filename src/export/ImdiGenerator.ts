@@ -30,9 +30,6 @@ import { Field } from "../model/field/Field";
 import { fieldElement, textElement } from "./Imdi-static-fns";
 import { applyCapitalization } from "../model/field/capitalization";
 import { FieldDefinition } from "../model/field/FieldDefinition";
-import { makeLametaSourceComment, makeLametaTranslationsComment } from "./lametaSourceComment";
-import { whereToTranslate } from "../model/Project/whereToTranslate";
-import { NavigationTarget } from "../navigation/NavigationTarget";
 import { GetOtherConfigurationSettings } from "../model/Project/OtherConfigurationSettings";
 import { getCommonFieldDefinition } from "../model/field/ConfiguredFieldDefinitions";
 import { ImdiVocabularyTranslator } from "./ImdiVocabularyTranslator";
@@ -140,9 +137,6 @@ export default class ImdiGenerator {
 
   //We enable this when we want to keep unit test xpaths simple
   private omitNamespaces: boolean;
-  // Whether to put lameta-source and lameta-translations comments in the IMDI. The IMDI
-  // view shows them; what export writes to disk leaves them out.
-  public writeLametaComments = true;
 
   private keysThatHaveBeenOutput = new Set<string>();
   private mode: IMDIMode;
@@ -175,13 +169,11 @@ export default class ImdiGenerator {
     childrenSubPaths: string[],
 
     omitNamespaces?: boolean,
-    writeLametaComments: boolean = true,
   ): string {
     const generator = new ImdiGenerator(mode, project, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
-    generator.writeLametaComments = writeLametaComments;
     return generator.corpus(childrenSubPaths);
   }
   public static generateProject(mode: IMDIMode, project: Project): string {
@@ -194,13 +186,11 @@ export default class ImdiGenerator {
     project: Project,
 
     omitNamespaces?: boolean,
-    writeLametaComments: boolean = true,
   ): string {
     const generator = new ImdiGenerator(mode, session, project);
     if (omitNamespaces) {
       generator.omitNamespaces = omitNamespaces;
     }
-    generator.writeLametaComments = writeLametaComments;
     sentryBreadCrumb(`Generating IMDI for session ${session.metadataFile?.metadataFilePath}`);
     return generator.session();
   }
@@ -211,7 +201,6 @@ export default class ImdiGenerator {
     this.startXmlRoot("CORPUS");
 
     this.startGroup("Corpus");
-    this.commentBeforeCurrentGroup(this.sourceOf(project));
 
     this.requiredMonolingualField("Name", "name", project);
     this.requiredMonolingualField("Title", "title", project);
@@ -228,11 +217,9 @@ export default class ImdiGenerator {
     // Project is required by the schema
     this.addProjectInfo();
     this.group("Keys", () => {
-      this.withSource(this.sourceOf(project, "fundingProjectFunder"), () =>
-        this.keyElement(
-          "Funding Body",
-          project.properties.getTextStringOrEmpty("fundingProjectFunder"),
-        ),
+      this.keyElement(
+        "Funding Body",
+        project.properties.getTextStringOrEmpty("fundingProjectFunder"),
       );
     });
 
@@ -258,23 +245,17 @@ export default class ImdiGenerator {
     });
 
     this.group("Actors", () => {
-      this.withSource(this.sourceOf(project, "collectionSteward"), () =>
-        this.addSimpleActor(
-          "Collection Steward",
-          project.properties.getTextStringOrEmpty("collectionSteward"),
-        ),
+      this.addSimpleActor(
+        "Collection Steward",
+        project.properties.getTextStringOrEmpty("collectionSteward"),
       );
       // split "Deputy Collection Stewards" into multiple actors
       const deputyCollectionStewards =
         project.properties.getTextStringOrEmpty("collectionDeputySteward");
-      this.withSource(this.sourceOf(project, "collectionDeputySteward"), () =>
-        this.addSimpleActorMultiple("Deputy Collection Steward", deputyCollectionStewards),
-      );
-      this.withSource(this.sourceOf(project, "depositor"), () =>
-        this.addSimpleActorMultiple(
-          "Depositor",
-          project.properties.getTextStringOrEmpty("depositor"),
-        ),
+      this.addSimpleActorMultiple("Deputy Collection Steward", deputyCollectionStewards);
+      this.addSimpleActorMultiple(
+        "Depositor",
+        project.properties.getTextStringOrEmpty("depositor"),
       );
     });
     this.exitGroup(); // MDGroup
@@ -330,7 +311,6 @@ export default class ImdiGenerator {
         this.vocabularyTranslator.getRoleTranslator(),
         role,
         getCommonFieldDefinition("role"),
-        "role",
       );
     } else {
       this.element("Role", role);
@@ -359,7 +339,7 @@ export default class ImdiGenerator {
   }
 
   private addProjectInfo() {
-    this.withSource(this.sourceOf(this.project), () => this.addProjectGroup());
+    this.addProjectGroup();
   }
   private addProjectGroup() {
     this.group("Project", () => {
@@ -391,44 +371,32 @@ export default class ImdiGenerator {
   private addActorsOfSession() {
     this.startGroup("Actors");
     const session = this.folderInFocus as Session;
-    this.commentBeforeCurrentGroup(this.sourceOf(session, "contributions"));
     session.getAllContributionsToAllFiles().forEach((contribution) => {
       const trimmedName = contribution.personReference.trim();
       if (trimmedName.length === 0) {
         return;
       }
       const person = findPersonToExport(this.project, trimmedName);
-      // the session's own file or one of its media files
-      const contributionSource = this.sourceOf(
-        session.files.find((f) => f.contributions.includes(contribution)) ?? session,
-        "contributions",
-      );
       if (person) {
         const referenceDate = session.properties.getDateField("date").asDate();
-        this.withSource(this.sourceOf(person), () =>
-          this.actor(
-            person,
-            contribution.role,
-            referenceDate,
-            // send in any contribution comments to be listed under the <Keys> element
-            [
-              {
-                name: "contribution-comments",
-                text: contribution.comments,
-                source: contributionSource,
-              },
-            ],
-            contributionSource,
-          ),
+        this.actor(
+          person,
+          contribution.role,
+          referenceDate,
+          // send in any contribution comments to be listed under the <Keys> element
+          [
+            {
+              name: "contribution-comments",
+              text: contribution.comments,
+            },
+          ],
         );
       } else {
-        this.withSource(contributionSource, () =>
-          this.addSimpleActorInternal(
-            contribution.role,
-            trimmedName,
-            true,
-            `Could not find a person with name "${trimmedName}"`,
-          ),
+        this.addSimpleActorInternal(
+          contribution.role,
+          trimmedName,
+          true,
+          `Could not find a person with name "${trimmedName}"`,
         );
       }
     });
@@ -445,29 +413,24 @@ export default class ImdiGenerator {
       const genreValue = session.properties.getTextStringOrEmpty("genre");
       // Get the label for the genre (may be snake_case like "procedural_discourse")
       const genreLabel = session.properties.getLabelOfValue("genre").replace(/_/g, " ");
-      this.withSource(this.sourceOf(session, "genre"), () =>
-        this.multilingualVocabularyElement(
-          "Genre",
-          genreLabel || genreValue,
-          "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
-          this.vocabularyTranslator.getGenreTranslator(),
-          genreValue,
-          session.properties.getFieldDefinition("genre"),
-          "genre",
-        ),
+      this.multilingualVocabularyElement(
+        "Genre",
+        genreLabel || genreValue,
+        "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
+        this.vocabularyTranslator.getGenreTranslator(),
+        genreValue,
+        session.properties.getFieldDefinition("genre"),
       );
       this.keysThatHaveBeenOutput.add("Session.genre");
 
       const subgenreValue = session.properties.getTextStringOrEmpty("subgenre");
       const subgenreLabel = session.properties.getLabelOfValue("subgenre").replace(/_/g, " ");
-      this.withSource(this.sourceOf(session, "subgenre"), () =>
-        this.multilingualVocabularyElement(
-          "SubGenre",
-          subgenreLabel || subgenreValue,
-          "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
-          this.vocabularyTranslator.getGenreTranslator(),
-          subgenreValue,
-        ),
+      this.multilingualVocabularyElement(
+        "SubGenre",
+        subgenreLabel || subgenreValue,
+        "http://www.mpi.nl/IMDI/Schema/Content-SubGenre.xml",
+        this.vocabularyTranslator.getGenreTranslator(),
+        subgenreValue,
       );
       this.keysThatHaveBeenOutput.add("Session.subgenre");
 
@@ -525,9 +488,7 @@ export default class ImdiGenerator {
             const entry = parseLanguageCodeAndName(langString);
             const { code } = entry;
             const langName = languageEntryNameForExport(entry, this.project);
-            this.withSource(this.sourceOf(session, "languages"), () =>
-              this.addSessionLanguage(code, langName, "Subject Language"),
-            );
+            this.addSessionLanguage(code, langName, "Subject Language");
           });
         } else {
           this.addMissingSessionLanguage("SubjectLanguages", "Subject Language");
@@ -540,9 +501,7 @@ export default class ImdiGenerator {
             const entry = parseLanguageCodeAndName(langString);
             const { code } = entry;
             const langName = languageEntryNameForExport(entry, this.project);
-            this.withSource(this.sourceOf(session, "workingLanguages"), () =>
-              this.addSessionLanguage(code, langName, "Working Language"),
-            );
+            this.addSessionLanguage(code, langName, "Working Language");
           });
         } else {
           this.addMissingSessionLanguage("WorkingLanguages", "Working Language");
@@ -577,9 +536,7 @@ export default class ImdiGenerator {
       const entry = parseLanguageCodeAndName(langString);
       const { code } = entry;
       const langName = languageEntryNameForExport(entry, this.project);
-      this.withSource(this.sourceOf(this.project, key), () =>
-        this.addSessionLanguage(code, langName, description),
-      );
+      this.addSessionLanguage(code, langName, description);
     });
   }
   private addSessionLanguage(code: string, name: string, description: string) {
@@ -652,7 +609,6 @@ export default class ImdiGenerator {
     this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
     this.startGroup("Session");
-    this.commentBeforeCurrentGroup(this.sourceOf(this.folderInFocus));
     this.requiredField("Name", "id");
     // Session.Title is String_Type in IMDI schema which doesn't support LanguageId attribute
     this.requiredMonolingualField("Title", "title");
@@ -695,9 +651,7 @@ export default class ImdiGenerator {
         // Always use ISO639-3 (3-letter) codes - ELAR, at least, can't handle 2-letter ISO639-1 codes
         const iso639_3 = this.iso639_3ForExport(slot.tag);
         const value = `ISO639-3:${iso639_3}: ${slot.name}`;
-        this.withSource(this.sourceOf(this.project, "metadataLanguages"), () =>
-          this.keyElement("MetadataLanguage", value),
-        );
+        this.keyElement("MetadataLanguage", value);
       }
     });
   }
@@ -766,17 +720,14 @@ export default class ImdiGenerator {
             const isMultilingual =
               languageAxes.length > 1 && shouldSplitByCommas && definition?.multilingual === true;
 
-            const source = this.sourceOf(target, key);
             if (isMultilingual) {
               // Multilingual export: output each language's values with index and LanguageId
-              this.withSource(source, () =>
-                this.outputMultilingualKeyElements(
-                  key,
-                  field!,
-                  languageAxes,
-                  shouldSplitByCommas,
-                  metadataSlotTags,
-                ),
+              this.outputMultilingualKeyElements(
+                key,
+                field!,
+                languageAxes,
+                shouldSplitByCommas,
+                metadataSlotTags,
               );
             } else {
               // Monolingual export (original behavior)
@@ -793,12 +744,10 @@ export default class ImdiGenerator {
                   v = sentenceCaseUnlessAcronym(v);
                 }
 
-                this.withSource(source, () => {
-                  this.tail = textElement(this.tail, "Key", v);
-                  this.mostRecentElement = this.tail;
-                  this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
-                  this.tail = this.tail.up();
-                });
+                this.tail = textElement(this.tail, "Key", v);
+                this.mostRecentElement = this.tail;
+                this.attributeLiteral("Name", capitalCase(key)); //https://trello.com/c/GXxtRimV/68-topic-and-keyword-in-the-imdi-output-should-start-with-upper-case
+                this.tail = this.tail.up();
               });
             }
           }
@@ -806,12 +755,10 @@ export default class ImdiGenerator {
       });
       if (moreKeys) {
         moreKeys.forEach((m) => {
-          this.withSource(m.source, () => {
-            this.tail = textElement(this.tail, "Key", m.text);
-            this.mostRecentElement = this.tail;
-            this.attributeLiteral("Name", m.name);
-            this.tail = this.tail.up();
-          });
+          this.tail = textElement(this.tail, "Key", m.text);
+          this.mostRecentElement = this.tail;
+          this.attributeLiteral("Name", m.name);
+          this.tail = this.tail.up();
         });
       }
     });
@@ -926,20 +873,18 @@ export default class ImdiGenerator {
             NotifyWarning(missingMsg);
           }
         } else {
-          this.withSource(this.sourceOf(f), () => {
-            switch (type) {
-              case "MediaFile":
-                if (this.isMediaFile(f)) {
-                  this.mediaFile(f);
-                }
-                break;
-              case "WrittenResource":
-                if (!this.isMediaFile(f)) {
-                  this.writtenResource(f);
-                }
-                break;
-            }
-          });
+          switch (type) {
+            case "MediaFile":
+              if (this.isMediaFile(f)) {
+                this.mediaFile(f);
+              }
+              break;
+            case "WrittenResource":
+              if (!this.isMediaFile(f)) {
+                this.writtenResource(f);
+              }
+              break;
+          }
         }
       }
     });
@@ -1014,22 +959,20 @@ export default class ImdiGenerator {
   public mediaFile(f: File): string | null {
     return this.group("MediaFile", () => {
       // ResourceLink, Type and Format all come from the file itself
-      this.withSource(this.sourceOf(f), () => {
-        this.element("ResourceLink", this.sanitizedRelativePath(f));
-        this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
+      this.element("ResourceLink", this.sanitizedRelativePath(f));
+      this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
-        this.element(
-          "Type",
-          titleCase(f.type), // while https://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml shows these should be lower case, this is apparently an OpenVocabulary and ELAR's system requires upper case
-          false,
-          "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml",
-        );
+      this.element(
+        "Type",
+        titleCase(f.type), // while https://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml shows these should be lower case, this is apparently an OpenVocabulary and ELAR's system requires upper case
+        false,
+        "http://www.mpi.nl/IMDI/Schema/MediaFile-Type.xml",
+      );
 
-        this.formatElement(
-          f.getRelativePathForExportingTheActualFile(),
-          "https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml",
-        );
-      });
+      this.formatElement(
+        f.getRelativePathForExportingTheActualFile(),
+        "https://www.mpi.nl/IMDI/Schema/MediaFile-Format.xml",
+      );
       this.requiredField("Size", "size", f);
       this.element("Quality", "Unspecified");
       this.element("RecordingConditions", "");
@@ -1052,9 +995,7 @@ export default class ImdiGenerator {
   }
   public writtenResource(f: File): string | null {
     return this.group("WrittenResource", () => {
-      this.withSource(this.sourceOf(f), () =>
-        this.element("ResourceLink", this.sanitizedRelativePath(f)),
-      );
+      this.element("ResourceLink", this.sanitizedRelativePath(f));
       this.attributeLiteral("ArchiveHandle", ""); // somehow this helps ELAR's process, to have this here, empty.
 
       // whereas this one just had this file name. NOte, you might expect that
@@ -1074,21 +1015,17 @@ export default class ImdiGenerator {
         f.getRelativePathForExportingTheActualFile(),
       );
 
-      this.withSource(this.sourceOf(f), () =>
-        this.element(
-          "Type",
-          imdiResourceType,
-          false,
-          "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml",
-        ),
+      this.element(
+        "Type",
+        imdiResourceType,
+        false,
+        "http://www.mpi.nl/IMDI/Schema/WrittenResource-Type.xml",
       );
       this.element("SubType", "");
       // "format" here is really mime type. See https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml
-      this.withSource(this.sourceOf(f), () =>
-        this.formatElement(
-          f.getRelativePathForExportingTheActualFile(),
-          "https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml",
-        ),
+      this.formatElement(
+        f.getRelativePathForExportingTheActualFile(),
+        "https://www.mpi.nl/IMDI/Schema/WrittenResource-Format.xml",
       );
       this.requiredField("Size", "size", f);
       this.group("Validation", () => {
@@ -1126,22 +1063,6 @@ export default class ImdiGenerator {
         ? (this.folderInFocus.properties.getValue("accessDescription") as Field)
         : undefined;
 
-    const accessOwner = fileWithAccess?.properties.getTextStringOrEmpty("access")
-      ? fileWithAccess
-      : this.folderInFocus instanceof Session
-        ? this.folderInFocus
-        : fileWithAccess;
-    const accessSource = accessOwner && this.sourceOf(accessOwner, "access");
-    const accessDescriptionOwner = fileWithAccess?.properties.getTextStringOrEmpty(
-      "accessDescription",
-    )
-      ? fileWithAccess
-      : this.folderInFocus instanceof Session
-        ? this.folderInFocus
-        : fileWithAccess;
-    const accessDescriptionSource =
-      accessDescriptionOwner && this.sourceOf(accessDescriptionOwner, "accessDescription");
-
     /* NO: the schema requires a all the access fields, even if they are empty.
     if (accessCode.length === 0) {
       return; // if the folder doesn't have an access code, then there is nothing for us to output
@@ -1150,29 +1071,15 @@ export default class ImdiGenerator {
     }
     */
 
-    this.withSource(accessSource, () =>
-      this.addAccessGroup(
-        accessCode,
-        accessSource,
-        accessDescriptionField,
-        accessDescriptionSource,
-      ),
-    );
+    this.addAccessGroup(accessCode, accessDescriptionField);
   }
-  private addAccessGroup(
-    accessCode: string,
-    accessSource: NavigationTarget | undefined,
-    accessDescriptionField: Field | undefined,
-    accessDescriptionSource: NavigationTarget | undefined,
-  ) {
+  private addAccessGroup(accessCode: string, accessDescriptionField: Field | undefined) {
     this.group("Access", () => {
-      this.withSource(accessSource, () => {
-        if (accessCode.length > 0) {
-          this.element("Availability", accessCode);
-        } else {
-          this.element("Availability", "");
-        }
-      });
+      if (accessCode.length > 0) {
+        this.element("Availability", accessCode);
+      } else {
+        this.element("Availability", "");
+      }
 
       //this.attributeLiteral("ISO639-3", "eng");
 
@@ -1213,24 +1120,22 @@ export default class ImdiGenerator {
       }
     */
       if (accessCode.length > 0 && accessDescriptionField && !accessDescriptionField.isEmpty()) {
-        this.withSource(accessDescriptionSource, () => {
-          // Use fieldElement to properly handle multilingual content with LanguageId attributes
-          const result = fieldElement(
-            "Description",
-            accessDescriptionField,
-            this.tail,
-            this.mostRecentElement,
-            false, // not required
-            "",
-            true, // IMDI Description supports multiple elements with LanguageId
-            undefined,
-            this.getMetadataLanguageTags(),
-          );
-          this.tail = result.tail;
-          if (result.mostRecentElement) this.mostRecentElement = result.mostRecentElement;
-        });
+        // Use fieldElement to properly handle multilingual content with LanguageId attributes
+        const result = fieldElement(
+          "Description",
+          accessDescriptionField,
+          this.tail,
+          this.mostRecentElement,
+          false, // not required
+          "",
+          true, // IMDI Description supports multiple elements with LanguageId
+          undefined,
+          this.getMetadataLanguageTags(),
+        );
+        this.tail = result.tail;
+        if (result.mostRecentElement) this.mostRecentElement = result.mostRecentElement;
       } else {
-        this.withSource(accessDescriptionSource, () => this.element("Description", ""));
+        this.element("Description", "");
       }
     });
 
@@ -1243,22 +1148,17 @@ export default class ImdiGenerator {
     role: string,
     referenceDate?: Date,
     moreKeys?: any[],
-    // where the contribution that gives this person this role is
-    roleSource?: NavigationTarget,
   ): string | null {
     return this.group("Actor", () => {
       // Role is a multilingual vocabulary field
       const roleOutput = roleForExport(role);
-      this.withSource(roleSource, () =>
-        this.multilingualVocabularyElement(
-          "Role",
-          roleOutput,
-          "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
-          this.vocabularyTranslator.getRoleTranslator(),
-          role,
-          getCommonFieldDefinition("role"),
-          "role",
-        ),
+      this.multilingualVocabularyElement(
+        "Role",
+        roleOutput,
+        "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml",
+        this.vocabularyTranslator.getRoleTranslator(),
+        role,
+        getCommonFieldDefinition("role"),
       );
 
       this.requiredField("Name", "name", person);
@@ -1279,9 +1179,7 @@ export default class ImdiGenerator {
       // for (let i = 0; i < maxOtherLanguages; i++) {
       //   this.addActorLanguage(person, "otherLanguage" + i);
       // }
-      person.languages.forEach((l) =>
-        this.withSource(this.sourceOf(person, "languages"), () => this.addActorLanguage(l)),
-      );
+      person.languages.forEach((l) => this.addActorLanguage(l));
       this.exitGroup(); // </Languages>
       this.requiredField("EthnicGroup", "ethnicGroup", person);
       // Note: age is relative to this session's date.
@@ -1308,11 +1206,10 @@ export default class ImdiGenerator {
       const dateToCompareWith = referenceDate ? referenceDate : undefined;
 
       const birthYear = person.properties.getTextStringOrEmpty("birthYear");
-      const birthYearSource = this.sourceOf(person, "birthYear");
       if (birthYear === "?") {
-        this.withSource(birthYearSource, () => this.element("Age", "Unknown")); // ELAR request Oct-Dec 2019. IMDI schema requires capital "Unknown"
+        this.element("Age", "Unknown"); // ELAR request Oct-Dec 2019. IMDI schema requires capital "Unknown"
       } else if (birthYear.trim() === "") {
-        this.withSource(birthYearSource, () => this.element("Age", "Unspecified")); // ELAR request https://trello.com/c/tnnCn8yQ/111-imdi-person-metadata-incomplete
+        this.element("Age", "Unspecified"); // ELAR request https://trello.com/c/tnnCn8yQ/111-imdi-person-metadata-incomplete
         this.tail.comment("Could not compute age");
       } else {
         const age = dateToCompareWith ? person.ageOn(dateToCompareWith) : "Unspecified";
@@ -1321,9 +1218,7 @@ export default class ImdiGenerator {
         }
         // IMDI schema requires Age element to always appear before BirthDate (xs:sequence)
         // so we must always output Age, even if empty/Unspecified
-        this.withSource(birthYearSource, () =>
-          this.element("Age", age && age.length > 0 ? age : "Unspecified"),
-        );
+        this.element("Age", age && age.length > 0 ? age : "Unspecified");
       }
       // BirthDate must conform to IMDI Date_Value_Type
       const rawBirthYear = person.properties.getTextStringOrEmpty("birthYear");
@@ -1348,7 +1243,7 @@ export default class ImdiGenerator {
         }
       }
       this.keysThatHaveBeenOutput.add("Person.birthYear");
-      this.withSource(birthYearSource, () => this.element("BirthDate", conformantBirthDate));
+      this.element("BirthDate", conformantBirthDate);
 
       this.addGender(person);
       this.requiredField("Education", "education", person);
@@ -1382,9 +1277,7 @@ export default class ImdiGenerator {
       );
     }
 
-    this.withSource(this.sourceOf(person, "gender"), () =>
-      this.element("Sex", gender, shouldUseClosedVocabulary, actorSexVocabularyUrl),
-    );
+    this.element("Sex", gender, shouldUseClosedVocabulary, actorSexVocabularyUrl);
   }
 
   //-----------------------------------------------------
@@ -1502,9 +1395,7 @@ export default class ImdiGenerator {
         ? "Unspecified"
         : // all we're really doing here is stripping off the time portion
           new Date(date).toISOString().slice(0, 10);
-    this.withSource(this.sourceOf(this.folderInFocus, fieldName), () =>
-      this.element(elementName, s),
-    );
+    this.element(elementName, s);
     this.keysThatHaveBeenOutput.add(this.folderInFocus.type + "." + fieldName);
   }
   private field(
@@ -1529,12 +1420,10 @@ export default class ImdiGenerator {
     );
 
     let field = folder.properties.getValue(fieldName) as Field;
-    let source = this.sourceOf(folder, fieldName);
 
     // as far as I can tell, this is only used for a case change, e.g "Country" or "country"
     if (projectFallbackFieldName && (!field || field.text.length === 0)) {
       field = this.project.properties.getValue(projectFallbackFieldName) as Field;
-      source = this.sourceOf(this.project, projectFallbackFieldName);
     } else {
       assert.ok(folder.type, "IMDI field f.type was null");
       this.keysThatHaveBeenOutput.add(folder.type + "." + fieldName);
@@ -1562,21 +1451,19 @@ export default class ImdiGenerator {
         : sentenceCase(label);
     }
 
-    this.withSource(source, () => {
-      const result = fieldElement(
-        elementName,
-        value,
-        this.tail,
-        this.mostRecentElement,
-        xmlElementIsRequired,
-        defaultValue,
-        imdiSupportsMultipleElements,
-        extraAttributes,
-        this.getMetadataLanguageTags(),
-      );
-      this.tail = result.tail;
-      if (result.mostRecentElement) this.mostRecentElement = result.mostRecentElement;
-    });
+    const result = fieldElement(
+      elementName,
+      value,
+      this.tail,
+      this.mostRecentElement,
+      xmlElementIsRequired,
+      defaultValue,
+      imdiSupportsMultipleElements,
+      extraAttributes,
+      this.getMetadataLanguageTags(),
+    );
+    this.tail = result.tail;
+    if (result.mostRecentElement) this.mostRecentElement = result.mostRecentElement;
   }
 
   private attribute(attributeName: string, fieldName: string, folder?: Folder) {
@@ -1586,77 +1473,10 @@ export default class ImdiGenerator {
     const v = f.properties.getTextStringOrEmpty(fieldName);
     if (v && v.length > 0) {
       this.mostRecentElement.attribute(attributeName, v);
-      const source = this.sourceOf(f, fieldName);
-      if (source && this.writeLametaComments)
-        (this.mostRecentElement as any).commentBefore(makeLametaSourceComment(source));
     }
   }
   private attributeLiteral(attributeName: string, value: string) {
     this.mostRecentElement.attribute(attributeName, value);
-  }
-  // Where `target` (a folder, or a file in one) is in lameta, for a lameta-source
-  // comment. Undefined for places that a NavigationTarget cannot name, such as the
-  // project's document folders.
-  private sourceOf(target: Folder | File, fieldKey?: string): NavigationTarget | undefined {
-    const folder = target instanceof Folder ? target : this.folderContaining(target);
-    const fileName =
-      !folder || target === folder || target === folder.metadataFile
-        ? undefined
-        : (target as File).getTextProperty("filename", "");
-    if (folder instanceof Project) {
-      return { folderType: "project", fieldKey };
-    }
-    if (folder instanceof Session) {
-      return { folderType: "session", folderId: folder.id, fileName, fieldKey };
-    }
-    if (folder instanceof Person) {
-      return {
-        folderType: "person",
-        folderId: folder.getIdToUseForReferences(),
-        fileName,
-        fieldKey,
-      };
-    }
-    return undefined;
-  }
-  private foldersOfFiles = new Map<File, Folder | undefined>();
-  private folderContaining(file: File): Folder | undefined {
-    if (this.folderInFocus?.files.includes(file)) return this.folderInFocus;
-    if (!this.foldersOfFiles.has(file)) {
-      const folders = this.project
-        ? [...this.project.sessions.items, ...this.project.persons.items]
-        : [];
-      this.foldersOfFiles.set(
-        file,
-        folders.find((f) => f.files.includes(file)),
-      );
-    }
-    return this.foldersOfFiles.get(file);
-  }
-  // Puts a lameta-source comment before each element that `write` adds to the
-  // current element, saying that it came from `source`. Adds nothing when building
-  // a standalone fragment (no current element yet).
-  private withSource(
-    source: NavigationTarget | undefined,
-    write: () => void,
-    makeComment: (target: NavigationTarget) => string = makeLametaSourceComment,
-  ) {
-    const parent = this.tail as any;
-    if (!source || !parent || !this.writeLametaComments) {
-      write();
-      return;
-    }
-    const countBefore = parent.children.length;
-    write();
-    const comment = makeComment(source);
-    parent.children
-      .slice(countBefore)
-      .filter((child: any) => child.attributes !== undefined)
-      .forEach((element: any) => element.commentBefore(comment));
-  }
-  private commentBeforeCurrentGroup(source: NavigationTarget | undefined) {
-    if (source && this.writeLametaComments)
-      (this.tail as any).commentBefore(makeLametaSourceComment(source));
   }
   private startGroup(elementName: string) {
     this.tail = this.tail.element(elementName);
@@ -1704,32 +1524,6 @@ export default class ImdiGenerator {
    * @param translateFn - Function to translate the value to a specific language
    */
   private multilingualVocabularyElement(
-    elementName: string,
-    englishValue: string,
-    vocabularyUrl: string,
-    translateFn: (value: string, lang: string) => string | undefined,
-    translationKey: string,
-    // the field whose capitalization, if it has one, replaces the sentence case below
-    definition?: FieldDefinition,
-    // the vocabulary field that the value is from, for a lameta-translations comment
-    // when the user enters its translations on the Translations tab
-    vocabularyFieldKey?: "genre" | "role",
-  ) {
-    this.withSource(
-      vocabularyFieldKey && whereToTranslate(vocabularyFieldKey, translationKey),
-      () =>
-        this.writeMultilingualVocabularyElement(
-          elementName,
-          englishValue,
-          vocabularyUrl,
-          translateFn,
-          translationKey,
-          definition,
-        ),
-      makeLametaTranslationsComment,
-    );
-  }
-  private writeMultilingualVocabularyElement(
     elementName: string,
     englishValue: string,
     vocabularyUrl: string,
@@ -1915,7 +1709,6 @@ export default class ImdiGenerator {
         this.vocabularyTranslator.getGenreTranslator(),
         genre,
         undefined,
-        "genre",
       );
       this.multilingualVocabularyElement(
         "SubGenre",
@@ -1996,9 +1789,7 @@ export default class ImdiGenerator {
     this.group("Actors", () => {
       const collectionSteward = this.project.properties.getTextStringOrEmpty("collectionSteward");
       if (collectionSteward) {
-        this.withSource(this.sourceOf(this.project, "collectionSteward"), () =>
-          this.addSimpleActor("Researcher", collectionSteward, true),
-        );
+        this.addSimpleActor("Researcher", collectionSteward, true);
       }
     });
 
