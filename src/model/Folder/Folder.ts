@@ -154,6 +154,12 @@ export abstract class Folder {
         );
         return;
       }
+      // A session's or person's folder that has gone stays gone: copying would create it
+      // again under its old name. A project's document folder is created on first use.
+      if (this.metadataFile && this.reportIfDirectoryIsMissing()) {
+        reject(new CopyInFailureAlreadyNotified(`${this.directory} is missing`));
+        return;
+      }
       const n = sanitizeForArchive(newFileName ? newFileName : Path.basename(pathToOriginalFile));
       const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);
@@ -516,14 +522,20 @@ export abstract class Folder {
   // was open. HomePage sets this to close the project and tell the user.
   public static onDirectoryMissingWhenSaving: (folder: Folder) => void = () => {};
 
+  // True from when a save finds this folder's directory missing until a save finds it
+  // there again, so that the user is told once each time it goes
+  public directoryReportedMissing = false;
+
   // Returns true, after reporting it, if this folder's directory is no longer on disk.
   // Saving into it would throw, or would write files into a folder the user removed.
   public reportIfDirectoryIsMissing(): boolean {
     if (fs.existsSync(this.directory)) {
+      this.directoryReportedMissing = false;
       return false;
     }
     sentryBreadCrumb(`Not saving because ${this.directory} is missing`);
     Folder.onDirectoryMissingWhenSaving(this);
+    this.directoryReportedMissing = true;
     return true;
   }
 
