@@ -154,6 +154,12 @@ export abstract class Folder {
         );
         return;
       }
+      // A session's or person's folder that has gone stays gone: copying would create it
+      // again under its old name. A project's document folder is created on first use.
+      if (this.metadataFile && this.reportIfDirectoryIsMissing()) {
+        reject(new CopyInFailureAlreadyNotified(`${this.directory} is missing`));
+        return;
+      }
       const n = sanitizeForArchive(newFileName ? newFileName : Path.basename(pathToOriginalFile));
       const stats = fs.statSync(pathToOriginalFile);
       const dest = Path.join(this.directory, n);

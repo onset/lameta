@@ -202,6 +202,17 @@ describe("closing a project whose folder has gone", () => {
     expect(timesToldUser).toBe(0);
   });
 
+  it("does not create a session folder that has gone again when a file is added to it", async () => {
+    const session = holder.loadedProject!.sessions.items[0];
+    fs.moveSync(session.directory, session.directory + "-renamed");
+    const source = Path.join(parentDir, "added.txt");
+    fs.writeFileSync(source, "x");
+    await expect(session.copyInOneFileAsync(source)).rejects.toThrow();
+    expect(fs.existsSync(session.directory)).toBe(false);
+    expect(holder.project).not.toBeNull();
+    expect(warned).toEqual([session]);
+  });
+
   it("does nothing while the folder is still there", () => {
     holder.loadedProject!.saveAllFilesInFolder();
     expect(holder.project).not.toBeNull();
