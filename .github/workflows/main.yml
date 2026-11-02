@@ -34,7 +34,7 @@ jobs:
       sha: ${{ steps.v.outputs.sha }}
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Work out the version and commit it to the branch
         id: v
@@ -89,7 +89,7 @@ jobs:
         run: sudo sntp -sS time.windows.com
 
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # when publishing, the commit that holds the new version
           ref: ${{ needs.version.outputs.sha || github.sha }}
