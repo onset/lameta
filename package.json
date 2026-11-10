@@ -93,6 +93,7 @@
     "electron-debug": "4.1.0",
     "electron-log": "5.4.3",
     "electron-store": "8.2.0",
+    "electron-updater": "^6.8.11",
     "excel-date-to-js": "1.1.5",
     "exifreader": "3.16.0",
     "ffmpeg-ffprobe-static": "6.1.2-rc.1",

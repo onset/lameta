@@ -12,6 +12,9 @@ type TestEnvironment = {
   // The GitHub repo whose releases the update check reads, as owner/name. Lets a test build
   // hear about releases published somewhere other than onset/lameta.
   LAMETA_RELEASES_REPO: string;
+  // The folder that an alpha reads its updates from (latest.yml and the installers). Lets a
+  // test build update from somewhere other than the R2 alpha folder.
+  LAMETA_ALPHA_UPDATE_URL: string;
 };
 
 export function getTestEnvironment(): TestEnvironment {
@@ -30,6 +33,9 @@ export function getTestEnvironment(): TestEnvironment {
     E2E_UI_LANGUAGE: runtimeEnv["E2E_UI_LANGUAGE"] || "",
     E2E_FAKE_CLOUD_PROVIDER: runtimeEnv["E2E_FAKE_CLOUD_PROVIDER"] || "",
     LAMETA_RELEASES_REPO: runtimeEnv["LAMETA_RELEASES_REPO"] || "onset/lameta",
+    LAMETA_ALPHA_UPDATE_URL:
+      runtimeEnv["LAMETA_ALPHA_UPDATE_URL"] ||
+      "https://pub-5aedb790466441e89334d52dab893bc4.r2.dev/alpha/",
   };
   //console.log("getTestEnvironment() = ", JSON.stringify(e, null, 2));
   return e;

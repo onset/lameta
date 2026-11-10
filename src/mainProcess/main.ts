@@ -17,6 +17,7 @@ import { getTestEnvironment } from "../getTestEnvironment";
 import { claimSprjFiles } from "./fileAssociation";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
 import { forwardWindowEvents } from "./windowIpc";
+import { startAlphaUpdates } from "./updater";
 
 // --launch-test opens the app, checks it came up, and quits again (scripts/test-launch.ts).
 // Nothing about it may leave a modal error dialog on the developer's screen, so this is
@@ -268,6 +269,9 @@ async function createWindow() {
 app
   .whenReady()
   .then(createWindow)
+  .then(() => {
+    if (!isLaunchTest()) startAlphaUpdates();
+  })
   .catch((err) => console.error("Could not create the main window:", err));
 
 if (process.platform === "win32" && app.isPackaged && !process.env.E2E) {

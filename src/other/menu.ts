@@ -20,7 +20,7 @@ import { initializeSentry } from "./errorHandling";
 import { ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog";
 import userSettingsSingleton from "./UserSettings";
 import { CopyManager } from "./CopyManager";
-import { ShowReleasesDialog } from "../components/ReleasesDialog";
+import { CheckForUpdates, ShowReleasesDialog } from "../components/ReleasesDialog";
 import { ShowMediaFolderDialog } from "../components/MediaFolderDialog";
 import { ShowCreditsDialog } from "./CreditsDialog";
 import pkg from "package.json";
@@ -444,6 +444,10 @@ export default class LametaMenu {
         {
           label: t`Credits`,
           click: () => ShowCreditsDialog(),
+        },
+        {
+          label: t`Check for Updates`,
+          click: () => CheckForUpdates(),
         },
         {
           label: t`Show Release Notes`,
