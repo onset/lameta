@@ -42,6 +42,7 @@ type InstallState =
   | { kind: "idle" }
   | { kind: "downloading"; percent: number }
   | { kind: "ready"; version: string }
+  | { kind: "preparing-for-quit"; version: string }
   | { kind: "on-quit"; version: string }
   | { kind: "failed"; message: string };
 
@@ -312,6 +313,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
           {install.kind === "failed" && (
             <span>{t`lameta could not download the update. Use the Download link instead.`}</span>
           )}
+          {install.kind === "preparing-for-quit" && <span>{t`Getting the update ready…`}</span>}
           {install.kind === "on-quit" && (
             <span>{t`lameta ${install.version} will install when you quit lameta.`}</span>
           )}
@@ -346,6 +348,8 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
               <button
                 onClick={() => {
                   const version = install.version;
+                  // on the Mac, getting the update ready takes a few seconds
+                  setInstall({ kind: "preparing-for-quit", version });
                   installOnQuit()
                     .then(() => setInstall({ kind: "on-quit", version }))
                     .catch((error) => {

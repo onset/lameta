@@ -121,14 +121,28 @@ ipcMain.handle("updater.installNow", () => {
   autoUpdater.quitAndInstall(true, true);
 });
 
-// Installs the downloaded update when lameta quits, without starting it again.
-ipcMain.handle("updater.installOnQuit", () => {
+// Installs the downloaded update when lameta quits, without starting it again. Resolves once
+// quitting will install it.
+ipcMain.handle("updater.installOnQuit", async () => {
   autoUpdater.autoInstallOnAppQuit = true;
   if (process.platform === "darwin") {
     // Squirrel.Mac installs an update on quit once it has fetched it. electron-updater serves
     // the download to Squirrel and set Squirrel's feed to it; this asks Squirrel to fetch it,
-    // which is what electron-updater's own quitAndInstall does in this situation.
-    electronAutoUpdater.checkForUpdates();
+    // which is what electron-updater's own quitAndInstall does in this situation. Until
+    // Squirrel has it, quitting would leave lameta as it is.
+    await new Promise<void>((resolve, reject) => {
+      const done = () => {
+        electronAutoUpdater.off("error", failed);
+        resolve();
+      };
+      const failed = (error: Error) => {
+        electronAutoUpdater.off("update-downloaded", done);
+        reject(error);
+      };
+      electronAutoUpdater.once("update-downloaded", done);
+      electronAutoUpdater.once("error", failed);
+      electronAutoUpdater.checkForUpdates();
+    });
   } else {
     // electron-updater adds its install-on-quit handler only if autoInstallOnAppQuit was on
     // when the download finished, which it was not.
