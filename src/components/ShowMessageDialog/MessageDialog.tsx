@@ -15,6 +15,7 @@ interface IConfig {
   content?: React.ReactNode;
   width?: string;
   testId?: string;
+  buttonColor?: string;
   // called once the user closes the dialog
   onClose?: () => void;
 }
@@ -72,7 +73,7 @@ export const MessageDialog: React.FunctionComponent<{}> = () => {
         {config.content}
       </div>
       <DialogBottomButtons>
-        <DialogButton onClick={close} default={true}>
+        <DialogButton onClick={close} default={true} backgroundColor={config.buttonColor}>
           {config.buttonText || <Trans>OK</Trans>}
         </DialogButton>
       </DialogBottomButtons>

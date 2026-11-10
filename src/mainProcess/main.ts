@@ -15,6 +15,7 @@ import * as path from "node:path";
 import Store from "electron-store";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { claimSprjFiles } from "./fileAssociation";
+import { replaceOldBetaIfAny } from "./replaceOldBeta";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
 import { forwardWindowEvents } from "./windowIpc";
 import { startAlphaUpdates } from "./updater";
@@ -268,8 +269,11 @@ async function createWindow() {
 
 app
   .whenReady()
-  .then(createWindow)
-  .then(() => {
+  .then(async () => {
+    // a beta's first start may replace an old beta; its progress window closes once ours is open
+    const closeProgress = await replaceOldBetaIfAny(app.getVersion());
+    await createWindow();
+    closeProgress();
     if (!isLaunchTest()) startAlphaUpdates();
   })
   .catch((err) => console.error("Could not create the main window:", err));

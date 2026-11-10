@@ -134,6 +134,8 @@ export default defineConfig({
         "src/mainProcess/main",
         "src/mainProcess/launchTest.ts",
         "src/mainProcess/fileAssociation.ts",
+        "src/mainProcess/replaceOldBeta.ts",
+        "src/mainProcess/oldBeta.ts",
         "src/other/locateDependency.ts",
         // the main process reaches these through src/mainProcess/launchTest.ts; files this
         // plugin does not list are not emitted, and the require fails at runtime
