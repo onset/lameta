@@ -44,7 +44,7 @@ type InstallState =
   | { kind: "ready"; version: string }
   | { kind: "preparing-for-quit"; version: string }
   | { kind: "on-quit"; version: string }
-  | { kind: "failed"; message: string };
+  | { kind: "failed"; step: "download" | "install"; message: string };
 
 interface IGithubRelease {
   assets: { browser_download_url: string }[];
@@ -168,7 +168,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
       .then((version) => setInstall({ kind: "ready", version }))
       .catch((error) => {
         console.error("Could not download the update:", error);
-        setInstall({ kind: "failed", message: String(error?.message ?? error) });
+        setInstall({ kind: "failed", step: "download", message: String(error?.message ?? error) });
       });
   };
 
@@ -310,8 +310,11 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
           {install.kind === "downloading" && (
             <span>{t`Downloading the update: ${Math.round(install.percent)}%`}</span>
           )}
-          {install.kind === "failed" && (
+          {install.kind === "failed" && install.step === "download" && (
             <span>{t`lameta could not download the update. Use the Download link instead.`}</span>
+          )}
+          {install.kind === "failed" && install.step === "install" && (
+            <span>{t`lameta could not install the update. Use the Download link instead.`}</span>
           )}
           {install.kind === "preparing-for-quit" && <span>{t`Getting the update ready…`}</span>}
           {install.kind === "on-quit" && (
@@ -337,7 +340,11 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
                   }
                   installNow().catch((error) => {
                     sentryException(error);
-                    setInstall({ kind: "failed", message: String(error?.message ?? error) });
+                    setInstall({
+                      kind: "failed",
+                      step: "install",
+                      message: String(error?.message ?? error),
+                    });
                   });
                 }}
               >
@@ -354,7 +361,11 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
                     .then(() => setInstall({ kind: "on-quit", version }))
                     .catch((error) => {
                       sentryException(error);
-                      setInstall({ kind: "failed", message: String(error?.message ?? error) });
+                      setInstall({
+                        kind: "failed",
+                        step: "install",
+                        message: String(error?.message ?? error),
+                      });
                     });
                 }}
               >

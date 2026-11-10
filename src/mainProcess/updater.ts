@@ -131,16 +131,24 @@ ipcMain.handle("updater.installOnQuit", async () => {
     // which is what electron-updater's own quitAndInstall does in this situation. Until
     // Squirrel has it, quitting would leave lameta as it is.
     await new Promise<void>((resolve, reject) => {
-      const done = () => {
+      const stopListening = () => {
+        electronAutoUpdater.off("update-downloaded", done);
         electronAutoUpdater.off("error", failed);
+        electronAutoUpdater.off("update-not-available", notAvailable);
+      };
+      const done = () => {
+        stopListening();
         resolve();
       };
       const failed = (error: Error) => {
-        electronAutoUpdater.off("update-downloaded", done);
+        stopListening();
         reject(error);
       };
-      electronAutoUpdater.once("update-downloaded", done);
-      electronAutoUpdater.once("error", failed);
+      const notAvailable = () =>
+        failed(new Error("Squirrel.Mac found no update to install from the download."));
+      electronAutoUpdater.on("update-downloaded", done);
+      electronAutoUpdater.on("error", failed);
+      electronAutoUpdater.on("update-not-available", notAvailable);
       electronAutoUpdater.checkForUpdates();
     });
   } else {
