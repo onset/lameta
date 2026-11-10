@@ -75,6 +75,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
   //  console.log("Version = " + version);
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
   checkForUpdates = (manual: boolean) => {
+    allowRetryAfterFailure();
     const github = axios
       // GitHub's maximum page; a running release missing from the page loses its cross-channel news
       .get(
@@ -120,11 +121,12 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
     // At startup, main.ts has already started the alpha check.
     const alpha = checkForAlphaUpdate().catch((error) => {
       sentryException(error);
-      return null;
+      return "failed" as const;
     });
     Promise.all([github, alpha])
       .then(([newerOnGitHub, alphaUpdate]) => {
-        if (alphaUpdate?.downloaded) NotifyAlphaUpdateDownloaded(alphaUpdate.version);
+        if (alphaUpdate === "failed") NotifyNoBigDeal("Could not check for updates");
+        else if (alphaUpdate?.downloaded) NotifyAlphaUpdateDownloaded(alphaUpdate.version);
         else if (alphaUpdate) NotifyAlphaUpdateDownloading(alphaUpdate.version);
         else if (newerOnGitHub === false) NotifyUpToDate(pkg.version);
       })
@@ -133,6 +135,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
 
   React.useEffect(() => {
     showDialogManually = () => {
+      allowRetryAfterFailure();
       setShowNewReleasesOnly(false);
       setMode("just-show-release-notes");
     };
@@ -140,6 +143,9 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
 
   const [canInstall, setCanInstall] = React.useState(false);
   const [install, setInstall] = React.useState<InstallState>({ kind: "idle" });
+  // brings back the Install button after a failed download
+  const allowRetryAfterFailure = () =>
+    setInstall((current) => (current.kind === "failed" ? { kind: "idle" } : current));
 
   // run once on startup
   React.useEffect(() => {
