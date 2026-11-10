@@ -126,7 +126,31 @@ export function NotifyUpdateAvailable(
   open: () => void,
   //download: DownloadFunction
 ) {
-  notify(t`Update available`, <a onClick={open}>{t`View Release Notes`}</a>);
+  // stays until closed, so someone who looked away at startup still sees it
+  notify(t`Update available`, <a onClick={open}>{t`View Release Notes`}</a>, {
+    autoClose: false,
+  });
+}
+
+export function NotifyAlphaUpdateDownloaded(version: string) {
+  notify(t`lameta ${version} has been downloaded. It will install when you quit lameta.`, "", {
+    type: "info",
+    autoClose: 10000,
+  });
+}
+
+export function NotifyAlphaUpdateDownloading(version: string) {
+  notify(t`Downloading lameta ${version}. It will install when you quit lameta.`, "", {
+    type: "info",
+    autoClose: 10000,
+  });
+}
+
+export function NotifyUpToDate(version: string) {
+  notify(t`You have the newest version of lameta (${version}).`, "", {
+    type: "success",
+    autoClose: 5000,
+  });
 }
 
 export function NotifyMultipleProjectFiles(

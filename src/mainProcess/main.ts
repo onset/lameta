@@ -18,6 +18,7 @@ import { claimSprjFiles } from "./fileAssociation";
 import { replaceOldBetaIfAny } from "./replaceOldBeta";
 import { spellCheckLanguages } from "../other/spellCheckLanguages";
 import { forwardWindowEvents } from "./windowIpc";
+import { startAlphaUpdates } from "./updater";
 
 // --launch-test opens the app, checks it came up, and quits again (scripts/test-launch.ts).
 // Nothing about it may leave a modal error dialog on the developer's screen, so this is
@@ -273,6 +274,7 @@ app
     const closeProgress = await replaceOldBetaIfAny(app.getVersion());
     await createWindow();
     closeProgress();
+    if (!isLaunchTest()) startAlphaUpdates();
   })
   .catch((err) => console.error("Could not create the main window:", err));
 

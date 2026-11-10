@@ -10,12 +10,41 @@ import pkg from "package.json";
 const ReactMarkdown = require("react-markdown");
 import { sentryException } from "../other/errorHandling";
 import axios from "axios";
-import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
+import {
+  NotifyAlphaUpdateDownloaded,
+  NotifyAlphaUpdateDownloading,
+  NotifyNoBigDeal,
+  NotifyUpdateAvailable,
+  NotifyUpToDate,
+  NotifyWarning,
+} from "./Notify";
+import { CopyManager } from "../other/CopyManager";
 import { lameta_blue, lameta_orange } from "../containers/theme";
 import { getTestEnvironment } from "../getTestEnvironment";
-import { getNewerReleases, newestOfEachChannel, sortNewestFirst } from "./releaseChannels";
+import {
+  getNewerReleases,
+  getReleaseToInstall,
+  newestOfEachChannel,
+  sortNewestFirst,
+} from "./releaseChannels";
+import {
+  canInstallUpdates,
+  checkForAlphaUpdate,
+  downloadRelease,
+  installNow,
+  installOnQuit,
+  onAlphaUpdateDownloaded,
+} from "../other/updaterIpc";
 
 type Mode = "querying" | "update-available" | "just-show-release-notes" | "closed";
+
+type InstallState =
+  | { kind: "idle" }
+  | { kind: "downloading"; percent: number }
+  | { kind: "ready"; version: string }
+  | { kind: "preparing-for-quit"; version: string }
+  | { kind: "on-quit"; version: string }
+  | { kind: "failed"; step: "download" | "install"; message: string };
 
 interface IGithubRelease {
   assets: { browser_download_url: string }[];
@@ -29,9 +58,14 @@ interface IGithubRelease {
   tag_name: string;
 }
 
-let checkForUpdates: () => void = () => {};
+// manual: the user chose Help > Check for Updates, so open the dialog straight away instead of
+// showing a toast, and say so when there is nothing newer.
+let checkForUpdates: (manual: boolean) => void = () => {};
 let showDialogManually: () => void;
 export { showDialogManually as ShowReleasesDialog };
+export function CheckForUpdates() {
+  checkForUpdates(true);
+}
 
 export const ReleasesDialog: React.FunctionComponent<{}> = () => {
   const [mode, setMode] = React.useState<Mode>("querying");
@@ -43,8 +77,9 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
   }, []);
   //  console.log("Version = " + version);
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
-  checkForUpdates = () => {
-    axios
+  checkForUpdates = (manual: boolean) => {
+    allowRetryAfterFailure();
+    const github = axios
       // GitHub's maximum page; a running release missing from the page loses its cross-channel news
       .get(
         `https://api.github.com/repos/${getTestEnvironment().LAMETA_RELEASES_REPO}/releases?per_page=100`,
@@ -70,29 +105,72 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
         //   },
         // ];
         setAllReleases(all);
-        if (getNewerReleases(all, pkg.version).length) {
-          NotifyUpdateAvailable(() => setMode("update-available"));
+        const newer = getNewerReleases(all, pkg.version).length > 0;
+        if (newer) {
+          if (manual) {
+            setShowNewReleasesOnly(true);
+            setMode("update-available");
+          } else NotifyUpdateAvailable(() => setMode("update-available"));
         }
+        return newer;
       })
       .catch((error) => {
         NotifyNoBigDeal("Could not check for updates");
         console.error(`There was an error checking for updates.`);
         sentryException(error);
+        return undefined;
       });
+    if (!manual) return;
+    // At startup, main.ts has already started the alpha check.
+    const alpha = checkForAlphaUpdate().catch((error) => {
+      sentryException(error);
+      return "failed" as const;
+    });
+    Promise.all([github, alpha])
+      .then(([newerOnGitHub, alphaUpdate]) => {
+        if (alphaUpdate === "failed") NotifyNoBigDeal("Could not check for updates");
+        else if (alphaUpdate?.downloaded) NotifyAlphaUpdateDownloaded(alphaUpdate.version);
+        else if (alphaUpdate) NotifyAlphaUpdateDownloading(alphaUpdate.version);
+        else if (newerOnGitHub === false) NotifyUpToDate(pkg.version);
+      })
+      .catch((error) => sentryException(error));
   };
 
   React.useEffect(() => {
     showDialogManually = () => {
+      allowRetryAfterFailure();
       setShowNewReleasesOnly(false);
       setMode("just-show-release-notes");
     };
   });
 
+  const [canInstall, setCanInstall] = React.useState(false);
+  const [install, setInstall] = React.useState<InstallState>({ kind: "idle" });
+  // brings back the Install button after a failed download
+  const allowRetryAfterFailure = () =>
+    setInstall((current) => (current.kind === "failed" ? { kind: "idle" } : current));
+
   // run once on startup
   React.useEffect(() => {
     // this is works fine in e2e test but the notification covers stuff up that we may want to click so it slows things down
-    if (!getTestEnvironment().E2E) checkForUpdates();
+    if (!getTestEnvironment().E2E) checkForUpdates(false);
+    canInstallUpdates()
+      .then(setCanInstall)
+      .catch(() => setCanInstall(false));
+    onAlphaUpdateDownloaded(NotifyAlphaUpdateDownloaded);
   }, []);
+
+  const releaseToInstall = canInstall ? getReleaseToInstall(allReleases, pkg.version) : undefined;
+
+  const startInstall = (release: IGithubRelease) => {
+    setInstall({ kind: "downloading", percent: 0 });
+    downloadRelease(release.tag_name, (percent) => setInstall({ kind: "downloading", percent }))
+      .then((version) => setInstall({ kind: "ready", version }))
+      .catch((error) => {
+        console.error("Could not download the update:", error);
+        setInstall({ kind: "failed", step: "download", message: String(error?.message ?? error) });
+      });
+  };
 
   const releasesToShow = showNewReleasesOnly
     ? getNewerReleases(allReleases, pkg.version)
@@ -167,8 +245,19 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
                 >
                   {release.name}
                   {/* If we're showing the dialog prompting them to upgrade, only offer the newest release of each channel for Downloading */}
-                  {(releasesToOfferForDownload.has(release) ||
-                    mode === "just-show-release-notes") &&
+                  {release === releaseToInstall && install.kind !== "failed" ? (
+                    <button
+                      css={css`
+                        float: right;
+                      `}
+                      disabled={install.kind !== "idle"}
+                      onClick={() => startInstall(release)}
+                    >
+                      <Trans>Install</Trans>
+                    </button>
+                  ) : (
+                    (releasesToOfferForDownload.has(release) ||
+                      mode === "just-show-release-notes") &&
                     getDownloadUrl(release) && (
                       <a
                         css={css`
@@ -178,7 +267,8 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
                       >
                         <Trans>Download</Trans>
                       </a>
-                    )}
+                    )
+                  )}
                 </h1>
 
                 <ReactMarkdown
@@ -217,12 +307,71 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
               {t`Show more releases`}
             </label>
           )}
+          {install.kind === "downloading" && (
+            <span>{t`Downloading the update: ${Math.round(install.percent)}%`}</span>
+          )}
+          {install.kind === "failed" && install.step === "download" && (
+            <span>{t`lameta could not download the update. Use the Download link instead.`}</span>
+          )}
+          {install.kind === "failed" && install.step === "install" && (
+            <span>{t`lameta could not install the update. Use the Download link instead.`}</span>
+          )}
+          {install.kind === "preparing-for-quit" && <span>{t`Getting the update ready…`}</span>}
+          {install.kind === "on-quit" && (
+            <span>{t`lameta ${install.version} will install when you quit lameta.`}</span>
+          )}
           <div
             className={"reverseOrderOnMac"}
             css={css`
               margin-left: auto;
             `}
           >
+            {install.kind === "ready" && (
+              <button
+                className="default"
+                onClick={() => {
+                  // On Windows the installer starts before lameta quits, so a quit that the
+                  // copy-in-progress question cancels would still be cut off by the installer.
+                  if (CopyManager.filesAreStillCopying()) {
+                    NotifyWarning(
+                      t`Files are still being copied into your project. Install the update once they are done.`,
+                    );
+                    return;
+                  }
+                  installNow().catch((error) => {
+                    sentryException(error);
+                    setInstall({
+                      kind: "failed",
+                      step: "install",
+                      message: String(error?.message ?? error),
+                    });
+                  });
+                }}
+              >
+                {t`Restart and install now`}
+              </button>
+            )}
+            {install.kind === "ready" && (
+              <button
+                onClick={() => {
+                  const version = install.version;
+                  // on the Mac, getting the update ready takes a few seconds
+                  setInstall({ kind: "preparing-for-quit", version });
+                  installOnQuit()
+                    .then(() => setInstall({ kind: "on-quit", version }))
+                    .catch((error) => {
+                      sentryException(error);
+                      setInstall({
+                        kind: "failed",
+                        step: "install",
+                        message: String(error?.message ?? error),
+                      });
+                    });
+                }}
+              >
+                {t`Install when I quit lameta`}
+              </button>
+            )}
             <button onClick={() => setMode("closed")}>
               <Trans>Close</Trans>
             </button>

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getNewerReleases, newestOfEachChannel, sortNewestFirst } from "./releaseChannels";
+import {
+  getNewerReleases,
+  getReleaseToInstall,
+  newestOfEachChannel,
+  sortNewestFirst,
+} from "./releaseChannels";
 
 const r = (tag_name: string, published_at: string) => ({
   tag_name,
@@ -49,6 +54,26 @@ describe("getNewerReleases", () => {
       "v4.0.52-beta",
       "v4.0.53-beta",
     ]);
+  });
+});
+
+describe("getReleaseToInstall", () => {
+  it("picks the highest-numbered newer release in the running channel", () => {
+    const lateDraft = [...releases, r("v4.0.51-beta", "2027-01-25T00:00:00Z")];
+    expect(getReleaseToInstall(lateDraft, "4.0.50-beta")?.tag_name).toBe("v4.0.53-beta");
+  });
+
+  it("does not install a release from another channel", () => {
+    expect(getReleaseToInstall(releases, "4.0.53-beta")).toBeUndefined();
+    expect(getReleaseToInstall(releases, "4.0.0")?.tag_name).toBe("v4.0.1");
+  });
+
+  it("returns nothing when the running version is the newest", () => {
+    expect(getReleaseToInstall(releases, "4.0.1")).toBeUndefined();
+  });
+
+  it("leaves alphas to the R2 updater", () => {
+    expect(getReleaseToInstall(releases, "4.0.11-alpha")).toBeUndefined();
   });
 });
 

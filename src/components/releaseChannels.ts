@@ -48,6 +48,22 @@ export function sortNewestFirst<T extends IReleaseSummary>(releases: T[]): T[] {
   return [...releases].sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at));
 }
 
+// The newest release that can replace the running lameta. Each channel installs as a separate
+// app, so only a release in the running channel can. Alphas update from Cloudflare R2 instead
+// (src/mainProcess/updater.ts), because alpha releases on GitHub stay drafts.
+export function getReleaseToInstall<T extends IReleaseSummary>(
+  releases: T[],
+  currentVersion: string,
+): T | undefined {
+  const channel = getChannel(currentVersion);
+  if (channel === "alpha") return undefined;
+  return releases
+    .filter(
+      (r) => getChannel(r.tag_name) === channel && Semver.compare(r.tag_name, currentVersion) > 0,
+    )
+    .sort((a, b) => Semver.compare(b.tag_name, a.tag_name))[0];
+}
+
 // The highest-numbered release of each channel in the list, which are the ones worth a Download
 // link. By number, not date: a draft published late can be older than one published before it.
 export function newestOfEachChannel<T extends IReleaseSummary>(releases: T[]): Set<T> {
