@@ -30,6 +30,11 @@ export function installNow(): Promise<void> {
   return ipc().invoke("updater.installNow");
 }
 
+// Installs the downloaded update when lameta quits.
+export function installOnQuit(): Promise<void> {
+  return ipc().invoke("updater.installOnQuit");
+}
+
 // In an alpha, checks for a newer alpha and starts downloading it. Resolves with its version and
 // whether it has already finished downloading, or null when there is none (and always null
 // outside an alpha).

@@ -13,7 +13,7 @@
 //
 // The renderer side is src/other/updaterIpc.ts.
 
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, autoUpdater as electronAutoUpdater, BrowserWindow, ipcMain } from "electron";
 import { autoUpdater } from "electron-updater";
 import { writeFileSync } from "fs";
 import { join } from "path";
@@ -39,7 +39,10 @@ function configure() {
   writeFileSync(configPath, `updaterCacheDirName: ${app.getName().replace(/ /g, "-")}-updater\n`);
   autoUpdater.updateConfigPath = configPath;
   autoUpdater.autoDownload = false;
-  autoUpdater.autoInstallOnAppQuit = true;
+  // A beta or release update installs on quit only when the user chooses that (installOnQuit).
+  // On the Mac this must be off while the update downloads: electron-updater then hands it to
+  // Squirrel.Mac, which installs it on quit whatever the user chose.
+  autoUpdater.autoInstallOnAppQuit = false;
   autoUpdater.logger = console;
 }
 
@@ -69,6 +72,7 @@ async function checkAlpha(): Promise<{ version: string; downloaded: boolean } | 
       url: getTestEnvironment().LAMETA_ALPHA_UPDATE_URL,
     });
     autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
     autoUpdater.on("update-downloaded", (info) => {
       downloadedAlpha = info.version;
       sendToWindows("updater.alphaDownloaded", info.version);
@@ -115,4 +119,19 @@ ipcMain.handle("updater.downloadRelease", async (_event, tag: string) => {
 // Quits, installs the downloaded update, and starts the new version.
 ipcMain.handle("updater.installNow", () => {
   autoUpdater.quitAndInstall(true, true);
+});
+
+// Installs the downloaded update when lameta quits, without starting it again.
+ipcMain.handle("updater.installOnQuit", () => {
+  autoUpdater.autoInstallOnAppQuit = true;
+  if (process.platform === "darwin") {
+    // Squirrel.Mac installs an update on quit once it has fetched it. electron-updater serves
+    // the download to Squirrel and set Squirrel's feed to it; this asks Squirrel to fetch it,
+    // which is what electron-updater's own quitAndInstall does in this situation.
+    electronAutoUpdater.checkForUpdates();
+  } else {
+    // electron-updater adds its install-on-quit handler only if autoInstallOnAppQuit was on
+    // when the download finished, which it was not.
+    (autoUpdater as unknown as { addQuitHandler(): void }).addQuitHandler();
+  }
 });

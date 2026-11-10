@@ -126,7 +126,10 @@ export function NotifyUpdateAvailable(
   open: () => void,
   //download: DownloadFunction
 ) {
-  notify(t`Update available`, <a onClick={open}>{t`View Release Notes`}</a>);
+  // stays until closed, so someone who looked away at startup still sees it
+  notify(t`Update available`, <a onClick={open}>{t`View Release Notes`}</a>, {
+    autoClose: false,
+  });
 }
 
 export function NotifyAlphaUpdateDownloaded(version: string) {

@@ -32,6 +32,7 @@ import {
   checkForAlphaUpdate,
   downloadRelease,
   installNow,
+  installOnQuit,
   onAlphaUpdateDownloaded,
 } from "../other/updaterIpc";
 
@@ -41,6 +42,7 @@ type InstallState =
   | { kind: "idle" }
   | { kind: "downloading"; percent: number }
   | { kind: "ready"; version: string }
+  | { kind: "on-quit"; version: string }
   | { kind: "failed"; message: string };
 
 interface IGithubRelease {
@@ -310,6 +312,9 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
           {install.kind === "failed" && (
             <span>{t`lameta could not download the update. Use the Download link instead.`}</span>
           )}
+          {install.kind === "on-quit" && (
+            <span>{t`lameta ${install.version} will install when you quit lameta.`}</span>
+          )}
           <div
             className={"reverseOrderOnMac"}
             css={css`
@@ -334,7 +339,22 @@ export const ReleasesDialog: React.FunctionComponent<{}> = () => {
                   });
                 }}
               >
-                {t`Restart and install ${install.version}`}
+                {t`Restart and install now`}
+              </button>
+            )}
+            {install.kind === "ready" && (
+              <button
+                onClick={() => {
+                  const version = install.version;
+                  installOnQuit()
+                    .then(() => setInstall({ kind: "on-quit", version }))
+                    .catch((error) => {
+                      sentryException(error);
+                      setInstall({ kind: "failed", message: String(error?.message ?? error) });
+                    });
+                }}
+              >
+                {t`Install when I quit lameta`}
               </button>
             )}
             <button onClick={() => setMode("closed")}>
