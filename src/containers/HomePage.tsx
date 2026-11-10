@@ -1,4 +1,6 @@
 import { AlphaWarning } from "./AlphaWarning";
+import { BetaWarning } from "./BetaWarning";
+import { lameta_orange } from "./theme";
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
@@ -297,9 +299,10 @@ class HomePage extends React.Component<IProps, IState> {
           break;
         case "beta":
           ShowMessageDialog({
-            title: `Warning`,
-            text: "This is a beta test version, so make sure you have a backup of your work.",
-            width: "300px",
+            iconPath: null,
+            content: <BetaWarning version={version} />,
+            buttonColor: lameta_orange,
+            width: "540px",
             buttonText: "I understand",
             testId: "prerelease-warning-dialog",
             onClose: openPendingProject,
