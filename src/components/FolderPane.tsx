@@ -470,31 +470,37 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
       const record = pluginManager.getById(m.pluginId);
       return (
         <TabPanel key={pluginTabId(m)}>
-          <ErrorBoundary>
-            <PluginTabPanel
-              pluginId={m.pluginId}
-              pluginVersion={m.pluginVersion}
-              pluginName={record?.manifest?.name || m.pluginId}
-              pluginInfoUrl={record?.manifest?.infoUrl ?? ""}
-              pluginDir={record?.directory || ""}
-              entry={m.entry}
-              tabId={m.tab.id}
-              apiVersion={record?.manifest?.apiVersion ?? 1}
-              permissions={m.permissions}
-              reloadCounter={record?.reloadCounter ?? 0}
-              filePath={path}
-              fileName={filename}
-              fileExtension={extNoDot}
-              fileMimeType={mimeType}
-              fileLametaType={file.type}
-              fileUri={URL.pathToFileURL(path).toString()}
-              folderType={props.folder.folderType}
-              folderDirectory={props.folder.directory}
-              languageCode={currentUILanguage}
-              appVersion={pkg.version}
-              onSelectFile={handlePluginSelectFile}
-            />
-          </ErrorBoundary>
+          {/* Like the built-in viewers: a plugin would read the file, which downloads a
+              cloud-only placeholder in full, so offer the CloudFilePanel instead. */}
+          {previewBlocked ? (
+            <CloudFilePanel file={file} />
+          ) : (
+            <ErrorBoundary>
+              <PluginTabPanel
+                pluginId={m.pluginId}
+                pluginVersion={m.pluginVersion}
+                pluginName={record?.manifest?.name || m.pluginId}
+                pluginInfoUrl={record?.manifest?.infoUrl ?? ""}
+                pluginDir={record?.directory || ""}
+                entry={m.entry}
+                tabId={m.tab.id}
+                apiVersion={record?.manifest?.apiVersion ?? 1}
+                permissions={m.permissions}
+                reloadCounter={record?.reloadCounter ?? 0}
+                filePath={path}
+                fileName={filename}
+                fileExtension={extNoDot}
+                fileMimeType={mimeType}
+                fileLametaType={file.type}
+                fileUri={URL.pathToFileURL(path).toString()}
+                folderType={props.folder.folderType}
+                folderDirectory={props.folder.directory}
+                languageCode={currentUILanguage}
+                appVersion={pkg.version}
+                onSelectFile={handlePluginSelectFile}
+              />
+            </ErrorBoundary>
+          )}
         </TabPanel>
       );
     });
