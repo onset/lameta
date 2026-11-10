@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -9,9 +9,8 @@ let project: E2eProject;
 test.describe("Folder Search minimum length", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "FolderSearchMinLenProj");
+    project = await launchWithProject(lameta, "FolderSearchMinLenProj");
+    page = lameta.page;
   });
   test.afterAll(async () => {
     await lameta.quit();
@@ -33,9 +32,9 @@ test.describe("Folder Search minimum length", () => {
     await page.waitForTimeout(250);
 
     // Expect no highlights in the folder list area and no filtered count indicator
-    await expect(
-      page.locator(".folderList [data-testid='inline-highlight']").first()
-    ).toHaveCount(0);
+    await expect(page.locator(".folderList [data-testid='inline-highlight']").first()).toHaveCount(
+      0,
+    );
     const countNow = await page.locator(allRowsSelector).count();
     expect(countNow).toBe(initialCount);
 

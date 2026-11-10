@@ -141,7 +141,7 @@ export interface WarningCollectionResult<T> {
  * ```
  */
 export const withWarningCollection = async <T>(
-  operation: () => Promise<T>
+  operation: () => Promise<T>,
 ): Promise<WarningCollectionResult<T>> => {
   startCollectingWarnings();
   try {
@@ -152,9 +152,25 @@ export const withWarningCollection = async <T>(
     const warnings = stopCollectingWarnings();
     // Attach warnings to the error if it's an Error object, for potential recovery
     if (error instanceof Error) {
-      (error as Error & { collectedWarnings?: string[] }).collectedWarnings =
-        warnings;
+      (error as Error & { collectedWarnings?: string[] }).collectedWarnings = warnings;
     }
     throw error;
   }
 };
+
+/**
+ * Run `generate` synchronously with its warnings thrown away, leaving any collection
+ * in progress (e.g. an export's) as it was. For IMDI that lameta generates only to
+ * check it, where the same warnings would otherwise pop up on every check.
+ */
+export function withWarningsDiscarded<T>(generate: () => T): T {
+  const saved = { currentWarnings, seenWarnings, isCollecting };
+  currentWarnings = [];
+  seenWarnings = new Set();
+  isCollecting = true;
+  try {
+    return generate();
+  } finally {
+    ({ currentWarnings, seenWarnings, isCollecting } = saved);
+  }
+}

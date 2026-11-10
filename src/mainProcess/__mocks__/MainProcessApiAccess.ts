@@ -1,8 +1,5 @@
 import { XMLValidationResult } from "xmllint-wasm";
-import {
-  ExportSessionData,
-  ExportCorpusData
-} from "../../export/ExportBundleTypes";
+import { ExportSessionData, ExportCorpusData } from "../../export/ExportBundleTypes";
 
 /**
  * MOCK VERSION of MainProcessApi
@@ -16,7 +13,7 @@ import {
  * VITEST_WORKER_ID environment variables).
  */
 export class MainProcessApi {
-  public trashItem(path: string): Promise<boolean> {
+  public trashItem(_path: string): Promise<boolean> {
     // just always return true
     return Promise.resolve(true);
   }
@@ -24,8 +21,8 @@ export class MainProcessApi {
   // We're doing this in the main process because I didn't get xmllint-wasm to work in the render process.
   // It has a browser build, but I couldn't get it loaded in vite. Could try again later.
   public async validateImdiAsync(
-    imdiContents: string,
-    imdiSchemaName?: string
+    _imdiContents: string,
+    _imdiSchemaName?: string,
   ): Promise<XMLValidationResult> {
     const r: XMLValidationResult = {
       valid: true,
@@ -35,34 +32,30 @@ export class MainProcessApi {
         {
           loc: null,
           message: "",
-          rawMessage: ""
-        }
-      ]
+          rawMessage: "",
+        },
+      ],
     };
     return r;
   }
 
   // IMDI Export file I/O methods - mock implementations for testing
-  public async prepareImdiExportDirectory(
-    rootDirectory: string
-  ): Promise<void> {
+  public async prepareImdiExportDirectory(_rootDirectory: string): Promise<void> {
     // Mock - do nothing in tests
   }
 
-  public async cleanupImdiExportDirectory(
-    rootDirectory: string
-  ): Promise<void> {
+  public async cleanupImdiExportDirectory(_rootDirectory: string): Promise<void> {
     // Mock - do nothing in tests
   }
 
   public async writeImdiSessionData(
-    data: ExportSessionData
+    data: ExportSessionData,
   ): Promise<{ filesWritten: number; errors: string[] }> {
     // Mock - pretend all files were written successfully
     return { filesWritten: data.filesToCopy.length, errors: [] };
   }
 
-  public async writeImdiCorpusData(data: ExportCorpusData): Promise<void> {
+  public async writeImdiCorpusData(_data: ExportCorpusData): Promise<void> {
     // Mock - do nothing in tests
   }
 
@@ -75,7 +68,7 @@ export class MainProcessApi {
     return false;
   }
 
-  public async revealInFolder(path: string): Promise<void> {
+  public async revealInFolder(_path: string): Promise<void> {
     // Mock implementation - do nothing in tests
   }
 }

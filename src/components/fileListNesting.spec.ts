@@ -12,13 +12,13 @@ describe("computeNestedFileOrder", () => {
       "i09_Source.mp3",
       "i09_Source_StandardAudio.wav",
       "i09_Source_StandardAudio.wav.annotations.eaf",
-      "i09_Source_StandardAudio.wav.oralAnnotations.wav"
+      "i09_Source_StandardAudio.wav.oralAnnotations.wav",
     ];
     expect(order(names)).toEqual([
       "i09_Source.mp3@0",
       "i09_Source_StandardAudio.wav@0",
       "i09_Source_StandardAudio.wav.annotations.eaf@1",
-      "i09_Source_StandardAudio.wav.oralAnnotations.wav@2"
+      "i09_Source_StandardAudio.wav.oralAnnotations.wav@2",
     ]);
   });
 
@@ -33,17 +33,12 @@ describe("computeNestedFileOrder", () => {
   });
 
   it("moves a child to immediately follow its parent even when listed apart", () => {
-    const names = [
-      "F.wav",
-      "unrelated.txt",
-      "F.wav.annotations.eaf",
-      "other.jpg"
-    ];
+    const names = ["F.wav", "unrelated.txt", "F.wav.annotations.eaf", "other.jpg"];
     expect(order(names)).toEqual([
       "F.wav@0",
       "F.wav.annotations.eaf@1",
       "unrelated.txt@0",
-      "other.jpg@0"
+      "other.jpg@0",
     ]);
   });
 
@@ -53,15 +48,11 @@ describe("computeNestedFileOrder", () => {
   });
 
   it("nests pfsx under the eaf when the eaf is present", () => {
-    const names = [
-      "F.wav",
-      "F.wav.annotations.eaf",
-      "F.wav.annotations.pfsx"
-    ];
+    const names = ["F.wav", "F.wav.annotations.eaf", "F.wav.annotations.pfsx"];
     expect(order(names)).toEqual([
       "F.wav@0",
       "F.wav.annotations.eaf@1",
-      "F.wav.annotations.pfsx@2"
+      "F.wav.annotations.pfsx@2",
     ]);
   });
 
@@ -71,15 +62,11 @@ describe("computeNestedFileOrder", () => {
   });
 
   it("accepts the transposed psfx prefs spelling", () => {
-    const names = [
-      "F.wav",
-      "F.wav.annotations.eaf",
-      "F.wav.annotations.psfx"
-    ];
+    const names = ["F.wav", "F.wav.annotations.eaf", "F.wav.annotations.psfx"];
     expect(order(names)).toEqual([
       "F.wav@0",
       "F.wav.annotations.eaf@1",
-      "F.wav.annotations.psfx@2"
+      "F.wav.annotations.psfx@2",
     ]);
   });
 
@@ -89,15 +76,11 @@ describe("computeNestedFileOrder", () => {
   });
 
   it("nests oralAnnotations under the eaf when present", () => {
-    const names = [
-      "F.wav",
-      "F.wav.annotations.eaf",
-      "F.wav.oralAnnotations.wav"
-    ];
+    const names = ["F.wav", "F.wav.annotations.eaf", "F.wav.oralAnnotations.wav"];
     expect(order(names)).toEqual([
       "F.wav@0",
       "F.wav.annotations.eaf@1",
-      "F.wav.oralAnnotations.wav@2"
+      "F.wav.oralAnnotations.wav@2",
     ]);
   });
 
@@ -112,11 +95,7 @@ describe("computeNestedFileOrder", () => {
   });
 
   it("matches case-insensitively", () => {
-    const names = [
-      "MyFile.WAV",
-      "myfile.wav.ANNOTATIONS.eaf",
-      "MYFILE.wav.OralAnnotations.WAV"
-    ];
+    const names = ["MyFile.WAV", "myfile.wav.ANNOTATIONS.eaf", "MYFILE.wav.OralAnnotations.WAV"];
     expect(computeNestedFileOrder(names).map((r) => r.depth)).toEqual([0, 1, 2]);
   });
 
@@ -127,44 +106,31 @@ describe("computeNestedFileOrder", () => {
 
   it("keeps multiple sibling children in original order under one parent", () => {
     // No eaf present, so both the oral and prefs files attach directly to F as siblings.
-    const names = [
-      "F.wav",
-      "F.wav.oralAnnotations.wav",
-      "F.wav.annotations.pfsx"
-    ];
+    const names = ["F.wav", "F.wav.oralAnnotations.wav", "F.wav.annotations.pfsx"];
     expect(order(names)).toEqual([
       "F.wav@0",
       "F.wav.oralAnnotations.wav@1",
-      "F.wav.annotations.pfsx@1"
+      "F.wav.annotations.pfsx@1",
     ]);
   });
 
   it("resolves the eaf as parent regardless of its position in the list", () => {
     // The eaf is listed last, but the oral still attaches to it (depth 2), not to F.
-    const names = [
-      "F.wav",
-      "F.wav.oralAnnotations.wav",
-      "F.wav.annotations.eaf"
-    ];
+    const names = ["F.wav", "F.wav.oralAnnotations.wav", "F.wav.annotations.eaf"];
     expect(order(names)).toEqual([
       "F.wav@0",
       "F.wav.annotations.eaf@1",
-      "F.wav.oralAnnotations.wav@2"
+      "F.wav.oralAnnotations.wav@2",
     ]);
   });
 
   it("handles two independent families", () => {
-    const names = [
-      "A.wav",
-      "A.wav.annotations.eaf",
-      "B.mp3",
-      "B.mp3.annotations.eaf"
-    ];
+    const names = ["A.wav", "A.wav.annotations.eaf", "B.mp3", "B.mp3.annotations.eaf"];
     expect(order(names)).toEqual([
       "A.wav@0",
       "A.wav.annotations.eaf@1",
       "B.mp3@0",
-      "B.mp3.annotations.eaf@1"
+      "B.mp3.annotations.eaf@1",
     ]);
   });
 

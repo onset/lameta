@@ -1,4 +1,5 @@
 import { Project } from "../model/Project/Project";
+import { exportablePersons, exportableSessions } from "../model/Project/exportableFolders";
 import { Folder } from "../model/Folder/Folder";
 import * as nodeArchiver from "archiver";
 import fs from "fs";
@@ -8,7 +9,6 @@ import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
 import { sentryBreadCrumb } from "../other/errorHandling";
 import { NotifyException } from "../components/Notify";
-import { debug } from "winston";
 
 export const kEol: string = require("os").EOL;
 
@@ -38,18 +38,17 @@ Last name
 export function makeGenericCsvZipFile(
   path: string,
   project: Project,
-  folderFilter: (f: Folder) => boolean
+  folderFilter: (f: Folder) => boolean,
 ): Promise<string> {
-  return asyncMakeZipFile(path, (archiver) =>
-    exportGenericCsv(project, archiver, folderFilter)
-  );
+  return asyncMakeZipFile(path, (archiver) => exportGenericCsv(project, archiver, folderFilter));
 }
 export async function asyncMakeZipFile(
   path: string,
-  synchronousExportFunction: (archive: nodeArchiver.Archiver) => void
+  synchronousExportFunction: (archive: nodeArchiver.Archiver) => void,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const archive = nodeArchiver.create("zip");
+    // without forceLocalTime, the files in the zip are stamped with UTC times
+    const archive = nodeArchiver.create("zip", { forceLocalTime: true });
 
     archive.on("warning", (err) => {
       console.log("makeGenericCsvZipFile warning:" + err.code);
@@ -79,18 +78,23 @@ export async function asyncMakeZipFile(
     } catch (e) {
       NotifyException(e, "There was an error making the zip file.");
     }
-    archive.finalize();
+    // archiver usually also reports a failure through the "error" event above, which notifies
+    // the user; rejecting here as well settles the promise when it does not.
+    archive.finalize().catch((err) => {
+      console.error("makeGenericCsvZipFile finalize:", err);
+      reject(err);
+    });
   });
 }
 
 export function exportGenericCsv(
   project: Project,
   archive: nodeArchiver.Archiver,
-  folderFilter: (f: Folder) => boolean
+  folderFilter: (f: Folder) => boolean,
 ) {
   archive.append(makeCsvForProject(project), { name: "project.csv" });
   archive.append(makeCsvForSessions(project, folderFilter), {
-    name: "sessions.csv"
+    name: "sessions.csv",
   });
   archive.append(makeCsvForPeople(project), { name: "people.csv" });
 }
@@ -115,14 +119,7 @@ function getGenericCsv(folders: Folder[]): string {
     return "";
   }
   currentKnownFields = folders[0].knownFields;
-  const blacklist = [
-    "modifiedDate",
-    "size",
-    "type",
-    "hasConsent",
-    "displayName",
-    "filename"
-  ];
+  const blacklist = ["modifiedDate", "size", "type", "hasConsent", "displayName", "filename"];
   const foundFields = getKeys(folders)
     .filter((k) => {
       if (blacklist.indexOf(k) > -1) return false;
@@ -188,10 +185,12 @@ function addContributionsIfSession(folder: Folder): string[] {
   }
   const session = folder as Session;
   return [
-    session
-      .getAllContributionsToAllFiles()
-      .map((c) => [c.role, c.personReference].join(":"))
-      .join("|")
+    csvEncode(
+      session
+        .getAllContributionsToAllFiles()
+        .map((c) => [c.role, c.personReference].join(":"))
+        .join("|"),
+    ),
   ];
 }
 
@@ -226,9 +225,12 @@ export function csvEncode(value: string): string {
   let needsQuotes = false;
   needsQuotes = value.indexOf(",") > -1;
 
-  // mac,linux, windows all have an \r, so that's
-  // enough, even though windows also has \n.
+  // A field containing any line break must be quoted, or the embedded
+  // newline splits the record. Check both \r and \n: a pasted value can
+  // contain a bare \n with no \r, and the row delimiter is os.EOL, which
+  // is a bare \n on mac/linux (so an unquoted \n would break the row there).
   needsQuotes = needsQuotes || value.indexOf("\r") > -1;
+  needsQuotes = needsQuotes || value.indexOf("\n") > -1;
 
   // LAM-115: https://linear.app/lameta/issue/LAM-115
   // If the value contains quotes, we must wrap the entire value in quotes.
@@ -252,12 +254,9 @@ export function makeCsvForProject(project: Project): string {
   return getGenericCsv([project]);
 }
 export function makeCsvForPeople(project: Project): string {
-  return getGenericCsv(project.persons.items);
+  return getGenericCsv(exportablePersons(project));
 }
 
-export function makeCsvForSessions(
-  project: Project,
-  folderFilter: (f: Folder) => boolean
-): string {
-  return getGenericCsv(project.sessions.items.filter(folderFilter));
+export function makeCsvForSessions(project: Project, folderFilter: (f: Folder) => boolean): string {
+  return getGenericCsv(exportableSessions(project).filter(folderFilter));
 }

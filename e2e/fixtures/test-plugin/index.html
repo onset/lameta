@@ -39,7 +39,7 @@
         try {
           await call("writeSidecar", [
             JSON.stringify({ ok: true, file: context.file.name }),
-            "e2e"
+            "e2e",
           ]);
         } catch (err) {
           document.getElementById("err").textContent = err.message;

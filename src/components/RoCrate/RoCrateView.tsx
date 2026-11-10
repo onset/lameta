@@ -14,8 +14,9 @@ export const RoCrateView: React.FunctionComponent<{
   doValidate: boolean;
 }> = (props) => {
   const [json, setJson] = React.useState<object>({});
-  const [validationResults, setValidationResults] =
-    React.useState<ValidationResult | undefined>(undefined);
+  const [validationResults, setValidationResults] = React.useState<ValidationResult | undefined>(
+    undefined,
+  );
 
   React.useEffect(() => {
     const loadAndValidate = async () => {
@@ -30,7 +31,7 @@ export const RoCrateView: React.FunctionComponent<{
             setValidationResults({
               errors: entries.filter((entry) => entry.status === "error"),
               warnings: entries.filter((entry) => entry.status === "warning"),
-              info: entries.filter((entry) => entry.status === "info")
+              info: entries.filter((entry) => entry.status === "info"),
             });
 
             // strip out errors that have a property of "license" for now. The validator does not match even the test data from its own repo
@@ -45,11 +46,11 @@ export const RoCrateView: React.FunctionComponent<{
                   message: `${e.message} ${e.stack}`,
                   id: "error",
                   status: "error",
-                  clause: "error"
-                }
+                  clause: "error",
+                },
               ],
               warnings: [],
-              info: []
+              info: [],
             });
           }
         }
@@ -59,7 +60,7 @@ export const RoCrateView: React.FunctionComponent<{
       }
     };
 
-    loadAndValidate();
+    void loadAndValidate(); // it catches all of its own errors
   }, [props.project, props.folder, props.doValidate]);
 
   const jsonString = React.useMemo(() => JSON.stringify(json, null, 2), [json]);

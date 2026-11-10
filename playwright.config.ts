@@ -19,6 +19,6 @@ export default defineConfig({
   outputDir: "tmp/playwright-output",
 
   use: {
-    trace: "retain-on-failure"
-  }
+    trace: "retain-on-failure",
+  },
 });

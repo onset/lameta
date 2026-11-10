@@ -52,7 +52,7 @@
     participant_4_full_name: { lameta: "contribution.name" },
     participant_4_role: { lameta: "contribution.role" },
     participant_5_full_name: { lameta: "contribution.name" },
-    participant_5_role: { lameta: "contribution.role" }
+    participant_5_role: { lameta: "contribution.role" },
   },
   person: {
     full_name: { lameta: "name" },
@@ -65,17 +65,17 @@
     primary_occupation: { lameta: "primaryOccupation" },
     description: { lameta: "description" },
     primary_language: {
-      lameta: "primaryLanguage"
+      lameta: "primaryLanguage",
     },
     primary_language_additional: { lameta: "primaryLanguageLearnedIn" },
     other_languages: {
-      lameta: "otherLanguages"
+      lameta: "otherLanguages",
     },
     mother_language: {
-      lameta: "mothersLanguage"
+      lameta: "mothersLanguage",
     },
     father_language: {
-      lameta: "fathersLanguage"
-    }
-  }
+      lameta: "fathersLanguage",
+    },
+  },
 }

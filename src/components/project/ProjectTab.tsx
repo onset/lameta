@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import * as React from "react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { observer } from "mobx-react";
 import { Project } from "../../model/Project/Project";
 //import { DocumentsPane } from "./DocumentsPane";
@@ -9,7 +9,7 @@ import AutoForm from "../AutoForm";
 import { FolderPane } from "../FolderPane";
 import { AuthorityLists } from "../../model/Project/AuthorityLists/AuthorityLists";
 import { ArchiveConfigurationForm } from "./ArchiveConfigurationForm";
-import { ImdiView } from "../ImdiView";
+import { ProjectImdiView } from "./ProjectImdiView";
 import "./ProjectTab.css";
 import userSettings from "../../other/UserSettings";
 import { ThemeProvider } from "@mui/material";
@@ -22,11 +22,10 @@ import { RoCrateView } from "../RoCrate/RoCrateView";
 import { MultilingualTextMigrationPanel } from "./MultilingualTextMigrationPanel";
 import {
   VocabularyTranslationsTab,
-  hasMultilingualVocabularyFields
+  hasMultilingualVocabularyFields,
 } from "./VocabularyTranslationsTab";
-
-// Remember the last selected tab within the Project tab (not persisted between runs)
-let lastProjectTabIndex = 0;
+import { navigationState, ProjectTabId } from "../../navigation/NavigationState";
+import { describeUnreadableMetadata } from "../../model/file/FileStatus";
 
 interface IProps {
   project: Project;
@@ -42,45 +41,51 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
   // Currently this is worthless... every config is going to have a Title, which will cause this to appear.
   // Leaving it for now to show how to turn tabs on an off in case we learn that there is a variation in
   // institutional preferences that will need it.
-  const showCollectionTab = props.project.properties.values().some((p) => {
-    return (
-      p.definition &&
-      p.definition.form === "collection" &&
-      p.definition.visibility === "always"
-    );
+  const showProjectTab = props.project.properties.values().some((p) => {
+    return p.definition && p.definition.form === "project" && p.definition.visibility === "always";
   });
 
-  // Only show Vocabulary Translations tab if there are multilingual vocab fields
-  const showVocabularyTranslationsTab = hasMultilingualVocabularyFields();
+  // When the .sprj could not be read, the tabs that edit its fields show why
+  // instead, because save() never writes over that file
+  const unreadable =
+    props.project.metadataFile && describeUnreadableMetadata(props.project.metadataFile);
+  const editsProjectFile = (form: React.ReactElement) =>
+    unreadable ? (
+      <p className="unreadableMetadata" data-testid="unreadable-metadata">
+        {unreadable}
+      </p>
+    ) : (
+      form
+    );
 
-  // Calculate the Languages tab index (depends on whether Collection tab is shown)
-  const languagesTabIndex = showCollectionTab ? 3 : 2;
+  // Only show  Translations tab if there are multilingual vocab fields
+  const showTranslationsTab = hasMultilingualVocabularyFields();
 
-  // Determine initial tab: if multilingualConversionPending, go to Languages tab
-  const getInitialTabIndex = () => {
-    if (
-      props.project.multilingualConversionPending &&
-      !hasNavigatedToLanguages.current
-    ) {
-      hasNavigatedToLanguages.current = true;
-      return languagesTabIndex;
-    }
-    return lastProjectTabIndex;
-  };
+  // in the order of the tabs below
+  const tabIds = [
+    "archive",
+    showProjectTab && "project",
+    "grant",
+    "languages",
+    showTranslationsTab && "translations",
+    "location",
+    "description-docs",
+    "other-docs",
+    GetOtherConfigurationSettings().archiveUsesImdi && "imdi",
+    GetOtherConfigurationSettings().archiveUsesParadisec && "paradisec",
+    userSettings.DeveloperMode && "lameta",
+    userSettings.DeveloperMode && "rocrate",
+  ].filter((id): id is ProjectTabId => !!id);
+  // navigationState.projectTab outlives this component, so the Project tab reopens to the last sub-tab
+  const tabIndex = Math.max(0, tabIds.indexOf(navigationState.projectTab));
 
-  const [tabIndex, setTabIndex] = useState(getInitialTabIndex);
-
-  // Also navigate to Languages tab if multilingualConversionPending becomes true after mount
+  // Go to the Languages tab if multilingualConversionPending is (or becomes) true
   useEffect(() => {
-    if (
-      props.project.multilingualConversionPending &&
-      !hasNavigatedToLanguages.current
-    ) {
+    if (props.project.multilingualConversionPending && !hasNavigatedToLanguages.current) {
       hasNavigatedToLanguages.current = true;
-      setTabIndex(languagesTabIndex);
-      lastProjectTabIndex = languagesTabIndex;
+      navigationState.setProjectTab("languages");
     }
-  }, [props.project.multilingualConversionPending, languagesTabIndex]);
+  }, [props.project.multilingualConversionPending]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -88,8 +93,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         className={"project"}
         selectedIndex={tabIndex}
         onSelect={(index) => {
-          setTabIndex(index);
-          lastProjectTabIndex = index;
+          navigationState.setProjectTab(tabIds[index]);
           props.project.saveFolderMetaData();
         }}
         css={css`
@@ -112,19 +116,13 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <Trans>Archive</Trans>
           </Tab>
-          {showCollectionTab && (
-            <Tab
-              className={"tab-project-collection"}
-              data-testid="project-collection-tab"
-            >
-              <Trans>Collection</Trans>
+          {showProjectTab && (
+            <Tab className={"tab-project-collection"} data-testid="project-collection-tab">
+              <Trans>Project</Trans>
             </Tab>
           )}
-          <Tab
-            className={"tab-project-funding-project"}
-            data-testid="project-funding-project-tab"
-          >
-            <Trans>Funding Project</Trans>
+          <Tab className={"tab-project-funding-project"} data-testid="project-funding-project-tab">
+            <Trans>Grant</Trans>
           </Tab>
           <Tab
             className={"tab-project-collection-languages"}
@@ -132,12 +130,12 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <Trans>Languages</Trans>
           </Tab>{" "}
-          {showVocabularyTranslationsTab && (
+          {showTranslationsTab && (
             <Tab
               className={"tab-project-vocabulary-translations"}
               data-testid="project-vocabulary-translations-tab"
             >
-              <Trans>Vocabulary Translations</Trans>
+              <Trans>Translations</Trans>
             </Tab>
           )}
           <Tab
@@ -153,30 +151,22 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             <Trans>Other Documents</Trans>
           </Tab>
           {GetOtherConfigurationSettings().archiveUsesImdi ? (
-            <Tab className={"tab-project-imdi"}>
-              IMDI {/* don't translate  */}
-            </Tab>
+            <Tab className={"tab-project-imdi"}>IMDI {/* don't translate  */}</Tab>
           ) : (
             <></>
           )}
           {GetOtherConfigurationSettings().archiveUsesParadisec ? (
-            <Tab className={"tab-project-paradisec"}>
-              PARADISEC {/* don't translate  */}
-            </Tab>
+            <Tab className={"tab-project-paradisec"}>PARADISEC {/* don't translate  */}</Tab>
           ) : (
             <></>
           )}
           {userSettings.DeveloperMode ? (
-            <Tab className={"tab-project-lameta"}>
-              LaMeta {/* don't translate  */}
-            </Tab>
+            <Tab className={"tab-project-lameta"}>LaMeta {/* don't translate  */}</Tab>
           ) : (
             <></>
           )}
           {userSettings.DeveloperMode ? (
-            <Tab className={"tab-project-rocrate"}>
-              Ro-Crate {/* don't translate  */}
-            </Tab>
+            <Tab className={"tab-project-rocrate"}>Ro-Crate {/* don't translate  */}</Tab>
           ) : (
             <></>
           )}
@@ -192,73 +182,79 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           />
         </TabPanel> */}
         <TabPanel>
-          <ArchiveConfigurationForm
-            archiveConfigurationField={props.project.properties.getTextField(
-              "archiveConfigurationName"
-            )}
-            customChoicesField={props.project.properties.getTextField(
-              "customAccessChoices"
-            )}
-            authorityLists={props.authorityLists}
-            onChange={() => {
-              props.project.metadataFile!.wasChangeThatMobxDoesNotNotice();
-              props.project.saveFolderMetaData();
-              props.reload();
-            }}
-          />
+          {editsProjectFile(
+            <ArchiveConfigurationForm
+              archiveConfigurationField={props.project.properties.getTextField(
+                "archiveConfigurationName",
+              )}
+              customChoicesField={props.project.properties.getTextField("customAccessChoices")}
+              authorityLists={props.authorityLists}
+              onChange={() => {
+                props.project.metadataFile!.wasChangeThatMobxDoesNotNotice();
+                props.project.saveFolderMetaData();
+                props.reload();
+              }}
+            />,
+          )}
         </TabPanel>
-        {showCollectionTab && (
+        {showProjectTab && (
           <TabPanel>
+            {editsProjectFile(
+              <AutoForm
+                form="project"
+                formClass="project"
+                folder={props.project}
+                authorityLists={props.authorityLists}
+                languageFinder={props.project.languageFinder}
+                rowStyle={true}
+              />,
+            )}
+          </TabPanel>
+        )}
+        <TabPanel>
+          {editsProjectFile(
             <AutoForm
-              form="collection"
+              form="fundingProject"
               formClass="project"
               folder={props.project}
               authorityLists={props.authorityLists}
               languageFinder={props.project.languageFinder}
               rowStyle={true}
-            />
-          </TabPanel>
-        )}
-        <TabPanel>
-          <AutoForm
-            form="fundingProject"
-            formClass="project"
-            folder={props.project}
-            authorityLists={props.authorityLists}
-            languageFinder={props.project.languageFinder}
-            rowStyle={true}
-          />
+            />,
+          )}
         </TabPanel>
         <TabPanel>
-          <AutoForm
-            form="languages"
-            formClass="project"
-            folder={props.project}
-            authorityLists={props.authorityLists}
-            languageFinder={props.project.languageFinder}
-            rowStyle={true}
-            insertAfterField={{
-              fieldKey: "metadataLanguages",
-              content: (
-                <MultilingualTextMigrationPanel project={props.project} />
-              )
-            }}
-          />
+          {editsProjectFile(
+            <AutoForm
+              form="languages"
+              formClass="project"
+              folder={props.project}
+              authorityLists={props.authorityLists}
+              languageFinder={props.project.languageFinder}
+              rowStyle={true}
+              insertAfterField={{
+                fieldKey: "metadataLanguages",
+                content: <MultilingualTextMigrationPanel project={props.project} />,
+              }}
+            />,
+          )}
         </TabPanel>
-        {showVocabularyTranslationsTab && (
+        {showTranslationsTab && (
           <TabPanel>
             <VocabularyTranslationsTab project={props.project} />
           </TabPanel>
         )}{" "}
         <TabPanel>
-          <AutoForm
-            form="collectionLocation"
-            formClass="project"
-            folder={props.project}
-            authorityLists={props.authorityLists}
-            languageFinder={props.project.languageFinder}
-            rowStyle={true}
-          />
+          {editsProjectFile(
+            <AutoForm
+              form="projectLocation"
+              formClass="project"
+              folder={props.project}
+              authorityLists={props.authorityLists}
+              languageFinder={props.project.languageFinder}
+              rowStyle={true}
+            />,
+          )}
         </TabPanel>
         <TabPanel>
           <FolderPane
@@ -269,9 +265,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
             authorityLists={props.authorityLists}
           >
             <strong>
-              <Trans>
-                Add documents here that describe the projects and corpus.
-              </Trans>
+              <Trans>Add documents here that describe the projects and corpus.</Trans>
             </strong>
             <br />
           </FolderPane>
@@ -286,9 +280,8 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
           >
             <strong>
               <Trans>
-                Add documents here that don't seem to fit anywhere else. An
-                example would be documents explaining how the project was
-                funded.
+                Add documents here that don't seem to fit anywhere else. An example would be
+                documents explaining how the project was funded.
               </Trans>
             </strong>
             <br />
@@ -297,22 +290,14 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         </TabPanel>
         {GetOtherConfigurationSettings().archiveUsesImdi ? (
           <TabPanel>
-            <ImdiView
-              target={props.project}
-              project={props.project}
-              folder={props.project}
-            />
+            <ProjectImdiView project={props.project} />
           </TabPanel>
         ) : (
           <></>
         )}
         {GetOtherConfigurationSettings().archiveUsesParadisec ? (
           <TabPanel>
-            <ParadisecView
-              target={props.project}
-              project={props.project}
-              folder={props.project}
-            />
+            <ParadisecView target={props.project} project={props.project} folder={props.project} />
           </TabPanel>
         ) : (
           <></>
@@ -320,11 +305,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         {/* if in developer mode, show LametaXmlView */}
         {userSettings.DeveloperMode ? (
           <TabPanel>
-            <LametaXmlView
-              target={props.project}
-              project={props.project}
-              folder={props.project}
-            />
+            <LametaXmlView target={props.project} project={props.project} folder={props.project} />
           </TabPanel>
         ) : (
           <></>
@@ -332,11 +313,7 @@ export const ProjectTab: React.FunctionComponent<IProps> = observer((props) => {
         {/* if in developer mode, show RoCrate Export */}
         {userSettings.DeveloperMode ? (
           <TabPanel>
-            <RoCrateView
-              project={props.project}
-              folder={props.project}
-              doValidate={true}
-            />
+            <RoCrateView project={props.project} folder={props.project} doValidate={true} />
           </TabPanel>
         ) : (
           <></>

@@ -51,7 +51,7 @@ interface ProviderInstance {
  * or empty `handles` means "query for every file"; otherwise it matches like a tab `match`. */
 export function providerHandlesFile(
   handles: PluginTabMatch | undefined,
-  file: { extension: string; mimeType: string; lametaType: string }
+  file: { extension: string; mimeType: string; lametaType: string },
 ): boolean {
   if (!handles) return true;
   const hasCriteria =
@@ -77,7 +77,7 @@ class TabProviderHost {
     const wanted = pluginManager.getEnabledTabProviders();
     const wantedIds = new Set(wanted.map((r) => r.id));
 
-    for (const id of [...this.providers.keys()])
+    for (const id of Array.from(this.providers.keys()))
       if (!wantedIds.has(id)) this.destroyProvider(id);
 
     for (const record of wanted) {
@@ -113,10 +113,10 @@ class TabProviderHost {
         plugin: {
           id: record.id,
           version: record.manifest!.version,
-          grantedPermissions: [...(record.manifest!.permissions || [])]
+          grantedPermissions: [...(record.manifest!.permissions || [])],
         },
         ui: { languageCode: currentUILanguage, appVersion: pkg.version },
-        role: "tabProvider"
+        role: "tabProvider",
       };
 
       const bridge = new PluginHostBridge({
@@ -127,7 +127,7 @@ class TabProviderHost {
         fileName: "",
         folderDirectory: "",
         pluginId: record.id,
-        permissions: record.manifest!.permissions || []
+        permissions: record.manifest!.permissions || [],
       });
 
       document.body.appendChild(iframe);
@@ -136,13 +136,10 @@ class TabProviderHost {
         iframe,
         bridge,
         record,
-        reloadCounter: record.reloadCounter
+        reloadCounter: record.reloadCounter,
       });
     } catch (e) {
-      console.warn(
-        `TabProviderHost: could not create provider for ${record.id}`,
-        e
-      );
+      console.warn(`TabProviderHost: could not create provider for ${record.id}`, e);
     }
   }
 
@@ -169,11 +166,11 @@ class TabProviderHost {
    */
   public async getTabsForFile(
     file: TabProviderFile,
-    folder: TabProviderFolder
+    folder: TabProviderFolder,
   ): Promise<MatchedProviderTab[]> {
     this.ensureSynced();
     const providers = [...this.providers.values()].sort((a, b) =>
-      a.record.id < b.record.id ? -1 : a.record.id > b.record.id ? 1 : 0
+      a.record.id < b.record.id ? -1 : a.record.id > b.record.id ? 1 : 0,
     );
 
     const perProvider = await Promise.all(
@@ -189,12 +186,12 @@ class TabProviderHost {
             pluginVersion: p.record.manifest!.version,
             permissions: p.record.manifest!.permissions || [],
             entry: p.record.manifest!.tabProvider!.entry,
-            tab
+            tab,
           }));
         } catch {
           return [];
         }
-      })
+      }),
     );
     return perProvider.flat();
   }

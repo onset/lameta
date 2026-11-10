@@ -57,7 +57,7 @@ describe("parsePluginManifest", () => {
     expect(result.errors).toBeUndefined();
     expect(result.manifest!.label).toEqual({
       en: "Nice Name",
-      es: "Buen nombre"
+      es: "Buen nombre",
     });
     expect(result.manifest!.infoUrl).toBe("https://example.org/about");
   });
@@ -170,9 +170,7 @@ describe("parsePluginManifest", () => {
   });
 
   it("errors when neither tabProvider nor tabs is declared", () => {
-    const result = parsePluginManifest(
-      `{ id: "a.b", name: "n", version: "1", apiVersion: 1 }`
-    );
+    const result = parsePluginManifest(`{ id: "a.b", name: "n", version: "1", apiVersion: 1 }`);
     expect(result.errors!.join(" ")).toMatch(/tabProvider|tabs/);
   });
 
@@ -238,9 +236,9 @@ describe("parsePluginManifest", () => {
         name: "n",
         version: "1",
         apiVersion: 1,
-        "infoUrl": "https://example.org",
-        tabs: [{ id: "t", label: "L", entry: "i.html" }]
-      })
+        infoUrl: "https://example.org",
+        tabs: [{ id: "t", label: "L", entry: "i.html" }],
+      }),
     );
     expect(result.errors).toBeUndefined();
   });

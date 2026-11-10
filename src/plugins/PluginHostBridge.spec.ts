@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as fs from "fs-extra";
 import * as os from "os";
 import * as Path from "path";
@@ -25,11 +25,11 @@ function makeContext(overrides: Partial<PluginInitContext> = {}): PluginInitCont
       extension: "wav",
       mimeType: "audio/wav",
       lametaType: "Audio",
-      uri: "file:///foo.wav"
+      uri: "file:///foo.wav",
     },
     folder: { type: "session", directory: "" },
     ui: { languageCode: "en", appVersion: "3.0.0" },
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -50,7 +50,7 @@ function makeHarness(opts: Partial<PluginBridgeOptions>): Harness {
   const posted: { msg: any; transfer?: Transferable[] }[] = [];
   const contentWindow: any = {
     postMessage: (msg: any, _origin: string, transfer?: Transferable[]) =>
-      posted.push({ msg, transfer })
+      posted.push({ msg, transfer }),
   };
   const loadHandlers: Array<() => void> = [];
   const iframe: any = {
@@ -58,7 +58,7 @@ function makeHarness(opts: Partial<PluginBridgeOptions>): Harness {
     addEventListener: (type: string, fn: () => void) => {
       if (type === "load") loadHandlers.push(fn);
     },
-    removeEventListener: () => {}
+    removeEventListener: () => {},
   };
 
   const full: PluginBridgeOptions = {
@@ -69,7 +69,7 @@ function makeHarness(opts: Partial<PluginBridgeOptions>): Harness {
     folderDirectory: "",
     pluginId: "org.test.plugin",
     permissions: [],
-    ...opts
+    ...opts,
   };
 
   const callsBefore = (window.addEventListener as any).mock.calls.length;
@@ -87,9 +87,7 @@ function makeHarness(opts: Partial<PluginBridgeOptions>): Harness {
     send({ type: "lameta:request", id, method, params });
     // handleRequest is async (real fs); poll the captured responses.
     for (let i = 0; i < 200; i++) {
-      const hit = posted.find(
-        (p) => p.msg?.type === "lameta:response" && p.msg.id === id
-      );
+      const hit = posted.find((p) => p.msg?.type === "lameta:response" && p.msg.id === id);
       if (hit) return hit.msg as { result?: any; error?: string };
       await new Promise((r) => setTimeout(r, 2));
     }
@@ -130,10 +128,10 @@ function mediaOpts(perms: string[] = ["companionFiles"]): Partial<PluginBridgeOp
         extension: "wav",
         mimeType: "audio/wav",
         lametaType: "Audio",
-        uri: "file:///foo.wav"
+        uri: "file:///foo.wav",
       },
-      folder: { type: "session", directory: tmp }
-    })
+      folder: { type: "session", directory: tmp },
+    }),
   };
 }
 
@@ -174,9 +172,9 @@ describe("PluginHostBridge — handshake", () => {
         plugin: {
           id: "org.test.plugin",
           version: "1.0.0",
-          grantedPermissions: perms as unknown as string[]
-        }
-      })
+          grantedPermissions: perms as unknown as string[],
+        },
+      }),
     });
     h.send({ type: "lameta:ready" });
     const init = h.posted.find((p) => p.msg?.type === "lameta:init")!;
@@ -246,14 +244,10 @@ describe("PluginHostBridge — companions.* round-trips (generic scoping)", () =
 
     await h.request("companions.rename", [eaf, "foo.wav.annotations.pfsx"]);
     expect(await h.request("companions.exists", [eaf])).toBe(false);
-    expect(await h.request("companions.exists", ["foo.wav.annotations.pfsx"])).toBe(
-      true
-    );
+    expect(await h.request("companions.exists", ["foo.wav.annotations.pfsx"])).toBe(true);
 
     await h.request("companions.delete", ["foo.wav.annotations.pfsx"]);
-    expect(await h.request("companions.exists", ["foo.wav.annotations.pfsx"])).toBe(
-      false
-    );
+    expect(await h.request("companions.exists", ["foo.wav.annotations.pfsx"])).toBe(false);
   });
 
   it("writeBytes/readBytes round-trips a segment wav one level deep", async () => {
@@ -279,15 +273,10 @@ describe("PluginHostBridge — companions.* round-trips (generic scoping)", () =
     const h = makeHarness(mediaOpts());
     await h.request("companions.writeBytes", [
       "foo.wav_Annotations/seg.wav",
-      te.encode("a").buffer
+      te.encode("a").buffer,
     ]);
-    await h.request("companions.writeText", [
-      "foo.wav_Annotations/seg.txt",
-      "note"
-    ]);
-    const list: { name: string }[] = await h.request("companions.list", [
-      "foo.wav_Annotations"
-    ]);
+    await h.request("companions.writeText", ["foo.wav_Annotations/seg.txt", "note"]);
+    const list: { name: string }[] = await h.request("companions.list", ["foo.wav_Annotations"]);
     const names = list.map((e) => e.name).sort();
     expect(names).toEqual(["seg.txt", "seg.wav"]);
   });
@@ -301,16 +290,14 @@ describe("PluginHostBridge — companions.* round-trips (generic scoping)", () =
   it("rejects traversal and absolute companion paths", async () => {
     const h = makeHarness(mediaOpts());
     expect((await h.raw("companions.readText", ["../evil"])).error).toBeTruthy();
-    expect(
-      (await h.raw("companions.writeText", ["/etc/passwd", "x"])).error
-    ).toBeTruthy();
+    expect((await h.raw("companions.writeText", ["/etc/passwd", "x"])).error).toBeTruthy();
   });
 
   it("refuses to delete a directory", async () => {
     const h = makeHarness(mediaOpts());
     await h.request("companions.writeBytes", [
       "foo.wav_Annotations/seg.wav",
-      te.encode("a").buffer
+      te.encode("a").buffer,
     ]);
     const r = await h.raw("companions.delete", ["foo.wav_Annotations"]);
     expect(r.error).toMatch(/refusing to delete a directory/);
@@ -333,21 +320,19 @@ describe("PluginHostBridge — companions.* round-trips (generic scoping)", () =
           extension: "eaf",
           mimeType: "text/xml",
           lametaType: "ELAN",
-          uri: "file:///foo.wav.annotations.eaf"
+          uri: "file:///foo.wav.annotations.eaf",
         },
-        folder: { type: "session", directory: tmp }
-      })
+        folder: { type: "session", directory: tmp },
+      }),
     });
     // the media file itself is reachable
     expect(await h.request("companions.readText", ["foo.wav"])).toBe("MEDIA-BYTES");
     // and its segment recordings
     await h.request("companions.writeBytes", [
       "foo.wav_Annotations/seg.wav",
-      te.encode("s").buffer
+      te.encode("s").buffer,
     ]);
-    expect(await h.request("companions.exists", ["foo.wav_Annotations/seg.wav"])).toBe(
-      true
-    );
+    expect(await h.request("companions.exists", ["foo.wav_Annotations/seg.wav"])).toBe(true);
   });
 });
 
@@ -359,33 +344,24 @@ describe("PluginHostBridge — ffmpeg permission gating & validation", () => {
     const h = makeHarness(mediaOpts(["companionFiles"])); // no "ffmpeg"
     expect((await h.raw("ffmpeg.probe", [])).error).toMatch(/ffmpeg permission/);
     expect(
-      (
-        await h.raw("ffmpeg.run", [
-          { outputRelPath: "foo_StandardAudio.wav", args: ["-vn"] }
-        ])
-      ).error
+      (await h.raw("ffmpeg.run", [{ outputRelPath: "foo_StandardAudio.wav", args: ["-vn"] }]))
+        .error,
     ).toMatch(/ffmpeg permission/);
   });
 
   it("rejects ffmpeg.run with a missing outputRelPath or non-string args", async () => {
     const h = makeHarness(mediaOpts(["companionFiles", "ffmpeg"]));
     expect((await h.raw("ffmpeg.run", [{ args: ["-vn"] }])).error).toMatch(
-      /outputRelPath must be a non-empty string/
+      /outputRelPath must be a non-empty string/,
     );
     expect(
-      (
-        await h.raw("ffmpeg.run", [
-          { outputRelPath: "foo_StandardAudio.wav", args: [1, 2] }
-        ])
-      ).error
+      (await h.raw("ffmpeg.run", [{ outputRelPath: "foo_StandardAudio.wav", args: [1, 2] }])).error,
     ).toMatch(/args must be an array of strings/);
   });
 
   it("rejects an ffmpeg.run output that escapes the companion allowlist", async () => {
     const h = makeHarness(mediaOpts(["companionFiles", "ffmpeg"]));
-    const r = await h.raw("ffmpeg.run", [
-      { outputRelPath: "../escape.wav", args: ["-vn"] }
-    ]);
+    const r = await h.raw("ffmpeg.run", [{ outputRelPath: "../escape.wav", args: ["-vn"] }]);
     expect(r.error).toMatch(/not an allowed companion path|outside the file/);
   });
 });
@@ -398,7 +374,7 @@ describe("PluginHostBridge — selectFile", () => {
       onSelectFile: (rel: string) => {
         calls.push(rel);
         return true;
-      }
+      },
     });
     expect(await h.request("selectFile", ["foo.wav.annotations.eaf"])).toBe(true);
     expect(calls).toEqual(["foo.wav.annotations.eaf"]);
@@ -439,11 +415,11 @@ describe("PluginHostBridge — tab provider (getTabs)", () => {
         plugin: {
           id: "org.test.plugin",
           version: "1.0.0",
-          grantedPermissions: ["companionFiles"]
+          grantedPermissions: ["companionFiles"],
         },
         ui: { languageCode: "en", appVersion: "3.0.0" },
-        role: "tabProvider"
-      } as any
+        role: "tabProvider",
+      } as any,
     });
   }
   const fileQuery = (name: string, extension: string) => ({
@@ -453,9 +429,9 @@ describe("PluginHostBridge — tab provider (getTabs)", () => {
       mimeType: "application/octet-stream",
       lametaType: extension === "eaf" ? "ELAN" : "Audio",
       path: Path.join(tmp, name),
-      uri: "file:///" + name
+      uri: "file:///" + name,
     },
-    folder: { type: "session", directory: tmp }
+    folder: { type: "session", directory: tmp },
   });
 
   it("sends getTabs and resolves with the provider's returned tabs", async () => {
@@ -466,7 +442,7 @@ describe("PluginHostBridge — tab provider (getTabs)", () => {
     h.send({
       type: "lameta:tabs",
       id: q.msg.id,
-      tabs: [{ id: "start", label: "SayMore: Start Annotating" }]
+      tabs: [{ id: "start", label: "SayMore: Start Annotating" }],
     });
     expect(await p).toEqual([{ id: "start", label: "SayMore: Start Annotating" }]);
   });
@@ -486,11 +462,9 @@ describe("PluginHostBridge — tab provider (getTabs)", () => {
     h.send({
       type: "lameta:tabs",
       id: q.msg.id,
-      tabs: [{ id: "segments", label: "Segments", claimDefault: true }]
+      tabs: [{ id: "segments", label: "Segments", claimDefault: true }],
     });
-    expect(await p).toEqual([
-      { id: "segments", label: "Segments", claimDefault: true }
-    ]);
+    expect(await p).toEqual([{ id: "segments", label: "Segments", claimDefault: true }]);
   });
 
   it("treats a malformed tabs response as [] (never a hang)", async () => {
@@ -522,7 +496,7 @@ describe("PluginHostBridge — write-completion guarantee on teardown", () => {
       type: "lameta:request",
       id: 99999,
       method: "companions.writeText",
-      params: ["foo.wav.annotations.eaf", "PERSISTED"]
+      params: ["foo.wav.annotations.eaf", "PERSISTED"],
     });
     h.bridge.detach();
     (h.contentWindow as any).postMessage = () => {

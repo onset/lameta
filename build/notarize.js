@@ -27,7 +27,7 @@ exports.default = async function notarizing(context) {
           return reject(err);
         }
         resolve(password);
-      }
+      },
     );
   });
 
@@ -39,7 +39,7 @@ exports.default = async function notarizing(context) {
   };
   console.log(`calling notarize(${JSON.stringify(params)})`);
   console.log(
-    "This takes a long time (like 10 minutes or so), because it waits for the notarization to finish at Apple before proceeding."
+    "This takes a long time (like 10 minutes or so), because it waits for the notarization to finish at Apple before proceeding.",
   );
   return await notarize(params);
 };

@@ -4,19 +4,19 @@
       id: "Public",
       label: "Public",
       description: "Open to all users",
-      ldacAccessCategory: "ldac:OpenAccess"
+      ldacAccessCategory: "ldac:OpenAccess",
     },
     {
       id: "REAP",
       label: "REAP Users",
       description: "Restricted to REAP users",
-      ldacAccessCategory: "ldac:AuthorizedAccess"
+      ldacAccessCategory: "ldac:AuthorizedAccess",
     },
     {
       id: "Entity",
       label: "Entity",
       description: "Restricted to Organizational Unit",
-      ldacAccessCategory: "ldac:AuthorizedAccess"
-    }
-  ]
+      ldacAccessCategory: "ldac:AuthorizedAccess",
+    },
+  ],
 }

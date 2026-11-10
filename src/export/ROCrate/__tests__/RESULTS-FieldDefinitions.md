@@ -37,16 +37,14 @@ The implementation successfully demonstrates using real field definitions from `
 ```typescript
 import {
   prepareGlobalFieldDefinitionCatalog,
-  fieldDefinitionsOfCurrentConfig
+  fieldDefinitionsOfCurrentConfig,
 } from "../../../model/field/ConfiguredFieldDefinitions";
 
 // Load real configuration
 prepareGlobalFieldDefinitionCatalog("lameta");
 
 // Use real field definitions
-const genreField = fieldDefinitionsOfCurrentConfig.session.find(
-  (f) => f.key === "genre"
-);
+const genreField = fieldDefinitionsOfCurrentConfig.session.find((f) => f.key === "genre");
 expect(genreField?.rocrate?.key).toBe("ldac:linguisticGenre");
 ```
 

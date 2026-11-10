@@ -81,7 +81,7 @@ export type ParseManifestResult =
 
 // Plugin ids namespace both the sidecar folder and the install folder, so keep them to a
 // safe, filesystem-friendly character set.
-export const PLUGIN_ID_REGEX = /^[a-z0-9][a-z0-9.\-]*$/;
+export const PLUGIN_ID_REGEX = /^[a-z0-9][a-z0-9.-]*$/;
 
 function isPlainObject(v: any): boolean {
   return v != null && typeof v === "object" && !Array.isArray(v);
@@ -89,8 +89,7 @@ function isPlainObject(v: any): boolean {
 
 function validateLabel(label: any, path: string, errors: string[]): void {
   if (typeof label === "string") {
-    if (label.trim().length === 0)
-      errors.push(`${path} must not be an empty string`);
+    if (label.trim().length === 0) errors.push(`${path} must not be an empty string`);
     return;
   }
   if (isPlainObject(label)) {
@@ -100,37 +99,27 @@ function validateLabel(label: any, path: string, errors: string[]): void {
       return;
     }
     for (const k of keys) {
-      if (typeof label[k] !== "string")
-        errors.push(`${path}.${k} must be a string`);
+      if (typeof label[k] !== "string") errors.push(`${path}.${k} must be a string`);
     }
     return;
   }
   errors.push(`${path} must be a string or a language-code map`);
 }
 
-function validateStringArray(
-  value: any,
-  path: string,
-  errors: string[]
-): void {
+function validateStringArray(value: any, path: string, errors: string[]): void {
   if (value === undefined) return;
   if (!Array.isArray(value)) {
     errors.push(`${path} must be an array of strings`);
     return;
   }
   value.forEach((v, i) => {
-    if (typeof v !== "string")
-      errors.push(`${path}[${i}] must be a string`);
+    if (typeof v !== "string") errors.push(`${path}[${i}] must be a string`);
   });
 }
 
 /** Validate a match/handles object (both share the {lametaTypes,extensions,mimePatterns} shape)
  * and return the normalized form (extensions lowercased, dot stripped). */
-function validateMatch(
-  match: any,
-  path: string,
-  errors: string[]
-): PluginTabMatch | undefined {
+function validateMatch(match: any, path: string, errors: string[]): PluginTabMatch | undefined {
   if (match === undefined) return undefined;
   if (!isPlainObject(match)) {
     errors.push(`${path} must be an object`);
@@ -144,14 +133,11 @@ function validateMatch(
     extensions: match.extensions
       ? match.extensions.map((e: string) => e.toLowerCase().replace(/^\./, ""))
       : undefined,
-    mimePatterns: match.mimePatterns
+    mimePatterns: match.mimePatterns,
   };
 }
 
-function validateTabProvider(
-  tp: any,
-  errors: string[]
-): PluginTabProviderManifest | undefined {
+function validateTabProvider(tp: any, errors: string[]): PluginTabProviderManifest | undefined {
   if (!isPlainObject(tp)) {
     errors.push("tabProvider must be an object");
     return undefined;
@@ -162,11 +148,7 @@ function validateTabProvider(
   return { entry: tp.entry, handles };
 }
 
-function validateTab(
-  tab: any,
-  index: number,
-  errors: string[]
-): PluginTabManifest | undefined {
+function validateTab(tab: any, index: number, errors: string[]): PluginTabManifest | undefined {
   const path = `tabs[${index}]`;
   if (!isPlainObject(tab)) {
     errors.push(`${path} must be an object`);
@@ -182,29 +164,14 @@ function validateTab(
     if (!isPlainObject(tab.match)) {
       errors.push(`${path}.match must be an object`);
     } else {
-      validateStringArray(
-        tab.match.lametaTypes,
-        `${path}.match.lametaTypes`,
-        errors
-      );
-      validateStringArray(
-        tab.match.extensions,
-        `${path}.match.extensions`,
-        errors
-      );
-      validateStringArray(
-        tab.match.mimePatterns,
-        `${path}.match.mimePatterns`,
-        errors
-      );
+      validateStringArray(tab.match.lametaTypes, `${path}.match.lametaTypes`, errors);
+      validateStringArray(tab.match.extensions, `${path}.match.extensions`, errors);
+      validateStringArray(tab.match.mimePatterns, `${path}.match.mimePatterns`, errors);
     }
   }
   if (tab.claimDefault !== undefined && typeof tab.claimDefault !== "boolean")
     errors.push(`${path}.claimDefault must be a boolean`);
-  if (
-    tab.defaultPriority !== undefined &&
-    typeof tab.defaultPriority !== "number"
-  )
+  if (tab.defaultPriority !== undefined && typeof tab.defaultPriority !== "number")
     errors.push(`${path}.defaultPriority must be a number`);
 
   // Return the (possibly partially-invalid) shape; caller only uses it when errors empty.
@@ -212,11 +179,9 @@ function validateTab(
     ? {
         lametaTypes: tab.match.lametaTypes,
         extensions: tab.match.extensions
-          ? tab.match.extensions.map((e: string) =>
-              e.toLowerCase().replace(/^\./, "")
-            )
+          ? tab.match.extensions.map((e: string) => e.toLowerCase().replace(/^\./, ""))
           : undefined,
-        mimePatterns: tab.match.mimePatterns
+        mimePatterns: tab.match.mimePatterns,
       }
     : undefined;
 
@@ -226,8 +191,7 @@ function validateTab(
     entry: tab.entry,
     match,
     claimDefault: tab.claimDefault === true,
-    defaultPriority:
-      typeof tab.defaultPriority === "number" ? tab.defaultPriority : 0
+    defaultPriority: typeof tab.defaultPriority === "number" ? tab.defaultPriority : 0,
   };
 }
 
@@ -251,7 +215,7 @@ export function parsePluginManifest(text: string): ParseManifestResult {
 
   if (typeof raw.id !== "string" || !PLUGIN_ID_REGEX.test(raw.id))
     errors.push(
-      `id is required and must match ${PLUGIN_ID_REGEX} (lowercase letters, digits, dots, hyphens)`
+      `id is required and must match ${PLUGIN_ID_REGEX} (lowercase letters, digits, dots, hyphens)`,
     );
   if (typeof raw.name !== "string" || raw.name.trim().length === 0)
     errors.push("name is required and must be a non-empty string");
@@ -274,13 +238,12 @@ export function parsePluginManifest(text: string): ParseManifestResult {
       errors.push("permissions must be an array of strings");
     } else {
       raw.permissions.forEach((p: any, i: number) => {
-        if (typeof p !== "string")
-          errors.push(`permissions[${i}] must be a string`);
+        if (typeof p !== "string") errors.push(`permissions[${i}] must be a string`);
         else if (!KNOWN_PERMISSIONS.includes(p))
           errors.push(
             `permissions[${i}] "${p}" is not a known permission (known: ${KNOWN_PERMISSIONS.join(
-              ", "
-            )})`
+              ", ",
+            )})`,
           );
       });
     }
@@ -312,9 +275,7 @@ export function parsePluginManifest(text: string): ParseManifestResult {
   }
 
   if (!hasTabProvider && !hasTabs)
-    errors.push(
-      "a manifest must declare a `tabProvider` or a non-empty `tabs` array"
-    );
+    errors.push("a manifest must declare a `tabProvider` or a non-empty `tabs` array");
 
   if (errors.length > 0) return { errors };
 
@@ -331,17 +292,14 @@ export function parsePluginManifest(text: string): ParseManifestResult {
       minLametaVersion: raw.minLametaVersion,
       permissions: Array.isArray(raw.permissions) ? raw.permissions : [],
       tabProvider,
-      tabs
-    }
+      tabs,
+    },
   };
 }
 
 /** Resolve a LocalizableLabel to a string for a given UI language, falling back to "en"
  * and then to any available value. */
-export function localizeLabel(
-  label: LocalizableLabel,
-  languageCode: string
-): string {
+export function localizeLabel(label: LocalizableLabel, languageCode: string): string {
   if (typeof label === "string") return label;
   if (!label || typeof label !== "object") return "";
   return (

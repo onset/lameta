@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { FolderSearchUtilities } from "./folderSearch-e2e-helpers";
 
 let lameta: LametaE2ERunner;
@@ -11,9 +11,8 @@ let searchUtils: FolderSearchUtilities;
 test.describe("Person Language Search", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "PersonLanguageSearchTest");
+    project = await launchWithProject(lameta, "PersonLanguageSearchTest");
+    page = lameta.page;
     searchUtils = new FolderSearchUtilities(page);
   });
 
@@ -45,20 +44,16 @@ test.describe("Person Language Search", () => {
 
     // Debug: Check how many people are visible before searching
     const allPeopleBeforeSearch = page.locator(".folderList .rt-tbody .rt-tr");
-    const countBeforeSearch = await allPeopleBeforeSearch.count();
+    await allPeopleBeforeSearch.count();
 
     // Debug: Check if we can see the Test Person
-    const testPersonVisible = await page
-      .getByRole("gridcell", { name: /Test Person/i })
-      .isVisible();
+    await page.getByRole("gridcell", { name: /Test Person/i }).isVisible();
 
     // Debug: First test if basic name search works
 
     await searchUtils.performSearch("Test");
     const countAfterNameSearch = await allPeopleBeforeSearch.count();
-    console.log(
-      `Debug: ${countAfterNameSearch} people visible after searching for 'Test'`
-    );
+    console.log(`Debug: ${countAfterNameSearch} people visible after searching for 'Test'`);
 
     // Clear the search before testing language search
     await searchUtils.clearSearch();

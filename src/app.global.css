@@ -11,8 +11,8 @@
   --default-font-size: 1em;
 
   /* Override with a specific stack */
-  --default-fonts: "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Ubuntu",
-    "Open Sans", sans-serif;
+  --default-fonts:
+    "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Ubuntu", "Open Sans", sans-serif;
   --color-interstitial: #f0f0f0;
   --field-height: 2em;
   --label-to-field-sep: 3px;
@@ -39,7 +39,7 @@ html,
   height: 100%;
   margin: 0;
   background-color: var(--color-interstitial);
-  color: black; /* blueprint messes with this */
+  color: var(--color-text-primary); /* blueprint messes with this */
   font-family: var(--default-fonts);
 }
 
@@ -185,7 +185,7 @@ button {
 }
 
 .Select-value-label {
-  color: black !important;
+  color: var(--color-text-primary) !important;
 }
 
 .react-tabs__tab:hover,

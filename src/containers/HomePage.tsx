@@ -1,51 +1,50 @@
+import { AlphaWarning } from "./AlphaWarning";
+import { BetaWarning } from "./BetaWarning";
+import { lameta_orange } from "./theme";
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
 import pkg from "package.json";
 import Workspace from "../components/Workspace";
+import { CloudUnavailableBanner } from "../components/CloudUnavailableBanner";
 import * as React from "react";
 import { observable, makeObservable } from "mobx";
 import { observer } from "mobx-react";
-import { Project, ProjectHolder } from "../model/Project/Project";
+import { ProjectHolder } from "../model/Project/Project";
+import { Folder } from "../model/Folder/Folder";
 import * as fs from "fs-extra";
 import * as Path from "path";
 import { OpenDialogOptions, ipcRenderer } from "electron";
 import CreateProjectDialog from "../components/project/CreateProjectDialog";
-import { app } from "@electron/remote";
-import * as remote from "@electron/remote";
+import { getPath, getStartupArguments, onWindowBlur, setWindowTitle } from "../other/windowIpc";
 import userSettings from "../other/UserSettings";
 
 import LametaMenu from "../other/menu";
+import { i18n } from "../other/localization";
 
 import "./StartScreen.css";
 import log from "../other/log";
 import { ExportDialog } from "../components/export/ExportDialog";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { analyticsEvent } from "../other/analytics";
 import RegistrationDialog from "../components/registration/RegistrationDialog";
-import {
-  MessageDialog,
-  ShowMessageDialog
-} from "../components/ShowMessageDialog/MessageDialog";
+import { MessageDialog, ShowMessageDialog } from "../components/ShowMessageDialog/MessageDialog";
 import { sentryBreadCrumb } from "../other/errorHandling";
-import {
-  NotifyError,
-  NotifyRenameProblem,
-  NotifyWarning
-} from "../components/Notify";
+import { NotifyError, NotifyException, NotifyWarning } from "../components/Notify";
 import { PatientFS } from "../other/patientFile";
 import { SpreadsheetImportDialog } from "../components/import/SpreadsheetImportDialog";
 import { locateDependencyForFilesystemCall } from "../other/locateDependency";
 import { copyDirSync } from "../other/crossPlatformUtilities";
-import { getTestEnvironment } from "../getTestEnvironment";
+import { shouldUseE2EFastProjectCreation, createProjectForE2E } from "./E2EProjectCreation";
 
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   LoadingProjectDialog,
   LoadingProgress,
-  shouldUseAsyncLoading,
-  loadProject
+  getLoadPlan,
+  loadProject,
 } from "../components/LoadingProjectDialog";
 
 // Added this as part of a workaround in typing when upgrading to mobx6.
@@ -63,6 +62,9 @@ interface IState {
   useSampleProject: boolean;
   showLoadingDialog: boolean;
   loadingProgress: LoadingProgress;
+  // Set when the current load was triggered by cloud-evicted metadata; drives
+  // the "Getting project information from OneDrive..." dialog message.
+  loadingCloudProviderName?: string;
 }
 
 class HomePage extends React.Component<IProps, IState> {
@@ -70,13 +72,14 @@ class HomePage extends React.Component<IProps, IState> {
   public projectHolder: ProjectHolder;
 
   private menu: LametaMenu;
+  private stopRebuildingMenuOnLanguageChange: () => void;
   public static homePageForTests: HomePage;
 
   constructor(props: IProps) {
     super(props);
 
     makeObservable(this, {
-      projectHolder: observable
+      projectHolder: observable,
     });
 
     this.projectHolder = new ProjectHolder();
@@ -87,15 +90,16 @@ class HomePage extends React.Component<IProps, IState> {
       loadingProgress: {
         phase: "sessions",
         overallCurrent: 0,
-        overallTotal: 0
-      }
+        overallTotal: 0,
+      },
+      loadingCloudProviderName: undefined,
     };
+
+    Folder.onDirectoryMissingWhenSaving = this.closeProjectWhoseFolderIsMissing;
 
     let expectedProjectDirectory = userSettings.PreviousProjectDirectory;
 
-    //const test = require("@electron/remote").getCurrentWebContents();
-    const p = remote.process;
-    const args = remote.getGlobal("arguments");
+    const args = getStartupArguments();
     // const args = [
     //   "ignore",
     //   "ignore",
@@ -118,17 +122,12 @@ class HomePage extends React.Component<IProps, IState> {
       expectedProjectDirectory = null;
     }
 
-    // Check if we should use async loading with progress dialog
-    // for projects with more than 10 sessions
+    // Always load the initial project via the async loader (in
+    // componentDidMount). loadProjectWithProgress -> loadProject internally
+    // decides sync vs async, so small local projects still load promptly, but
+    // large or cloud-evicted projects no longer freeze the renderer here.
     if (expectedProjectDirectory && fs.existsSync(expectedProjectDirectory)) {
-      if (shouldUseAsyncLoading(expectedProjectDirectory)) {
-        // Defer to async loading with progress - will be done in componentDidMount
-        this.pendingProjectDirectory = expectedProjectDirectory;
-      } else {
-        // Small project - load synchronously as before
-        const project = Project.fromDirectory(expectedProjectDirectory);
-        this.projectHolder.setProject(project);
-      }
+      this.pendingProjectDirectory = expectedProjectDirectory;
     } else {
       this.projectHolder.setProject(null);
     }
@@ -145,35 +144,92 @@ class HomePage extends React.Component<IProps, IState> {
   public createProject(useSample: boolean) {
     this.setState({
       showCreateProjectDialog: true,
-      useSampleProject: useSample
+      useSampleProject: useSample,
     });
   }
 
-  // Load a project asynchronously with progress dialog
+  // Load a project via the shared loader. Used by every project-open path so
+  // cloud-evicted projects never block the renderer.
   private async loadProjectWithProgress(directory: string) {
-    this.setState({ showLoadingDialog: true });
+    // Compute the plan once (it stats every metadata file); reuse it for both
+    // the dialog decision and the load itself.
+    const plan = getLoadPlan(directory);
 
-    const project = await loadProject(directory, (progress) => {
+    // Only show the modal for the async path. A small local project loads in
+    // ~100ms, so flashing the dialog on it is just flicker.
+    if (plan.useAsync) {
       this.setState({
-        loadingProgress: {
-          phase: progress.phase,
-          overallCurrent: progress.overallCurrent,
-          overallTotal: progress.overallTotal
-        }
+        showLoadingDialog: true,
+        loadingCloudProviderName: plan.cloudProviderName,
       });
-    });
+    }
 
-    this.setState({ showLoadingDialog: false });
+    const project = await loadProject(
+      directory,
+      (progress) => {
+        this.setState({
+          loadingProgress: {
+            phase: progress.phase,
+            overallCurrent: progress.overallCurrent,
+            overallTotal: progress.overallTotal,
+          },
+        });
+      },
+      plan,
+    ).finally(() => {
+      // close the dialog even if the load failed, or it would block the app forever
+      if (plan.useAsync) {
+        this.setState({ showLoadingDialog: false });
+      }
+    });
     this.projectHolder.setProject(project);
   }
+
+  private closeProjectWhoseFolderIsMissing = (folder: Folder) => {
+    const outcome = this.projectHolder.handleMissingFolder(folder);
+    if (outcome === "warn") {
+      // the folder's own name, which tells DescriptionDocuments from OtherDocuments
+      const name = Path.basename(folder.directory);
+      NotifyWarning(
+        t`lameta cannot save "${name}" because its folder is no longer on disk. It may have been moved, renamed or deleted outside lameta, for example by OneDrive or Dropbox. To see the project as it is on disk now, close it and open it again.`,
+      );
+    }
+    if (outcome === "close") {
+      ShowMessageDialog({
+        title: t`lameta cannot find a folder of this project`,
+        content: (
+          <div>
+            <p>{folder.directory}</p>
+            <p>
+              <Trans>
+                The folder may have been moved, renamed or deleted, or the drive it is on may have
+                been disconnected. lameta cannot save changes into a folder that is not there, so it
+                has closed the project. Changes that lameta had not yet saved are lost.
+              </Trans>
+            </p>
+            <p>
+              <Trans>To keep working, open the project again from where it is now.</Trans>
+            </p>
+          </div>
+        ),
+        width: "450px",
+        testId: "folder-missing-dialog",
+      });
+    }
+  };
 
   // for e2e (but not entirely?)
-  public softReload() {
-    const dir = this.projectHolder.project?.directory;
+  public async softReload() {
+    const dir = this.projectHolder.loadedProject?.directory;
     this.projectHolder.setProject(null);
+    // if the folder has gone, the save in setProject(null) has already told the user
+    if (!dir || !fs.existsSync(dir)) {
+      return;
+    }
 
-    const project = Project.fromDirectory(dir!);
-    this.projectHolder.setProject(project);
+    // Route through the async loader + progress dialog (same machinery as every
+    // other open path) so a reload of a cloud-evicted project doesn't freeze.
+    await this.loadProjectWithProgress(dir!);
   }
 
   public goToStartScreenForTests() {
@@ -182,6 +238,9 @@ class HomePage extends React.Component<IProps, IState> {
 
   public componentDidUpdate() {
     this.updateMenu();
+  }
+  public componentWillUnmount() {
+    this.stopRebuildingMenuOnLanguageChange?.();
   }
   private updateMenu() {
     this.menu = new LametaMenu(this);
@@ -195,82 +254,86 @@ class HomePage extends React.Component<IProps, IState> {
 
   private previousFolderNames = "";
   public componentDidMount() {
-    // Handle async loading of large projects with progress dialog
-    if (this.pendingProjectDirectory) {
-      this.loadProjectWithProgress(this.pendingProjectDirectory);
-      this.pendingProjectDirectory = null;
+    // Menu labels are translated when the menu is built. With a project open, the Workspace
+    // rebuilds the menu, including its Session and People menus, which this one would drop.
+    this.stopRebuildingMenuOnLanguageChange = i18n.on("change", () => {
+      if (!this.projectHolder.project) this.updateMenu();
+    });
+
+    // E2E fast path: if E2E_PROJECT_NAME is set, create project directly without UI
+    if (shouldUseE2EFastProjectCreation()) {
+      createProjectForE2E(this.projectHolder);
+      // Skip registration and other dialogs, but still set up window event handlers below
     }
 
-    if (!this.isRunningFromSource()) {
-      const version = pkg.version as string;
-      const match = version.match(/-(alpha|beta)(?:\.|$)/);
-      const tag = (match && match[1]) as "alpha" | "beta" | undefined;
+    // An alpha or beta could change the project, so it opens the project only after the user
+    // has closed the notice about this version
+    const openPendingProject = () => {
+      if (this.pendingProjectDirectory) {
+        this.loadProjectWithProgress(this.pendingProjectDirectory).catch((err) =>
+          NotifyException(err as Error),
+        );
+        this.pendingProjectDirectory = null;
+      }
+    };
+    const version = pkg.version as string;
+    const match = version.match(/-(alpha|beta)(?:\.|$)/);
+    const tag =
+      shouldUseE2EFastProjectCreation() || this.isRunningFromSource()
+        ? undefined
+        : ((match && match[1]) as "alpha" | "beta" | undefined);
+    if (!tag) openPendingProject();
+
+    // Skip dialogs in E2E fast path mode
+    if (!shouldUseE2EFastProjectCreation()) {
       switch (tag) {
         case "alpha":
           ShowMessageDialog({
-            title: `TESTING ONLY`,
-            text: "Thank you so much for testing this experimental version of lameta. Make sure you have a backup of your work.",
-            width: "300px",
+            iconPath: null,
+            content: <AlphaWarning version={version} />,
+            width: "540px",
             buttonText: "I understand",
-            testId: "prerelease-warning-dialog"
+            testId: "prerelease-warning-dialog",
+            onClose: openPendingProject,
           });
           break;
         case "beta":
           ShowMessageDialog({
-            title: `Warning`,
-            text: "This is a beta test version, so make sure you have a backup of your work.",
-            width: "300px",
+            iconPath: null,
+            content: <BetaWarning version={version} />,
+            buttonColor: lameta_orange,
+            width: "540px",
             buttonText: "I understand",
-            testId: "prerelease-warning-dialog"
+            testId: "prerelease-warning-dialog",
+            onClose: openPendingProject,
           });
           break;
         default:
         // release build: no prerelease tag, show nothing
       }
+
+      if (userSettings.HowUsing === "") {
+        RegistrationDialog.show();
+      }
     }
 
-    if (userSettings.HowUsing === "") {
-      RegistrationDialog.show();
-    }
     // Save when we're quitting. Review: does this cover shutdown?
-    window.addEventListener("beforeunload", (e) => {
-      if (
-        this.projectHolder.project &&
-        this.projectHolder.project.saveAllFilesInFolder
-      ) {
-        this.projectHolder.project.saveAllFilesInFolder();
-      }
+    window.addEventListener("beforeunload", () => {
+      this.projectHolder.saveLoadedProject();
     });
 
-    // Without this timeout, one of: {remote, BrowserWindow, or getFocusedWindow()}, most likely the later,
-    // was unavailable sometimes, particularly when running production build via "yarn start" on Windows.
-    // So we give it a few seconds and catch the problem if it still fails.
-    window.setTimeout(() => {
-      try {
-        // Save when we lose focus. Review: this might take care of the quitting one, above.
-        remote.BrowserWindow.getFocusedWindow()!.on("blur", (e) => {
-          console.log("HomePage blur");
-          if (this.projectHolder.project) {
-            this.projectHolder.project.saveAllFilesInFolder();
-          }
-        });
-      } catch (error) {
-        log.error(
-          "Error trying to set the window blur event callback: " + error
-        );
-      }
-    }, 3000);
+    // Save when we lose focus. Review: this might take care of the quitting one, above.
+    onWindowBlur(() => {
+      console.log("HomePage blur");
+      this.projectHolder.saveLoadedProject();
+    });
 
     // for trying to figure out https://lameta.notion.site/Error-when-renaming-files-4943fd45037b45e2828ece3e9b80db48
     window.setInterval(() => {
       try {
-        if (
-          this.projectHolder.project &&
-          this.previousFolderNames !==
-            this.projectHolder.project.getFolderNamesForDebugging()
-        ) {
-          this.previousFolderNames =
-            this.projectHolder.project.getFolderNamesForDebugging();
+        const project = this.projectHolder.loadedProject;
+        if (project && this.previousFolderNames !== project.getFolderNamesForDebugging()) {
+          this.previousFolderNames = project.getFolderNamesForDebugging();
           //console.log("CurrentFolderNames:\r\n" + this.previousFolderNames);
         }
       } catch (error) {
@@ -279,40 +342,55 @@ class HomePage extends React.Component<IProps, IState> {
     }, 1000);
   }
 
-  private handleCreateProjectDialogClose(
-    directory: string,
-    useSampleProject: boolean
-  ) {
+  private async handleCreateProjectDialogClose(directory: string, useSampleProject: boolean) {
     this.setState({ showCreateProjectDialog: false });
     if (directory) {
       fs.ensureDirSync(directory);
       try {
         if (useSampleProject) {
-          const sampleSourceDir = locateDependencyForFilesystemCall(
-            "sample data/Edolo sample"
-          );
+          const sampleSourceDir = locateDependencyForFilesystemCall("sample data/Edolo sample");
           copyDirSync(sampleSourceDir, directory);
           const projectName = Path.basename(directory);
           const srcPath = Path.join(directory, "Edolo sample.sprj");
 
           PatientFS.renameSyncWithNotifyAndRethrow(
             srcPath,
-            Path.join(directory, projectName + ".sprj")
+            Path.join(directory, projectName + ".sprj"),
           );
 
-          this.projectHolder.setProject(Project.fromDirectory(directory));
+          await this.loadProjectWithProgress(directory);
           analyticsEvent("Create Project", "Create Sample Project");
         } else {
-          this.projectHolder.setProject(Project.fromDirectory(directory));
+          await this.loadProjectWithProgress(directory);
           analyticsEvent("Create Project", "Create Custom Project");
         }
         userSettings.PreviousProjectDirectory = directory;
       } catch (err) {
         NotifyError(
-          `lameta had a problem while creating the project at ${directory} (useSampleProject=${useSampleProject}): ${err}`
+          `lameta had a problem while creating the project at ${directory} (useSampleProject=${useSampleProject}): ${err}`,
         );
       }
     }
+  }
+
+  private getWindowTitle(): string {
+    const project = this.projectHolder.project;
+    if (!project) {
+      return "lameta";
+    }
+
+    const directoryName = Path.basename(project.directory);
+    const projectName = project.properties.getTextStringOrEmpty("name");
+    const projectTitle = project.properties.getTextField("title").getTextForSimpleDisplay();
+    const projectDisplayName = project.displayName || directoryName;
+    const shouldIncludeDirectoryName =
+      directoryName !== projectName && directoryName !== projectTitle;
+
+    if (shouldIncludeDirectoryName && projectDisplayName !== directoryName) {
+      return `${directoryName} / ${projectDisplayName}`;
+    }
+
+    return projectDisplayName;
   }
 
   public render() {
@@ -330,32 +408,44 @@ class HomePage extends React.Component<IProps, IState> {
       );
     }
 
-    let title = this.projectHolder.project
-      ? `${Path.basename(this.projectHolder.project.directory)}/ ${
-          this.projectHolder.project.displayName
-        }  - lameta`
-      : "lameta";
+    let title = this.getWindowTitle();
 
     title += " " + pkg.version;
 
-    remote.getCurrentWindow().setTitle(title);
+    setWindowTitle(title);
     return (
       <div style={{ height: "100%" }}>
         {(this.projectHolder.project && (
-          <Workspace
-            project={this.projectHolder.project}
-            authorityLists={this.projectHolder.project.authorityLists}
-            menu={this.menu}
-            reload={() => {
-              // currently, I'm trying to just use softReload because that is more e2e
-              // friendly and having the same behavior in e2e and non-e2e is good.
+          <div
+            css={css`
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+            `}
+          >
+            <CloudUnavailableBanner project={this.projectHolder.project} />
+            <div
+              css={css`
+                flex: 1;
+                min-height: 0;
+              `}
+            >
+              <Workspace
+                project={this.projectHolder.project}
+                authorityLists={this.projectHolder.project.authorityLists}
+                menu={this.menu}
+                reload={() => {
+                  // currently, I'm trying to just use softReload because that is more e2e
+                  // friendly and having the same behavior in e2e and non-e2e is good.
 
-              //remote.getCurrentWindow().reload();
-              this.softReload();
-              //if (getTestEnvironment().E2E) this.softReload();
-              //else remote.getCurrentWindow().reload();
-            }}
-          />
+                  //remote.getCurrentWindow().reload();
+                  this.softReload().catch((err) => NotifyException(err as Error));
+                  //if (getTestEnvironment().E2E) this.softReload();
+                  //else remote.getCurrentWindow().reload();
+                }}
+              />
+            </div>
+          </div>
         )) || (
           <div className={"startScreen"}>
             <div className={"core"}>
@@ -412,6 +502,7 @@ class HomePage extends React.Component<IProps, IState> {
         <LoadingProjectDialog
           open={this.state.showLoadingDialog}
           progress={this.state.loadingProgress}
+          cloudProviderName={this.state.loadingCloudProviderName}
         />
         <ToastContainer
           position="top-right"
@@ -426,8 +517,8 @@ class HomePage extends React.Component<IProps, IState> {
 
   public openProject() {
     const defaultProjectParentDirectory = Path.join(
-      app.getPath("documents"),
-      "lameta" // we don't translate this
+      getPath("documents"),
+      "lameta", // we don't translate this
     );
     sentryBreadCrumb("open project dialog");
     const options: OpenDialogOptions = {
@@ -439,29 +530,29 @@ class HomePage extends React.Component<IProps, IState> {
       filters: [
         {
           name: t`lameta and SayMore Project Files`,
-          extensions: ["sprj"]
-        }
-      ]
+          extensions: ["sprj"],
+        },
+      ],
     };
-    ipcRenderer.invoke("showOpenDialog", options).then((results) => {
-      sentryBreadCrumb("processing callback of open project dialog");
-      if (
-        results &&
-        results!.filePaths &&
-        results.filePaths!.length > 0 &&
-        results.filePaths![0].length > 0
-      ) {
-        const directory = fs.realpathSync(Path.dirname(results.filePaths[0]));
-        userSettings.PreviousProjectDirectory = directory;
+    ipcRenderer
+      .invoke("showOpenDialog", options)
+      .then(async (results) => {
+        sentryBreadCrumb("processing callback of open project dialog");
+        if (
+          results &&
+          results!.filePaths &&
+          results.filePaths!.length > 0 &&
+          results.filePaths![0].length > 0
+        ) {
+          const directory = fs.realpathSync(Path.dirname(results.filePaths[0]));
+          userSettings.PreviousProjectDirectory = directory;
 
-        // Use async loading with progress dialog for large projects
-        if (shouldUseAsyncLoading(directory)) {
-          this.loadProjectWithProgress(directory);
-        } else {
-          this.projectHolder.setProject(Project.fromDirectory(directory));
+          // Always route through the async loader; it internally decides sync vs
+          // async and shows the progress dialog for large/cloud-evicted projects.
+          await this.loadProjectWithProgress(directory);
         }
-      }
-    });
+      })
+      .catch((err) => NotifyException(err as Error));
   }
 }
 

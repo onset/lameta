@@ -1,14 +1,14 @@
 import { render } from "react-dom";
 import { ipcRenderer } from "electron";
-import { app, process } from "@electron/remote";
+import { quitApp } from "./other/windowIpc";
 import "./app.global.css";
 import { App } from "./containers/App";
 import { initializeAnalytics, analyticsEvent } from "./other/analytics";
 import { initializeSentry as initializeErrorReporting } from "./other/errorHandling";
-import { i18n, initializeLocalization } from "./other/localization";
+import { initializeLocalization } from "./other/localization";
 import { CopyManager } from "./other/CopyManager";
-import { t } from "@lingui/macro";
-import { PatientFS } from "./other/patientFile";
+import { NotifyException } from "./components/Notify";
+import { t } from "@lingui/core/macro";
 import ReactModal from "react-modal";
 import * as mobx from "mobx";
 import pluginManager from "./plugins/PluginManager";
@@ -24,48 +24,47 @@ import tabProviderHost from "./plugins/tabProviderHost";
 // "observed" to write more idiomatic MobX code.
 mobx.configure({
   enforceActions: "never",
-  useProxies: "always"
+  useProxies: "always",
 });
 
-app.whenReady().then(async () => {
-  PatientFS.init();
-  initializeErrorReporting(false);
+// The main process creates this window only after the app is ready, so no need to wait for that here.
+initializeErrorReporting(false);
 
-  initializeLocalization();
-  pluginManager.initialize(); // discover file-handler plugins (installed + dev folder)
-  tabProviderHost.warmUp(); // pre-load hidden tab-provider iframes so first selection is instant
-  initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
-  analyticsEvent("Launch", "Launch");
+initializeLocalization();
+pluginManager.initialize(); // discover file-handler plugins (installed + dev folder)
+tabProviderHost.warmUp(); // pre-load hidden tab-provider iframes so first selection is instant
+initializeAnalytics(); //nb: this will report the current language, so should follow initializeLocalization()
+analyticsEvent("Launch", "Launch");
 
-  document.body.setAttribute("class", process.platform);
-  const container = document.getElementById("root");
-  ReactModal.setAppElement(container!);
+document.body.setAttribute("class", process.platform);
+const container = document.getElementById("root");
+ReactModal.setAppElement(container!);
 
-  render(<App />, container, () => {
-    try {
-      // see test-launch.ts
-      ipcRenderer.send("renderer-ready");
-    } catch (e) {
-      console.error("Failed to notify main of renderer-ready:", e);
-    }
-  });
+render(<App />, container, () => {
+  try {
+    // see test-launch.ts
+    ipcRenderer.send("renderer-ready");
+  } catch (e) {
+    console.error("Failed to notify main of renderer-ready:", e);
+  }
 });
 
-window.onbeforeunload = (e: BeforeUnloadEvent) => {
+window.onbeforeunload = () => {
   if (CopyManager.filesAreStillCopying()) {
     ipcRenderer
       .invoke(
         "confirm-quit",
         t`One or more files are still being copied into your project.`,
         t`Do not quit`,
-        t`Abandon files that are still copying`
+        t`Abandon files that are still copying`,
       )
       .then((result) => {
         if (result.response === 1) {
           CopyManager.abandonCopying(true);
-          app.quit(); // this time it will go through
+          quitApp(); // this time it will go through
         }
-      });
+      })
+      .catch((err) => NotifyException(err as Error));
     return "this is ignored but prevents quitting";
   }
   return; // just quit

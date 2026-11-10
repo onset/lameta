@@ -1,0 +1,21 @@
+{
+  "branch": "REHEARSAL-l10n",
+  "langs": {
+    "pt-BR": {
+      "messages": {
+        "branchAlreadyTranslated": 210,
+        "filled": 0,
+        "bySource": {},
+        "stillEmpty": 76
+      },
+      "fields": {
+        "branchAlreadyTranslated": 77,
+        "filled": 4,
+        "bySource": {
+          "v2-csv-text-match": 4
+        },
+        "stillEmpty": 37
+      }
+    }
+  }
+}

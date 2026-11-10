@@ -15,9 +15,7 @@ const JSON5 = require("json5");
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
-const manifest = JSON5.parse(
-  fs.readFileSync(path.join(here, "plugin.json5"), "utf8")
-);
+const manifest = JSON5.parse(fs.readFileSync(path.join(here, "plugin.json5"), "utf8"));
 const outName = `waveform-annotator-${manifest.version}.lmplug`;
 const outPath = path.join(here, outName);
 
@@ -30,7 +28,7 @@ const INCLUDE = [
   "styles.css",
   "lameta-plugin.css",
   "lametaPluginClient.js",
-  "lib"
+  "lib",
 ];
 
 const output = fs.createWriteStream(outPath);
@@ -52,4 +50,4 @@ for (const entry of INCLUDE) {
   if (stat.isDirectory()) archive.directory(full, entry);
   else archive.file(full, { name: entry });
 }
-archive.finalize();
+void archive.finalize();

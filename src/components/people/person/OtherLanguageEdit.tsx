@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Trans } from "@lingui/macro";
-import {
-  Person,
-  maxOtherLanguages
-} from "../../../model/Project/Person/Person";
-import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
+import React from "react";
+import { Person } from "../../../model/Project/Person/Person";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 
 export const OtherLanguageEdit: React.FunctionComponent<{
   person: Person;
   languageFinder: LanguageFinder;
-}> = (props) => {
+}> = () => {
   return <div>This control is no longer used</div>;
   // // we use `iteration` just to cause this to update when you click "Add Language"
   // const [iteration, setIteration] = useState(0);

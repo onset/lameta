@@ -18,9 +18,7 @@ export default class NotificationBar extends React.Component<IProps, IState> {
   }
   public render() {
     return (
-      <div className={"sidebar " + (this.state.open ? "open" : "closed")}>
-        inside the sidebar
-      </div>
+      <div className={"sidebar " + (this.state.open ? "open" : "closed")}>inside the sidebar</div>
     );
   }
 }

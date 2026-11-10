@@ -13,10 +13,7 @@ import JSON5 from "json5";
 
 type Message = { context: string; message: string };
 
-function harvestMessagesFromFile(
-  relativePath: string,
-  currentMessages: Message[]
-): void {
+function harvestMessagesFromFile(relativePath: string, currentMessages: Message[]): void {
   let totalString = 0;
   const root = JSON5.parse(fs.readFileSync(relativePath, "utf8"));
   // for each of project, sessions, people
@@ -30,7 +27,7 @@ function harvestMessagesFromFile(
             ++totalString;
             currentMessages.push({
               context: context,
-              message: choice
+              message: choice,
             });
           }
         } else if (
@@ -39,7 +36,8 @@ function harvestMessagesFromFile(
             "englishLabel",
             "description",
             "separatorWithCommaInstructions",
-            "tipOnUsingThisField"
+            "tipOnUsingThisField",
+            "patternDescription",
           ].includes(prop)
         ) {
           const context = `${parent}/${area}/${field.key}/${
@@ -48,7 +46,7 @@ function harvestMessagesFromFile(
           ++totalString;
           currentMessages.push({
             context: context,
-            message: field[prop]
+            message: field[prop],
           });
         }
       }
@@ -91,12 +89,14 @@ function createPoFilesFromOneSetOfJsons(set: string) {
     return aKey.localeCompare(bKey);
   });
 
-  console.log(
-    `extractFromJSON: Gathered ${messages.length} strings from ${set}.`
-  );
+  console.log(`extractFromJSON: Gathered ${messages.length} strings from ${set}.`);
+  // PO string literals need backslashes, quotes and newlines escaped, or the
+  // file stops parsing (e.g. a description that quotes an example title)
+  const poString = (s: string) =>
+    s.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n");
   const content = messages
     .map((m) => {
-      return `msgctxt "${m.context}"\nmsgid "${m.message}"\nmsgstr ""\n`;
+      return `msgctxt "${poString(m.context)}"\nmsgid "${poString(m.message)}"\nmsgstr ""\n`;
     })
     .join("\n");
   //console.log(content);
@@ -106,10 +106,7 @@ function createPoFilesFromOneSetOfJsons(set: string) {
 
 export function collectMessageFromOneSetOfFiles(set: string): Message[] {
   const messages: Message[] = [];
-  const configurationDirectory = path.join(
-    /*__dirname*/ "./",
-    "archive-configurations"
-  );
+  const configurationDirectory = path.join(/*__dirname*/ "./", "archive-configurations");
 
   const findFilesRecursively = (dir: string): string[] => {
     let files: string[] = [];

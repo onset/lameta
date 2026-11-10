@@ -1,7 +1,7 @@
 import { NotifyWarning } from "../../components/Notify";
 import {
   getMediaFolderOrEmptyForProjectAndMachine,
-  setMediaFolderOrEmptyForProjectAndMachine
+  setMediaFolderOrEmptyForProjectAndMachine,
 } from "../../other/UserSettings";
 
 let sCurrentProjectId: string = "";
@@ -18,7 +18,7 @@ export function setCurrentProjectId(projectId: string) {
 export function getMediaFolderOrEmptyForThisProjectAndMachine() {
   if (sCurrentProjectId === null) {
     throw new Error(
-      "getMediaFolderOrEmptyForThisProjectAndMachine() called when sCurrentProject is null"
+      "getMediaFolderOrEmptyForThisProjectAndMachine() called when sCurrentProject is null",
     );
   }
   // Note, we'd rather have an id that cannot change, but don't have one to

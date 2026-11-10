@@ -2,9 +2,16 @@ const electron = require("electron");
 import * as Path from "path";
 import * as fs from "fs-extra";
 import { PatientFS } from "./patientFile";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { mainProcessApi } from "../mainProcess/MainProcessApiAccess";
-import { globSync } from "glob";
+import { NotifyException } from "../components/Notify";
+
+// The platform-appropriate label for the "reveal this file in the OS file
+// manager" action. Shared by the file-list context menu and the cloud status
+// card so the wording stays consistent.
+export function revealInFolderLabel(): string {
+  return process.platform === "darwin" ? t`Show in Finder` : t`Show in File Explorer`;
+}
 
 export function revealInFolder(path: string) {
   console.log("Revealing in folder:", path);
@@ -14,7 +21,7 @@ export function revealInFolder(path: string) {
   }
 
   // Call main process to show item in folder (avoids macOS issues with renderer process)
-  mainProcessApi.revealInFolder(path);
+  mainProcessApi.revealInFolder(path).catch((err) => NotifyException(err as Error));
 }
 
 export async function asyncTrash(path: string) {
@@ -22,11 +29,11 @@ export async function asyncTrash(path: string) {
 }
 export async function asyncTrashWithContext<T>(
   path: string,
-  callerContext: T
+  callerContext: T,
 ): Promise<{ succeeded: boolean; path: string; context: T }> {
   // On windows, forward slash is normally fine, but electron.shell.moveItemToTrash fails.
   // So convert to backslashes as needed:
-  const fixedPath = Path.normalize(path).replace("/", Path.sep); // ?
+  const fixedPath = Path.normalize(path).replace(/\//g, Path.sep);
 
   const msg = t`lameta was not able to delete the file.`;
 
@@ -41,19 +48,19 @@ export async function asyncTrashWithContext<T>(
         return Promise.resolve({
           succeeded: !fs.existsSync(fixedPath),
           path: path,
-          context: callerContext
+          context: callerContext,
         });
       else
         return Promise.resolve({
           succeeded: false,
           path: path,
-          context: callerContext
+          context: callerContext,
         });
-    } catch (e) {
+    } catch {
       return Promise.resolve({
         succeeded: false,
         path: path,
-        context: callerContext
+        context: callerContext,
       });
     }
   } else {
@@ -62,7 +69,7 @@ export async function asyncTrashWithContext<T>(
     return Promise.resolve({
       succeeded: !fs.existsSync(fixedPath),
       path: path,
-      context: callerContext
+      context: callerContext,
     }); // we don't get a result from removeSync
   }
 
@@ -97,18 +104,23 @@ export function copyDirSync(src, dest) {
   }
 }
 
-// this is "safe" because it escapes all characters that glob might interpret and works on windows
-// this is "limited" because it does not allow for things like [ and ] in the path
-function globSyncSaferAndLimited(pattern: string): string[] {
-  let p;
-  if (process.platform === "win32") {
-    p = pattern.replace(/\\/g, "/"); // deal with windows paths
-  } else {
-    p = pattern;
-  }
-  // escape() does not work, at least on windows and glob 9.3 const safeDirectory = escape(pattern);
-  p = p.replace(/\[/g, "\\[").replace(/\]/g, "\\]"); // deal with brackets in the path
-  return globSync(p);
+// Detects macOS filesystem junk files that must never be treated as project
+// content. When a project is copied to a non-HFS+ volume (e.g. an external
+// SSD, a FAT/exFAT drive, or a network share), macOS creates AppleDouble
+// sidecar files named "._<originalname>" to preserve resource forks and
+// extended attributes, plus ".DS_Store" for Finder view settings. These are
+// binary, not XML. If lameta scans them it can, for example, find the
+// AppleDouble companion of a "foo.jpg.meta" file ("._foo.jpg.meta") and try
+// to parse it as XML, producing "Non-whitespace before first tag." See
+// https://github.com/onset/lameta/issues/68.
+export function isMacOSMetadataFile(fileName: string): boolean {
+  const base = Path.basename(fileName);
+  return base.startsWith("._") || base === ".DS_Store";
+}
+
+// File systems on Windows and macOS ignore case, so "Foo.SESSION" is a session's metadata file.
+export function hasMetadataExtension(fileName: string, extensionWithDot: string): boolean {
+  return fileName.toLowerCase().endsWith(extensionWithDot.toLowerCase());
 }
 
 // PERFORMANCE: Replaced glob-based implementation with fs.readdirSync
@@ -119,17 +131,16 @@ export function getAllFilesSync(directory: string): string[] {
   try {
     const entries = fs.readdirSync(directory, { withFileTypes: true });
     return entries
-      .filter((entry) => entry.isFile() && entry.name.includes("."))
+      .filter(
+        (entry) => entry.isFile() && entry.name.includes(".") && !isMacOSMetadataFile(entry.name),
+      )
       .map((entry) => Path.join(directory, entry.name));
   } catch (err: any) {
     // If the directory doesn't exist or can't be read, return empty array
     // (matching the behavior of glob which returns [] for non-matching patterns)
     // Only log unexpected errors (not ENOENT which is expected for optional directories)
     if (err.code !== "ENOENT") {
-      console.error(
-        `getAllFilesSync: Error reading directory ${directory}:`,
-        err
-      );
+      console.error(`getAllFilesSync: Error reading directory ${directory}:`, err);
     }
     return [];
   }

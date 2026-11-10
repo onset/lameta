@@ -1,18 +1,13 @@
+import { describe, it, beforeAll, beforeEach, afterEach, expect } from "vite-plus/test";
 import ImdiGenerator, { IMDIMode } from "./ImdiGenerator";
 import { Project } from "../model/Project/Project";
 import temp from "temp";
-import {
-  setResultXml,
-  value,
-  count,
-  select,
-  xexpect
-} from "../other/xmlUnitTestUtils";
+import { setResultXml, value, count, select, xexpect } from "../other/xmlUnitTestUtils";
 import { Contribution } from "../model/file/File";
 import {
   SetOtherConfigurationSettings,
   GetOtherConfigurationSettings,
-  resetOtherConfigurationSettings
+  resetOtherConfigurationSettings,
 } from "../model/Project/OtherConfigurationSettings";
 
 let project: Project;
@@ -27,48 +22,32 @@ describe("ImdiGenerator genre handling", () => {
   it("should convert genre to sentence case", () => {
     const session = project.addSession();
     session.properties.setText("genre", "procedural_discourse");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      project,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, project, true);
     setResultXml(imdi);
 
     // Check for correct genre case in the output
-    expect(value("//Session/MDGroup/Content/Genre")).toBe(
-      "Procedural discourse"
-    );
+    expect(value("//Session/MDGroup/Content/Genre")).toBe("Procedural discourse");
   });
 });
 
 describe("ImdiGenerator multilingual vocabulary export", () => {
   let multiLangProject: Project;
-  const multiLangProjectDir = temp.mkdirSync(
-    "lameta imdi generator multilang vocab test"
-  );
+  const multiLangProjectDir = temp.mkdirSync("lameta imdi generator multilang vocab test");
 
   beforeAll(async () => {
     temp.track();
     multiLangProject = Project.fromDirectory(multiLangProjectDir);
     // Set up project with English, Spanish, and Portuguese as metadata languages
-    multiLangProject.properties.setText(
-      "metadataLanguages",
-      "en:English;es:Spanish;pt:Portuguese"
-    );
-    await multiLangProject.descriptionFolder.addFileForTestAsync(
-      randomFileName()
-    );
-    await multiLangProject.otherDocsFolder.addFileForTestAsync(
-      randomFileName()
-    );
+    multiLangProject.properties.setText("metadataLanguages", "en:English;es:Spanish;pt:Portuguese");
+    await multiLangProject.descriptionFolder.addFileForTestAsync(randomFileName());
+    await multiLangProject.otherDocsFolder.addFileForTestAsync(randomFileName());
   });
 
   beforeEach(() => {
     // Set to ELAR schema which supports multilingual vocabulary
     SetOtherConfigurationSettings({
       ...GetOtherConfigurationSettings(),
-      imdiSchema: "IMDI_3.0_elar.xsd"
+      imdiSchema: "IMDI_3.0_elar.xsd",
     });
   });
 
@@ -80,12 +59,7 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
   it("should output Genre in multiple languages based on metadataLanguageSlots", () => {
     const session = multiLangProject.addSession();
     session.properties.setText("genre", "narrative");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      multiLangProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, multiLangProject, true);
     setResultXml(imdi);
 
     // Should have Genre elements for each language that has a translation
@@ -93,40 +67,47 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
     expect(genreCount).toBeGreaterThanOrEqual(1);
 
     // English should be present
-    xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
-    ).toHaveText("Narrative");
+    xexpect("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']").toHaveText("Narrative");
 
     // Spanish should be present (from genres.csv)
-    xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:spa']"
-    ).toHaveText("Narrativa");
+    xexpect("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:spa']").toHaveText("Narrativa");
 
     // Portuguese should be present (from genres.csv - pt-BR column)
-    xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:por']"
-    ).toHaveText("Narrativa");
+    xexpect("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:por']").toHaveText("Narrativa");
 
     // All should have the correct vocabulary link and type
     const genreNodes = select("//Session/MDGroup/Content/Genre");
     genreNodes.forEach((node) => {
       const element = node as Element;
-      expect(element.getAttribute("Link")).toBe(
-        "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml"
-      );
+      expect(element.getAttribute("Link")).toBe("http://www.mpi.nl/IMDI/Schema/Content-Genre.xml");
       expect(element.getAttribute("Type")).toBe("OpenVocabulary");
     });
+  });
+
+  it("should export project translation for built-in genre ids", () => {
+    const session = multiLangProject.addSession();
+    session.properties.setText("genre", "personal_narrative");
+    multiLangProject.vocabularyTranslations.setGenre(
+      "personal_narrative",
+      "factory-value-used-in-sessions",
+      { pt: "Narrativa pessoal" },
+    );
+
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, multiLangProject, true);
+    setResultXml(imdi);
+
+    xexpect("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']").toHaveText(
+      "Personal narrative",
+    );
+    xexpect("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:por']").toHaveText(
+      "Narrativa pessoal",
+    );
   });
 
   it("should output SubGenre in multiple languages", () => {
     const session = multiLangProject.addSession();
     session.properties.setText("subgenre", "myth");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      multiLangProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, multiLangProject, true);
     setResultXml(imdi);
 
     // Should have SubGenre elements
@@ -134,9 +115,7 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
     expect(subgenreCount).toBeGreaterThanOrEqual(1);
 
     // Check English - should be sentence case
-    xexpect(
-      "//Session/MDGroup/Content/SubGenre[@LanguageId='ISO639-3:eng']"
-    ).toHaveText("Myth");
+    xexpect("//Session/MDGroup/Content/SubGenre[@LanguageId='ISO639-3:eng']").toHaveText("Myth");
   });
 
   it("should output Role in multiple languages for actors", () => {
@@ -148,12 +127,7 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
     // Add a contribution with a known role
     session.addContribution(new Contribution("Test Person", "speaker", ""));
 
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      multiLangProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, multiLangProject, true);
     setResultXml(imdi);
 
     // Should have Role elements for the actor
@@ -161,22 +135,20 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
     expect(roleCount).toBeGreaterThanOrEqual(1);
 
     // English should have "Speaker" (sentence case)
-    xexpect(
-      "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:eng']"
-    ).toHaveText("Speaker");
+    xexpect("//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:eng']").toHaveText(
+      "Speaker",
+    );
 
     // Spanish should have the translation
-    xexpect(
-      "//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:spa']"
-    ).toHaveText("Hablante");
+    xexpect("//Session/MDGroup/Actors/Actor/Role[@LanguageId='ISO639-3:spa']").toHaveText(
+      "Hablante",
+    );
 
     // All Role elements should have vocabulary attributes
     const roleNodes = select("//Session/MDGroup/Actors/Actor/Role");
     roleNodes.forEach((node) => {
       const element = node as Element;
-      expect(element.getAttribute("Link")).toBe(
-        "http://www.mpi.nl/IMDI/Schema/Actor-Role.xml"
-      );
+      expect(element.getAttribute("Link")).toBe("http://www.mpi.nl/IMDI/Schema/Actor-Role.xml");
       expect(element.getAttribute("Type")).toBe("OpenVocabulary");
     });
   });
@@ -184,12 +156,7 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
   it("should handle empty genre gracefully", () => {
     const session = multiLangProject.addSession();
     session.properties.setText("genre", "");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      multiLangProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, multiLangProject, true);
     setResultXml(imdi);
 
     // Should have at least one Genre element (empty but with attributes)
@@ -199,39 +166,25 @@ describe("ImdiGenerator multilingual vocabulary export", () => {
 
   it("should skip languages without translations", () => {
     // Create a project with a language that has no translations in the CSV
-    const noTransProject = Project.fromDirectory(
-      temp.mkdirSync("lameta no trans test")
-    );
-    noTransProject.properties.setText(
-      "metadataLanguages",
-      "en:English;tpi:Tok Pisin"
-    );
+    const noTransProject = Project.fromDirectory(temp.mkdirSync("lameta no trans test"));
+    noTransProject.properties.setText("metadataLanguages", "en:English;tpi:Tok Pisin");
 
     // Must set ELAR schema after creating project since Project.fromDirectory reloads settings
     SetOtherConfigurationSettings({
       ...GetOtherConfigurationSettings(),
-      imdiSchema: "IMDI_3.0_elar.xsd"
+      imdiSchema: "IMDI_3.0_elar.xsd",
     });
 
     const session = noTransProject.addSession();
     session.properties.setText("genre", "narrative");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      noTransProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, noTransProject, true);
     setResultXml(imdi);
 
     // Should have English (using ISO639-3 code)
-    xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
-    ).toHaveText("Narrative");
+    xexpect("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']").toHaveText("Narrative");
 
     // Should NOT have Tok Pisin since there's no translation
-    expect(
-      count("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:tpi']")
-    ).toBe(0);
+    expect(count("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:tpi']")).toBe(0);
   });
 });
 
@@ -244,13 +197,8 @@ describe("ImdiGenerator standard IMDI 3.0 vocabulary export (non-ELAR)", () => {
     temp.track();
     standardProject = Project.fromDirectory(standardProjectDir);
     // Set up project with multiple metadata languages
-    standardProject.properties.setText(
-      "metadataLanguages",
-      "en:English;es:Spanish;pt:Portuguese"
-    );
-    await standardProject.descriptionFolder.addFileForTestAsync(
-      randomFileName()
-    );
+    standardProject.properties.setText("metadataLanguages", "en:English;es:Spanish;pt:Portuguese");
+    await standardProject.descriptionFolder.addFileForTestAsync(randomFileName());
     await standardProject.otherDocsFolder.addFileForTestAsync(randomFileName());
   });
 
@@ -269,12 +217,7 @@ describe("ImdiGenerator standard IMDI 3.0 vocabulary export (non-ELAR)", () => {
   it("should output only one Genre element without LanguageId for standard IMDI 3.0", () => {
     const session = standardProject.addSession();
     session.properties.setText("genre", "narrative");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      standardProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, standardProject, true);
     setResultXml(imdi);
 
     // Should have exactly one Genre element
@@ -292,7 +235,7 @@ describe("ImdiGenerator standard IMDI 3.0 vocabulary export (non-ELAR)", () => {
 
     // Should have correct vocabulary link and type
     expect(genreElement.getAttribute("Link")).toBe(
-      "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml"
+      "http://www.mpi.nl/IMDI/Schema/Content-Genre.xml",
     );
     expect(genreElement.getAttribute("Type")).toBe("OpenVocabulary");
   });
@@ -300,12 +243,7 @@ describe("ImdiGenerator standard IMDI 3.0 vocabulary export (non-ELAR)", () => {
   it("should output only one SubGenre element without LanguageId for standard IMDI 3.0", () => {
     const session = standardProject.addSession();
     session.properties.setText("subgenre", "myth");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      standardProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, standardProject, true);
     setResultXml(imdi);
 
     // Should have exactly one SubGenre element
@@ -329,16 +267,9 @@ describe("ImdiGenerator standard IMDI 3.0 vocabulary export (non-ELAR)", () => {
     person.properties.setText("code", "TPS");
 
     // Add a contribution with a known role
-    session.addContribution(
-      new Contribution("Test Person Standard", "speaker", "")
-    );
+    session.addContribution(new Contribution("Test Person Standard", "speaker", ""));
 
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      standardProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, standardProject, true);
     setResultXml(imdi);
 
     // Should have exactly one Role element per actor
@@ -358,12 +289,7 @@ describe("ImdiGenerator standard IMDI 3.0 vocabulary export (non-ELAR)", () => {
   it("should handle empty genre for standard IMDI 3.0", () => {
     const session = standardProject.addSession();
     session.properties.setText("genre", "");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      standardProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, standardProject, true);
     setResultXml(imdi);
 
     // Should have exactly one Genre element (empty but with attributes)
@@ -386,10 +312,7 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
     temp.track();
     elarProject = Project.fromDirectory(elarProjectDir);
     // Set up project with multiple metadata languages
-    elarProject.properties.setText(
-      "metadataLanguages",
-      "en:English;es:Spanish;pt:Portuguese"
-    );
+    elarProject.properties.setText("metadataLanguages", "en:English;es:Spanish;pt:Portuguese");
     await elarProject.descriptionFolder.addFileForTestAsync(randomFileName());
     await elarProject.otherDocsFolder.addFileForTestAsync(randomFileName());
   });
@@ -398,7 +321,7 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
     // Set to ELAR schema which supports multilingual vocabulary
     SetOtherConfigurationSettings({
       ...GetOtherConfigurationSettings(),
-      imdiSchema: "IMDI_3.0_elar.xsd"
+      imdiSchema: "IMDI_3.0_elar.xsd",
     });
   });
 
@@ -410,12 +333,7 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
   it("should output multiple Genre elements with LanguageId for ELAR schema", () => {
     const session = elarProject.addSession();
     session.properties.setText("genre", "narrative");
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      elarProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, elarProject, true);
     setResultXml(imdi);
 
     // Should have multiple Genre elements (one per language with translations)
@@ -430,25 +348,16 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
     });
 
     // English should be present
-    xexpect(
-      "//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']"
-    ).toHaveText("Narrative");
+    xexpect("//Session/MDGroup/Content/Genre[@LanguageId='ISO639-3:eng']").toHaveText("Narrative");
   });
 
   it("should output MetadataLanguage keys in session MDGroup/Keys", () => {
     const session = elarProject.addSession();
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      elarProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, elarProject, true);
     setResultXml(imdi);
 
     // Should have MetadataLanguage keys for each metadata language
-    const metadataLangCount = count(
-      "//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']"
-    );
+    const metadataLangCount = count("//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']");
     expect(metadataLangCount).toBe(3);
 
     // Check the format: "ISO639-3:eng: English"
@@ -465,30 +374,21 @@ describe("ImdiGenerator ELAR schema multilingual vocabulary export", () => {
 
   it("should not output MetadataLanguage keys when only default language is set", () => {
     // Create a project with just the default language (empty metadataLanguages = English only)
-    const singleLangProject = Project.fromDirectory(
-      temp.mkdirSync("lameta single lang test")
-    );
+    const singleLangProject = Project.fromDirectory(temp.mkdirSync("lameta single lang test"));
     // Don't set metadataLanguages, so it defaults to English only
 
     // Must set ELAR schema after creating project
     SetOtherConfigurationSettings({
       ...GetOtherConfigurationSettings(),
-      imdiSchema: "IMDI_3.0_elar.xsd"
+      imdiSchema: "IMDI_3.0_elar.xsd",
     });
 
     const session = singleLangProject.addSession();
-    const imdi = ImdiGenerator.generateSession(
-      IMDIMode.RAW_IMDI,
-      session,
-      singleLangProject,
-      true
-    );
+    const imdi = ImdiGenerator.generateSession(IMDIMode.RAW_IMDI, session, singleLangProject, true);
     setResultXml(imdi);
 
     // Should NOT have MetadataLanguage keys (backwards compatibility)
-    const metadataLangCount = count(
-      "//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']"
-    );
+    const metadataLangCount = count("//Session/MDGroup/Keys/Key[@Name='MetadataLanguage']");
     expect(metadataLangCount).toBe(0);
 
     // Keys element should still exist but be empty

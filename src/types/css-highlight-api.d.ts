@@ -8,10 +8,7 @@ interface Highlight extends Iterable<Range> {
   clear(): void;
   delete(range: Range): boolean;
   has(range: Range): boolean;
-  forEach(
-    callbackfn: (value: Range, key: Range, set: Highlight) => void,
-    thisArg?: unknown
-  ): void;
+  forEach(callbackfn: (value: Range, key: Range, set: Highlight) => void, thisArg?: unknown): void;
   readonly size: number;
 }
 
@@ -30,7 +27,7 @@ interface HighlightRegistry {
   clear(): void;
   forEach(
     callbackfn: (value: Highlight, key: string, map: HighlightRegistry) => void,
-    thisArg?: unknown
+    thisArg?: unknown,
   ): void;
   readonly size: number;
 }

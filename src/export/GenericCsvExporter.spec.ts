@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { describe, it, beforeAll, expect } from "vite-plus/test";
 import { Project } from "../model/Project/Project";
 import * as fs from "fs-extra";
 import * as temp from "temp";
@@ -7,8 +7,9 @@ import {
   makeCsvForProject,
   makeCsvForSessions,
   csvEncode,
-  makeGenericCsvZipFile
+  makeGenericCsvZipFile,
 } from "./CsvExporter";
+import { Contribution } from "../model/file/File";
 
 // tslint:disable-next-line:no-submodule-imports
 const parseSync = require("csv-parse/lib/sync");
@@ -20,15 +21,13 @@ let sessionsCsv: string;
 let sessionMatrix: any;
 let projectMatrix: any;
 
-const kEol: string = require("os").EOL;
-
 beforeAll(() => {
   project = Project.fromDirectory("sample data/Edolo sample");
   peopleCsv = makeCsvForPeople(project);
   //  fs.writeFileSync("d:/temp/peoplecsv.csv", peopleCsv);
   peopleMatrix = parseSync(peopleCsv, { relax_column_count: false });
 
-  sessionsCsv = makeCsvForSessions(project, (f) => true);
+  sessionsCsv = makeCsvForSessions(project, () => true);
   sessionMatrix = parseSync(sessionsCsv, { relax_column_count: false });
   //fs.writeFileSync("d:/temp/sessionsCsv.csv", sessionsCsv);
   const projectCsv = makeCsvForProject(project);
@@ -39,10 +38,7 @@ beforeAll(() => {
 describe("csv exporter", () => {
   it("should produce the file requested", async () => {
     // didn't work, though I set this variable in the main.yml
-    if (
-      process.platform === "win32" &&
-      process.env.in_github_action === "true"
-    ) {
+    if (process.platform === "win32" && process.env.in_github_action === "true") {
       // for some reason this fails to ever deliver a file in the windows github action environment
       console.log("Skipping csv exporter test on github-actions on windows.");
     } else {
@@ -70,9 +66,7 @@ describe("csv encoding", () => {
     expect(csvEncode("one\r\ntwo")).toBe('"one\r\ntwo"');
   });
   it("should double quotes if there are quotes", () => {
-    expect(csvEncode('please, call me "John"')).toBe(
-      '"please, call me ""John"""'
-    );
+    expect(csvEncode('please, call me "John"')).toBe('"please, call me ""John"""');
   });
   // LAM-115: https://linear.app/lameta/issue/LAM-115
   // When a value contains quotes but no commas or newlines, the function
@@ -116,9 +110,7 @@ describe("people csv export", () => {
     expect(people(2, "education")).toBe("Grade 1");
     expect(people(2, "birthYear")).toBe("1972");
     expect(people(2, "gender")).toBe("Male");
-    expect(people(2, "languages")).toContain(
-      "*etr (also mother) (also father)"
-    );
+    expect(people(2, "languages")).toContain("*etr (also mother) (also father)");
     expect(people(2, "languages")).toContain("hui");
     expect(people(2, "languages")).toContain("tpi");
   });
@@ -132,6 +124,43 @@ describe("people csv export", () => {
 describe("sessions csv export", () => {
   it("should contain right number of sessions", () => {
     expect(sessionMatrix.length).toBe(1 + 1);
+  });
+  it("should preserve bare line feeds inside description fields", () => {
+    const projectWithLineFeeds = Project.fromDirectory("sample data/Edolo sample");
+    const sessionWithLineFeeds = projectWithLineFeeds.sessions.items[0];
+    const description = [
+      "On spine: Mon intervent 1/12/77",
+      "On back cover: Solomon Is.",
+      "On reel: N 1",
+    ].join("\n");
+
+    sessionWithLineFeeds.properties.setText("description", description);
+
+    const csv = makeCsvForSessions(projectWithLineFeeds, () => true);
+    const parsed = parseSync(csv, { relax_column_count: false });
+    const descriptionColumn = parsed[0].indexOf("description");
+
+    expect(parsed.length).toBe(2);
+    expect(descriptionColumn).toBeGreaterThan(-1);
+    expect(parsed[1][descriptionColumn]).toBe(description);
+  });
+  it("should keep a contributor whose name holds a comma, quote or line break in one cell", () => {
+    const projectWithOddNames = Project.fromDirectory("sample data/Edolo sample");
+    const sessionWithOddNames = projectWithOddNames.sessions.items[0];
+    sessionWithOddNames.metadataFile!.contributions.push(
+      new Contribution("Smith, John", "speaker", ""),
+      new Contribution('Ana "the elder"\nLópez', "speaker", ""),
+    );
+
+    const csv = makeCsvForSessions(projectWithOddNames, () => true);
+    const parsed = parseSync(csv, { relax_column_count: false });
+    const contributionsColumn = parsed[0].indexOf("contributions");
+
+    expect(parsed.length).toBe(2);
+    expect(parsed[1].length).toBe(parsed[0].length);
+    expect(parsed[1][contributionsColumn].split("|")).toEqual(
+      expect.arrayContaining(["speaker:Smith, John", 'speaker:Ana "the elder"\nLópez']),
+    );
   });
   it("should contain id", () => {
     expect(session(1, "id")).toBe("ETR009");
@@ -147,7 +176,7 @@ describe("sessions csv export", () => {
   });
   it("should have good contributor list", () => {
     expect(session(1, "contributions")).toBe(
-      "participant:Awi Heole|participant:Ilawi Amosa|recorder:Hatton|speaker:Awi Heole"
+      "participant:Awi Heole|participant:Ilawi Amosa|recorder:Hatton|speaker:Awi Heole",
     );
   });
 });

@@ -2,69 +2,230 @@
   common: [
     {
       key: "role",
-      multilingual: true
-    }
+      multilingual: true,
+      capitalization: "ELARTerm",
+    },
   ],
   project: [
     {
+      key: "name",
+      multilingual: false,
+      tipOnUsingThisField: "Key + Grant Id. E.g. 0793-SG0123",
+      required: true,
+      pattern: "^(?:[0-9]{4}(?:[0-9]{4})?(?:-[0-9A-Z]+)?)+$",
+      patternDescription: "the collection key and grant ID, e.g. 0793-SG0123",
+    },
+    {
+      key: "grantId",
+      required: true,
+      pattern: "^[A-Z0-9]+$",
+      patternDescription: "capital letters and digits only",
+    },
+    {
+      // 22 mar 2026 "Grant: to avoid confusion the Funding project title field should either be filled out with the same information as in Project > Title or be deleted:"
+      key: "fundingProjectTitle",
+      visibility: "never",
+    },
+    {
       key: "collectionSteward",
       visibility: "always",
-      description: "This is usually the same person as the Depositor."
+      tipOnUsingThisField: "This is usually the same person as the Depositor.",
+      required: true,
     },
-    { key: "collectionDeputySteward", visibility: "always" },
+    { key: "collectionDeputySteward", visibility: "always", required: true },
     {
       key: "depositor",
       visibility: "always",
-      description: "This is usually the same person as the Collection Steward."
+      separatorWithCommaInstructions: "This is usually the same person as the Collection Steward. For multiple people, separate with commas.",
+      required: true,
     },
     {
-      key: "collectionDescription",
-      multilingual: true
+      key: "projectDescription",
+      multilingual: true,
+      required: true,
+      translationRequired: true,
+      capitalization: "sentence",
     },
     {
       key: "title",
-      multilingual: true
+      multilingual: true,
+      required: true,
+      translationRequired: true,
+      capitalization: "sentence",
     },
     {
       key: "metadataLanguages",
-      visibility: "always"
-    }
+      visibility: "always",
+      // the IMDI has the English of each genre and role only when English is a metadata language
+      englishRequired: true,
+    },
+    {
+      key: "continent",
+      choices: ["unspecified", "Africa", "Asia", "Australia", "Europe", "Americas", "Oceania"],
+      pattern: "^(?:Africa|Americas|Asia|Europe|Oceania)$",
+      patternDescription: "Africa, Americas, Asia, Europe or Oceania",
+    },
   ],
   session: [
-    /*- 
+    /*-
 - Access descriptions
 - Actor descriptions
 - Actor roles (that one might be a more difficult to implement, I think)*/
 
     {
+      key: "id",
+      tipOnUsingThisField: "Must be a maximum of 20 characters in length and consist of letters a-z, numbers 0-9, dashes and underscores only.",
+      required: true,
+      maxLength: 20,
+      pattern: "^[A-Za-z0-9_-]*$",
+      patternDescription: "letters a-z, numbers 0-9, dashes and underscores only",
+    },
+    {
+      key: "date",
+      required: true,
+    },
+    {
       key: "description",
-      multilingual: true
+      multilingual: true,
+      required: true,
+      translationRequired: true,
+      capitalization: "sentence",
     },
     {
       key: "title",
-      multilingual: true
+      multilingual: true,
+      tipOnUsingThisField: "Title should be a short, meaningful sentence",
+      required: true,
+      translationRequired: true,
+      capitalization: "sentence",
     },
     {
       key: "genre",
-      multilingual: true
+      multilingual: true,
+      tipOnUsingThisField: "Select from the drop-down menu.",
+      required: true,
+      capitalization: "ELARTerm",
+    },
+    {
+      key: "subgenre",
+      tipOnUsingThisField: "Subgenre is optional",
     },
     {
       key: "topic",
-      multilingual: true
+      multilingual: true,
+      separatorWithCommaInstructions: "Add at least one Topic. Multiple values must be separated with commas. Individual topics cannot contain a comma.",
+      minItems: 1,
+      translationRequired: true,
+      capitalization: "ELARTerm",
     },
     {
       key: "keyword",
-      multilingual: true
+      multilingual: true,
+      separatorWithCommaInstructions: "Add at least one Keyword. Multiple values must be separated with commas. Individual keywords cannot contain a comma.",
+      minItems: 1,
+      translationRequired: true,
+      capitalization: "ELARTerm",
+    },
+    {
+      key: "access",
+      tipOnUsingThisField: "Select from the drop down menu. If you select the access level S you must complete the adjacent Access Explanation field.",
+      required: true,
+      pattern: "^[OUSous]$",
+      patternDescription: "O, U or S",
     },
     {
       key: "accessDescription",
-      multilingual: true
-    }
+      multilingual: true,
+      tipOnUsingThisField: "Complete for sessions marked S, optional otherwise. Should be a short explanation about why access is restricted, and for how long.",
+      requiredWhen: { field: "access", value: "S" },
+      capitalization: "sentence",
+    },
+    {
+      key: "customFields",
+      tipOnUsingThisField: "Optional",
+    },
+    {
+      key: "locationContinent",
+      choices: ["unspecified", "Africa", "Americas", "Asia", "Australia", "Europe", "Oceania"],
+      required: true,
+      projectFallback: "continent",
+      pattern: "^(?:Africa|Americas|Asia|Europe|Oceania)$",
+      patternDescription: "Africa, Americas, Asia, Europe or Oceania",
+    },
+    // Like locationContinent, the IMDI export uses the project's value when the session has none
+    { key: "locationCountry", required: true, projectFallback: "country" },
+    { key: "languages", required: true, projectFallback: "SubjectLanguages" },
+    {
+      key: "workingLanguages",
+      required: true,
+      projectFallback: "WorkingLanguages",
+    },
   ],
-  people: [
+  person: [
+    {
+      key: "name",
+      tipOnUsingThisField: "Person will be listed by this name on the ELAR catalogue.",
+    },
+    {
+      key: "nickname",
+      tipOnUsingThisField: "Optional, can be left blank.",
+    },
+    {
+      key: "code",
+      tipOnUsingThisField: "Optional, can be left blank.",
+    },
+    {
+      key: "languages",
+      tipOnUsingThisField: "Star indicates primary language. Icons indicate whether mother and father speak the language - this is optional.",
+      minItems: 1,
+    },
+    {
+      key: "birthYear",
+      tipOnUsingThisField: 'Enter an approximation or "?" if unsure, and describe in the Description field below.',
+      required: true,
+      pattern: "^[0-9]{4}(-[0-9]{2})?(-[0-9]{2})?$",
+      patternDescription: "a year (YYYY) or a date (YYYY-MM or YYYY-MM-DD)",
+    },
+    {
+      key: "education",
+      tipOnUsingThisField: "Optional",
+    },
+    {
+      key: "howToContact",
+      tipOnUsingThisField: "Leave blank",
+      visibility: "never",
+    },
+    {
+      key: "ethnicGroup",
+      tipOnUsingThisField: "Optional",
+    },
+    {
+      key: "primaryOccupation",
+      tipOnUsingThisField: "Optional",
+    },
     {
       key: "description",
-      multilingual: true
-    }
-  ]
+      multilingual: true,
+      tipOnUsingThisField: "Should contain basic information about the person's background, role in the community and/or project, and a basic language profile.",
+      required: true,
+      translationRequired: true,
+      capitalization: "sentence",
+    },
+  ],
+  projectDocuments: [
+    {
+      key: "access",
+      englishLabel: "Access",
+      type: "Text",
+      pattern: "^[OUSous]$",
+      patternDescription: "O, U or S",
+    },
+    {
+      key: "accessDescription",
+      multilingual: true,
+      requiredWhen: { field: "access", value: "S" },
+      capitalization: "sentence",
+    },
+    { key: "genre", multilingual: true, capitalization: "ELARTerm" },
+  ],
 }

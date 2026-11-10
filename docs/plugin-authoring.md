@@ -35,10 +35,10 @@ Distributed as a **`.lmplug`** file — this is just a zip with a different exte
 
 ```json5
 {
-  id: "org.example.my-plugin",  // /^[a-z0-9][a-z0-9.\-]*$/ ; namespaces sidecars + install folder
+  id: "org.example.my-plugin", // /^[a-z0-9][a-z0-9.\-]*$/ ; namespaces sidecars + install folder
   name: "My Plugin",
-  version: "1.0.0",             // semver, display only
-  apiVersion: 1,                // plugin API major version (this doc describes v1)
+  version: "1.0.0", // semver, display only
+  apiVersion: 1, // plugin API major version (this doc describes v1)
   description: "…",
   author: "…",
   // OPTIONAL user-facing label: a plain string or a {languageCode: string} map ("en" is the
@@ -46,8 +46,8 @@ Distributed as a **`.lmplug`** file — this is just a zip with a different exte
   label: { en: "My Plugin", es: "Mi complemento" },
   // REQUIRED web page about your plugin. The corner of your plugin's tab pane shows an
   // "About Plugin: <name>" link that opens this URL in the user's default browser.
-  "infoUrl": "https://example.org/my-plugin",
-  minLametaVersion: "3.6.0",    // optional, informational
+  infoUrl: "https://example.org/my-plugin",
+  minLametaVersion: "3.6.0", // optional, informational
 
   // Optional capabilities you ask the host for. Currently the only known permission is
   // "companionFiles" (see "Companion files" below); anything else is a validation error.
@@ -56,13 +56,14 @@ Distributed as a **`.lmplug`** file — this is just a zip with a different exte
   // A plugin contributes tabs by declaring a TAB PROVIDER: a hidden page lameta loads once and
   // asks, on every file selection, which tabs to show for that file (see "Tab provider" below).
   tabProvider: {
-    entry: "index.html",        // the page lameta loads (hidden) to answer tab queries
-    handles: {                  // OPTIONAL coarse filter — only query me for these files;
-      lametaTypes: ["Audio"],   // omit `handles` entirely to be queried for every selection.
-      extensions: ["eaf"],      // lowercase, no dot
-      mimePatterns: ["audio/*"] // exact ("image/png") or trailing wildcard ("audio/*")
-    }
-  }
+    entry: "index.html", // the page lameta loads (hidden) to answer tab queries
+    handles: {
+      // OPTIONAL coarse filter — only query me for these files;
+      lametaTypes: ["Audio"], // omit `handles` entirely to be queried for every selection.
+      extensions: ["eaf"], // lowercase, no dot
+      mimePatterns: ["audio/*"], // exact ("image/png") or trailing wildcard ("audio/*")
+    },
+  },
 }
 ```
 
@@ -73,7 +74,7 @@ provider returns them.
 ## Tab provider — lameta asks your plugin which tabs to show
 
 Instead of a static tab list, lameta **asks your plugin, on every selection change, which tabs it
-wants for the selected file** — and never caches the answer. This lets the *same* file yield
+wants for the selected file** — and never caches the answer. This lets the _same_ file yield
 different tabs over time: an audio file with no annotations can show a "Start Annotating" tab, and
 once your plugin creates the annotation companion (and `api.selectFile`s to it), the next query for
 that audio file can return `[]` (no tab).
@@ -90,7 +91,7 @@ that audio file can return `[]` (no tab).
     }
     if (file.extension === "eaf")
       return [{ id: "segments", label: "Segments", claimDefault: true }];
-    return [];  // no tab for this file
+    return []; // no tab for this file
   });
   ```
 
@@ -233,7 +234,7 @@ for your waveform/playback via `companions.readBytes("<media>")`.
 
 `api.selectFile(relPath)` asks lameta to make another file in the **same folder** the selected
 file. The host registers the file into the folder's file list if it isn't already there (so a
-file your plugin *just wrote* is picked up without a manual refresh), sets it as the selected
+file your plugin _just wrote_ is picked up without a manual refresh), sets it as the selected
 file, and re-drives the file pane — which **tears down your current iframe and creates a fresh one
 bound to the newly selected file**. `relPath` is relative to `context.folder.directory` and must
 be a bare file name (no `..`, no absolute paths, no subdirectories) that already exists on disk in
@@ -266,7 +267,7 @@ preferences (machine-local)" below instead.
 Not everything a plugin remembers belongs in the project. Pick the store that matches what
 you're persisting:
 
-- **`localStorage`** — a preference that belongs to *this user, on this machine* (a zoom level,
+- **`localStorage`** — a preference that belongs to _this user, on this machine_ (a zoom level,
   a last-used option, "don't show this again"). Never travels with the project.
 - **Sidecars** (`readSidecar`/`writeSidecar`) — data about the specific selected file that
   should travel with the project (annotations, segment lists).
@@ -292,7 +293,7 @@ zoomSlider.addEventListener("input", () => {
 ```
 
 Your tab provider's hidden iframe and your content iframe share the same origin, so they share
-the same `localStorage`. The standard DOM `storage` event fires in your *other* iframe when one
+the same `localStorage`. The standard DOM `storage` event fires in your _other_ iframe when one
 of them writes (verified), so live sync is possible — but the simple pattern is to just read
 whatever you need at load time.
 
@@ -319,7 +320,7 @@ is loss-free.
 
 Any `lameta:request` the host has **received** before your iframe is torn down is executed to
 completion — a `writeSidecar` or `companions.writeText` that reached the host finishes its
-disk write even though your iframe is already gone. What is *not* guaranteed: the
+disk write even though your iframe is already gone. What is _not_ guaranteed: the
 `lameta:response` may never be delivered (there is nowhere to deliver it), and a message you
 post at the same instant as teardown can be lost before the host ever sees it. So don't wait
 for a "safe moment" to save — persist eagerly (debounced) and treat unresolved write promises
@@ -349,18 +350,18 @@ host. It's a starting point — override freely.
 
 ## Installing & developing
 
-- **Install**: File → Plugins… → *Install plugin…*, choose a `.lmplug`. Or drop the unzipped
-  folder into the plugins folder (File → Plugins… → *Open plugins folder*).
+- **Install**: File → Plugins… → _Install plugin…_, choose a `.lmplug`. Or drop the unzipped
+  folder into the plugins folder (File → Plugins… → _Open plugins folder_).
 - **Enable/disable/uninstall**: File → Plugins….
-- **Develop with a live loop**: turn on Developer mode, then File → Plugins… → *Developer plugin
-  folder* and point it at your plugin folder. lameta watches the folder and reloads the open tab
+- **Develop with a live loop**: turn on Developer mode, then File → Plugins… → _Developer plugin
+  folder_ and point it at your plugin folder. lameta watches the folder and reloads the open tab
   whenever you save. If your plugin is buildless (plain ES modules, like the example), the loop
   is simply: edit → save → the tab refreshes. If you use a bundler, run it in watch mode
   (e.g. `vite build --watch`) and you get the same loop.
 
 ## A complete minimal plugin (copy-paste)
 
-Make a folder with these three files, point the *Developer plugin folder* at it, select an
+Make a folder with these three files, point the _Developer plugin folder_ at it, select an
 audio file, and you'll see a "Hello" tab that shows the file name and remembers a note.
 
 **`plugin.json5`**
@@ -376,9 +377,9 @@ audio file, and you'll see a "Hello" tab that shows the file name and remembers 
       id: "hello",
       label: "Hello",
       entry: "index.html",
-      match: { lametaTypes: ["Audio"] }
-    }
-  ]
+      match: { lametaTypes: ["Audio"] },
+    },
+  ],
 }
 ```
 
@@ -387,7 +388,9 @@ audio file, and you'll see a "Hello" tab that shows the file name and remembers 
 ```html
 <!doctype html>
 <html>
-  <head><meta charset="utf-8" /></head>
+  <head>
+    <meta charset="utf-8" />
+  </head>
   <body>
     <h3 id="title">…</h3>
     <label>Note: <input id="note" type="text" /></label>

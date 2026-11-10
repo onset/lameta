@@ -3,9 +3,7 @@ import { css } from "@emotion/react";
 import { lameta_orange } from "../../containers/theme";
 import { JsonViewer, JsonViewerKeyRenderer } from "@textea/json-viewer";
 
-export const JsonView: React.FunctionComponent<{ value: object }> = ({
-  value
-}) => {
+export const JsonView: React.FunctionComponent<{ value: object }> = ({ value }) => {
   const KeyRenderer: JsonViewerKeyRenderer = ({ path }) => {
     const last = path[path.length - 1];
     return Number.isInteger(last) ? null : <span>{last}</span>;

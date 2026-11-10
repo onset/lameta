@@ -15,17 +15,11 @@ import getSayMoreXml from "./GetSayMoreXml";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import {
   fieldDefinitionsOfCurrentConfig,
-  isKnownFieldKey
+  isKnownFieldKey,
+  getProjectDocumentFieldDefinition,
 } from "../field/ConfiguredFieldDefinitions";
 import { ShowSavingNotifier } from "../../components/SaveNotifier";
-import {
-  NotifyError,
-  NotifyException,
-  NotifyFileAccessProblem,
-  NotifyRenameProblem,
-  NotifySuccess,
-  NotifyWarning
-} from "../../components/Notify";
+import { NotifyError, NotifyFileAccessProblem, NotifyWarning } from "../../components/Notify";
 import _ from "lodash";
 import { GetFileFormatInfoForPath } from "./FileTypeInfo";
 import genres from "../Project/Session/genres.json";
@@ -33,9 +27,18 @@ import { sentryBreadCrumb } from "../../other/errorHandling";
 import compareVersions from "compare-versions";
 import xmlbuilder from "xmlbuilder";
 import { PatientFS } from "../../other/patientFile";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { ShowMessageDialog } from "../../components/ShowMessageDialog/MessageDialog";
 import userSettings from "../../other/UserSettings";
+import {
+  CloudFileStatus,
+  getCloudFileStatus,
+  getCloudFileProvider,
+  getCloudProviderNameForPath,
+  isMissingCloudPlaceholder,
+} from "../../other/cloudFileStatus";
+import { cloudReadGuard, isCloudProviderReadFailure } from "../../other/cloudReadGuard";
+import { cloudFilePoller } from "../../other/cloudFilePoller";
 
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../Project/MediaFolderAccess";
 
@@ -44,6 +47,18 @@ function getCannotRenameFileMsg() {
 }
 
 export const kLinkExtensionWithFullStop = ".link";
+
+// Property key under which probed media stats (ffprobe/ExifReader results)
+// are cached into the .meta file, alongside the file identity (size + mtime)
+// they were probed from. Exported so exporters (IMDI, RO-Crate, CSV, ...) can
+// blacklist it -- it's internal bookkeeping, not metadata to archive.
+export const kMediaStatsCacheKey = "mediaStatsCache";
+
+interface IMediaStatsCachePayload {
+  stats: Record<string, string>;
+  sizeBytes: number;
+  mtimeMs: number;
+}
 
 export class Contribution {
   //review this @observable
@@ -56,13 +71,24 @@ export class Contribution {
     makeObservable(this, {
       personReference: observable,
       role: observable,
-      comments: observable
+      comments: observable,
     });
 
     this.personReference = personReference;
     this.role = role;
     this.comments = comments;
   }
+
+  // A row with only a role or comments is kept; the person may not be known yet.
+  public get isEmpty(): boolean {
+    return !this.personReference?.trim() && !this.role?.trim() && !this.comments?.trim();
+  }
+}
+
+// xml2js gives a plain string for <tag>text</tag>, and an object with the text in "_" when the element has attributes
+function textOfXmlValue(value: any): string {
+  if (typeof value === "string") return value;
+  return typeof value?._ === "string" ? value._ : "";
 }
 
 export /*babel doesn't like this: abstract*/ class File {
@@ -83,6 +109,59 @@ export /*babel doesn't like this: abstract*/ class File {
   public copyInProgress: boolean;
 
   public copyProgress: string;
+
+  public cloudStatus: CloudFileStatus = "unknown";
+
+  // True when we tried (or deliberately skipped trying) to read this file's
+  // metadata from the cloud during load and the provider couldn't deliver it.
+  // Drives the "cloud unavailable" affordance and lets Retry find the files
+  // that need re-reading. See cloudReadGuard.
+  public cloudMetadataUnavailable: boolean = false;
+
+  // Why readMetadataFile() could not read the metadata file (0-byte file,
+  // truncated write from an interrupted cloud sync, another encoding, a file
+  // from a newer lameta, etc.), or undefined when it could. The in-memory
+  // properties are then empty/default, so save() must refuse to write --
+  // otherwise it would overwrite the user's real (possibly recoverable) bytes
+  // with an empty template. There is no automatic Retry for this (unlike
+  // cloudMetadataUnavailable): the file needs manual recovery.
+  public metadataReadProblem: string | undefined = undefined;
+
+  // True when the folder that should contain this file has vanished from disk
+  // while the project was open -- e.g. a collaborator deleted/renamed the
+  // session on another machine and a sync service (OneDrive/Dropbox) applied
+  // that locally, or someone removed it in Explorer. Every save trigger (window
+  // blur, selection change, rename) would otherwise re-attempt the write, hit
+  // ENOENT, and pop a fresh error toast. Instead save() fails softly: it warns
+  // ONCE (gated on this flag) and then silently skips, leaving the in-memory
+  // data intact. The flag clears itself if the folder reappears and a save
+  // succeeds. We deliberately do NOT try to reload/reconcile here -- that is a
+  // separate planned workstream.
+  public fileMissing: boolean = false;
+
+  // True once save() has found the metadata file changed on disk underneath us
+  // (a cloud sync service delivering another machine's edit, or an external
+  // editor) and moved that version aside so our write wouldn't silently revert
+  // it. Purely informational; the once-per-change notification is driven by the
+  // disk-identity tracking below, not by this flag. Siblings: fileMissing,
+  // metadataReadProblem, cloudMetadataUnavailable.
+  public metadataChangedExternally: boolean = false;
+
+  // On-disk identity (mtimeMs + size) of the metadata file as of the last time
+  // lameta itself read or wrote it, plus the exact bytes involved. save() uses
+  // these to notice that the file was changed underneath us so it never
+  // silently overwrites (and thereby reverts) another machine's synced-down
+  // edit. The bytes let us tell a real external edit from mere mtime churn (a
+  // sync engine can rewrite byte-identical content and bump the mtime). Both
+  // are undefined until the first successful read or write. See save()'s
+  // freshness check and setAsideExternallyChangedFile().
+  private lastKnownDiskIdentity: { mtimeMs: number; size: number } | undefined;
+  private lastKnownDiskContent: string | undefined;
+
+  // Start time (ms since epoch) of the current hydration, or undefined when
+  // not hydrating. Lives on the model (not a component ref) so the elapsed
+  // timer survives unmount/remount of the panel showing it.
+  public hydratingSinceMs: number | undefined;
 
   // This file can be *just* metadata for a folder, in which case it has the fileExtensionForFolderMetadata.
   // But it can also be paired with a file in the folder, such as an image, sound, video, elan file, etc.,
@@ -124,27 +203,13 @@ export /*babel doesn't like this: abstract*/ class File {
     this.metadataFilePath = "error: this file was previously put in trash";
     this.describedFileOrLinkFilePath = "";
   }
-  protected addDatePropertyFromString(key: string, dateString: string) {
-    // Note: I am finding it rather hard to not mess up dates, because in javascript
-    // everything (including moment) wants to over-think things and convert dates
-    // to one's local timezone. You get bugs like having the file say 2015-3-21, but
-    // then saving as 2015-3-20 because you're running this in America. Ugghhh.
-    // It's just too easy to mess up. So what I'm trying for now
-    // is to confine anything that could mess with the date to 2 places: here,
-    // at import time where we have to be permissive, and when displaying in the UI.
-    // Other than those two places, the rule is that all strings are YYYY-MM-DD in UTC.
-
-    //assert.ok(moment(dateString).isValid()); //todo: handle bad data
-
-    this.properties.setValue(
-      key,
-      new Field(
-        key,
-        FieldType.Date,
-        this.normalizeIncomingDateString(dateString)
-      )
-    );
-  }
+  // Note: I am finding it rather hard to not mess up dates, because in javascript
+  // everything (including moment) wants to over-think things and convert dates
+  // to one's local timezone. You get bugs like having the file say 2015-3-21, but
+  // then saving as 2015-3-20 because you're running this in America. Ugghhh.
+  // So anything that could mess with the date is confined to 2 places: here,
+  // at import time where we have to be permissive, and when displaying in the UI.
+  // Other than those two places, the rule is that all strings are YYYY-MM-DD in UTC.
   protected normalizeIncomingDateString(dateString: string): string {
     if (!dateString || dateString.trim().length === 0) {
       return "";
@@ -155,10 +220,8 @@ export /*babel doesn't like this: abstract*/ class File {
       return "";
     }
 
-    let date: moment.Moment;
-
     // 1) Try strict YYYY-MM-DD first
-    date = moment(dateString, "YYYY-MM-DD", true /* strict */);
+    const date = moment(dateString, "YYYY-MM-DD", true /* strict */);
     if (date.isValid()) {
       return date.format("YYYY-MM-DD");
     }
@@ -180,7 +243,7 @@ export /*babel doesn't like this: abstract*/ class File {
       "M/D/YYYY H:mm",
       // date only
       "M/D/YYYY",
-      "MM/DD/YYYY"
+      "MM/DD/YYYY",
     ];
     const EU_FORMATS = [
       // with time (12-hour clock)
@@ -191,7 +254,7 @@ export /*babel doesn't like this: abstract*/ class File {
       "D/M/YYYY H:mm",
       // date only
       "D/M/YYYY",
-      "DD/MM/YYYY"
+      "DD/MM/YYYY",
     ];
 
     const parseWithFormats = (s: string, formats: string[]) =>
@@ -205,12 +268,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     // If both US and EU interpretations parse, treat as ambiguous regardless of equality
     if (usResults.length > 0 && euResults.length > 0) {
-      this.setTextProperty(
-        "notes",
-        `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
-          moment.now()
-        ).toString()}`
-      );
+      this.reportUnparseableDate(dateString);
       return "";
     }
 
@@ -227,7 +285,7 @@ export /*babel doesn't like this: abstract*/ class File {
       "D MMM YYYY",
       "D MMMM YYYY",
       "YYYY/M/D",
-      "YYYY.M.D"
+      "YYYY.M.D",
     ];
     const fallback = parseWithFormats(dateString, FALLBACK_FORMATS);
     const fallbackUnique = Array.from(new Set(fallback));
@@ -236,13 +294,23 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     // If we reach here, either nothing parsed or it was ambiguous
-    this.setTextProperty(
-      "notes",
-      `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
-        moment.now()
-      ).toString()}`
-    );
+    this.reportUnparseableDate(dateString);
     return ""; // Our GUI controls need an unambiguous date, so it's safer to just clear the date and leave it for the human to fix it using the error we put in the notes
+  }
+  // The notes may not have been read yet, so these are added to them after loading.
+  private dateParsingProblems: string[] = [];
+  private reportUnparseableDate(dateString: string) {
+    this.dateParsingProblems.push(
+      `Parsing Error: lameta could not parse "${dateString}" unambiguously, so it will be set to empty. Encountered on ${moment(
+        moment.now(),
+      ).toString()}`,
+    );
+  }
+  private addDateParsingProblemsToNotes() {
+    if (this.dateParsingProblems.length === 0) return;
+    const notes = this.properties.getTextStringOrEmpty("notes");
+    this.setTextProperty("notes", [notes, ...this.dateParsingProblems].filter((n) => n).join("\n"));
+    this.dateParsingProblems = [];
   }
   protected addDateProperty(key: string, date: Date, persist: boolean = true) {
     this.checkType(key, date);
@@ -253,7 +321,7 @@ export /*babel doesn't like this: abstract*/ class File {
       type: "Date",
       isCustom: false,
       showOnAutoForm: false,
-      multilingual: false
+      multilingual: false,
     };
 
     const f = Field.fromFieldDefinition(definition);
@@ -269,7 +337,7 @@ export /*babel doesn't like this: abstract*/ class File {
       isCustom: false,
       showOnAutoForm: false,
       multipleLines: true,
-      multilingual: false
+      multilingual: false,
     };
 
     const f = Field.fromFieldDefinition(definition);
@@ -287,7 +355,7 @@ export /*babel doesn't like this: abstract*/ class File {
     value: string,
     persist: boolean = true,
     isCustom: boolean = false,
-    showOnAutoForm: boolean = false
+    showOnAutoForm: boolean = false,
   ) {
     // assert.notEqual(
     //   value,
@@ -313,7 +381,7 @@ export /*babel doesn't like this: abstract*/ class File {
         type: "Text",
         isCustom,
         showOnAutoForm,
-        multilingual: false
+        multilingual: false,
       };
 
       const f = Field.fromFieldDefinition(definition);
@@ -321,10 +389,7 @@ export /*babel doesn't like this: abstract*/ class File {
       this.properties.setValue(key, f);
     }
     if (key === "Sub-Genre") {
-      console.log(
-        "addTextProperty(Sub-Genre) " +
-          JSON.stringify(this.properties.getValue(key))
-      );
+      console.log("addTextProperty(Sub-Genre) " + JSON.stringify(this.properties.getValue(key)));
     }
 
     // //console.log("setting " + key + " to " + value);
@@ -341,9 +406,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     assert.ok(
       value === this.properties.getTextField(key).text,
-      `expected value of '${key}', '${value}'==='${
-        this.properties.getTextField(key).text
-      }'`
+      `expected value of '${key}', '${value}'==='${this.properties.getTextField(key).text}'`,
     );
   }
   public setTextProperty(key: string, value: string) {
@@ -356,10 +419,7 @@ export /*babel doesn't like this: abstract*/ class File {
     if (existing) {
       existing.setValueFromString(value);
     } else {
-      this.properties.setValue(
-        key,
-        new Field(correctedKey, FieldType.Text, value)
-      );
+      this.properties.setValue(key, new Field(correctedKey, FieldType.Text, value));
     }
   }
   public getTextProperty(key: string, ifMissing: string = "MISSING"): string {
@@ -378,14 +438,20 @@ export /*babel doesn't like this: abstract*/ class File {
     xmlRootName: string,
     doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
-    canDelete: boolean
+    canDelete: boolean,
   ) {
     makeObservable<File, "describedFileOrLinkFilePath">(this, {
       describedFileOrLinkFilePath: observable,
       copyInProgress: observable,
       copyProgress: observable,
+      cloudStatus: observable,
+      cloudMetadataUnavailable: observable,
+      metadataReadProblem: observable,
+      fileMissing: observable,
+      metadataChangedExternally: observable,
+      hydratingSinceMs: observable,
       properties: observable,
-      contributions: observable
+      contributions: observable,
     });
 
     this.canDelete = canDelete;
@@ -410,17 +476,20 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   public isLinkFile(): boolean {
-    return this.describedFileOrLinkFilePath.endsWith(
-      kLinkExtensionWithFullStop
-    );
+    return this.describedFileOrLinkFilePath.endsWith(kLinkExtensionWithFullStop);
+  }
+  // True when this is a link whose .link file was deleted while the project
+  // was open (e.g. by a sync service). getActualFilePath() throws then.
+  public isDeletedLinkFile(): boolean {
+    return this.isLinkFile() && !fs.existsSync(this.describedFileOrLinkFilePath);
   }
   public getFilenameToShowInList(): string {
-    return trimSuffix(
-      this.getTextProperty("filename"),
-      kLinkExtensionWithFullStop
-    );
+    return trimSuffix(this.getTextProperty("filename"), kLinkExtensionWithFullStop);
   }
   public getActualFileExists(): boolean {
+    if (this.isLinkFile() && !fs.existsSync(this.describedFileOrLinkFilePath)) {
+      return false;
+    }
     return fs.existsSync(this.getActualFilePath());
   }
 
@@ -438,7 +507,7 @@ export /*babel doesn't like this: abstract*/ class File {
       // folder name, e.g. "ETR009/"
       Path.basename(dir),
       // file name
-      this.getNameToUseWhenExportingUsingTheActualFile()
+      this.getNameToUseWhenExportingUsingTheActualFile(),
     ).replace(/\\/g, "/");
   }
   public getNameToUseWhenExportingUsingTheActualFile(): string {
@@ -451,18 +520,112 @@ export /*babel doesn't like this: abstract*/ class File {
   }
   public getActualFilePath(): string {
     if (this.isLinkFile()) {
-      const subpath = fs.readFileSync(
-        this.describedFileOrLinkFilePath,
-        "utf-8"
-      );
-      return Path.join(
-        getMediaFolderOrEmptyForThisProjectAndMachine(),
-        subpath
-      );
+      const subpath = fs.readFileSync(this.describedFileOrLinkFilePath, "utf-8");
+      return Path.join(getMediaFolderOrEmptyForThisProjectAndMachine(), subpath);
     } else {
       return this.describedFileOrLinkFilePath;
     }
   }
+  public updateCloudStatus(): void {
+    this.cloudStatus = getCloudFileStatus(this.getActualFilePath());
+    if (this.cloudStatus === "hydrating") {
+      if (this.hydratingSinceMs === undefined) {
+        this.hydratingSinceMs = Date.now();
+      }
+      cloudFilePoller.watch(this);
+    } else {
+      this.hydratingSinceMs = undefined;
+    }
+  }
+
+  public get isCloudFileNotPresent(): boolean {
+    return this.cloudStatus === "cloudOnly" || this.cloudStatus === "hydrating";
+  }
+
+  // Size in bytes of the actual file on disk. For a cloud-only placeholder,
+  // fs.statSync() reports the eventual full size without triggering hydration
+  // (unlike opening/reading the file, which downloads it).
+  public getSizeInBytes(): number {
+    try {
+      return fs.statSync(this.getActualFilePath()).size;
+    } catch {
+      return 0;
+    }
+  }
+
+  // Modification time (ms since epoch) of the actual file on disk. Like
+  // getSizeInBytes(), this is safe to call on a cloud-only placeholder.
+  public getMtimeMs(): number {
+    try {
+      return fs.statSync(this.getActualFilePath()).mtimeMs;
+    } catch {
+      return 0;
+    }
+  }
+
+  // Returns media stats (e.g. from ffprobe/ExifReader) previously cached via
+  // setCachedMediaStats(), or undefined if there is none, or if the file's
+  // size/mtime no longer match what was recorded (i.e. the file has changed).
+  public getCachedMediaStats(): Record<string, string> | undefined {
+    const raw = this.getTextProperty(kMediaStatsCacheKey, "");
+    if (!raw) {
+      return undefined;
+    }
+    let parsed: IMediaStatsCachePayload | undefined;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      return undefined;
+    }
+    if (!parsed || !parsed.stats) {
+      return undefined;
+    }
+    if (parsed.sizeBytes !== this.getSizeInBytes() || parsed.mtimeMs !== this.getMtimeMs()) {
+      return undefined;
+    }
+    return parsed.stats;
+  }
+
+  // Persist probed media stats into this file's .meta, along with the file
+  // identity (size + mtime) they were probed from, so future loads can serve
+  // them without re-probing (which, for a cloud-only file, would force a full
+  // download of its content). A no-op (and does not dirty the file) if the
+  // incoming value is identical to what's already cached.
+  public setCachedMediaStats(
+    stats: Record<string, string>,
+    identity: { sizeBytes: number; mtimeMs: number },
+  ): void {
+    const payload: IMediaStatsCachePayload = {
+      stats,
+      sizeBytes: identity.sizeBytes,
+      mtimeMs: identity.mtimeMs,
+    };
+    const json = JSON.stringify(payload);
+    const isNewField = !this.properties.getValue(kMediaStatsCacheKey);
+    this.addTextProperty(kMediaStatsCacheKey, json, true, false, false);
+    // Creating a brand-new property on `properties` isn't itself observed by
+    // the mobx reaction that watches for changes to save (see
+    // recomputedChangeWatcher()); and setting an unchanged value on an
+    // existing field is already a no-op for mobx. So we only need to
+    // explicitly mark the file dirty when the field didn't exist before.
+    if (isNewField) {
+      this.wasChangeThatMobxDoesNotNotice();
+    }
+  }
+
+  public async makeAvailableOffline(): Promise<void> {
+    await getCloudFileProvider().setPinned(this.getActualFilePath(), true);
+    this.updateCloudStatus(); // → "hydrating" (pinned placeholder), auto-enrolls in the poller
+  }
+
+  // Stops *waiting* for hydration to complete; OneDrive may continue fetching
+  // the file in the background regardless. Safe to call even if nothing is
+  // in progress.
+  public async stopWaiting(): Promise<void> {
+    await getCloudFileProvider().setPinned(this.getActualFilePath(), false);
+    this.updateCloudStatus();
+  }
+
   public getModifiedDate(): Date | undefined {
     // when you drag a file into the filelist, it doesn't have a modifiedDate
     if (this.properties.getHasValue("modifiedDate"))
@@ -477,6 +640,7 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     const stats = fs.statSync(this.getActualFilePath());
+    this.updateCloudStatus();
 
     this.addTextProperty("size", filesize(stats.size, { round: 0 }), false);
     this.addDateProperty("modifiedDate", stats.mtime, false);
@@ -485,14 +649,19 @@ export /*babel doesn't like this: abstract*/ class File {
       Path.extname(this.getActualFilePath());
     this.addTextProperty("type", typeName, false);
   }
-  protected specialLoadingOfField(
-    tag: string,
-    propertiesFromXml: any
-  ): boolean {
+  protected specialLoadingOfField(_tag: string, _propertiesFromXml: any): boolean {
     //console.log("Field.specialHandlingOfField");
     return false;
   }
   private loadPropertiesFromXml(propertiesFromXml: any) {
+    const customFieldsNamedLikeKnownFields: { xmlTag: string; value: any }[] = [];
+    const keysWithAValueInTheFile = new Set<string>();
+    const loadOwnField = (xmlTag: string, value: any) => {
+      if (textOfXmlValue(value).trim().length > 0) {
+        keysWithAValueInTheFile.add(this.properties.getKeyFromXmlTag(xmlTag));
+      }
+      this.loadOnePersistentProperty(xmlTag, value, false);
+    };
     const tags = Object.keys(propertiesFromXml);
     for (const tag of tags) {
       if (this.specialLoadingOfField(tag, propertiesFromXml)) {
@@ -503,50 +672,47 @@ export /*babel doesn't like this: abstract*/ class File {
 
       // <CustomFields>
       else if (tag.toLowerCase() === "customfields") {
-        //        console.log(JSON.stringify(propertiesFromXml[key]));
         const customKeys = Object.keys(propertiesFromXml[tag]);
         for (const key of customKeys) {
           // first one is just $":{"type":"xml"}
           if (key !== "$") {
-            // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
-            // understand. It will move them to the set of "custom" fields. Notably, in Dec 2019
-            // this happened when we introduced "id" as a field (instead of just relying on the folder
-            // name).
-            // Here we can pull such fields back out of the custom list and up to the top level.
-            const isCustom = !isKnownFieldKey(key);
-            if (!isCustom) {
-              //   console.info(
-              //     `** Pulling ${key}:${propertiesFromXml[tag][key]._} back out of custom list, where presumably SayMore Classic put it.`
-              //   );
+            if (isKnownFieldKey(key)) {
+              customFieldsNamedLikeKnownFields.push({
+                xmlTag: key,
+                value: propertiesFromXml[tag][key],
+              });
+            } else {
+              this.loadOnePersistentProperty(key, propertiesFromXml[tag][key], true);
             }
-            this.loadOnePersistentProperty(
-              key,
-              propertiesFromXml[tag][key],
-              isCustom
-            );
           }
         }
       }
       // <AdditionalFields>
       else if (tag.toLowerCase() === "additionalfields") {
         //        console.log(JSON.stringify(propertiesFromXml[key]));
-        const tagsInAdditionalFieldSection = Object.keys(
-          propertiesFromXml[tag]
-        );
+        const tagsInAdditionalFieldSection = Object.keys(propertiesFromXml[tag]);
         for (const childTag of tagsInAdditionalFieldSection) {
           // first one is just $":{"type":"xml"}
           if (childTag !== "$") {
-            this.loadOnePersistentProperty(
-              childTag,
-              propertiesFromXml[tag][childTag],
-              false
-            );
+            loadOwnField(childTag, propertiesFromXml[tag][childTag]);
           }
         }
       } else {
         // "Normal" fields
-        this.loadOnePersistentProperty(tag, propertiesFromXml[tag], false);
+        loadOwnField(tag, propertiesFromXml[tag]);
       }
+    }
+    // If one of our files is opened in SayMore Classic, it will see fields that it doesn't
+    // understand and move them to the set of "custom" fields. Notably, in Dec 2019
+    // this happened when we introduced "id" as a field (instead of just relying on the folder
+    // name). Here we pull such fields back out of the custom list and up to the top level,
+    // unless the file has its own value for that field, in which case the custom field is
+    // one the user made, and it stays custom.
+    for (const { xmlTag, value } of customFieldsNamedLikeKnownFields) {
+      const fileHasItsOwnValue = keysWithAValueInTheFile.has(
+        this.properties.getKeyFromXmlTag(xmlTag),
+      );
+      this.loadOnePersistentProperty(xmlTag, value, fileHasItsOwnValue);
     }
   }
 
@@ -569,7 +735,7 @@ export /*babel doesn't like this: abstract*/ class File {
 
     // Try to find a genre that matches by label (case-insensitive)
     const matchingGenre = genres.find(
-      (genre) => genre.label.toLowerCase() === trimmedValue.toLowerCase()
+      (genre) => genre.label.toLowerCase() === trimmedValue.toLowerCase(),
     );
 
     if (matchingGenre) {
@@ -577,9 +743,7 @@ export /*babel doesn't like this: abstract*/ class File {
     }
 
     // If no label match, check if it's already an ID
-    const idMatch = genres.find(
-      (genre) => genre.id.toLowerCase() === trimmedValue.toLowerCase()
-    );
+    const idMatch = genres.find((genre) => genre.id.toLowerCase() === trimmedValue.toLowerCase());
 
     if (idMatch) {
       return idMatch.id; // Return the correct case
@@ -589,33 +753,20 @@ export /*babel doesn't like this: abstract*/ class File {
     return genreValue;
   }
 
-  private loadOnePersistentProperty(
-    xmlTag: string,
-    value: any,
-    isCustom: boolean
-  ) {
+  private loadOnePersistentProperty(xmlTag: string, value: any, isCustom: boolean) {
     //for some reason xml gives us undefined for things with just a space. Let's just trim while we're at it.
     if (value === undefined) {
       value = "";
     }
 
-    const typesWeStoreAsStrings = [
-      "string",
-      "date",
-      "languageChoices",
-      "language"
-    ];
+    const typesWeStoreAsStrings = ["string", "date", "languageChoices", "language"];
 
     // console.log("loadProperties key: " + key);
     // console.log(JSON.stringify(value));
     if (value === undefined) {
       value = "";
     } else if (typeof value === "object") {
-      if (
-        value.$ &&
-        value.$.type &&
-        typesWeStoreAsStrings.includes(value.$.type)
-      ) {
+      if (value.$ && value.$.type && typesWeStoreAsStrings.includes(value.$.type)) {
         // Handle empty XML elements like <code type="string"/> where value._ is undefined
         value = value._ ?? "";
       }
@@ -640,7 +791,7 @@ export /*babel doesn't like this: abstract*/ class File {
     if (isCustom && textValue.length > 0) {
       this.encounteredVocabularyRegistry.encountered(
         this.type + EncounteredVocabularyRegistry.kCustomFieldSuffix,
-        xmlTag
+        xmlTag,
       );
     }
 
@@ -651,6 +802,7 @@ export /*babel doesn't like this: abstract*/ class File {
     // styles for elements... ending up with all this code to work around that.
     let fixedKey = xmlTag;
     if (
+      !isCustom &&
       // if we know about this field, then we know how to roundtrip correctly
       // already.
       // Note the following would give a false positive if the key was
@@ -660,20 +812,18 @@ export /*babel doesn't like this: abstract*/ class File {
       // I'm living with that risk.
       Object.keys(fieldDefinitionsOfCurrentConfig).some(
         (
-          area // e.g. project, session, person
+          area, // e.g. project, session, person
         ) =>
           fieldDefinitionsOfCurrentConfig[area].find(
-            (d: any) =>
-              d.key.toLowerCase() === xmlTag.toLowerCase() ||
-              d.xmlTag === xmlTag
-          )
+            (d: any) => d.key.toLowerCase() === xmlTag.toLowerCase() || d.xmlTag === xmlTag,
+          ),
       )
     ) {
       fixedKey = this.properties.getKeyFromXmlTag(xmlTag);
     }
 
     // Apply genre normalization after fixedKey is determined
-    if (fixedKey.toLowerCase() === "genre") {
+    if (!isCustom && fixedKey.toLowerCase() === "genre") {
       const normalizedGenre = this.normalizeGenreValue(textValue);
       if (normalizedGenre !== textValue) {
         // Track that normalization occurred during reading
@@ -682,34 +832,23 @@ export /*babel doesn't like this: abstract*/ class File {
       processedTextValue = normalizedGenre;
     }
 
-    // ---- DATES  --
-    if (xmlTag.toLowerCase().indexOf("date") > -1) {
-      const normalizedDateString =
-        this.normalizeIncomingDateString(processedTextValue);
-      if (this.properties.containsKey(fixedKey)) {
-        const existingDateField = this.properties.getValueOrThrow(fixedKey);
-        existingDateField.setValueFromString(normalizedDateString);
-        //console.log("11111" + key);
-      } else {
-        this.addDatePropertyFromString(fixedKey, normalizedDateString);
-      }
+    const existingField = this.properties.containsKey(fixedKey)
+      ? this.properties.getValueOrThrow(fixedKey)
+      : undefined;
+    if (existingField?.type === FieldType.Date) {
+      existingField.setValueFromString(this.normalizeIncomingDateString(processedTextValue));
     }
-
-    // --- Text ----
-    // if it's already defined, let the existing field parse this into whatever structure (e.g. date)
-    else if (this.properties.containsKey(fixedKey)) {
-      const v = this.properties.getValueOrThrow(fixedKey);
-      v.setValueFromString(processedTextValue);
-      //console.log("11111" + key);
+    // if it's already defined, let the existing field parse this into whatever structure it has
+    else if (existingField) {
+      existingField.setValueFromString(processedTextValue);
     } else {
-      //console.log("extra" + fixedKey + "=" + value);
       // otherwise treat it as a string
       this.addTextProperty(
         fixedKey,
         processedTextValue,
         true,
         isCustom,
-        undefined /*showOnAutoForm*/
+        undefined /*showOnAutoForm*/,
       );
     }
   }
@@ -737,18 +876,17 @@ export /*babel doesn't like this: abstract*/ class File {
     const role = contributionFromXml.smxrole
       ? (contributionFromXml.smxrole === "unspecified" ? "" : contributionFromXml.smxrole)
       : contributionFromXml.role;
+    // a file from elsewhere (hand edits, other tools) may leave out any of these elements
+    const name = contributionFromXml.name ?? "";
     const n = new Contribution(
-      contributionFromXml.name,
-      role,
+      name,
+      role ?? "",
       //this.normalizeIncomingDateString(contributionFromXml.date),
-      contributionFromXml.comments
+      contributionFromXml.comments ?? "",
     );
     this.contributions.push(n);
 
-    this.encounteredVocabularyRegistry.encountered(
-      "contributor",
-      contributionFromXml.name
-    );
+    this.encounteredVocabularyRegistry.encountered("contributor", name);
   }
   public removeContribution(index: number) {
     console.assert(index >= 0 && index < this.contributions.length);
@@ -756,6 +894,21 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   private haveReadMetadataFile: boolean = false;
+
+  // Record that this file's metadata could not be read from the cloud, and
+  // leave it in a state where a later Retry can re-attempt the read.
+  private markCloudMetadataUnavailable(tripBreaker: boolean = true): void {
+    this.cloudMetadataUnavailable = true;
+    // Reset so a Retry re-enters readMetadataFile for this file.
+    this.haveReadMetadataFile = false;
+    this.updateCloudStatus();
+    cloudReadGuard.recordFailure(
+      this.metadataFilePath,
+      getCloudProviderNameForPath(this.metadataFilePath),
+      tripBreaker,
+    );
+  }
+
   public readMetadataFile() {
     try {
       sentryBreadCrumb(`enter readMetadataFile ${this.metadataFilePath}`);
@@ -765,34 +918,105 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.haveReadMetadataFile = true;
       //console.log("readMetadataFile() " + this.metadataFilePath);
+      if (isMissingCloudPlaceholder(this.metadataFilePath)) {
+        // iCloud evicted this file the legacy way: only a ".<name>.icloud"
+        // sibling is on disk, and there is no read that waits for the download.
+        // Ask for it, and leave the file unread so save() won't write over it;
+        // the "couldn't download" banner's Retry reads it once it has arrived.
+        // A file that is merely not downloaded yet says nothing about whether
+        // the provider works, so this does not trip the breaker.
+        if (!cloudReadGuard.isTripped) {
+          getCloudFileProvider()
+            .setPinned(this.metadataFilePath, true)
+            .catch(() => {});
+        }
+        this.markCloudMetadataUnavailable(false);
+        return;
+      }
       if (fs.existsSync(this.metadataFilePath)) {
-        const xml: string = PatientFS.readFileSyncWithNotifyAndRethrow(
-          this.metadataFilePath
-        );
+        const provider = getCloudFileProvider();
+        // "cloudOnly"/"hydrating" are the only statuses that mean "this is a
+        // placeholder the provider needs to fetch" -- "unknown" (e.g. a file
+        // not under any sync root on macOS) is NOT a placeholder, so this must
+        // stay a positive check rather than "not locally available".
+        const status = provider.getStatus(this.metadataFilePath);
+        const isCloudPlaceholder =
+          provider.capabilities.canFetch && (status === "cloudOnly" || status === "hydrating");
+
+        if (isCloudPlaceholder) {
+          // If the cloud provider already failed to deliver a file during this
+          // load, don't touch this placeholder at all -- both pinning and
+          // reading ask the sync engine to hydrate it, and each failed attempt
+          // can make the provider's own client pop a modal error dialog. Fail
+          // softly so the project keeps loading; the row shows a "cloud
+          // unavailable" state and the user can Retry. See cloudReadGuard.
+          if (cloudReadGuard.isTripped) {
+            this.markCloudMetadataUnavailable();
+            return;
+          }
+
+          // On Windows, this durably pins our own metadata sidecar so OneDrive's
+          // "free up space" can never dehydrate it again; lameta must always be
+          // able to read these regardless of the user's auto-fetch threshold. On
+          // macOS there is no durable pin, so this just triggers a one-shot fetch
+          // of a file the sync read below needs anyway -- still worth calling
+          // unconditionally.
+          provider.setPinned(this.metadataFilePath, true).catch(() => {});
+        }
+
+        let xml: string;
+        try {
+          xml = PatientFS.readFileSyncNoNotify(this.metadataFilePath);
+        } catch (err) {
+          if (isCloudPlaceholder && isCloudProviderReadFailure(err)) {
+            // The provider couldn't hydrate this placeholder. Trip the breaker,
+            // record it for the consolidated banner, and fail softly: no
+            // per-file toast, and no aborting the whole project load.
+            this.markCloudMetadataUnavailable();
+            return;
+          }
+          // A genuine file problem (missing, locked, a folder with the name of a
+          // file): the catch below records it.
+          throw err;
+        }
+
+        // The read succeeded; clear any prior cloud-unavailable state (e.g. this
+        // is a successful Retry).
+        this.cloudMetadataUnavailable = false;
+        cloudReadGuard.clearFailure(this.metadataFilePath);
+
+        // Remember what we just read (bytes + on-disk identity) so a later
+        // save() can tell whether the file was changed underneath us before it
+        // overwrites. See save()'s freshness check.
+        this.recordDiskIdentity(xml);
+
+        // That sync read just hydrated a dehydrated metadata file. For
+        // session/person files the metadata file IS the file shown in the
+        // list, and its cloudStatus was captured (as cloudOnly) by
+        // addFieldsUsedInternally() BEFORE this read -- refresh it so the
+        // row doesn't stay grey with a cloud icon until the next
+        // focus/reselect.
+        this.updateCloudStatus();
 
         let xmlAsObject: any = {};
         xml2js.parseString(
           xml,
           {
             async: false,
-            explicitArray: false //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
+            explicitArray: false, //this is good for most things, but if there are sometimes 1 and sometime multiple (array), you have to detect the two scenarios
             //explicitArray: true, this also just... gives you a mess
             //explicitChildren: true this makes even simple items have arrays... what a pain
           },
           (err, result) => {
             if (err) {
-              throw Error(
-                `There was a problem reading the XML in ${this.metadataFilePath}: ${err.message}`
-              );
+              throw err;
             }
             xmlAsObject = result;
-          }
+          },
         );
         if (!xmlAsObject) {
           // there was a sentry error report that seemed to implicate this being null
-          throw new Error(
-            `Got null xmlAsObject in readMetadataFile ${this.metadataFilePath}`
-          );
+          throw new Error(t`The file is empty.`);
         }
         // that will have a root with one child, like "Session" or "Meta". Zoom in on that
         // so that we just have the object with its properties.
@@ -808,12 +1032,13 @@ export /*babel doesn't like this: abstract*/ class File {
           const current = pkg.version;
           if (compareVersions(minimumVersion, current) === 1) {
             throw Error(
-              `The file ${this.metadataFilePath} is from a later version of lameta. It claims to require at least lameta version ${minimumVersion}. Please upgrade.`
+              t`It is from a later version of lameta and needs lameta ${minimumVersion} or later.`,
             );
           }
         }
         //copies from this object (which is just the xml as an object) into this File object
         this.loadPropertiesFromXml(properties);
+        this.addDateParsingProblemsToNotes();
         // But otherwise, we don't want to spend time saving, notifying, and messing with the file change dates.
         this.clearDirty();
 
@@ -825,11 +1050,15 @@ export /*babel doesn't like this: abstract*/ class File {
       }
       this.recomputedChangeWatcher();
     } catch (err) {
-      NotifyException(
-        err,
-        `There was a problem reading ${this.metadataFilePath}`
-      );
-      throw err;
+      // The read/parse failed (0-byte or truncated file from an interrupted
+      // cloud sync, corrupt XML, unsupported version, ...). `properties` is
+      // empty/default at this point, so save() must refuse to write -- see the
+      // matching guard there. `haveReadMetadataFile` stays true (nothing below
+      // resets it, unlike the cloud-placeholder retry path), so a later call to
+      // this method just no-ops instead of re-attempting the read. The rest of
+      // the project still loads; the problem list and the file's own pane say
+      // what went wrong, so there is no notification here.
+      this.metadataReadProblem = err instanceof Error ? err.message : String(err);
     } finally {
       sentryBreadCrumb(`exit readMetadataFile ${this.metadataFilePath}`);
     }
@@ -848,14 +1077,14 @@ export /*babel doesn't like this: abstract*/ class File {
         this.contributions,
         this,
         this.doOutputTypeInXmlTags,
-        doOutputEmptyCustomFields
+        doOutputEmptyCustomFields,
       );
     } finally {
       this.inGetXml = false;
     }
   }
   //overridden by person (eventually session)
-  public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {}
+  public writeXmlForComplexFields(_root: xmlbuilder.XMLElementOrXMLNode) {}
 
   public save(beforeRename: boolean = false, forceSave: boolean = false) {
     //console.log(`Might save ${this.metadataFilePath}`);
@@ -866,16 +1095,59 @@ export /*babel doesn't like this: abstract*/ class File {
       return;
     }
 
+    // Never overwrite a file whose real metadata we could not read from the
+    // cloud. On that soft-fail path (see markCloudMetadataUnavailable) the
+    // in-memory properties are empty/default, so writing them would destroy the
+    // real file on disk -- and sync that empty version back to the cloud and
+    // other machines. A successful (re)read clears this flag and re-enables
+    // saving. This must run before the dirty check because that soft-fail path
+    // leaves `dirty` undefined (clearDirty() was skipped), which the
+    // `dirty === false` guard below would not catch.
+    if (this.cloudMetadataUnavailable) {
+      return;
+    }
+
+    // Never overwrite a file whose on-disk XML we failed to parse (0-byte or
+    // truncated file from an interrupted cloud sync, corrupt XML, ...). The
+    // in-memory properties are empty/default in that case (see
+    // readMetadataFile's catch), so writing them would destroy the user's real
+    // -- possibly still recoverable -- bytes on disk. There is no automatic
+    // Retry for this case, so leave the file alone for manual recovery.
+    if (this.metadataReadProblem !== undefined) {
+      console.warn(
+        `Refusing to save ${this.metadataFilePath} because its metadata failed to read/parse; the file on disk was left untouched.`,
+      );
+      return;
+    }
+
+    // If the folder that should contain this file has vanished from disk (a
+    // collaborator deleted/renamed the session on another machine and a sync
+    // service applied that locally, or someone removed it in Explorer), we
+    // cannot write it: the open() would throw ENOENT. Fail softly instead of
+    // re-throwing (and re-toasting) on every save trigger. Warn exactly once
+    // -- gated on fileMissing -- then skip silently, leaving the in-memory data
+    // intact. This must run before the dirty check below because a dirty file
+    // would otherwise fall through to the write and hit ENOENT anyway.
+    if (!fs.existsSync(Path.dirname(this.metadataFilePath))) {
+      if (!this.fileMissing) {
+        this.fileMissing = true;
+        NotifyWarning(
+          `lameta could not save "${Path.basename(
+            this.metadataFilePath,
+          )}" because its folder is no longer on your hard drive. It looks like it was moved or deleted outside of lameta (for example by a file-synchronization service such as OneDrive or Dropbox). lameta will stop trying to save it. Restart lameta to bring it up to date with what is actually on disk.`,
+        );
+      }
+      return;
+    }
+    // The folder is present (again); allow saving and future warnings.
+    this.fileMissing = false;
+
     // console.log(
     //   `dirty of ${this.metadataFilePath} is ${
     //     this.dirty === undefined ? "undefined" : this.dirty
     //   }}`
     // );
-    if (
-      !forceSave &&
-      this.dirty === false &&
-      fs.existsSync(this.metadataFilePath)
-    ) {
+    if (!forceSave && this.dirty === false && fs.existsSync(this.metadataFilePath)) {
       //console.log(`skipping save of ${this.metadataFilePath}, not dirty`);
       return;
     }
@@ -894,38 +1166,172 @@ export /*babel doesn't like this: abstract*/ class File {
       console.log("WOULD HAVE SAVED THE FOLLOWING TO " + this.metadataFilePath);
     } else {
       try {
-        console.debug(
-          `${beforeRename ? "BEFORE RENAME" : ""} Saving ${
-            this.metadataFilePath
-          } `
-        );
+        console.debug(`${beforeRename ? "BEFORE RENAME" : ""} Saving ${this.metadataFilePath} `);
+        // Never silently clobber a version of this file that was changed on
+        // disk underneath us (a cloud sync service delivering another machine's
+        // edit, or an external editor). If we detect that, the real version is
+        // moved aside to a sibling BEFORE we write ours; if it could not be
+        // moved aside, we must not overwrite it, so skip the write entirely.
+        if (!this.setAsideExternallyChangedFile(xml)) {
+          return;
+        }
         ShowSavingNotifier(Path.basename(this.metadataFilePath), beforeRename);
-        PatientFS.writeFileSyncWithNotifyThenRethrow(
-          this.metadataFilePath,
-          xml
-        );
+        PatientFS.writeFileSyncWithNotifyThenRethrow(this.metadataFilePath, xml);
         this.clearDirty();
+        // Record the identity of what we just wrote so the next save() can
+        // recognize our own write and not mistake it for an external change.
+        this.recordDiskIdentity(xml);
       } catch (error) {
         if (error.code === "EPERM") {
           NotifyFileAccessProblem(
             `Cannot save because lameta was denied write access to ${this.metadataFilePath}.`,
-            error
+            error,
           );
+        } else if (error.code === "ENOENT") {
+          // The file/folder vanished between the existence check above and the
+          // write (a sync service or another process removed it). Same soft
+          // fail as the pre-check: warn once, then stay quiet.
+          if (!this.fileMissing) {
+            this.fileMissing = true;
+            NotifyWarning(
+              `lameta could not save "${Path.basename(
+                this.metadataFilePath,
+              )}" because it is no longer on your hard drive. It looks like it was moved or deleted outside of lameta (for example by a file-synchronization service such as OneDrive or Dropbox). lameta will stop trying to save it. Restart lameta to bring it up to date with what is actually on disk.`,
+            );
+          }
         } else {
-          NotifyError(
-            `While saving ${this.metadataFilePath}, got ${error} (file.save)`
-          );
+          NotifyError(`While saving ${this.metadataFilePath}, got ${error} (file.save)`);
         }
         //console.log(`File readonly, skipping save: ${this.metadataFilePath}`);
       }
     }
   }
 
+  // Capture the on-disk identity (mtime + size) and exact bytes of the
+  // metadata file as it is right now, tagged as "what lameta last read/wrote".
+  // Called after every successful read (readMetadataFile) and write (save) so
+  // the freshness check has an accurate baseline. If the file can't be stat'd
+  // (e.g. it isn't there), the baseline is cleared -- with no baseline the
+  // freshness check does nothing, which is the safe default.
+  private recordDiskIdentity(content: string): void {
+    try {
+      const stat = fs.statSync(this.metadataFilePath);
+      this.lastKnownDiskIdentity = { mtimeMs: stat.mtimeMs, size: stat.size };
+      this.lastKnownDiskContent = content;
+    } catch {
+      this.lastKnownDiskIdentity = undefined;
+      this.lastKnownDiskContent = undefined;
+    }
+  }
+
+  // Guard against silently overwriting a version of the metadata file that was
+  // changed on disk underneath us. Returns true if save() should proceed to
+  // write the canonical file, false if it must not (the on-disk version could
+  // not be moved to safety, so overwriting it would lose it).
+  //
+  // If the file's on-disk identity differs from what we last read/wrote, we
+  // read it back: identical bytes (or bytes already equal to what we're about
+  // to write) mean nothing would be lost -- just mtime churn from a sync
+  // engine -- so we refresh the baseline and proceed. Otherwise it's a genuine
+  // external edit: move it aside to a uniquely-named sibling, warn once, then
+  // let save() write our version to the canonical name.
+  private setAsideExternallyChangedFile(xmlAboutToWrite: string): boolean {
+    // No baseline -> no evidence of an external change; nothing to do.
+    if (!this.lastKnownDiskIdentity) {
+      return true;
+    }
+
+    let stat: fs.Stats;
+    try {
+      stat = fs.statSync(this.metadataFilePath);
+    } catch {
+      // The file isn't there right now (the missing-folder/ENOENT handling in
+      // save() and its catch cover that). Nothing to set aside.
+      return true;
+    }
+
+    const unchanged =
+      stat.mtimeMs === this.lastKnownDiskIdentity.mtimeMs &&
+      stat.size === this.lastKnownDiskIdentity.size;
+    if (unchanged) {
+      return true;
+    }
+
+    // Identity differs. Read what's actually there to tell a real edit from
+    // mere mtime churn.
+    let onDisk: string;
+    try {
+      onDisk = PatientFS.readFileSyncNoNotify(this.metadataFilePath);
+    } catch {
+      // Couldn't read it (locked, etc.). We can neither confirm a change nor
+      // safely move it; don't risk clobbering -- skip this write and try again
+      // on the next save trigger.
+      return false;
+    }
+
+    if (onDisk === this.lastKnownDiskContent || onDisk === xmlAboutToWrite) {
+      // No real change (identical bytes) -- refresh the baseline so we stop
+      // re-checking, and let the normal write proceed.
+      this.lastKnownDiskIdentity = { mtimeMs: stat.mtimeMs, size: stat.size };
+      this.lastKnownDiskContent = onDisk;
+      return true;
+    }
+
+    // A genuine external change. Move it aside so our write can't erase it.
+    const setAsidePath = this.makeSetAsidePath();
+    try {
+      PatientFS.renameSyncWithNotifyAndRethrow(this.metadataFilePath, setAsidePath);
+    } catch {
+      // renameSyncWithNotifyAndRethrow already told the user it couldn't move
+      // the file. Do NOT overwrite it -- preserving it is the whole point.
+      return false;
+    }
+
+    this.metadataChangedExternally = true;
+    const originalName = Path.basename(this.metadataFilePath);
+    const keptName = Path.basename(setAsidePath);
+    NotifyWarning(
+      t`The file "${originalName}" was changed outside of lameta, perhaps by a file-synchronization service such as OneDrive or Dropbox, or on another computer. To avoid losing that change, lameta kept it next to the original with the name "${keptName}".`,
+    );
+    return true;
+  }
+
+  // Build a unique sibling path to preserve an externally-changed metadata
+  // file, e.g. "ETR009.session" -> "ETR009.session (changed on another
+  // computer 2026-07-12).txt" and "foo.jpg.meta" -> "foo.jpg (changed on
+  // another computer 2026-07-12).meta". The date disambiguates day-to-day; a
+  // numeric counter guarantees uniqueness if several land on the same day.
+  //
+  // A folder's own metadata file (.session/.person/.sprj) must not keep its
+  // extension here: Folder.runSanityCheck reports any second file with that
+  // extension as "multiple project files", and the misnamed-metadata repair in
+  // Folder and FolderMetadataFile would rename the copy into place whenever the
+  // real file is missing. Ending it in ".txt" lets it load as an ordinary
+  // attached file that opens in a text editor. A ".meta" copy keeps its
+  // extension, because the folder loader already skips every ".meta" file.
+  private makeSetAsidePath(): string {
+    const dir = Path.dirname(this.metadataFilePath);
+    const base = Path.basename(this.metadataFilePath);
+    const ext = Path.extname(base); // ".session"/".person"/".sprj"/".meta"
+    const label = `changed on another computer ${moment().format("YYYY-MM-DD")}`;
+    const nameFor = (suffix: string) =>
+      ext === ".meta"
+        ? `${base.substring(0, base.length - ext.length)} (${suffix})${ext}`
+        : `${base} (${suffix}).txt`;
+    let candidate = Path.join(dir, nameFor(label));
+    let counter = 2;
+    while (fs.existsSync(candidate)) {
+      candidate = Path.join(dir, nameFor(`${label} ${counter}`));
+      counter++;
+    }
+    return candidate;
+  }
+
   private getUniqueFilePath(intendedPath: string): string {
     if (fs.existsSync(intendedPath)) {
       // Dec 2019, I don't think this ever gets used
       throw Error(
-        `Please report error: getUniqueFilePath("${intendedPath}") did not expect that it was actually possible to have to come up with a unique name.`
+        `Please report error: getUniqueFilePath("${intendedPath}") did not expect that it was actually possible to have to come up with a unique name.`,
       );
 
       //     In Sentry, someone using 0.9.2, got
@@ -961,10 +1367,7 @@ export /*babel doesn't like this: abstract*/ class File {
   // jo.person  --> joe.person
   // jo_photo.jpg --> joe_photo.jpg
   // group_photo.jpg --> no change
-  private internalUpdateNameBasedOnNewFolderName(
-    currentFilePath: string,
-    newbase: string
-  ): string {
+  private internalUpdateNameBasedOnNewFolderName(currentFilePath: string, newbase: string): string {
     const oldbase = Path.basename(Path.dirname(currentFilePath));
     const oldFilename = Path.basename(currentFilePath);
     if (oldFilename.startsWith(oldbase)) {
@@ -991,7 +1394,7 @@ export /*babel doesn't like this: abstract*/ class File {
     // enhance, on Linux this might need to be different?
     return (
       aNormalized.localeCompare(bNormalized, undefined, {
-        sensitivity: "accent"
+        sensitivity: "accent",
       }) === 0
     );
   }
@@ -1016,26 +1419,24 @@ export /*babel doesn't like this: abstract*/ class File {
   // Rename the file and change any internal references to the name.
   // Must be called *before* renaming the parent folder.
   public updateNameBasedOnNewFolderName(newFolderName: string) {
-    const hasSeparateMetaDataFile =
-      this.metadataFilePath !== this.describedFileOrLinkFilePath;
+    const hasSeparateMetaDataFile = this.metadataFilePath !== this.describedFileOrLinkFilePath;
     //was: if (hasSeparateMetaDataFile && fs.existsSync(this.metadataFilePath)),
     // but the file might not have been saved yet... we still need to change the
     // path so that it points to somewhere in the newly renamed folder.
     if (hasSeparateMetaDataFile) {
       this.metadataFilePath = this.internalUpdateNameBasedOnNewFolderName(
         this.metadataFilePath,
-        newFolderName
+        newFolderName,
       );
       // this.metadataFilePath = this.updateFolderOnly(
       //   this.metadataFilePath,
       //   newFolderName
       // );
     }
-    this.describedFileOrLinkFilePath =
-      this.internalUpdateNameBasedOnNewFolderName(
-        this.describedFileOrLinkFilePath,
-        newFolderName
-      );
+    this.describedFileOrLinkFilePath = this.internalUpdateNameBasedOnNewFolderName(
+      this.describedFileOrLinkFilePath,
+      newFolderName,
+    );
     // this.describedFilePath = this.updateFolderOnly(
     //   this.describedFilePath,
     //   newFolderName
@@ -1045,21 +1446,57 @@ export /*babel doesn't like this: abstract*/ class File {
     }
     this.setFileNameProperty();
   }
+
+  // Capture the paths before updateNameBasedOnNewFolderName() so that if the
+  // folder rename that follows the per-file renames fails, Folder can undo
+  // our on-disk renames instead of leaving a folder with the old name full of
+  // files carrying the new name.
+  public getRenameRollbackSnapshot(): {
+    metadataFilePath: string;
+    describedFileOrLinkFilePath: string;
+  } {
+    return {
+      metadataFilePath: this.metadataFilePath,
+      describedFileOrLinkFilePath: this.describedFileOrLinkFilePath,
+    };
+  }
+  public rollbackRename(snapshot: {
+    metadataFilePath: string;
+    describedFileOrLinkFilePath: string;
+  }) {
+    const hasSeparateMetaDataFile = this.metadataFilePath !== this.describedFileOrLinkFilePath;
+    if (
+      this.describedFileOrLinkFilePath !== snapshot.describedFileOrLinkFilePath &&
+      fs.existsSync(this.describedFileOrLinkFilePath)
+    ) {
+      PatientFS.renameSync(this.describedFileOrLinkFilePath, snapshot.describedFileOrLinkFilePath);
+    }
+    this.describedFileOrLinkFilePath = snapshot.describedFileOrLinkFilePath;
+    if (hasSeparateMetaDataFile) {
+      if (
+        this.metadataFilePath !== snapshot.metadataFilePath &&
+        fs.existsSync(this.metadataFilePath)
+      ) {
+        PatientFS.renameSync(this.metadataFilePath, snapshot.metadataFilePath);
+      }
+      this.metadataFilePath = snapshot.metadataFilePath;
+    } else {
+      this.metadataFilePath = this.describedFileOrLinkFilePath;
+    }
+    this.setFileNameProperty();
+  }
+
   public updateRecordOfWhatFolderThisIsLocatedIn(newFolderName: string) {
     console.debug(
-      `this.getFilenameToShowInList updateRecordOfWhatFolderThisIsLocatedIn(${newFolderName})`
+      `this.getFilenameToShowInList updateRecordOfWhatFolderThisIsLocatedIn(${newFolderName})`,
     );
-    const hasSeparateMetaDataFile =
-      this.metadataFilePath !== this.describedFileOrLinkFilePath;
+    const hasSeparateMetaDataFile = this.metadataFilePath !== this.describedFileOrLinkFilePath;
     if (hasSeparateMetaDataFile) {
-      this.metadataFilePath = this.updateFolderOnly(
-        this.metadataFilePath,
-        newFolderName
-      );
+      this.metadataFilePath = this.updateFolderOnly(this.metadataFilePath, newFolderName);
     }
     this.describedFileOrLinkFilePath = this.updateFolderOnly(
       this.describedFileOrLinkFilePath,
-      newFolderName
+      newFolderName,
     );
     if (!hasSeparateMetaDataFile) {
       this.metadataFilePath = this.describedFileOrLinkFilePath;
@@ -1067,10 +1504,7 @@ export /*babel doesn't like this: abstract*/ class File {
   }
 
   private setFileNameProperty() {
-    this.properties.setText(
-      "filename",
-      Path.basename(this.describedFileOrLinkFilePath)
-    );
+    this.properties.setText("filename", Path.basename(this.describedFileOrLinkFilePath));
   }
   /* ----------- Change Detection -----------
     Enhance: move to its own class
@@ -1121,7 +1555,7 @@ export /*babel doesn't like this: abstract*/ class File {
         return this.getXml(true);
       },
       // Function fires when a change is detected
-      () => this.changed()
+      () => this.changed(),
     );
   }
 
@@ -1130,14 +1564,7 @@ export /*babel doesn't like this: abstract*/ class File {
     //   return locate("assets/warning.png");
     // }
     const type = this.getTextProperty("type", "unknowntype");
-    const typesWeHaveIconsFor = [
-      "Audio",
-      "Video",
-      "Image",
-      "ELAN",
-      "Person",
-      "Session"
-    ];
+    const typesWeHaveIconsFor = ["Audio", "Video", "Image", "ELAN", "Person", "Session"];
     if (!typesWeHaveIconsFor.includes(type)) {
       return `assets/file-icons/generic.png`;
     }
@@ -1155,9 +1582,7 @@ export /*babel doesn't like this: abstract*/ class File {
     return directoryName + "_" + roleName;
   }
   private tryToRenameToFunction(roleName: string): boolean {
-    sentryBreadCrumb(
-      `Rename for function ${roleName} (${this.describedFileOrLinkFilePath})`
-    );
+    sentryBreadCrumb(`Rename for function ${roleName} (${this.describedFileOrLinkFilePath})`);
     if (this.tryToRenameBothFiles(this.getCoreNameWithRole(roleName))) {
       return true;
     }
@@ -1172,21 +1597,19 @@ export /*babel doesn't like this: abstract*/ class File {
   public tryToRenameBothFiles(newCoreName: string): boolean {
     assert(
       this.metadataFilePath !== this.describedFileOrLinkFilePath,
-      "this method is not for renaming the person or session files"
+      "this method is not for renaming the person or session files",
     );
 
     this.save();
-    const possibleLinkExtension = this.isLinkFile()
-      ? kLinkExtensionWithFullStop
-      : "";
+    const possibleLinkExtension = this.isLinkFile() ? kLinkExtensionWithFullStop : "";
     const originalFileName = this.describedFileOrLinkFilePath.replace(
       kLinkExtensionWithFullStop,
-      ""
+      "",
     );
     const originalFileExtension = Path.extname(originalFileName);
     const newDescribedFilePath = Path.join(
       Path.dirname(this.describedFileOrLinkFilePath),
-      newCoreName + originalFileExtension + possibleLinkExtension
+      newCoreName + originalFileExtension + possibleLinkExtension,
     );
 
     const newMetadataFilePath =
@@ -1203,53 +1626,45 @@ export /*babel doesn't like this: abstract*/ class File {
       return false;
     }
 
-    sentryBreadCrumb(
-      `Attempting rename from ${this.metadataFilePath} to ${newMetadataFilePath}`
-    );
+    sentryBreadCrumb(`Attempting rename from ${this.metadataFilePath} to ${newMetadataFilePath}`);
 
     try {
-      PatientFS.renameSyncWithNotifyAndRethrow(
-        this.metadataFilePath,
-        newMetadataFilePath
-      );
-    } catch (err) {
+      PatientFS.renameSyncWithNotifyAndRethrow(this.metadataFilePath, newMetadataFilePath);
+    } catch {
       return false;
     }
     sentryBreadCrumb(
-      `Attempting rename from ${this.describedFileOrLinkFilePath} to ${newDescribedFilePath}`
+      `Attempting rename from ${this.describedFileOrLinkFilePath} to ${newDescribedFilePath}`,
     );
 
     try {
       PatientFS.renameSyncWithNotifyAndRethrow(
         this.describedFileOrLinkFilePath,
         newDescribedFilePath,
-        this.type
+        this.type,
       );
-    } catch (err) {
+    } catch {
       // oh my. We failed to rename the described file. Undo the rename of the metadata file.
       try {
-        PatientFS.renameSyncWithNotifyAndRethrow(
-          newMetadataFilePath,
-          this.metadataFilePath
-        );
-      } catch (err) {
+        PatientFS.renameSyncWithNotifyAndRethrow(newMetadataFilePath, this.metadataFilePath);
+      } catch {
         // oh boy. in danger of losing this data, especially since something might want to come along and clean up because it looks like a zombie file now
         // that its name does not match a core file.
         // try and just copy it over
         try {
           PatientFS.copyFileSync(newMetadataFilePath, this.metadataFilePath);
-        } catch (err) {
+        } catch {
           try {
             PatientFS.copyFileSync(
               newMetadataFilePath,
-              Path.join(this.metadataFilePath, ".maybeLostInfoHere")
+              this.metadataFilePath + ".maybeLostInfoHere",
             );
-          } catch (e) {
+          } catch {
             // ok this is getting stupid. just fall through.
           }
           ShowMessageDialog({
             title: `Error`,
-            text: `During the failed rename, the meta file got renamed and lameta can't seem to get it back to its original name. The `
+            text: `During the failed rename, the meta file got renamed and lameta can't seem to get it back to its original name. The metadata is currently in "${newMetadataFilePath}".`,
           });
         }
       }
@@ -1281,7 +1696,7 @@ export class OtherFile extends File {
   constructor(
     path: string,
     customVocabularies: EncounteredVocabularyRegistry,
-    partialLoadWhileCopyingInThisFile?: boolean
+    partialLoadWhileCopyingInThisFile?: boolean,
   ) {
     // we want "foo.mp3.meta", not "foo.mp3.link.meta"
     const r = path.replace(kLinkExtensionWithFullStop, "");
@@ -1291,13 +1706,25 @@ export class OtherFile extends File {
 
     // Add access fields for document files (Description Documents / Other Documents)
     // These enable per-document access levels which will be exported to IMDI
-    this.addTextProperty("access", "", true);
-    this.properties.getValueOrThrow("access").definition.englishLabel =
-      "Access";
-    this.addTextProperty("accessDescription", "", true);
-    this.properties.getValueOrThrow(
-      "accessDescription"
-    ).definition.englishLabel = "Access Explanation";
+    // Use field definitions from the configuration to respect multilingual settings
+    const accessDef = getProjectDocumentFieldDefinition("access");
+    if (accessDef) {
+      const accessField = Field.fromFieldDefinition(accessDef);
+      this.properties.setValue("access", accessField);
+    } else {
+      this.addTextProperty("access", "", true);
+      this.properties.getValueOrThrow("access").definition.englishLabel = "Access";
+    }
+
+    const accessDescDef = getProjectDocumentFieldDefinition("accessDescription");
+    if (accessDescDef) {
+      const accessDescField = Field.fromFieldDefinition(accessDescDef);
+      this.properties.setValue("accessDescription", accessDescField);
+    } else {
+      this.addTextProperty("accessDescription", "", true);
+      this.properties.getValueOrThrow("accessDescription").definition.englishLabel =
+        "Access Explanation";
+    }
 
     if (partialLoadWhileCopyingInThisFile) {
       this.copyInProgress = true;
@@ -1310,24 +1737,19 @@ export class OtherFile extends File {
   public static CreateLinkFile(
     pathToOriginalFile: string,
     customFileRegistry: EncounteredVocabularyRegistry,
-    destinationFolderPath: string
+    destinationFolderPath: string,
   ) {
     const mediaFolderPath = getMediaFolderOrEmptyForThisProjectAndMachine();
     if (!mediaFolderPath)
-      throw new Error(
-        "CreateLinkFile called but there is no known MediaFolder"
-      );
+      throw new Error("CreateLinkFile called but there is no known MediaFolder");
     if (!fs.existsSync(mediaFolderPath))
       throw new Error(
-        `CreateLinkFile called but the MediaFolder "${mediaFolderPath}" does not exist.`
+        `CreateLinkFile called but the MediaFolder "${mediaFolderPath}" does not exist.`,
       );
-    const pathRelativeToRoot = Path.relative(
-      mediaFolderPath!,
-      pathToOriginalFile
-    );
+    const pathRelativeToRoot = Path.relative(mediaFolderPath!, pathToOriginalFile);
     const pathToLinkFile = Path.posix.join(
       destinationFolderPath,
-      Path.basename(pathToOriginalFile + kLinkExtensionWithFullStop)
+      Path.basename(pathToOriginalFile + kLinkExtensionWithFullStop),
     );
     fs.writeFileSync(pathToLinkFile, pathRelativeToRoot, "utf-8");
     return new OtherFile(pathToLinkFile, customFileRegistry, false);

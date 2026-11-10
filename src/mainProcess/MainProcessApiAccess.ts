@@ -2,10 +2,7 @@
 // import { mainProcessApi } from "../MainProcessApiAccess";
 // mainProcessApi.someFunction(someArg).then()...
 
-import type {
-  ExportSessionData,
-  ExportCorpusData
-} from "../export/ExportBundleTypes";
+import type { ExportSessionData, ExportCorpusData } from "../export/ExportBundleTypes";
 import type { XMLValidationResult } from "xmllint-wasm";
 
 // Define the public API interface for the renderer process.
@@ -14,12 +11,12 @@ interface MainProcessApiPublic {
   trashItem: (path: string) => Promise<boolean>;
   validateImdiAsync: (
     imdiContents: string,
-    imdiSchemaName?: string
+    imdiSchemaName?: string,
   ) => Promise<XMLValidationResult>;
   prepareImdiExportDirectory: (rootDirectory: string) => Promise<void>;
   cleanupImdiExportDirectory: (rootDirectory: string) => Promise<void>;
   writeImdiSessionData: (
-    data: ExportSessionData
+    data: ExportSessionData,
   ) => Promise<{ filesWritten: number; errors: string[] }>;
   writeImdiCorpusData: (data: ExportCorpusData) => Promise<void>;
   cancelImdiExportCopyOperations: () => Promise<void>;
@@ -38,10 +35,12 @@ let _mockApi: MainProcessApiPublic | null = null;
 
 // This shouldn't be needed, since there is a mock in __mocks__. But that isn't working at the moment.
 if (process.env.VITEST_POOL_ID && process.env.VITEST_WORKER_ID) {
-  import("./__mocks__/MainProcessApiAccess").then((m) => {
-    // NB: don't try to use await here, it is currently breaking vite build
-    _mockApi = m as unknown as MainProcessApiPublic;
-  });
+  import("./__mocks__/MainProcessApiAccess")
+    .then((m) => {
+      // NB: don't try to use await here, it is currently breaking vite build
+      _mockApi = m as unknown as MainProcessApiPublic;
+    })
+    .catch((err) => console.error("Could not load the MainProcessApiAccess mock", err));
 }
 
 /**
@@ -51,34 +50,22 @@ function createNativeIpcApi(): MainProcessApiPublic {
   const { ipcRenderer } = require("electron");
 
   return {
-    trashItem: (path: string) =>
-      ipcRenderer.invoke("MainProcessApi.trashItem", path),
+    trashItem: (path: string) => ipcRenderer.invoke("MainProcessApi.trashItem", path),
     validateImdiAsync: (imdiContents: string, imdiSchemaName?: string) =>
-      ipcRenderer.invoke(
-        "MainProcessApi.validateImdiAsync",
-        imdiContents,
-        imdiSchemaName
-      ),
+      ipcRenderer.invoke("MainProcessApi.validateImdiAsync", imdiContents, imdiSchemaName),
     prepareImdiExportDirectory: (rootDirectory: string) =>
-      ipcRenderer.invoke(
-        "MainProcessApi.prepareImdiExportDirectory",
-        rootDirectory
-      ),
+      ipcRenderer.invoke("MainProcessApi.prepareImdiExportDirectory", rootDirectory),
     writeImdiSessionData: (data: any) =>
       ipcRenderer.invoke("MainProcessApi.writeImdiSessionData", data),
     writeImdiCorpusData: (data: any) =>
       ipcRenderer.invoke("MainProcessApi.writeImdiCorpusData", data),
     cleanupImdiExportDirectory: (rootDirectory: string) =>
-      ipcRenderer.invoke(
-        "MainProcessApi.cleanupImdiExportDirectory",
-        rootDirectory
-      ),
+      ipcRenderer.invoke("MainProcessApi.cleanupImdiExportDirectory", rootDirectory),
     cancelImdiExportCopyOperations: () =>
       ipcRenderer.invoke("MainProcessApi.cancelImdiExportCopyOperations"),
     hasActiveImdiCopyOperations: () =>
       ipcRenderer.invoke("MainProcessApi.hasActiveImdiCopyOperations"),
-    revealInFolder: (path: string) =>
-      ipcRenderer.invoke("MainProcessApi.revealInFolder", path)
+    revealInFolder: (path: string) => ipcRenderer.invoke("MainProcessApi.revealInFolder", path),
   };
 }
 
@@ -91,14 +78,11 @@ function getMainProcessApiImpl(): MainProcessApiPublic {
 }
 
 // Create a proxy that lazily forwards all method calls
-const mainProcessApi: MainProcessApiPublic = new Proxy(
-  {} as MainProcessApiPublic,
-  {
-    get(_target, prop: keyof MainProcessApiPublic) {
-      const impl = getMainProcessApiImpl();
-      return impl[prop];
-    }
-  }
-);
+const mainProcessApi: MainProcessApiPublic = new Proxy({} as MainProcessApiPublic, {
+  get(_target, prop: keyof MainProcessApiPublic) {
+    const impl = getMainProcessApiImpl();
+    return impl[prop];
+  },
+});
 
 export { mainProcessApi };

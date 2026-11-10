@@ -1,6 +1,6 @@
-import { test, expect as expect, Page } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import fs from "fs";
 import * as Path from "path";
 
@@ -11,9 +11,8 @@ let project: E2eProject;
 test.describe("Drag and Drop Files", () => {
   test.beforeAll(async ({}) => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "DragDropTest");
+    project = await launchWithProject(lameta, "DragDropTest");
+    page = lameta.page;
   });
 
   test.afterAll(async ({}) => {
@@ -41,7 +40,7 @@ test.describe("Drag and Drop Files", () => {
       (element, { filePath, fileName }) => {
         // Create a mock File object with the `path` property that Electron adds
         const mockFile = new File(["test content"], fileName, {
-          type: "text/plain"
+          type: "text/plain",
         });
         // Electron adds this path property when nodeIntegration is true
         (mockFile as any).path = filePath;
@@ -54,11 +53,11 @@ test.describe("Drag and Drop Files", () => {
         const dropEvent = new DragEvent("drop", {
           bubbles: true,
           cancelable: true,
-          dataTransfer
+          dataTransfer,
         });
         element.dispatchEvent(dropEvent);
       },
-      { filePath: testFilePath, fileName: testFileName }
+      { filePath: testFilePath, fileName: testFileName },
     );
 
     // Wait for the file to appear in the file list

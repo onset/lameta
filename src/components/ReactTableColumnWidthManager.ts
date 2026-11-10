@@ -5,11 +5,7 @@ export class ReactTableColumnWidthManager {
   private defaults: any;
   private storageKey: string;
   public columnWidths: object = {};
-  public constructor(
-    storageKey: string,
-    columnKeys: string[],
-    defaultWidths: number[]
-  ) {
+  public constructor(storageKey: string, columnKeys: string[], defaultWidths: number[]) {
     this.storageKey = storageKey;
     this.columnKeys = columnKeys;
     this.defaults = defaultWidths;
@@ -29,7 +25,7 @@ export class ReactTableColumnWidthManager {
       try {
         this.columnWidths = JSON.parse(widthString);
         //        console.log(`found in storage: ${columnWidthKey} = ${JSON.stringify(this.columnWidths)});
-      } catch (err) {
+      } catch {
         console.error("Error parsing " + columnWidthKey);
       }
     }

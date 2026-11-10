@@ -71,8 +71,8 @@ export function connectToLameta(timeoutMs = 10000) {
         writeBytes: (relPath, data) => request("companions.writeBytes", [relPath, data], [data]),
         rename: (fromRelPath, toRelPath) => request("companions.rename", [fromRelPath, toRelPath]),
         delete: (relPath) => request("companions.delete", [relPath]),
-        stat: (relPath) => request("companions.stat", [relPath])
-      }
+        stat: (relPath) => request("companions.stat", [relPath]),
+      },
     };
 
     window.addEventListener("message", onMessage);

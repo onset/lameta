@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import { FolderSearchUtilities } from "./folderSearch-e2e-helpers";
 
 let lameta: LametaE2ERunner;
@@ -12,9 +12,8 @@ let searchUtils: FolderSearchUtilities;
 test.describe("Folder Search More Fields Highlight", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, "FolderSearchMoreFields/ΔMore");
+    project = await launchWithProject(lameta, "FolderSearchMoreFields/ΔMore");
+    page = lameta.page;
     searchUtils = new FolderSearchUtilities(page);
   });
   test.afterAll(async () => {

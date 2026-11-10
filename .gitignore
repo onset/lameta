@@ -35,8 +35,16 @@ app/node_modules
 # OSX
 .DS_Store
 
+# the torture project is generated where it is needed (see sample-data-generator/README.md)
+/sample data/Interviews with Abstract Artists*/
+
 # App packaged
 release
+# electron-builder output sent somewhere else, e.g. with
+# --config.directories.output=release-check, which is handy when a previous build's app.asar
+# is still locked
+release-*
+!release-notes/
 *-bundle.*
 app/style.css
 app/style.css.map
@@ -70,3 +78,7 @@ test-results/.last-run.json
 rocrate-export-review-*.md
 
 Large Sample/
+scripts/crowdin/staging/
+
+# a configuration that configuredChecks.e2e.ts copies in while it runs
+/archive-configurations/e2e-*/

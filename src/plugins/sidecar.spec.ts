@@ -5,7 +5,7 @@ import {
   getPluginDataDir,
   getSidecarPath,
   parseSidecarName,
-  DEFAULT_SIDECAR_NAME
+  DEFAULT_SIDECAR_NAME,
 } from "./sidecar";
 
 describe("isValidSidecarName", () => {
@@ -25,9 +25,7 @@ describe("isValidSidecarName", () => {
 describe("getPluginDataDir", () => {
   it("nests under plugin-data/<pluginId>", () => {
     const dir = getPluginDataDir("/proj/Sessions/S1", "org.example.a");
-    expect(dir).toBe(
-      Path.join("/proj/Sessions/S1", "plugin-data", "org.example.a")
-    );
+    expect(dir).toBe(Path.join("/proj/Sessions/S1", "plugin-data", "org.example.a"));
   });
 });
 
@@ -37,15 +35,15 @@ describe("getSidecarPath", () => {
       "/proj/Sessions/S1",
       "org.example.a",
       "ETR009_Careful.mp3",
-      "annotations"
+      "annotations",
     );
     expect(p).toBe(
       Path.join(
         "/proj/Sessions/S1",
         "plugin-data",
         "org.example.a",
-        "ETR009_Careful.mp3.annotations.json"
-      )
+        "ETR009_Careful.mp3.annotations.json",
+      ),
     );
   });
 
@@ -55,17 +53,15 @@ describe("getSidecarPath", () => {
   });
 
   it("throws on an invalid name", () => {
-    expect(() =>
-      getSidecarPath("/proj/S", "a.b", "f.wav", "../escape")
-    ).toThrow(/Invalid sidecar name/);
+    expect(() => getSidecarPath("/proj/S", "a.b", "f.wav", "../escape")).toThrow(
+      /Invalid sidecar name/,
+    );
   });
 });
 
 describe("parseSidecarName", () => {
   it("extracts the name segment for a matching sidecar", () => {
-    expect(
-      parseSidecarName("f.wav.annotations.json", "f.wav")
-    ).toBe("annotations");
+    expect(parseSidecarName("f.wav.annotations.json", "f.wav")).toBe("annotations");
   });
   it("returns null for a non-matching basename", () => {
     expect(parseSidecarName("other.wav.annotations.json", "f.wav")).toBeNull();

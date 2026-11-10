@@ -8,10 +8,7 @@ export interface IProps {
   onClick: () => void;
 }
 
-export default class NotificationIndicator extends React.Component<
-  IProps,
-  IState
-> {
+export default class NotificationIndicator extends React.Component<IProps, IState> {
   public constructor(props: IProps) {
     super(props);
     this.state = { open: true };
@@ -19,10 +16,7 @@ export default class NotificationIndicator extends React.Component<
 
   public render() {
     return (
-      <button
-        className="notificationsIndicator"
-        onClick={() => this.props.onClick()}
-      >
+      <button className="notificationsIndicator" onClick={() => this.props.onClick()}>
         0 Notifications
       </button>
     );

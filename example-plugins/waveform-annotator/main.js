@@ -24,17 +24,16 @@ const STRINGS = {
     labelPlaceholder: "Region label",
     delete: "Delete region",
     error: "Could not load audio: ",
-    zoom: "Zoom"
+    zoom: "Zoom",
   },
   es: {
     loading: "Cargando audio…",
-    ready:
-      "Arrastra sobre la forma de onda para crear una región y escribe una etiqueta.",
+    ready: "Arrastra sobre la forma de onda para crear una región y escribe una etiqueta.",
     labelPlaceholder: "Etiqueta de la región",
     delete: "Eliminar región",
     error: "No se pudo cargar el audio: ",
-    zoom: "Zoom"
-  }
+    zoom: "Zoom",
+  },
 };
 function stringsFor(languageCode) {
   const base = (languageCode || "en").split("-")[0];
@@ -85,7 +84,7 @@ async function save() {
     id: r.id,
     start: r.start,
     end: r.end,
-    label: labelOf(r)
+    label: labelOf(r),
   }));
   const payload = JSON.stringify({ version: SIDECAR_VERSION, regions }, null, 2);
   try {
@@ -99,7 +98,7 @@ function scheduleLabelSave() {
   if (labelTimer) clearTimeout(labelTimer);
   labelTimer = setTimeout(() => {
     labelTimer = null;
-    save();
+    void save();
   }, LABEL_DEBOUNCE_MS);
 }
 
@@ -130,7 +129,7 @@ async function restore() {
         start: r.start,
         end: r.end,
         content: r.label || "",
-        color: REGION_COLOR
+        color: REGION_COLOR,
       });
     }
   } catch (e) {
@@ -155,7 +154,7 @@ async function main() {
     waveColor: "#becde4",
     progressColor: "#3d5e90",
     cursorColor: "#e69664",
-    height: 160
+    height: 160,
   });
   ws.on("ready", () => {
     statusEl.textContent = "";
@@ -188,14 +187,14 @@ async function main() {
   regionsPlugin.enableDragSelection({ color: REGION_COLOR });
 
   // Persist immediately on settled region changes (see PERSISTENCE NOTE above).
-  regionsPlugin.on("region-created", (region) => {
-    if (!restoring) save();
+  regionsPlugin.on("region-created", () => {
+    if (!restoring) void save();
   });
   regionsPlugin.on("region-updated", () => {
-    if (!restoring) save();
+    if (!restoring) void save();
   });
   regionsPlugin.on("region-removed", () => {
-    if (!restoring) save();
+    if (!restoring) void save();
   });
   regionsPlugin.on("region-clicked", (region, e) => {
     e.stopPropagation(); // don't seek
@@ -216,7 +215,7 @@ async function main() {
       clearTimeout(labelTimer);
       labelTimer = null;
     }
-    save();
+    void save();
   });
   deleteButton.addEventListener("click", () => {
     if (!selectedRegion) return;

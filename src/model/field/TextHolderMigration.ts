@@ -9,6 +9,14 @@
  */
 
 /**
+ * One language's text in tagged multilingual format, "[[es]]casa". The format cannot
+ * hold "[[" or "]]" inside a text, so each becomes a single bracket.
+ */
+export function taggedAxis(tag: string, text: string): string {
+  return `[[${tag}]]${text.replace(/\[{2,}/g, "[").replace(/\]{2,}/g, "]")}`;
+}
+
+/**
  * Result of parsing slash syntax text.
  * Each segment preserves whitespace exactly as provided.
  */
@@ -73,7 +81,7 @@ export interface LanguageAssignmentResult {
  */
 export function assignLanguagesToSegments(
   segments: string[],
-  languageTags: string[]
+  languageTags: string[],
 ): LanguageAssignmentResult {
   const assignments = new Map<string, string>();
   const orderedTags: string[] = [];
@@ -102,9 +110,7 @@ export function assignLanguagesToSegments(
       // More segments than tags - use unknown1, unknown2, etc.
       const unknownIndex = i - tagCount + 1;
       tag = `unknown${unknownIndex}`;
-      warnings.push(
-        `Segment ${i + 1} has no language tag, assigned to "${tag}"`
-      );
+      warnings.push(`Segment ${i + 1} has no language tag, assigned to "${tag}"`);
     }
 
     if (i < segmentCount) {
@@ -130,10 +136,7 @@ export function assignLanguagesToSegments(
  * @param languageTags The language tags in order (e.g., ["es", "en"])
  * @returns Tagged format string (e.g., "[[es]]casa[[en]]house")
  */
-export function slashSyntaxToTaggedText(
-  input: string,
-  languageTags: string[]
-): string {
+export function slashSyntaxToTaggedText(input: string, languageTags: string[]): string {
   const { segments, hasSlashes } = parseSlashSyntax(input);
 
   // If no slashes, don't convert - return as-is
@@ -141,17 +144,14 @@ export function slashSyntaxToTaggedText(
     return input;
   }
 
-  const { assignments, orderedTags } = assignLanguagesToSegments(
-    segments,
-    languageTags
-  );
+  const { assignments, orderedTags } = assignLanguagesToSegments(segments, languageTags);
 
   // Build tagged format
   const parts: string[] = [];
   for (const tag of orderedTags) {
     const text = assignments.get(tag) ?? "";
     // Include all tags, even empty ones, to preserve structure
-    parts.push(`[[${tag}]]${text}`);
+    parts.push(taggedAxis(tag, text));
   }
 
   return parts.join("");
@@ -194,7 +194,7 @@ export interface CommaSeparatedSlashResult {
  */
 export function parseCommaSeparatedSlashSyntax(
   input: string,
-  languageTags: string[]
+  languageTags: string[],
 ): CommaSeparatedSlashResult {
   const assignments = new Map<string, string>();
   const warnings: string[] = [];
@@ -235,8 +235,10 @@ export function parseCommaSeparatedSlashSyntax(
       hasSlashes = true;
     }
 
-    const { assignments: itemAssignments, orderedTags: itemTags } =
-      assignLanguagesToSegments(parsed.segments, languageTags);
+    const { assignments: itemAssignments, orderedTags: itemTags } = assignLanguagesToSegments(
+      parsed.segments,
+      languageTags,
+    );
 
     // Collect values for each language
     for (const tag of itemTags) {
@@ -278,10 +280,12 @@ export function parseCommaSeparatedSlashSyntax(
  */
 export function commaSeparatedSlashSyntaxToTaggedText(
   input: string,
-  languageTags: string[]
+  languageTags: string[],
 ): string {
-  const { assignments, orderedTags, hasSlashes } =
-    parseCommaSeparatedSlashSyntax(input, languageTags);
+  const { assignments, orderedTags, hasSlashes } = parseCommaSeparatedSlashSyntax(
+    input,
+    languageTags,
+  );
 
   // If no slashes in any item, don't convert - return as-is
   if (!hasSlashes) {
@@ -293,7 +297,7 @@ export function commaSeparatedSlashSyntaxToTaggedText(
   for (const tag of orderedTags) {
     const text = assignments.get(tag) ?? "";
     if (text.length > 0) {
-      parts.push(`[[${tag}]]${text}`);
+      parts.push(taggedAxis(tag, text));
     }
   }
 

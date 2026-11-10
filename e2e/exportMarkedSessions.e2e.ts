@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let project: E2eProject;
@@ -8,14 +8,9 @@ let project: E2eProject;
 test.describe("Export Marked Sessions", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    await lameta.launch();
-    await lameta.cancelRegistration();
     // Use timestamp to ensure unique project name
     const timestamp = Date.now();
-    project = await createNewProject(
-      lameta,
-      `ExportMarkedSessionsTest_${timestamp}`
-    );
+    project = await launchWithProject(lameta, `ExportMarkedSessionsTest_${timestamp}`);
   });
 
   test.afterAll(async () => {
@@ -36,21 +31,15 @@ test.describe("Export Marked Sessions", () => {
     console.log("✓ Added 3 sessions");
 
     // Wait for sessions to be visible
-    await expect(
-      page.locator('[data-testid="new-session-button"]')
-    ).toBeVisible();
+    await expect(page.locator('[data-testid="new-session-button"]')).toBeVisible();
 
     // Let's double-check how many sessions we actually have
     const initialSessionRows = page.locator(".rt-tr-group");
     const initialSessionCount = await initialSessionRows.count();
-    console.log(
-      `After adding sessions, found ${initialSessionCount} sessions in the table`
-    );
+    console.log(`After adding sessions, found ${initialSessionCount} sessions in the table`);
 
     if (initialSessionCount === 0) {
-      console.log(
-        "MANUAL CHECK: Do you see any sessions in the sessions list?"
-      );
+      console.log("MANUAL CHECK: Do you see any sessions in the sessions list?");
       await page.pause();
     }
 
@@ -75,12 +64,8 @@ test.describe("Export Marked Sessions", () => {
 
     // Since all checkboxes have the same data-testid, we need to use a different approach
     // Get the checkboxes by their position in each row
-    const firstRowCheckbox = sessionRows
-      .nth(0)
-      .locator('input[type="checkbox"]');
-    const secondRowCheckbox = sessionRows
-      .nth(1)
-      .locator('input[type="checkbox"]');
+    const firstRowCheckbox = sessionRows.nth(0).locator('input[type="checkbox"]');
+    const secondRowCheckbox = sessionRows.nth(1).locator('input[type="checkbox"]');
 
     console.log("Checking if checkboxes are visible...");
     await expect(firstRowCheckbox).toBeVisible();
@@ -111,10 +96,7 @@ test.describe("Export Marked Sessions", () => {
 
     // Should show "2 Marked Sessions" and be enabled
     await expect(markedSessionsOption).toContainText("2 Marked Sessions");
-    await expect(markedSessionsOption).not.toHaveAttribute(
-      "aria-disabled",
-      "true"
-    );
+    await expect(markedSessionsOption).not.toHaveAttribute("aria-disabled", "true");
 
     // Close the dropdown
     await page.keyboard.press("Escape");
@@ -129,14 +111,8 @@ test.describe("Export Marked Sessions", () => {
     const sessionRowsForUncheck = page.locator(".rt-tr-group");
 
     // Uncheck using position-based selectors
-    await sessionRowsForUncheck
-      .nth(0)
-      .locator('input[type="checkbox"]')
-      .uncheck();
-    await sessionRowsForUncheck
-      .nth(1)
-      .locator('input[type="checkbox"]')
-      .uncheck();
+    await sessionRowsForUncheck.nth(0).locator('input[type="checkbox"]').uncheck();
+    await sessionRowsForUncheck.nth(1).locator('input[type="checkbox"]').uncheck();
 
     // Open export dialog again
     await lameta.clickMenu("File", "Export Project...");
@@ -148,10 +124,7 @@ test.describe("Export Marked Sessions", () => {
     // Should show "0 Marked Sessions" and be disabled
     const markedSessionsOptionZero = page.locator('li[data-value="marked"]');
     await expect(markedSessionsOptionZero).toContainText("0 Marked Sessions");
-    await expect(markedSessionsOptionZero).toHaveAttribute(
-      "aria-disabled",
-      "true"
-    );
+    await expect(markedSessionsOptionZero).toHaveAttribute("aria-disabled", "true");
 
     // Close dialog
     await page.keyboard.press("Escape");
@@ -184,9 +157,7 @@ test.describe("Export Marked Sessions", () => {
 
     // Now mark a session
     const sessionRows = page.locator(".rt-tr-group");
-    const firstSessionCheckbox = sessionRows
-      .nth(0)
-      .locator('input[type="checkbox"]');
+    const firstSessionCheckbox = sessionRows.nth(0).locator('input[type="checkbox"]');
     await firstSessionCheckbox.check();
 
     // Open export dialog again
@@ -196,10 +167,7 @@ test.describe("Export Marked Sessions", () => {
     // Check that count is now updated to 1
     await sessionDropdown.click();
     await expect(markedSessionsOption).toContainText("1 Marked Sessions");
-    await expect(markedSessionsOption).not.toHaveAttribute(
-      "aria-disabled",
-      "true"
-    );
+    await expect(markedSessionsOption).not.toHaveAttribute("aria-disabled", "true");
 
     // Close dialog
     await page.keyboard.press("Escape");

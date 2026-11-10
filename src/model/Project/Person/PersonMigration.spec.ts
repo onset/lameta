@@ -1,16 +1,15 @@
-import { Person } from "./Person";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { FieldSet } from "../../field/FieldSet";
 import { Field, FieldType } from "../../field/Field";
 import { IPersonLanguage } from "../../PersonLanguage";
 import {
   migrateOnePersonLanguageFromNameToCode,
-  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
 } from "./PersonMigration";
 
-const languageFinder = new LanguageFinder(() => ({
+new LanguageFinder(() => ({
   iso639_3: "",
-  englishName: ""
+  englishName: "",
 }));
 
 // this migration happened before we switched to the new PersonLanguages structure
@@ -46,7 +45,6 @@ describe("migrateOnePersonLanguageFromNameToCode", () => {
     expect(field.text).toBe("");
   });
   it("should take undefined and just leave that alone", () => {
-    const field = new Field("doesn't matter what this is", FieldType.Text);
     migrateOnePersonLanguageFromNameToCode(undefined);
   });
 });
@@ -60,16 +58,13 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
     fields.addTextProperty("fathersLanguage", "tpi");
     fields.addTextProperty("otherLanguage", "tpi");
 
-    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
-      fields,
-      languages
-    );
+    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(fields, languages);
     expect(languages.length).toBe(1);
     expect(languages[0]).toStrictEqual({
       code: "tpi",
       primary: true,
       mother: true,
-      father: true
+      father: true,
     });
   });
   it("should create multiple languages if there is no overlap between primary, father, mother, other", () => {
@@ -81,40 +76,37 @@ describe("migrateLegacyLanguageFieldsToNewList", () => {
     fields.addTextProperty("otherLanguage0", "de");
     fields.addTextProperty("otherLanguage1", "etr");
 
-    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
-      fields,
-      languages
-    );
+    migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(fields, languages);
     expect(languages.length).toBe(5);
     expect(languages[0]).toStrictEqual({
       code: "tpi",
       primary: true,
       mother: false,
-      father: false
+      father: false,
     });
     expect(languages[1]).toStrictEqual({
       code: "en",
       primary: false,
       mother: true,
-      father: false
+      father: false,
     });
     expect(languages[2]).toStrictEqual({
       code: "fr",
       primary: false,
       mother: false,
-      father: true
+      father: true,
     });
     expect(languages[3]).toStrictEqual({
       code: "de",
       primary: false,
       mother: false,
-      father: false
+      father: false,
     });
     expect(languages[4]).toStrictEqual({
       code: "etr",
       primary: false,
       mother: false,
-      father: false
+      father: false,
     });
   });
 });
@@ -128,10 +120,7 @@ it("should not import legacy fields if there is already a modern languages list"
   fields.addTextProperty("otherLanguage0", "de");
   fields.addTextProperty("otherLanguage1", "etr");
 
-  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
-    fields,
-    languages
-  );
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(fields, languages);
   expect(languages.length).toBe(1);
   expect(languages[0].code).toBe("foo");
 });
@@ -144,10 +133,7 @@ it("should store the primary language detail text in the description", () => {
   fields.addTextProperty("primaryLanguageLearnedIn", "Huya");
   fields.addTextProperty("description", "Lorem Ipsum.");
 
-  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
-    fields,
-    languages
-  );
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(fields, languages);
   expect(languages.length).toBe(1);
   expect(fields.getTextStringOrEmpty("description")).toContain("Lorem Ipsum");
   expect(fields.getTextStringOrEmpty("description")).toContain("Huya");

@@ -1,0 +1,117 @@
+{
+  "branch": "V3",
+  "langs": {
+    "es-ES": {
+      "messages": {
+        "branchAlreadyTranslated": 212,
+        "filled": 0,
+        "bySource": {},
+        "stillEmpty": 74
+      },
+      "fields": {
+        "branchAlreadyTranslated": 83,
+        "filled": 8,
+        "bySource": {
+          "v2-csv-text-match": 8
+        },
+        "stillEmpty": 27
+      }
+    },
+    "fr": {
+      "messages": {
+        "branchAlreadyTranslated": 202,
+        "filled": 0,
+        "bySource": {},
+        "stillEmpty": 84
+      },
+      "fields": {
+        "branchAlreadyTranslated": 79,
+        "filled": 9,
+        "bySource": {
+          "v2-csv-text-match": 9
+        },
+        "stillEmpty": 30
+      }
+    },
+    "ru": {
+      "messages": {
+        "branchAlreadyTranslated": 42,
+        "filled": 0,
+        "bySource": {},
+        "stillEmpty": 244
+      },
+      "fields": {
+        "branchAlreadyTranslated": 52,
+        "filled": 34,
+        "bySource": {
+          "v2-csv-text-match": 34
+        },
+        "stillEmpty": 32
+      }
+    },
+    "zh-CN": {
+      "messages": {
+        "branchAlreadyTranslated": 222,
+        "filled": 0,
+        "bySource": {},
+        "stillEmpty": 64
+      },
+      "fields": {
+        "branchAlreadyTranslated": 100,
+        "filled": 5,
+        "bySource": {
+          "v2-csv-text-match": 5
+        },
+        "stillEmpty": 13
+      }
+    },
+    "pt-BR": {
+      "messages": {
+        "branchAlreadyTranslated": 210,
+        "filled": 0,
+        "bySource": {},
+        "stillEmpty": 76
+      },
+      "fields": {
+        "branchAlreadyTranslated": 72,
+        "filled": 9,
+        "bySource": {
+          "v2-csv-text-match": 9
+        },
+        "stillEmpty": 37
+      }
+    },
+    "id": {
+      "messages": {
+        "branchAlreadyTranslated": 213,
+        "filled": 0,
+        "bySource": {},
+        "stillEmpty": 73
+      },
+      "fields": {
+        "branchAlreadyTranslated": 100,
+        "filled": 5,
+        "bySource": {
+          "v2-csv-text-match": 5
+        },
+        "stillEmpty": 13
+      }
+    },
+    "fa": {
+      "messages": {
+        "branchAlreadyTranslated": 162,
+        "filled": 0,
+        "bySource": {},
+        "stillEmpty": 124
+      },
+      "fields": {
+        "branchAlreadyTranslated": 72,
+        "filled": 9,
+        "bySource": {
+          "v2-csv-text-match": 9
+        },
+        "stillEmpty": 37
+      }
+    }
+  }
+}

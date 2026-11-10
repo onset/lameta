@@ -15,15 +15,10 @@ export interface PluginTabProps {
 }
 
 export const PluginTab = React.forwardRef<HTMLLIElement, PluginTabProps>(
-  ({ label, testId, className, children, ...rest }, ref) => {
+  ({ label, testId, className, children: _children, ...rest }, ref) => {
     const baseClass = ["react-tabs__tab", className].filter(Boolean).join(" ");
     return (
-      <Tab
-        ref={ref as any}
-        {...rest}
-        className={baseClass}
-        data-testid={testId || "plugin-tab"}
-      >
+      <Tab ref={ref as any} {...rest} className={baseClass} data-testid={testId || "plugin-tab"}>
         <img
           src={pluginIcon}
           alt=""
@@ -40,7 +35,7 @@ export const PluginTab = React.forwardRef<HTMLLIElement, PluginTabProps>(
         <span className="plugin-tab-label">{label}</span>
       </Tab>
     );
-  }
+  },
 );
 
 // Let react-tabs know this component represents a Tab.

@@ -1,0 +1,821 @@
+[
+ {
+  "id": 6608,
+  "identifier": "This is usually the same person as the Depositor.",
+  "text": "This is usually the same person as the Depositor.",
+  "context": "ELAR/project/collectionSteward/description",
+  "isHidden": false
+ },
+ {
+  "id": 6610,
+  "identifier": "This is usually the same person as the Collection Steward.",
+  "text": "This is usually the same person as the Collection Steward.",
+  "context": "ELAR/project/depositor/description",
+  "isHidden": false
+ },
+ {
+  "id": 6612,
+  "identifier": "Project ID",
+  "text": "Project ID",
+  "context": "lameta/project/title",
+  "isHidden": false
+ },
+ {
+  "id": 6616,
+  "identifier": "Subject Language",
+  "text": "Subject Language",
+  "context": "lameta/project/vernacularIso3CodeAndName",
+  "isHidden": false
+ },
+ {
+  "id": 6618,
+  "identifier": "Working Language",
+  "text": "Working Language",
+  "context": "lameta/project/analysisIso3CodeAndName",
+  "isHidden": false
+ },
+ {
+  "id": 6620,
+  "identifier": "Location/Address",
+  "text": "Location/Address",
+  "context": "lameta/project/location",
+  "isHidden": false
+ },
+ {
+  "id": 6622,
+  "identifier": "Grant ID",
+  "text": "Grant ID",
+  "context": "lameta/project/grantId",
+  "isHidden": false
+ },
+ {
+  "id": 6624,
+  "identifier": "Funding Project Title",
+  "text": "Funding Project Title",
+  "context": "lameta/project/fundingProjectTitle",
+  "isHidden": false
+ },
+ {
+  "id": 6628,
+  "identifier": "Custom access choices",
+  "text": "Custom access choices",
+  "context": "lameta/project/customAccessChoices",
+  "isHidden": false
+ },
+ {
+  "id": 6630,
+  "identifier": "Contact Person",
+  "text": "Contact Person",
+  "context": "lameta/project/contactPerson",
+  "isHidden": false
+ },
+ {
+  "id": 6632,
+  "identifier": "Contact information about the person or institution responsible for the project.",
+  "text": "Contact information about the person or institution responsible for the project.",
+  "context": "lameta/project/contactPerson/description",
+  "isHidden": false
+ },
+ {
+  "id": 6634,
+  "identifier": "Collection Name",
+  "text": "Collection Name",
+  "context": "lameta/project/collectionName",
+  "isHidden": false
+ },
+ {
+  "id": 6636,
+  "identifier": "Collection Title",
+  "text": "Collection Title",
+  "context": "lameta/project/collectionTitle",
+  "isHidden": false
+ },
+ {
+  "id": 6638,
+  "identifier": "Collection Description",
+  "text": "Collection Description",
+  "context": "lameta/project/collectionDescription",
+  "isHidden": false
+ },
+ {
+  "id": 6640,
+  "identifier": "Collection Steward",
+  "text": "Collection Steward",
+  "context": "lameta/project/collectionSteward",
+  "isHidden": false
+ },
+ {
+  "id": 6642,
+  "identifier": "Deputy Collection Stewards",
+  "text": "Deputy Collection Stewards",
+  "context": "lameta/project/deputyCollectionSteward",
+  "isHidden": false
+ },
+ {
+  "id": 6648,
+  "identifier": "ID",
+  "text": "ID",
+  "context": "lameta/session/id",
+  "isHidden": false
+ },
+ {
+  "id": 6650,
+  "identifier": "Subject Languages",
+  "text": "Subject Languages",
+  "context": "lameta/session/languages",
+  "isHidden": false
+ },
+ {
+  "id": 6652,
+  "identifier": "Working Languages",
+  "text": "Working Languages",
+  "context": "lameta/session/workingLanguages",
+  "isHidden": false
+ },
+ {
+  "id": 6654,
+  "identifier": "People",
+  "text": "People",
+  "context": "lameta/session/participants",
+  "isHidden": false
+ },
+ {
+  "id": 6656,
+  "identifier": "Subgenre",
+  "text": "Subgenre",
+  "context": "lameta/session/subgenre",
+  "isHidden": false
+ },
+ {
+  "id": 6658,
+  "identifier": "Neighborhood/Town/Village",
+  "text": "Neighborhood/Town/Village",
+  "context": "lameta/session/location",
+  "isHidden": false
+ },
+ {
+  "id": 6660,
+  "identifier": "A location that is relevant within the group you are studying",
+  "text": "A location that is relevant within the group you are studying",
+  "context": "lameta/session/location/description",
+  "isHidden": false
+ },
+ {
+  "id": 6662,
+  "identifier": "Access Explanation",
+  "text": "Access Explanation",
+  "context": "lameta/session/accessDescription",
+  "isHidden": false
+ },
+ {
+  "id": 6664,
+  "identifier": "If the access is not open/free, use this to explain why.",
+  "text": "If the access is not open/free, use this to explain why.",
+  "context": "lameta/session/accessDescription/description",
+  "isHidden": false
+ },
+ {
+  "id": 6666,
+  "identifier": "Researcher Involvement",
+  "text": "Researcher Involvement",
+  "context": "lameta/session/involvement",
+  "isHidden": false
+ },
+ {
+  "id": 6674,
+  "identifier": "Separate with commas. Note that individual keywords cannot contain a comma.",
+  "text": "Separate with commas. Note that individual keywords cannot contain a comma.",
+  "context": "lameta/session/keyword/separatorWithCommaInstructions",
+  "isHidden": false
+ },
+ {
+  "id": 6676,
+  "identifier": "Separate with commas. Note that individual topics cannot contain a comma.",
+  "text": "Separate with commas. Note that individual topics cannot contain a comma.",
+  "context": "lameta/session/topic/separatorWithCommaInstructions",
+  "isHidden": false
+ },
+ {
+  "id": 6678,
+  "identifier": "Full Name",
+  "text": "Full Name",
+  "context": "lameta/person/name",
+  "isHidden": false
+ },
+ {
+  "id": 6680,
+  "identifier": "Nickname",
+  "text": "Nickname",
+  "context": "lameta/person/nickname",
+  "isHidden": false
+ },
+ {
+  "id": 6682,
+  "identifier": "Code",
+  "text": "Code",
+  "context": "lameta/person/code",
+  "isHidden": false
+ },
+ {
+  "id": 6688,
+  "identifier": "Father's Language",
+  "text": "Father's Language",
+  "context": "lameta/person/fathersLanguage",
+  "isHidden": false
+ },
+ {
+  "id": 6690,
+  "identifier": "Mother's Language",
+  "text": "Mother's Language",
+  "context": "lameta/person/mothersLanguage",
+  "isHidden": false
+ },
+ {
+  "id": 6692,
+  "identifier": "Other Languages",
+  "text": "Other Languages",
+  "context": "lameta/person/otherLanguages",
+  "isHidden": false
+ },
+ {
+  "id": 6694,
+  "identifier": "Birth Year",
+  "text": "Birth Year",
+  "context": "lameta/person/birthYear",
+  "isHidden": false
+ },
+ {
+  "id": 6696,
+  "identifier": "If you are estimating, talk about that in the Description. Enter '?' if you don't know.",
+  "text": "If you are estimating, talk about that in the Description. Enter '?' if you don't know.",
+  "context": "lameta/person/birthYear/tipOnUsingThisField",
+  "isHidden": false
+ },
+ {
+  "id": 6698,
+  "identifier": "How to Contact",
+  "text": "How to Contact",
+  "context": "lameta/person/howToContact",
+  "isHidden": false
+ },
+ {
+  "id": 6700,
+  "identifier": "Ethnic Group",
+  "text": "Ethnic Group",
+  "context": "lameta/person/ethnicGroup",
+  "isHidden": false
+ },
+ {
+  "id": 6702,
+  "identifier": "Primary Occupation",
+  "text": "Primary Occupation",
+  "context": "lameta/person/primaryOccupation",
+  "isHidden": false
+ },
+ {
+  "id": 7244,
+  "identifier": "Education",
+  "text": "Education",
+  "context": "lameta/person/education",
+  "isHidden": false
+ },
+ {
+  "id": 7246,
+  "identifier": "Gender",
+  "text": "Gender",
+  "context": "lameta/person/gender",
+  "isHidden": false
+ },
+ {
+  "id": 7248,
+  "identifier": "Languages",
+  "text": "Languages",
+  "context": "lameta/person/languages",
+  "isHidden": false
+ },
+ {
+  "id": 7262,
+  "identifier": "Access",
+  "text": "Access",
+  "context": "lameta/session/access",
+  "isHidden": false
+ },
+ {
+  "id": 7264,
+  "identifier": "Date",
+  "text": "Date",
+  "context": "lameta/session/date",
+  "isHidden": false
+ },
+ {
+  "id": 7266,
+  "identifier": "Keywords",
+  "text": "Keywords",
+  "context": "lameta/session/keyword",
+  "isHidden": false
+ },
+ {
+  "id": 7268,
+  "identifier": "Planning Type",
+  "text": "Planning Type",
+  "context": "lameta/session/planningType",
+  "isHidden": false
+ },
+ {
+  "id": 7270,
+  "identifier": "Social Context",
+  "text": "Social Context",
+  "context": "lameta/session/socialContext",
+  "isHidden": false
+ },
+ {
+  "id": 7272,
+  "identifier": "Status",
+  "text": "Status",
+  "context": "lameta/session/status",
+  "isHidden": false
+ },
+ {
+  "id": 7274,
+  "identifier": "Topic",
+  "text": "Topic",
+  "context": "lameta/session/topic",
+  "isHidden": false
+ },
+ {
+  "id": 7276,
+  "identifier": "Description",
+  "text": "Description",
+  "context": "lameta/person/description",
+  "isHidden": false
+ },
+ {
+  "id": 7278,
+  "identifier": "Continent",
+  "text": "Continent",
+  "context": "lameta/project/continent",
+  "isHidden": false
+ },
+ {
+  "id": 7280,
+  "identifier": "Country",
+  "text": "Country",
+  "context": "lameta/project/country",
+  "isHidden": false
+ },
+ {
+  "id": 7282,
+  "identifier": "Depositor",
+  "text": "Depositor",
+  "context": "lameta/project/depositor",
+  "isHidden": false
+ },
+ {
+  "id": 7286,
+  "identifier": "For multiple people, separate with commas",
+  "text": "For multiple people, separate with commas",
+  "context": "lameta/project/depositor/separatorWithCommaInstructions",
+  "isHidden": false
+ },
+ {
+  "id": 7288,
+  "identifier": "For multiple people, separate with commas",
+  "text": "For multiple people, separate with commas",
+  "context": "lameta/project/deputyCollectionSteward/separatorWithCommaInstructions",
+  "isHidden": false
+ },
+ {
+  "id": 7290,
+  "identifier": "Description",
+  "text": "Description",
+  "context": "lameta/project/projectDescription",
+  "isHidden": false
+ },
+ {
+  "id": 7292,
+  "identifier": "Region",
+  "text": "Region",
+  "context": "lameta/project/region",
+  "isHidden": false
+ },
+ {
+  "id": 7294,
+  "identifier": "Description",
+  "text": "Description",
+  "context": "lameta/session/description",
+  "isHidden": false
+ },
+ {
+  "id": 7296,
+  "identifier": "Continent",
+  "text": "Continent",
+  "context": "lameta/session/locationContinent",
+  "isHidden": false
+ },
+ {
+  "id": 7298,
+  "identifier": "Country",
+  "text": "Country",
+  "context": "lameta/session/locationCountry",
+  "isHidden": false
+ },
+ {
+  "id": 7300,
+  "identifier": "Region",
+  "text": "Region",
+  "context": "lameta/session/locationRegion",
+  "isHidden": false
+ },
+ {
+  "id": 7302,
+  "identifier": "Genre",
+  "text": "Genre",
+  "context": "lameta/session/genre",
+  "isHidden": false
+ },
+ {
+  "id": 7304,
+  "identifier": "Title",
+  "text": "Title",
+  "context": "lameta/session/title",
+  "isHidden": false
+ },
+ {
+  "id": 7306,
+  "identifier": "Relevant details such as where they learned the language(s)",
+  "text": "Relevant details such as where they learned the language(s)",
+  "context": "lameta/person/description/description",
+  "isHidden": false
+ },
+ {
+  "id": 7308,
+  "identifier": "Depositor",
+  "text": "Depositor",
+  "context": "lameta/project/depositor",
+  "isHidden": false
+ },
+ {
+  "id": 7310,
+  "identifier": "Unknown",
+  "text": "Unknown",
+  "context": "lameta/person/gender/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7312,
+  "identifier": "Male",
+  "text": "Male",
+  "context": "lameta/person/gender/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7314,
+  "identifier": "Female",
+  "text": "Female",
+  "context": "lameta/person/gender/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7316,
+  "identifier": "Other",
+  "text": "Other",
+  "context": "lameta/person/gender/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7318,
+  "identifier": "unspecified",
+  "text": "unspecified",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7320,
+  "identifier": "Africa",
+  "text": "Africa",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7322,
+  "identifier": "Asia",
+  "text": "Asia",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7324,
+  "identifier": "Australia",
+  "text": "Australia",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7326,
+  "identifier": "Europe",
+  "text": "Europe",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7328,
+  "identifier": "Americas",
+  "text": "Americas",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7330,
+  "identifier": "North-America",
+  "text": "North-America",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7332,
+  "identifier": "Middle-America",
+  "text": "Middle-America",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7334,
+  "identifier": "Oceania",
+  "text": "Oceania",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7336,
+  "identifier": "South-America",
+  "text": "South-America",
+  "context": "lameta/project/continent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7338,
+  "identifier": "unspecified",
+  "text": "unspecified",
+  "context": "lameta/session/involvement/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7340,
+  "identifier": "//leaving out until Windows SayMore can handle it: unknown",
+  "text": "//leaving out until Windows SayMore can handle it: unknown",
+  "context": "lameta/session/involvement/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7342,
+  "identifier": "elicited",
+  "text": "elicited",
+  "context": "lameta/session/involvement/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7344,
+  "identifier": "non-elicited",
+  "text": "non-elicited",
+  "context": "lameta/session/involvement/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7346,
+  "identifier": "no-observer",
+  "text": "no-observer",
+  "context": "lameta/session/involvement/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7348,
+  "identifier": "unspecified",
+  "text": "unspecified",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7350,
+  "identifier": "Africa",
+  "text": "Africa",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7352,
+  "identifier": "Americas",
+  "text": "Americas",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7354,
+  "identifier": "Asia",
+  "text": "Asia",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7356,
+  "identifier": "Australia",
+  "text": "Australia",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7358,
+  "identifier": "Europe",
+  "text": "Europe",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7360,
+  "identifier": "North-America",
+  "text": "North-America",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7362,
+  "identifier": "Middle-America",
+  "text": "Middle-America",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7364,
+  "identifier": "Oceania",
+  "text": "Oceania",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7366,
+  "identifier": "South-America",
+  "text": "South-America",
+  "context": "lameta/session/locationContinent/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7368,
+  "identifier": "unspecified",
+  "text": "unspecified",
+  "context": "lameta/session/planningType/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7370,
+  "identifier": "//leaving out until Windows SayMore can handle it: unknown",
+  "text": "//leaving out until Windows SayMore can handle it: unknown",
+  "context": "lameta/session/planningType/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7372,
+  "identifier": "spontaneous",
+  "text": "spontaneous",
+  "context": "lameta/session/planningType/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7374,
+  "identifier": "semi-spontaneous",
+  "text": "semi-spontaneous",
+  "context": "lameta/session/planningType/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7376,
+  "identifier": "planned",
+  "text": "planned",
+  "context": "lameta/session/planningType/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7378,
+  "identifier": "unspecified",
+  "text": "unspecified",
+  "context": "lameta/session/socialContext/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7380,
+  "identifier": "//leaving out until Windows SayMore can handle it: unknown",
+  "text": "//leaving out until Windows SayMore can handle it: unknown",
+  "context": "lameta/session/socialContext/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7382,
+  "identifier": "family",
+  "text": "family",
+  "context": "lameta/session/socialContext/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7384,
+  "identifier": "private",
+  "text": "private",
+  "context": "lameta/session/socialContext/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7386,
+  "identifier": "public",
+  "text": "public",
+  "context": "lameta/session/socialContext/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7388,
+  "identifier": "controlled environment",
+  "text": "controlled environment",
+  "context": "lameta/session/socialContext/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7390,
+  "identifier": "Incoming",
+  "text": "Incoming",
+  "context": "lameta/session/status/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7392,
+  "identifier": "In_Progress",
+  "text": "In_Progress",
+  "context": "lameta/session/status/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7394,
+  "identifier": "Finished",
+  "text": "Finished",
+  "context": "lameta/session/status/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7396,
+  "identifier": "Skipped",
+  "text": "Skipped",
+  "context": "lameta/session/status/choices",
+  "isHidden": false
+ },
+ {
+  "id": 7422,
+  "identifier": "Custom Fields",
+  "text": "Custom Fields",
+  "context": "lameta/person/customFields",
+  "isHidden": false
+ },
+ {
+  "id": 7424,
+  "identifier": "A table of labels and values for a person.",
+  "text": "A table of labels and values for a person.",
+  "context": "lameta/person/customFields/description",
+  "isHidden": false
+ },
+ {
+  "id": 7426,
+  "identifier": "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+  "text": "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+  "context": "lameta/person/customFields/tipOnUsingThisField",
+  "isHidden": false
+ },
+ {
+  "id": 7428,
+  "identifier": "Archive Configuration used by this project",
+  "text": "Archive Configuration used by this project",
+  "context": "lameta/project/archiveConfigurationName",
+  "isHidden": false
+ },
+ {
+  "id": 7430,
+  "identifier": "Archive Configuration used by this project",
+  "text": "Archive Configuration used by this project",
+  "context": "lameta/project/configurationName",
+  "isHidden": false
+ },
+ {
+  "id": 7432,
+  "identifier": "Custom Fields",
+  "text": "Custom Fields",
+  "context": "lameta/session/customFields",
+  "isHidden": false
+ },
+ {
+  "id": 7434,
+  "identifier": "A table of labels and values for a session.",
+  "text": "A table of labels and values for a session.",
+  "context": "lameta/session/customFields/description",
+  "isHidden": false
+ },
+ {
+  "id": 7436,
+  "identifier": "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+  "text": "Use commas if you want multiple values. To remove a custom field, clear out the value everywhere you have used it, then restart lameta.",
+  "context": "lameta/session/customFields/tipOnUsingThisField",
+  "isHidden": false
+ }
+]

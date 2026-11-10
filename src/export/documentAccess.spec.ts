@@ -23,10 +23,7 @@ describe("Document Access", () => {
     const testFilePath = Path.join(tempDir, "test.txt");
     fs.writeFileSync(testFilePath, "test content");
 
-    const file = new OtherFile(
-      testFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const file = new OtherFile(testFilePath, new EncounteredVocabularyRegistry());
 
     // Verify access field exists and is empty by default
     expect(file.properties.getHasValue("access")).toBe(true);
@@ -37,24 +34,19 @@ describe("Document Access", () => {
     const testFilePath = Path.join(tempDir, "test.txt");
     fs.writeFileSync(testFilePath, "test content");
 
-    const file = new OtherFile(
-      testFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const file = new OtherFile(testFilePath, new EncounteredVocabularyRegistry());
 
     // Verify accessDescription field exists
     expect(file.properties.getHasValue("accessDescription")).toBe(true);
     expect(file.properties.getTextStringOrEmpty("accessDescription")).toBe("");
+    // Note: multilingual is false by default, set to true via ELAR/fields.json5 for ELAR configuration
   });
 
   it("should persist access field value", () => {
     const testFilePath = Path.join(tempDir, "test.txt");
     fs.writeFileSync(testFilePath, "test content");
 
-    const file = new OtherFile(
-      testFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const file = new OtherFile(testFilePath, new EncounteredVocabularyRegistry());
 
     // Set access value
     file.properties.setText("access", "S");
@@ -63,10 +55,7 @@ describe("Document Access", () => {
     // Save and reload
     file.save();
 
-    const reloadedFile = new OtherFile(
-      testFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const reloadedFile = new OtherFile(testFilePath, new EncounteredVocabularyRegistry());
 
     expect(reloadedFile.properties.getTextStringOrEmpty("access")).toBe("S");
   });
@@ -75,28 +64,40 @@ describe("Document Access", () => {
     const testFilePath = Path.join(tempDir, "test.txt");
     fs.writeFileSync(testFilePath, "test content");
 
-    const file = new OtherFile(
-      testFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const file = new OtherFile(testFilePath, new EncounteredVocabularyRegistry());
 
     // Set access description value
     file.properties.setText("access", "S");
-    file.properties.setText(
-      "accessDescription",
-      "Restricted for cultural reasons"
-    );
+    file.properties.setText("accessDescription", "Restricted for cultural reasons");
 
     // Save and reload
     file.save();
 
-    const reloadedFile = new OtherFile(
-      testFilePath,
-      new EncounteredVocabularyRegistry()
-    );
+    const reloadedFile = new OtherFile(testFilePath, new EncounteredVocabularyRegistry());
 
-    expect(
-      reloadedFile.properties.getTextStringOrEmpty("accessDescription")
-    ).toBe("Restricted for cultural reasons");
+    expect(reloadedFile.properties.getTextStringOrEmpty("accessDescription")).toBe(
+      "Restricted for cultural reasons",
+    );
+  });
+
+  it("should persist multilingual accessDescription translations", () => {
+    const testFilePath = Path.join(tempDir, "test.txt");
+    fs.writeFileSync(testFilePath, "test content");
+
+    const file = new OtherFile(testFilePath, new EncounteredVocabularyRegistry());
+
+    const accessExplanationField = file.properties.getTextField("accessDescription");
+    file.properties.setText("access", "S");
+    accessExplanationField.setTextAxis("en", "Limited for cultural reasons");
+    accessExplanationField.setTextAxis("pt", "Restrito por motivos culturais");
+
+    file.save();
+
+    const reloadedFile = new OtherFile(testFilePath, new EncounteredVocabularyRegistry());
+    const reloadedAccessExplanationField =
+      reloadedFile.properties.getTextField("accessDescription");
+
+    expect(reloadedAccessExplanationField.getTextAxis("en")).toBe("Limited for cultural reasons");
+    expect(reloadedAccessExplanationField.getTextAxis("pt")).toBe("Restrito por motivos culturais");
   });
 });

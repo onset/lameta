@@ -26,10 +26,7 @@ export function isValidSidecarName(name: string): boolean {
 }
 
 /** The directory holding all of one plugin's sidecars for a folder. */
-export function getPluginDataDir(
-  folderDirectory: string,
-  pluginId: string
-): string {
+export function getPluginDataDir(folderDirectory: string, pluginId: string): string {
   return Path.join(folderDirectory, PLUGIN_DATA_FOLDER, pluginId);
 }
 
@@ -41,12 +38,10 @@ export function getSidecarPath(
   folderDirectory: string,
   pluginId: string,
   describedFileName: string,
-  name: string = DEFAULT_SIDECAR_NAME
+  name: string = DEFAULT_SIDECAR_NAME,
 ): string {
   if (!isValidSidecarName(name)) {
-    throw new Error(
-      `Invalid sidecar name "${name}"; must match ${SIDECAR_NAME_REGEX}`
-    );
+    throw new Error(`Invalid sidecar name "${name}"; must match ${SIDECAR_NAME_REGEX}`);
   }
   const dir = getPluginDataDir(folderDirectory, pluginId);
   const fullPath = Path.join(dir, `${describedFileName}.${name}.json`);
@@ -55,7 +50,7 @@ export function getSidecarPath(
   const rel = Path.relative(dir, fullPath);
   if (rel.startsWith("..") || Path.isAbsolute(rel)) {
     throw new Error(
-      `Refusing to write sidecar outside plugin data directory (name="${name}", file="${describedFileName}")`
+      `Refusing to write sidecar outside plugin data directory (name="${name}", file="${describedFileName}")`,
     );
   }
   return fullPath;
@@ -68,20 +63,14 @@ export function getSidecarPath(
  */
 export function parseSidecarName(
   sidecarBasename: string,
-  describedFileName: string
+  describedFileName: string,
 ): string | null {
   const prefix = `${describedFileName}.`;
   const suffix = ".json";
-  if (
-    !sidecarBasename.startsWith(prefix) ||
-    !sidecarBasename.endsWith(suffix)
-  ) {
+  if (!sidecarBasename.startsWith(prefix) || !sidecarBasename.endsWith(suffix)) {
     return null;
   }
-  const middle = sidecarBasename.slice(
-    prefix.length,
-    sidecarBasename.length - suffix.length
-  );
+  const middle = sidecarBasename.slice(prefix.length, sidecarBasename.length - suffix.length);
   if (!isValidSidecarName(middle)) return null;
   return middle;
 }

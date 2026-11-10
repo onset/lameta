@@ -1,8 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
-import * as fs from "fs";
-import * as path from "path";
+import { launchWithProject, createNewProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -16,8 +14,9 @@ let project: E2eProject;
 test.describe("Multilingual Conversion Pending - Languages Tab Navigation", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
+    // Start with a fast launch project
+    project = await launchWithProject(lameta, `SlashSyntaxTest_${Date.now()}`);
+    page = lameta.page;
   });
 
   test.afterAll(async () => {
@@ -25,9 +24,6 @@ test.describe("Multilingual Conversion Pending - Languages Tab Navigation", () =
   });
 
   test("should open to Languages tab when project has slash-syntax content in ELAR mode", async () => {
-    // Create a new project
-    project = await createNewProject(lameta, `SlashSyntaxTest_${Date.now()}`);
-
     // Create a session with slash-syntax content (like "English / Spanish")
     await project.goToSessions();
     await project.addSession();
@@ -52,7 +48,7 @@ test.describe("Multilingual Conversion Pending - Languages Tab Navigation", () =
     // After configuration change, the app reloads
     // With multilingualConversionPending true, it should navigate to Languages tab
     await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // The Languages tab should be visible and selected (or at least the migration panel visible)
@@ -113,22 +109,20 @@ test.describe.skip("Multilingual Field Migration", () => {
 
     // Wait for the app to reload after configuration change
     await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Go back to the session using the helper method that waits for UI to be ready
     await project.goToSessions();
 
     // Click on the session we created (sessions are displayed as gridcells)
-    const sessionRow = page
-      .getByRole("gridcell", { name: /New_Session/i })
-      .first();
+    const sessionRow = page.getByRole("gridcell", { name: /New_Session/i }).first();
     await sessionRow.click();
     await page.waitForTimeout(500);
 
     // Wait for the Session tab to be active
     await page.waitForSelector('[data-testid="field-title-edit"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // The Title field should now be multilingual with the plain text in English axis
@@ -142,9 +136,7 @@ test.describe.skip("Multilingual Field Migration", () => {
       throw new Error("No translation slots found - migration failed!");
     }
 
-    const titleSlotEn = titleField.locator(
-      '[data-testid="translation-slot-en"]'
-    );
+    const titleSlotEn = titleField.locator('[data-testid="translation-slot-en"]');
     await expect(titleSlotEn).toBeVisible({ timeout: 5000 });
 
     const titleEditorEn = titleSlotEn.locator('[contenteditable="true"]');
@@ -153,18 +145,13 @@ test.describe.skip("Multilingual Field Migration", () => {
     await expect(titleEditorEn).toHaveText("Under the House");
 
     // We should be able to add a translation
-    const addTranslationBtn = titleField
-      .locator('[data-testid="add-translation-button"]')
-      .first();
+    const addTranslationBtn = titleField.locator('[data-testid="add-translation-button"]').first();
     await expect(addTranslationBtn).toBeVisible();
   });
 
   test("should preserve multilingual Title data when switching between configs", async () => {
     // Create a new project and switch to ELAR mode
-    project = await createNewProject(
-      lameta,
-      `MultilingualPreserve_${Date.now()}`
-    );
+    project = await createNewProject(lameta, `MultilingualPreserve_${Date.now()}`);
 
     await project.goToProjectConfiguration();
     await page.locator("#archiveConfigurationName-select").click();
@@ -172,7 +159,7 @@ test.describe.skip("Multilingual Field Migration", () => {
     await page.locator("button:has-text('Change')").click();
 
     await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Create a session with multilingual title
@@ -180,14 +167,12 @@ test.describe.skip("Multilingual Field Migration", () => {
     await project.addSession();
 
     await page.waitForSelector('[data-testid="field-title-edit"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Add English title
     const titleField = page.locator('[data-testid="field-title-edit"]');
-    const englishAxis = titleField.locator(
-      '[data-testid="translation-slot-en"]'
-    );
+    const englishAxis = titleField.locator('[data-testid="translation-slot-en"]');
     const englishEditor = englishAxis.locator('[contenteditable="true"]');
     await englishEditor.click();
     await englishEditor.fill("English Title");
@@ -195,14 +180,10 @@ test.describe.skip("Multilingual Field Migration", () => {
     await page.waitForTimeout(200);
 
     // Add Spanish translation
-    const addTranslationBtn = titleField
-      .locator('[data-testid="add-translation-button"]')
-      .first();
+    const addTranslationBtn = titleField.locator('[data-testid="add-translation-button"]').first();
     await addTranslationBtn.click();
 
-    const languageInput = titleField
-      .locator('.select input[role="combobox"]')
-      .first();
+    const languageInput = titleField.locator('.select input[role="combobox"]').first();
     await languageInput.fill("Spanish");
     await page.waitForTimeout(300);
     await languageInput.press("Enter");
@@ -210,13 +191,11 @@ test.describe.skip("Multilingual Field Migration", () => {
     await page.waitForSelector(
       '[data-testid="field-title-edit"] [data-testid="translation-slot-spa"]',
       {
-        timeout: 5000
-      }
+        timeout: 5000,
+      },
     );
 
-    const spanishAxis = titleField.locator(
-      '[data-testid="translation-slot-spa"]'
-    );
+    const spanishAxis = titleField.locator('[data-testid="translation-slot-spa"]');
     const spanishEditor = spanishAxis.locator('[contenteditable="true"]');
     await spanishEditor.click();
     await spanishEditor.fill("Título Español");
@@ -230,21 +209,19 @@ test.describe.skip("Multilingual Field Migration", () => {
     await page.locator("button:has-text('Change')").click();
 
     await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Go back to the session using proper helper
     await project.goToSessions();
 
-    const sessionRow = page
-      .getByRole("gridcell", { name: /New_Session/i })
-      .first();
+    const sessionRow = page.getByRole("gridcell", { name: /New_Session/i }).first();
     await sessionRow.click();
     await page.waitForTimeout(500);
 
     // In monolingual mode, the Title field should show the raw tagged text
     await page.waitForSelector('[data-testid="field-title-edit"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     const titleEditor = page.locator('[data-testid="field-title-edit"]');
@@ -261,39 +238,29 @@ test.describe.skip("Multilingual Field Migration", () => {
     await page.locator("button:has-text('Change')").click();
 
     await page.waitForSelector('[data-testid="project-tab"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Go back to the session using proper helper
     await project.goToSessions();
 
-    const sessionRowAgain = page
-      .getByRole("gridcell", { name: /New_Session/i })
-      .first();
+    const sessionRowAgain = page.getByRole("gridcell", { name: /New_Session/i }).first();
     await sessionRowAgain.click();
     await page.waitForTimeout(500);
 
     // Both translations should still be there
     await page.waitForSelector('[data-testid="field-title-edit"]', {
-      timeout: 10000
+      timeout: 10000,
     });
 
     const titleFieldAfter = page.locator('[data-testid="field-title-edit"]');
-    const englishAxisAfter = titleFieldAfter.locator(
-      '[data-testid="translation-slot-en"]'
-    );
-    const englishEditorAfter = englishAxisAfter.locator(
-      '[contenteditable="true"]'
-    );
+    const englishAxisAfter = titleFieldAfter.locator('[data-testid="translation-slot-en"]');
+    const englishEditorAfter = englishAxisAfter.locator('[contenteditable="true"]');
     await expect(englishEditorAfter).toHaveText("English Title");
 
-    const spanishAxisAfter = titleFieldAfter.locator(
-      '[data-testid="translation-slot-spa"]'
-    );
+    const spanishAxisAfter = titleFieldAfter.locator('[data-testid="translation-slot-spa"]');
     await expect(spanishAxisAfter).toBeVisible();
-    const spanishEditorAfter = spanishAxisAfter.locator(
-      '[contenteditable="true"]'
-    );
+    const spanishEditorAfter = spanishAxisAfter.locator('[contenteditable="true"]');
     await expect(spanishEditorAfter).toHaveText("Título Español");
   });
 });

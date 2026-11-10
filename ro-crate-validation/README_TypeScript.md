@@ -5,7 +5,6 @@ This directory contains TypeScript validation scripts for Lameta RO-Crate files 
 ## Files
 
 - `validate_oni_ocfl.ts` - Main validation script using oni-ocfl Collector
-- `test_oni_ocfl.ts` - Test script for the validation
 - `lameta_rocrate_validation.py` - Original Python validation script
 
 ## Usage
@@ -14,13 +13,17 @@ This directory contains TypeScript validation scripts for Lameta RO-Crate files 
 
 ```bash
 # Validate a specific ro-crate-metadata.json file
-yarn validate-rocrate-oni /path/to/ro-crate-metadata.json
+vp exec tsx ro-crate-validation/validate_oni_ocfl.ts /path/to/ro-crate-metadata.json
 
 # Validate a directory containing ro-crate-metadata.json
-yarn validate-rocrate-oni /path/to/rocrate-directory
+vp exec tsx ro-crate-validation/validate_oni_ocfl.ts /path/to/rocrate-directory
 
 # With additional validation options
-yarn tsx ro-crate-validation/validate_oni_ocfl.ts /path/to/crate --mode-validator https://example.com/mode.json --namespace my-namespace --ignore-files
+vp exec tsx ro-crate-validation/validate_oni_ocfl.ts /path/to/crate --mode-validator https://example.com/mode.json --namespace my-namespace --ignore-files
+
+# Validate the sample crates in this directory
+vp run validate-oni-fishing
+vp run validate-oni-farms
 ```
 
 ### Programmatic Usage
@@ -32,7 +35,7 @@ const result = await validateRoCrateWithOniOcfl("/path/to/crate", {
   modeValidator:
     "https://language-research-technology.github.io/ro-crate-modes/modes/comprehensive-ldac.json",
   namespace: "my-validation",
-  ignoreFiles: true
+  ignoreFiles: true,
 });
 
 const success = printResults(result);
@@ -59,13 +62,3 @@ The script:
 3. **Reports results** with detailed error, warning, and info messages
 
 The oni-ocfl Collector handles all the complex validation logic including LDAC profile conformance, language metadata validation, and publisher information checking.
-
-## Testing
-
-Run the test script to verify the validation works:
-
-```bash
-yarn test-validate-oni
-```
-
-This will test the validation against the sample ro-crate-metadata.json file in this directory.

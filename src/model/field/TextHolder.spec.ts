@@ -1,4 +1,4 @@
-import { vi, describe, it, beforeAll, beforeEach, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { TextHolder } from "./TextHolder";
 
 describe("TextHolder multilingual", () => {
@@ -180,8 +180,7 @@ describe("TextHolder migration: multilingual ↔ monolingual", () => {
 
     it("should handle plain text with special characters", () => {
       const textHolder = new TextHolder();
-      const specialText =
-        'Text with <html>, "quotes", & ampersands, slashes/backslashes\\';
+      const specialText = 'Text with <html>, "quotes", & ampersands, slashes/backslashes\\';
       textHolder.monoLingualText = specialText;
 
       expect(textHolder.getTextAxis("en")).toBe(specialText);
@@ -206,14 +205,10 @@ describe("TextHolder migration: multilingual ↔ monolingual", () => {
 
       // Add Spanish (now multilingual)
       textHolder.setTextAxis("es", "texto original");
-      expect(textHolder.getSerialized()).toBe(
-        "[[en]]original text[[es]]texto original"
-      );
+      expect(textHolder.getSerialized()).toBe("[[en]]original text[[es]]texto original");
 
       // Read as monolingual (should show tagged format)
-      expect(textHolder.monoLingualText).toBe(
-        "[[en]]original text[[es]]texto original"
-      );
+      expect(textHolder.monoLingualText).toBe("[[en]]original text[[es]]texto original");
 
       // Back to multilingual - should still parse correctly
       expect(textHolder.getTextAxis("en")).toBe("original text");
@@ -297,6 +292,50 @@ describe("TextHolder migration: multilingual ↔ monolingual", () => {
       expect(textHolder.monoLingualText).toBe(textWithBrackets);
       // When read as multilingual axis, should also work
       expect(textHolder.getTextAxis("en")).toBe(textWithBrackets);
+    });
+
+    it.each(["[[en]]a]]b", "[[en]Fish", "[[]]Fish", "[[en]]Fish[[es"])(
+      "should read malformed tagged text %s as plain text",
+      (malformed) => {
+        const textHolder = new TextHolder();
+        textHolder.monoLingualText = malformed;
+
+        expect(textHolder.getTextAxis("en")).toBe(malformed);
+        expect(textHolder.getAllNonEmptyTextAxes()).toEqual(["en"]);
+        expect(textHolder.getEffectiveSlotTags(["en", "es"])).toEqual(["en"]);
+        expect(textHolder.getFirstNonEmptyText(["en"])).toBe(malformed);
+      },
+    );
+
+    it("should keep a translation added to malformed tagged text", () => {
+      const textHolder = new TextHolder();
+      textHolder.monoLingualText = "[[en]]a]]b";
+      textHolder.setTextAxis("es", "x");
+      expect(textHolder.getTextAxis("es")).toBe("x");
+      expect(textHolder.getTextAxis("en")).toBe("[en]a]b");
+      textHolder.setTextAxis("fr", "y");
+      expect(textHolder.getTextAxis("en")).toBe("[en]a]b");
+    });
+
+    it("should write [[ and ]] in a value unchanged when there is only English", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", "[[Draft]] notes");
+      expect(textHolder.getSerialized()).toBe("[[Draft]] notes");
+    });
+
+    it("should keep each language's text when a value holds [[ or ]]", () => {
+      const textHolder = new TextHolder();
+      textHolder.setTextAxis("en", "a [[b]] c");
+      textHolder.setTextAxis("es", "x]]y");
+      expect(textHolder.getTextAxis("en")).toBe("a [b] c");
+      expect(textHolder.getTextAxis("es")).toBe("x]y");
+    });
+
+    it("should let the user correct malformed tagged text", () => {
+      const textHolder = new TextHolder();
+      textHolder.monoLingualText = "[[en]]a]]b";
+      textHolder.setTextAxis("en", "ab");
+      expect(textHolder.getSerialized()).toBe("ab");
     });
 
     it("should handle multilingual text without English", () => {
@@ -561,27 +600,17 @@ describe("TextHolder slash syntax virtual conversion", () => {
       t.monoLingualText =
         "Mberyo / Mberyo,Everyday Activities / Actividades Cotidianas,Traditional Materials / Materiales";
       t.commitSlashSyntaxConversion(["en", "es"], true);
-      expect(t.getTextAxis("en")).toBe(
-        "Mberyo, Everyday Activities, Traditional Materials"
-      );
-      expect(t.getTextAxis("es")).toBe(
-        "Mberyo, Actividades Cotidianas, Materiales"
-      );
+      expect(t.getTextAxis("en")).toBe("Mberyo, Everyday Activities, Traditional Materials");
+      expect(t.getTextAxis("es")).toBe("Mberyo, Actividades Cotidianas, Materiales");
     });
 
     it("getTextAxisVirtual should parse comma-separated slash syntax correctly", () => {
       const t = new TextHolder();
       t.monoLingualText = "History / Historia, Customs / Costumbres";
-      expect(t.getTextAxisVirtual("en", ["en", "es"], true)).toBe(
-        "History, Customs"
-      );
-      expect(t.getTextAxisVirtual("es", ["en", "es"], true)).toBe(
-        "Historia, Costumbres"
-      );
+      expect(t.getTextAxisVirtual("en", ["en", "es"], true)).toBe("History, Customs");
+      expect(t.getTextAxisVirtual("es", ["en", "es"], true)).toBe("Historia, Costumbres");
       // Should not modify original text
-      expect(t.monoLingualText).toBe(
-        "History / Historia, Customs / Costumbres"
-      );
+      expect(t.monoLingualText).toBe("History / Historia, Customs / Costumbres");
     });
 
     it("getVirtualMultiAxisView should return all axes for comma-separated", () => {

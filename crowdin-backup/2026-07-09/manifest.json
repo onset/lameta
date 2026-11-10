@@ -1,0 +1,879 @@
+{
+  "fetchedAt": "2026-07-09",
+  "project": {
+    "translateDuplicates": 3,
+    "tagsDetection": 0,
+    "glossaryAccess": false,
+    "glossaryAccessOption": "readOnly",
+    "isMtAllowed": true,
+    "taskBasedAccessControl": false,
+    "hiddenStringsProofreadersAccess": true,
+    "autoSubstitution": true,
+    "exportTranslatedOnly": true,
+    "skipUntranslatedStrings": true,
+    "exportApprovedOnly": false,
+    "autoTranslateDialects": false,
+    "useGlobalTm": true,
+    "showTmSuggestionsDialects": true,
+    "tmApprovedSuggestionsOnly": false,
+    "isSuspended": false,
+    "qaCheckIsActive": true,
+    "qaCheckCategories": {
+      "empty": true,
+      "size": true,
+      "tags": true,
+      "spaces": true,
+      "variables": true,
+      "punctuation": true,
+      "symbolRegister": true,
+      "specialSymbols": true,
+      "wrongTranslation": true,
+      "spellcheck": true,
+      "icu": true,
+      "terms": false,
+      "duplicate": true,
+      "ftl": true,
+      "android": false,
+      "numbers": true,
+      "ai": false,
+      "outdated": false
+    },
+    "qaChecksIgnorableCategories": {
+      "empty": true,
+      "size": false,
+      "tags": true,
+      "spaces": true,
+      "variables": true,
+      "punctuation": true,
+      "symbolRegister": true,
+      "specialSymbols": true,
+      "wrongTranslation": true,
+      "spellcheck": true,
+      "icu": false,
+      "terms": true,
+      "duplicate": false,
+      "ftl": false,
+      "android": false,
+      "numbers": true,
+      "ai": true,
+      "outdated": true
+    },
+    "languageMapping": {},
+    "notificationSettings": {
+      "translatorNewStrings": true,
+      "managerNewStrings": true,
+      "managerLanguageCompleted": true
+    },
+    "defaultTmId": 118965,
+    "defaultGlossaryId": 107977,
+    "assignedTms": {
+      "118965": {
+        "priority": 1
+      }
+    },
+    "assignedGlossaries": [
+      107977
+    ],
+    "assignedStyleGuides": [],
+    "tmPenalties": [],
+    "normalizePlaceholder": false,
+    "tmPreTranslate": {
+      "enabled": false,
+      "autoApproveOption": "none",
+      "minimumMatchRatio": "perfect"
+    },
+    "mtPreTranslate": {
+      "enabled": false,
+      "mts": []
+    },
+    "aiPreTranslate": {
+      "enabled": false,
+      "aiPrompts": []
+    },
+    "preTranslationAiPromptId": null,
+    "editorSuggestionAiPromptId": null,
+    "qaCheckActionAiPromptId": null,
+    "contextReviewAiPromptId": null,
+    "inContext": false,
+    "inContextProcessHiddenStrings": true,
+    "inContextPseudoLanguageId": null,
+    "inContextPseudoLanguage": null,
+    "id": 324607,
+    "type": 0,
+    "userId": 13682419,
+    "sourceLanguageId": "en",
+    "targetLanguageIds": [
+      "fr",
+      "es-ES",
+      "ru",
+      "zh-CN",
+      "pt-BR",
+      "id",
+      "fa"
+    ],
+    "languageAccessPolicy": "open",
+    "name": "laMeta",
+    "cname": null,
+    "identifier": "saymorex",
+    "description": "lameta is an open source, cross platform manager for Language Documentation metadata. By contributing translations, you agree to release your contributions under our open source license.",
+    "visibility": "open",
+    "logo": "https://crowdin-static.cf-downloads.crowdin.com/images/project-logo/324607/small/7323919ba52457deb08e5b969939b47d50.png",
+    "publicDownloads": false,
+    "createdAt": "2018-12-03T20:58:17+00:00",
+    "updatedAt": "2024-02-06T17:45:13+00:00",
+    "lastActivity": "2026-02-05T01:26:47+00:00",
+    "sourceLanguage": {
+      "id": "en",
+      "name": "English",
+      "editorCode": "en",
+      "twoLettersCode": "en",
+      "threeLettersCode": "eng",
+      "locale": "en-US",
+      "androidCode": "en-rUS",
+      "bcp47Code": "b+en+US",
+      "osxCode": "en.lproj",
+      "osxLocale": "en",
+      "pluralCategoryNames": [
+        "one",
+        "other"
+      ],
+      "pluralRules": "(n != 1)",
+      "pluralExamples": [
+        "1",
+        "0, 2-999; 1.2, 2.07..."
+      ],
+      "textDirection": "ltr",
+      "dialectOf": null
+    },
+    "targetLanguages": [
+      {
+        "id": "fr",
+        "name": "French",
+        "editorCode": "fr",
+        "twoLettersCode": "fr",
+        "threeLettersCode": "fra",
+        "locale": "fr-FR",
+        "androidCode": "fr-rFR",
+        "bcp47Code": "b+fr+FR",
+        "osxCode": "fr.lproj",
+        "osxLocale": "fr",
+        "pluralCategoryNames": [
+          "one",
+          "other"
+        ],
+        "pluralRules": "(n > 1)",
+        "pluralExamples": [
+          "0, 1",
+          "2-999; 1.2, 2.07..."
+        ],
+        "textDirection": "ltr",
+        "dialectOf": null
+      },
+      {
+        "id": "es-ES",
+        "name": "Spanish",
+        "editorCode": "es",
+        "twoLettersCode": "es",
+        "threeLettersCode": "spa",
+        "locale": "es-ES",
+        "androidCode": "es-rES",
+        "bcp47Code": "b+es+ES",
+        "osxCode": "es.lproj",
+        "osxLocale": "es",
+        "pluralCategoryNames": [
+          "one",
+          "other"
+        ],
+        "pluralRules": "(n != 1)",
+        "pluralExamples": [
+          "1",
+          "0, 2-999; 1.2, 2.07..."
+        ],
+        "textDirection": "ltr",
+        "dialectOf": null
+      },
+      {
+        "id": "ru",
+        "name": "Russian",
+        "editorCode": "ru",
+        "twoLettersCode": "ru",
+        "threeLettersCode": "rus",
+        "locale": "ru-RU",
+        "androidCode": "ru-rRU",
+        "bcp47Code": "b+ru+RU",
+        "osxCode": "ru.lproj",
+        "osxLocale": "ru",
+        "pluralCategoryNames": [
+          "one",
+          "few",
+          "many",
+          "other"
+        ],
+        "pluralRules": "((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3))",
+        "pluralExamples": [
+          "1, 21, 31, 41, 51, 61, 71, 81...",
+          "2-4, 22-24, 32-34, 42-44, 52-54, 62...",
+          "0, 5-19, 100, 1000, 10000...",
+          "0.0-0.9, 1.1-1.6, 10.0, 100.0..."
+        ],
+        "textDirection": "ltr",
+        "dialectOf": null
+      },
+      {
+        "id": "zh-CN",
+        "name": "Chinese Simplified",
+        "editorCode": "zhcn",
+        "twoLettersCode": "zh",
+        "threeLettersCode": "zho",
+        "locale": "zh-CN",
+        "androidCode": "zh-rCN",
+        "bcp47Code": "b+zh+Hans",
+        "osxCode": "zh-Hans.lproj",
+        "osxLocale": "zh-Hans",
+        "pluralCategoryNames": [
+          "other"
+        ],
+        "pluralRules": "0",
+        "pluralExamples": [
+          "0-999; 1.2..."
+        ],
+        "textDirection": "ltr",
+        "dialectOf": null
+      },
+      {
+        "id": "pt-BR",
+        "name": "Portuguese, Brazilian",
+        "editorCode": "ptbr",
+        "twoLettersCode": "pt",
+        "threeLettersCode": "por",
+        "locale": "pt-BR",
+        "androidCode": "pt-rBR",
+        "bcp47Code": "b+pt+BR",
+        "osxCode": "pt-BR.lproj",
+        "osxLocale": "pt_BR",
+        "pluralCategoryNames": [
+          "one",
+          "other"
+        ],
+        "pluralRules": "(n != 1)",
+        "pluralExamples": [
+          "1",
+          "0, 2-999; 1.2, 2.07..."
+        ],
+        "textDirection": "ltr",
+        "dialectOf": null
+      },
+      {
+        "id": "id",
+        "name": "Indonesian",
+        "editorCode": "id",
+        "twoLettersCode": "id",
+        "threeLettersCode": "ind",
+        "locale": "id-ID",
+        "androidCode": "in-rID",
+        "bcp47Code": "b+id+ID",
+        "osxCode": "id.lproj",
+        "osxLocale": "id",
+        "pluralCategoryNames": [
+          "other"
+        ],
+        "pluralRules": "0",
+        "pluralExamples": [
+          "0-999; 1.2..."
+        ],
+        "textDirection": "ltr",
+        "dialectOf": null
+      },
+      {
+        "id": "fa",
+        "name": "Persian",
+        "editorCode": "fa",
+        "twoLettersCode": "fa",
+        "threeLettersCode": "fas",
+        "locale": "fa-IR",
+        "androidCode": "fa-rIR",
+        "bcp47Code": "b+fa+IR",
+        "osxCode": "fa.lproj",
+        "osxLocale": "fa",
+        "pluralCategoryNames": [
+          "one",
+          "other"
+        ],
+        "pluralRules": "(n != 1)",
+        "pluralExamples": [
+          "0, 1; 0.0~1.0, 0.00~0.04",
+          "2~17, 100, 1000, 10000, 100000, 1000000, ...; 1.1~2.6, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, ..."
+        ],
+        "textDirection": "rtl",
+        "dialectOf": null
+      }
+    ],
+    "webUrl": "https://crowdin.com/project/saymorex",
+    "savingsReportSettingsTemplateId": null,
+    "saveMetaInfoInSource": true,
+    "skipUntranslatedFiles": false,
+    "tmContextType": "segmentContext"
+  },
+  "branches": [
+    {
+      "id": 66,
+      "projectId": 324607,
+      "name": "V3",
+      "title": null,
+      "createdAt": "2023-12-31T15:05:21+00:00",
+      "updatedAt": "2023-12-31T15:05:21+00:00",
+      "exportPattern": null,
+      "priority": "normal"
+    }
+  ],
+  "files": [
+    {
+      "id": 6,
+      "projectId": 324607,
+      "branchId": null,
+      "directoryId": null,
+      "name": "fields.csv",
+      "title": "Field Names",
+      "context": null,
+      "type": "csv",
+      "path": "/fields.csv",
+      "status": "active",
+      "revisionId": 26,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "identifier": 0,
+          "context": 1,
+          "sourcePhrase": 2,
+          "ru": 5,
+          "pt-BR": 7,
+          "es-ES": 3,
+          "id": 8,
+          "fa": 9,
+          "fr": 4,
+          "zh-CN": 6
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2018-12-15T15:51:36+00:00",
+      "updatedAt": "2024-12-21T21:58:08+00:00"
+    },
+    {
+      "id": 18,
+      "projectId": 324607,
+      "branchId": null,
+      "directoryId": null,
+      "name": "genres.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/genres.csv",
+      "status": "active",
+      "revisionId": 28,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "context": 0,
+          "sourcePhrase": 1,
+          "ru": 4,
+          "pt-BR": 6,
+          "es-ES": 2,
+          "id": 7,
+          "fa": 8,
+          "fr": 3,
+          "zh-CN": 5
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2018-12-18T17:15:42+00:00",
+      "updatedAt": "2026-02-05T00:36:27+00:00"
+    },
+    {
+      "id": 22,
+      "projectId": 324607,
+      "branchId": null,
+      "directoryId": null,
+      "name": "roles.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/roles.csv",
+      "status": "active",
+      "revisionId": 19,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "context": 1,
+          "sourcePhrase": 2,
+          "ru": 5,
+          "pt-BR": 7,
+          "es-ES": 3,
+          "id": 8,
+          "fa": 9,
+          "fr": 4,
+          "zh-CN": 6
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2018-12-18T17:19:13+00:00",
+      "updatedAt": "2026-02-05T00:36:29+00:00"
+    },
+    {
+      "id": 24,
+      "projectId": 324607,
+      "branchId": null,
+      "directoryId": null,
+      "name": "accessProtocols.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/accessProtocols.csv",
+      "status": "active",
+      "revisionId": 33,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "identifier": 0,
+          "context": 1,
+          "sourcePhrase": 2,
+          "ru": 5,
+          "pt-BR": 7,
+          "es-ES": 3,
+          "id": 8,
+          "fa": 9,
+          "fr": 4,
+          "zh-CN": 6
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2018-12-18T17:19:45+00:00",
+      "updatedAt": "2026-02-05T00:36:24+00:00"
+    },
+    {
+      "id": 30,
+      "projectId": 324607,
+      "branchId": null,
+      "directoryId": null,
+      "name": "choices.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/choices.csv",
+      "status": "active",
+      "revisionId": 17,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "context": 0,
+          "sourcePhrase": 1,
+          "ru": 4,
+          "pt-BR": 6,
+          "es-ES": 2,
+          "id": 7,
+          "fa": 8,
+          "fr": 3,
+          "zh-CN": 5
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2018-12-18T17:22:46+00:00",
+      "updatedAt": "2024-12-21T21:58:07+00:00"
+    },
+    {
+      "id": 35,
+      "projectId": 324607,
+      "branchId": null,
+      "directoryId": null,
+      "name": "tips.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/tips.csv",
+      "status": "active",
+      "revisionId": 16,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "context": 0,
+          "sourcePhrase": 1,
+          "ru": 4,
+          "pt-BR": 6,
+          "es-ES": 2,
+          "id": 7,
+          "fa": 8,
+          "fr": 3,
+          "zh-CN": 5
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2019-12-12T15:24:55+00:00",
+      "updatedAt": "2024-12-21T21:58:13+00:00"
+    },
+    {
+      "id": 36,
+      "projectId": 324607,
+      "branchId": null,
+      "directoryId": null,
+      "name": "messages.po",
+      "title": null,
+      "context": null,
+      "type": "gettext",
+      "path": "/messages.po",
+      "status": "active",
+      "revisionId": 14,
+      "priority": "normal",
+      "importOptions": null,
+      "exportOptions": {
+        "exportPattern": "/%two_letters_code%/messages.po"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 4,
+      "createdAt": "2020-09-13T20:55:23+00:00",
+      "updatedAt": "2025-01-06T23:05:21+00:00"
+    },
+    {
+      "id": 68,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "messages.po",
+      "title": null,
+      "context": null,
+      "type": "gettext",
+      "path": "/V3/messages.po",
+      "status": "active",
+      "revisionId": 3,
+      "priority": "normal",
+      "importOptions": null,
+      "exportOptions": {
+        "exportPattern": "/%two_letters_code%/messages.po"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 4,
+      "createdAt": "2023-12-31T15:08:37+00:00",
+      "updatedAt": "2024-03-23T14:36:23+00:00"
+    },
+    {
+      "id": 70,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "fields.po",
+      "title": null,
+      "context": null,
+      "type": "gettext",
+      "path": "/V3/fields.po",
+      "status": "active",
+      "revisionId": 10,
+      "priority": "normal",
+      "importOptions": null,
+      "exportOptions": {
+        "exportPattern": "/%two_letters_code%/fields.po"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 4,
+      "createdAt": "2023-12-31T15:08:39+00:00",
+      "updatedAt": "2024-03-23T14:36:25+00:00"
+    },
+    {
+      "id": 72,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "accessProtocols.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/V3/accessProtocols.csv",
+      "status": "active",
+      "revisionId": 2,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "identifier": 0,
+          "context": 1,
+          "sourcePhrase": 2,
+          "ru": 5,
+          "pt-BR": 7,
+          "es-ES": 3,
+          "id": 8,
+          "fa": 9,
+          "fr": 4,
+          "zh-CN": 6
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2023-12-31T15:08:40+00:00",
+      "updatedAt": "2023-12-31T15:26:05+00:00"
+    },
+    {
+      "id": 74,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "choices.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/V3/choices.csv",
+      "status": "active",
+      "revisionId": 2,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "context": 0,
+          "sourcePhrase": 1,
+          "ru": 4,
+          "pt-BR": 6,
+          "es-ES": 2,
+          "id": 7,
+          "fa": 8,
+          "fr": 3,
+          "zh-CN": 5
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2023-12-31T15:08:41+00:00",
+      "updatedAt": "2023-12-31T15:26:07+00:00"
+    },
+    {
+      "id": 76,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "fields.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/V3/fields.csv",
+      "status": "active",
+      "revisionId": 2,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "identifier": 0,
+          "context": 1,
+          "sourcePhrase": 2,
+          "ru": 5,
+          "pt-BR": 7,
+          "es-ES": 3,
+          "id": 8,
+          "fa": 9,
+          "fr": 4,
+          "zh-CN": 6
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2023-12-31T15:08:42+00:00",
+      "updatedAt": "2023-12-31T15:26:09+00:00"
+    },
+    {
+      "id": 78,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "genres.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/V3/genres.csv",
+      "status": "active",
+      "revisionId": 3,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "context": 0,
+          "sourcePhrase": 1,
+          "ru": 4,
+          "pt-BR": 6,
+          "es-ES": 2,
+          "id": 7,
+          "fa": 8,
+          "fr": 3,
+          "zh-CN": 5
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2023-12-31T15:08:43+00:00",
+      "updatedAt": "2024-09-19T20:13:56+00:00"
+    },
+    {
+      "id": 80,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "roles.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/V3/roles.csv",
+      "status": "active",
+      "revisionId": 2,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "context": 1,
+          "sourcePhrase": 2,
+          "ru": 5,
+          "pt-BR": 7,
+          "es-ES": 3,
+          "id": 8,
+          "fa": 9,
+          "fr": 4,
+          "zh-CN": 6
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2023-12-31T15:08:45+00:00",
+      "updatedAt": "2023-12-31T15:26:12+00:00"
+    },
+    {
+      "id": 82,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "tips.csv",
+      "title": null,
+      "context": null,
+      "type": "csv",
+      "path": "/V3/tips.csv",
+      "status": "active",
+      "revisionId": 2,
+      "priority": "normal",
+      "importOptions": {
+        "importTranslations": false,
+        "firstLineContainsHeader": true,
+        "contentSegmentation": false,
+        "customSegmentation": false,
+        "scheme": {
+          "context": 0,
+          "sourcePhrase": 1,
+          "ru": 4,
+          "pt-BR": 6,
+          "es-ES": 2,
+          "id": 7,
+          "fa": 8,
+          "fr": 3,
+          "zh-CN": 5
+        }
+      },
+      "exportOptions": {
+        "exportPattern": "%original_file_name%"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 1,
+      "createdAt": "2023-12-31T15:08:46+00:00",
+      "updatedAt": "2023-12-31T15:26:14+00:00"
+    },
+    {
+      "id": 84,
+      "projectId": 324607,
+      "branchId": 66,
+      "directoryId": null,
+      "name": "vocabularies.po",
+      "title": null,
+      "context": null,
+      "type": "gettext",
+      "path": "/V3/vocabularies.po",
+      "status": "active",
+      "revisionId": 1,
+      "priority": "normal",
+      "importOptions": null,
+      "exportOptions": {
+        "exportPattern": "/%two_letters_code%/vocabularies.po"
+      },
+      "excludedTargetLanguages": null,
+      "parserVersion": 4,
+      "createdAt": "2024-01-01T23:14:55+00:00",
+      "updatedAt": "2024-01-01T23:14:55+00:00"
+    }
+  ]
+}

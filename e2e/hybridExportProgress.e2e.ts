@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 import * as fs from "fs";
 import * as Path from "path";
 
@@ -15,13 +15,8 @@ let project: E2eProject;
 test.describe("Hybrid Export Progress UI", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    await lameta.launch();
-    await lameta.cancelRegistration();
     const timestamp = Date.now();
-    project = await createNewProject(
-      lameta,
-      `HybridExportProgressTest_${timestamp}`
-    );
+    project = await launchWithProject(lameta, `HybridExportProgressTest_${timestamp}`);
   });
 
   test.afterAll(async () => {
@@ -40,9 +35,7 @@ test.describe("Hybrid Export Progress UI", () => {
     console.log("✓ Added 3 sessions");
 
     // Wait for sessions to be visible
-    await expect(
-      page.locator('[data-testid="new-session-button"]')
-    ).toBeVisible();
+    await expect(page.locator('[data-testid="new-session-button"]')).toBeVisible();
 
     // 2. Open export dialog
     await lameta.clickMenu("File", "Export Project...");
@@ -58,7 +51,7 @@ test.describe("Hybrid Export Progress UI", () => {
     const exportParent = Path.join(project.projectDirectory, "..", "exports");
     const exportDir = Path.join(exportParent, "imdi-export-test");
     fs.mkdirSync(exportParent, { recursive: true });
-    
+
     await lameta.electronApp.evaluate(async ({ dialog }, exportPath) => {
       dialog.showSaveDialog = async () => {
         return Promise.resolve({ canceled: false, filePath: exportPath });
@@ -73,7 +66,7 @@ test.describe("Hybrid Export Progress UI", () => {
     // 6. Verify progress UI appears
     // The progress bar should appear
     const progressBar = page.locator('[role="progressbar"]');
-    
+
     // Wait for progress to start - may be very fast with only 3 sessions
     // Use a longer timeout but don't fail if we miss it - export may be too fast
     try {
@@ -85,11 +78,13 @@ test.describe("Hybrid Export Progress UI", () => {
     }
 
     // 7. Wait for export to complete
-    // Look for the "Done" success message 
+    // Look for the "Done" success message
     try {
       // Wait for successful completion indicator - "Done" text (may have warnings)
       // Use a more specific selector that matches the h3 heading
-      await expect(page.locator("h3:has-text('Done')")).toBeVisible({ timeout: 30000 });
+      await expect(page.locator("h3:has-text('Done')")).toBeVisible({
+        timeout: 30000,
+      });
       console.log("✓ Export completed successfully");
     } catch {
       // Check if still in progress or error - but handle page being closed
@@ -110,7 +105,7 @@ test.describe("Hybrid Export Progress UI", () => {
         throw new Error("Export timed out - page may have closed or export failed");
       }
     }
-    
+
     // Give a little extra time for file system operations
     await page.waitForTimeout(500);
 
@@ -119,7 +114,7 @@ test.describe("Hybrid Export Progress UI", () => {
     console.log(`Checking for export at: ${exportDir}`);
     const dirExists = fs.existsSync(exportDir);
     console.log(`Export directory exists: ${dirExists}`);
-    
+
     if (dirExists) {
       // List all files recursively
       const listFilesRecursive = (dir: string, prefix = ""): string[] => {
@@ -136,12 +131,12 @@ test.describe("Hybrid Export Progress UI", () => {
         }
         return files;
       };
-      
+
       const allFiles = listFilesRecursive(exportDir);
       console.log(`Export created files: ${allFiles.join(", ")}`);
-      
+
       // Should have at least one IMDI file somewhere in the export
-      const hasImdiFiles = allFiles.some(f => f.endsWith(".imdi"));
+      const hasImdiFiles = allFiles.some((f) => f.endsWith(".imdi"));
       expect(hasImdiFiles).toBe(true);
       console.log("✓ IMDI files were created");
     } else {
@@ -190,7 +185,7 @@ test.describe("Hybrid Export Progress UI", () => {
     // 4. Set up export directory mock (uses showSaveDialog)
     const exportDir = Path.join(project.projectDirectory, "..", "export-cancel-test");
     fs.mkdirSync(exportDir, { recursive: true });
-    
+
     await lameta.electronApp.evaluate(async ({ dialog }, exportPath) => {
       dialog.showSaveDialog = async () => {
         return Promise.resolve({ canceled: false, filePath: exportPath });
@@ -200,11 +195,14 @@ test.describe("Hybrid Export Progress UI", () => {
     // 5. Start export
     const exportButton = page.getByRole("button", { name: "Export" });
     await exportButton.click();
+    // Until the export starts, the dialog's own Cancel (which closes the
+    // dialog) is still showing; wait for the choosing state to end.
+    await expect(exportButton).toBeHidden();
 
     // 6. Try to click Cancel quickly
     // The Cancel button should be visible during export
     const cancelButton = page.getByRole("button", { name: "Cancel" });
-    
+
     try {
       // Try to catch the Cancel button while export is in progress
       await expect(cancelButton).toBeVisible({ timeout: 2000 });
@@ -215,21 +213,16 @@ test.describe("Hybrid Export Progress UI", () => {
       console.log("Export completed before cancel could be clicked - this is acceptable");
     }
 
-    // Wait a moment for any cleanup
-    await page.waitForTimeout(1000);
+    // A Cancel that lands after the last session (corpus write or validation)
+    // does not stop the export, so the dialog can end in either "cancelled" or
+    // "Done". Both show a Close button; the next test needs the dialog gone.
+    const closeButton = page.getByRole("button", { name: "Close" });
+    await closeButton.waitFor({ state: "visible", timeout: 30000 });
+    await closeButton.click();
+    await expect(imdiRadio).toBeHidden();
 
     // Clean up
     fs.rmSync(exportDir, { recursive: true, force: true });
-
-    // Close the dialog if still open
-    try {
-      const closeButton = page.getByRole("button", { name: /Cancel|Close/i });
-      if (await closeButton.isVisible({ timeout: 500 })) {
-        await closeButton.click();
-      }
-    } catch {
-      // Dialog already closed
-    }
   });
 
   test("should show export warnings in log area", async () => {
@@ -239,14 +232,15 @@ test.describe("Hybrid Export Progress UI", () => {
     await lameta.clickMenu("File", "Export Project...");
     await expect(page.locator("text=Export Project")).toBeVisible();
 
-    // 2. Select IMDI format using radio button
+    // 2. Select IMDI format using radio button - wait for dialog to be fully loaded
     const imdiRadio = page.locator('input[type="radio"][value="imdi"]');
+    await imdiRadio.waitFor({ state: "visible", timeout: 10000 });
     await imdiRadio.check();
 
     // 3. Set up export directory mock (uses showSaveDialog)
     const exportDir = Path.join(project.projectDirectory, "..", "export-log-test");
     fs.mkdirSync(exportDir, { recursive: true });
-    
+
     await lameta.electronApp.evaluate(async ({ dialog }, exportPath) => {
       dialog.showSaveDialog = async () => {
         return Promise.resolve({ canceled: false, filePath: exportPath });
@@ -259,7 +253,9 @@ test.describe("Hybrid Export Progress UI", () => {
 
     // 5. Wait for export to complete
     try {
-      await expect(page.locator("text=Export Completed")).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("text=Export Completed")).toBeVisible({
+        timeout: 10000,
+      });
       console.log("✓ Export completed");
     } catch {
       console.log("Export completion text not found");
@@ -269,8 +265,8 @@ test.describe("Hybrid Export Progress UI", () => {
     // The log area should be visible if there are any messages
     // Note: We may or may not have warnings depending on the session data
     const logArea = page.locator('[data-testid="export-log"]');
-    const logExists = await logArea.count() > 0;
-    if (logExists && await logArea.isVisible()) {
+    const logExists = (await logArea.count()) > 0;
+    if (logExists && (await logArea.isVisible())) {
       const logText = await logArea.textContent();
       console.log(`Export log contents: ${logText}`);
     } else {

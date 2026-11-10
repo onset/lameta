@@ -12,14 +12,14 @@ What this does now:
 3) Runs Playwright e2e with that executable
 
 Usage:
-  yarn tsx ./scripts/install-run-e2e.ts [--stop-on-failure] [--debug] [--slowmo[=<ms>]] [<playwright-args>...]
+  pnpm exec tsx ./scripts/install-run-e2e.ts [--stop-on-failure] [--debug] [--slowmo[=<ms>]] [<playwright-args>...]
 
 Examples:
   # Single file
-  yarn tsx ./scripts/install-run-e2e.ts e2e/peopleSearchByRole.e2e.ts
+  pnpm exec tsx ./scripts/install-run-e2e.ts e2e/peopleSearchByRole.e2e.ts
 
   # Single test by title grep
-  yarn tsx ./scripts/install-run-e2e.ts -g "typing a role filters and highlights person"
+  pnpm exec tsx ./scripts/install-run-e2e.ts -g "typing a role filters and highlights person"
 */
 import * as os from "os";
 import * as fs from "fs";
@@ -34,22 +34,13 @@ const findInstalledPath = async (): Promise<string> => {
   const platform = os.platform();
   if (platform === "win32") {
     const candidates = [
-      path.join(
-        process.env.LOCALAPPDATA || "",
-        "Programs",
-        "lameta",
-        "lameta.exe"
-      ),
-      path.join(
-        process.env["ProgramFiles"] || "C:/Program Files",
-        "lameta",
-        "lameta.exe"
-      ),
+      path.join(process.env.LOCALAPPDATA || "", "Programs", "lameta", "lameta.exe"),
+      path.join(process.env["ProgramFiles"] || "C:/Program Files", "lameta", "lameta.exe"),
       path.join(
         process.env["ProgramFiles(x86)"] || "C:/Program Files (x86)",
         "lameta",
-        "lameta.exe"
-      )
+        "lameta.exe",
+      ),
     ];
     for (const p of candidates) {
       if (p && fs.existsSync(p)) return p;
@@ -72,7 +63,7 @@ const killExistingLameta = async (): Promise<void> => {
     // Kill any auto-launched instance from the installer so Playwright can start a fresh one
     await new Promise<void>((resolve) => {
       const p = spawn("taskkill", ["/IM", "lameta.exe", "/F"], {
-        stdio: "ignore"
+        stdio: "ignore",
       });
       p.on("exit", () => resolve());
       p.on("error", () => resolve());
@@ -82,7 +73,7 @@ const killExistingLameta = async (): Promise<void> => {
   } else if (platform === "darwin") {
     await new Promise<void>((resolve) => {
       const p = spawn("bash", ["-lc", "pkill -f 'lameta.app' || true"], {
-        stdio: "ignore"
+        stdio: "ignore",
       });
       p.on("exit", () => resolve());
       p.on("error", () => resolve());
@@ -91,19 +82,19 @@ const killExistingLameta = async (): Promise<void> => {
   }
 };
 
-const runYarnE2E = async (
+const runPnpmE2E = async (
   exePath: string,
   opts?: {
     stopOnFailure?: boolean;
     debug?: boolean;
     slowmo?: string | number;
     extraArgs?: string[];
-  }
+  },
 ): Promise<number> => {
   return new Promise<number>((resolve) => {
-    // Use 1 worker to avoid single-instance conflicts with packaged app
-    // Use the project's Yarn script to respect repo conventions and config
-    const args = ["e2e", "--workers=1"];
+    // Use 1 worker to avoid single-instance conflicts with packaged app.
+    // Run through the project's pnpm script so local CLI resolution stays consistent.
+    const args = ["run", "e2e", "--", "--workers=1"];
     if (opts?.stopOnFailure) {
       args.push("--max-failures=1");
     }
@@ -119,12 +110,12 @@ const runYarnE2E = async (
     if (opts?.extraArgs && opts.extraArgs.length) {
       args.push(...opts.extraArgs);
     }
-    const child = spawn("yarn", args, {
+    const child = spawn("pnpm", args, {
       stdio: "inherit",
       env: {
         ...process.env,
-        E2E_LAMETA_EXECUTABLE: exePath
-      }
+        E2E_LAMETA_EXECUTABLE: exePath,
+      },
     });
     child.on("exit", (code) => resolve(code ?? 1));
   });
@@ -133,8 +124,7 @@ const runYarnE2E = async (
 const main = async () => {
   const platform = os.platform();
   const argv = process.argv.slice(2);
-  const stopOnFailure =
-    argv.includes("--stop-on-failure") || argv.includes("-x");
+  const stopOnFailure = argv.includes("--stop-on-failure") || argv.includes("-x");
 
   // Parse and strip script-level flags we handle explicitly
   let debug = false;
@@ -178,13 +168,13 @@ const main = async () => {
   log(
     `Running e2e${stopOnFailure ? " (stop on first failure)" : ""}${
       extraArgs.length ? ` with args: ${extraArgs.join(" ")}` : ""
-    }...`
+    }...`,
   );
-  const exitCode = await runYarnE2E(exePath, {
+  const exitCode = await runPnpmE2E(exePath, {
     stopOnFailure,
     debug,
     slowmo,
-    extraArgs
+    extraArgs,
   });
   if (exitCode === 0) {
     log("E2E SUCCESS");

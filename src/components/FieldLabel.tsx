@@ -5,7 +5,7 @@ import {
   CommaSeparatedIndicator,
   InfoIndicator,
   NotConsumedByArchiveIndicator,
-  PiiIndicator
+  PiiIndicator,
 } from "./FieldIndicators";
 import { translateFieldLabel, translateTip } from "../other/localization";
 import { observer } from "mobx-react";
@@ -17,10 +17,7 @@ export const FieldLabel: React.FunctionComponent<{
   htmlFor?: string; // aria for accessibility (react requires 'htmlFor')
   omitInfoAffordances?: boolean;
 }> = observer((props) => {
-  const tooltip = useMemo(
-    () => translateTip(props.fieldDef.description),
-    [props.fieldDef]
-  );
+  const tooltip = useMemo(() => translateTip(props.fieldDef.description), [props.fieldDef]);
 
   const labelElement = (
     <label htmlFor={props.htmlFor} style={{ display: "inline-block" }}>
@@ -48,9 +45,7 @@ export const FieldLabel: React.FunctionComponent<{
   return (
     <div className="field-label" style={{ display: "flex" }}>
       {labelMaybeWithTooltip}
-      {!props.omitInfoAffordances && (
-        <FieldInfoAffordances fieldDef={props.fieldDef} />
-      )}
+      {!props.omitInfoAffordances && <FieldInfoAffordances fieldDef={props.fieldDef} />}
     </div>
   );
 });
@@ -81,8 +76,9 @@ export const FieldInfoAffordances: React.FunctionComponent<{
         </CommaSeparatedIndicator>
       )}
 
-      {GetOtherConfigurationSettings().archiveUsesImdi &&
-        props.fieldDef.omitFromImdi && <NotConsumedByArchiveIndicator />}
+      {GetOtherConfigurationSettings().archiveUsesImdi && props.fieldDef.omitFromImdi && (
+        <NotConsumedByArchiveIndicator />
+      )}
     </div>
   );
 });

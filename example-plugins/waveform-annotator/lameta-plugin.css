@@ -7,8 +7,9 @@
  */
 
 :root {
-  --lameta-fonts: "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Ubuntu",
-    "Roboto", "Helvetica Neue", "Arial", sans-serif;
+  --lameta-fonts:
+    "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Ubuntu", "Roboto", "Helvetica Neue",
+    "Arial", sans-serif;
   --lameta-font-size: 14px;
 
   --lameta-orange: #e69664;

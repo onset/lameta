@@ -60,7 +60,7 @@ const SCHEMA_ORG_TYPES = new Set([
   "CollectionEvent",
   "RepositoryCollection",
   "RepositoryObject",
-  "Profile"
+  "Profile",
 ]);
 
 // Properties that reference other entities and must use {@id} form
@@ -104,7 +104,7 @@ const REFERENCE_PROPERTIES = new Set([
   "exampleOfWork",
   "conformsTo",
   "ldac:subjectLanguage",
-  "subjectLanguage"
+  "subjectLanguage",
 ]);
 
 // File types that are considered as File data entities
@@ -114,7 +114,7 @@ const FILE_TYPES = new Set([
   "VideoObject",
   "ImageObject",
   "DigitalDocument",
-  "MediaObject"
+  "MediaObject",
 ]);
 
 /**
@@ -188,9 +188,7 @@ export class RoCrateValidator {
     if (type === undefined || type === null) return false;
     if (Array.isArray(type)) {
       // Array must contain at least one valid non-empty string
-      const validTypes = type.filter(
-        (t) => typeof t === "string" && t.trim().length > 0
-      );
+      const validTypes = type.filter((t) => typeof t === "string" && t.trim().length > 0);
       return validTypes.length > 0;
     }
     if (typeof type !== "string") return false;
@@ -207,14 +205,12 @@ export class RoCrateValidator {
     if (Array.isArray(type)) {
       if (type.length === 0) return "@type array is empty";
       const invalidCount = type.filter(
-        (t) => typeof t !== "string" || t.trim().length === 0
+        (t) => typeof t !== "string" || t.trim().length === 0,
       ).length;
-      if (invalidCount === type.length)
-        return "@type array contains no valid string values";
+      if (invalidCount === type.length) return "@type array contains no valid string values";
       return "@type array contains invalid elements";
     }
-    if (typeof type !== "string")
-      return `@type must be string or array, got ${typeof type}`;
+    if (typeof type !== "string") return `@type must be string or array, got ${typeof type}`;
     if (type.trim().length === 0) return "@type is empty or whitespace-only";
     return "unknown";
   }
@@ -228,9 +224,7 @@ export class RoCrateValidator {
 
     // RO-Crate 1.2 line 138: Must have @graph array (flattened form)
     if (!roCrate["@graph"] || !Array.isArray(roCrate["@graph"])) {
-      errors.push(
-        "RO-Crate must have a @graph array (line 138: flattened document form)"
-      );
+      errors.push("RO-Crate must have a @graph array (line 138: flattened document form)");
       return { isValid: false, errors, warnings };
     }
 
@@ -246,18 +240,14 @@ export class RoCrateValidator {
     this.validateUniqueIds(graph, errors);
 
     // RO-Crate 1.2 line 822: Must have metadata descriptor
-    const metadataDescriptor = this.validateMetadataDescriptor(
-      graph,
-      errors,
-      warnings
-    );
+    this.validateMetadataDescriptor(graph, errors, warnings);
 
     // Validate all entities have @id and @type (lines 648-649)
     this.validateAllEntities(graph, errors, warnings);
 
     // Find root collection and sessions/objects
     const rootCollection = graph.find(
-      (item: any) => item["@id"] === "./" && item["@type"]?.includes("Dataset")
+      (item: any) => item["@id"] === "./" && item["@type"]?.includes("Dataset"),
     );
 
     // RO-Crate 1.2 line 192: Root Data Entity MUST have @type Dataset
@@ -267,21 +257,14 @@ export class RoCrateValidator {
 
     const objects = graph.filter((item: any) => {
       const rawType = item["@type"];
-      const typeList = Array.isArray(rawType)
-        ? rawType
-        : rawType
-        ? [rawType]
-        : [];
+      const typeList = Array.isArray(rawType) ? rawType : rawType ? [rawType] : [];
       const isRepositoryObject = typeList.includes("RepositoryObject");
       const isObjectType = typeList.includes("Object");
       const isLegacyEvent = typeList.includes("Event");
       const isCollectionEvent = typeList.includes("CollectionEvent");
       // Sessions declare CollectionEvent (and RepositoryObject) types, so treat them as LDAC objects.
       const isRelevantType =
-        isRepositoryObject ||
-        isObjectType ||
-        isLegacyEvent ||
-        isCollectionEvent;
+        isRepositoryObject || isObjectType || isLegacyEvent || isCollectionEvent;
       return isRelevantType && !this.isFileType(rawType);
     });
 
@@ -293,7 +276,7 @@ export class RoCrateValidator {
         rootCollection,
         "Root Collection",
         errors,
-        warnings
+        warnings,
       );
     } else {
       errors.push("No root collection found in @graph");
@@ -301,12 +284,7 @@ export class RoCrateValidator {
 
     // Validate each object/session has ldac:subjectLanguage
     objects.forEach((obj: any) => {
-      this.ldacValidator.validateEntityLanguages(
-        obj,
-        `Object ${obj["@id"]}`,
-        errors,
-        warnings
-      );
+      this.ldacValidator.validateEntityLanguages(obj, `Object ${obj["@id"]}`, errors, warnings);
     });
 
     // Validate that any files that have licenses have valid license declarations
@@ -317,11 +295,7 @@ export class RoCrateValidator {
     // Validate LDAC-required properties for every typed entity
     graph.forEach((entity: any) => {
       const entityName = entity["@id"] || "Unnamed entity";
-      this.ldacValidator.validateEntityAgainstLdacProfile(
-        entity,
-        entityName,
-        errors
-      );
+      this.ldacValidator.validateEntityAgainstLdacProfile(entity, entityName, errors);
     });
 
     // Build entity index for reference validation
@@ -338,21 +312,10 @@ export class RoCrateValidator {
     });
 
     // RO-Crate 1.2 line 431 & 654: Validate contextual entities are linked
-    this.validateContextualEntityLinkage(
-      graph,
-      entityIndex,
-      rootCollection,
-      warnings
-    );
+    this.validateContextualEntityLinkage(graph, entityIndex, rootCollection, warnings);
 
     // RO-Crate 1.2 line 1032: Validate data entities are linked from root via hasPart
-    this.validateDataEntityLinkage(
-      graph,
-      entityIndex,
-      rootCollection,
-      errors,
-      warnings
-    );
+    this.validateDataEntityLinkage(graph, entityIndex, rootCollection, errors, warnings);
 
     // RO-Crate 1.2: hasPart/isPartOf should only reference Files and Datasets, not other entity types
     this.validateHasPartTypes(graph, entityIndex, errors);
@@ -360,7 +323,7 @@ export class RoCrateValidator {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -388,16 +351,11 @@ export class RoCrateValidator {
     value: any,
     entityId: string,
     propertyName: string,
-    errors: string[]
+    errors: string[],
   ): void {
     if (Array.isArray(value)) {
       value.forEach((item, index) => {
-        this.checkForNestedEntities(
-          item,
-          entityId,
-          `${propertyName}[${index}]`,
-          errors
-        );
+        this.checkForNestedEntities(item, entityId, `${propertyName}[${index}]`, errors);
       });
     } else if (value && typeof value === "object") {
       // Valid reference objects have only @id
@@ -408,12 +366,12 @@ export class RoCrateValidator {
       // PropertyValue and similar inline objects are allowed
       if (value["@type"] && !value["@id"]) {
         errors.push(
-          `Entity "${entityId}" has nested entity in ${propertyName} that should be a separate entity in @graph (line 674)`
+          `Entity "${entityId}" has nested entity in ${propertyName} that should be a separate entity in @graph (line 674)`,
         );
       } else if (value["@type"] && value["@id"]) {
         // Has both @type and @id - should be separate entity
         errors.push(
-          `Entity "${entityId}" has nested entity "${value["@id"]}" in ${propertyName} - must be in @graph (line 674)`
+          `Entity "${entityId}" has nested entity "${value["@id"]}" in ${propertyName} - must be in @graph (line 674)`,
         );
       }
     }
@@ -422,11 +380,7 @@ export class RoCrateValidator {
   /**
    * RO-Crate 1.2 line 192, 884-891: Validate Root Data Entity requirements
    */
-  private validateRootDataEntity(
-    rootEntity: any,
-    errors: string[],
-    warnings: string[]
-  ): void {
+  private validateRootDataEntity(rootEntity: any, errors: string[], warnings: string[]): void {
     const types = this.normalizeTypeList(rootEntity["@type"]);
 
     // Line 192: Root Data Entity MUST have @type Dataset
@@ -438,55 +392,39 @@ export class RoCrateValidator {
     const rootId = rootEntity["@id"];
     if (rootId !== "./" && !rootId.startsWith("http")) {
       errors.push(
-        `Root Data Entity @id must be "./" or an absolute URI (line 479), found: "${rootId}"`
+        `Root Data Entity @id must be "./" or an absolute URI (line 479), found: "${rootId}"`,
       );
     }
 
     // Line 884-891: Required properties
     // datePublished MUST be present
     if (!rootEntity.datePublished) {
-      errors.push(
-        "Root Data Entity must have datePublished property (line 884-891)"
-      );
+      errors.push("Root Data Entity must have datePublished property (line 884-891)");
     } else {
       // Validate ISO 8601 date format
-      this.validateDateFormat(
-        rootEntity.datePublished,
-        "Root Data Entity datePublished",
-        errors
-      );
+      this.validateDateFormat(rootEntity.datePublished, "Root Data Entity datePublished", errors);
     }
 
     // name SHOULD be present
     if (!rootEntity.name) {
-      warnings.push(
-        "Root Data Entity should have a name property (line 884-891)"
-      );
+      warnings.push("Root Data Entity should have a name property (line 884-891)");
     }
 
     // description SHOULD be present
     if (!rootEntity.description) {
-      warnings.push(
-        "Root Data Entity should have a description property (line 884-891)"
-      );
+      warnings.push("Root Data Entity should have a description property (line 884-891)");
     }
 
     // license SHOULD be present
     if (!rootEntity.license) {
-      warnings.push(
-        "Root Data Entity should have a license property (line 884-891)"
-      );
+      warnings.push("Root Data Entity should have a license property (line 884-891)");
     }
   }
 
   /**
    * Validate ISO 8601 date format
    */
-  private validateDateFormat(
-    date: any,
-    context: string,
-    errors: string[]
-  ): void {
+  private validateDateFormat(date: any, context: string, errors: string[]): void {
     if (typeof date !== "string") {
       errors.push(`${context} must be a string in ISO 8601 format`);
       return;
@@ -495,9 +433,7 @@ export class RoCrateValidator {
     const iso8601Regex =
       /^\d{4}(-\d{2}(-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?)?)?$/;
     if (!iso8601Regex.test(date)) {
-      errors.push(
-        `${context} must be in ISO 8601 date format (line 884-891), found: "${date}"`
-      );
+      errors.push(`${context} must be in ISO 8601 date format (line 884-891), found: "${date}"`);
     }
   }
 
@@ -508,7 +444,7 @@ export class RoCrateValidator {
     entity: any,
     entityIndex: Map<string, any>,
     errors: string[],
-    warnings: string[]
+    warnings: string[],
   ): void {
     const entityId = entity["@id"] || "(no @id)";
 
@@ -517,14 +453,7 @@ export class RoCrateValidator {
 
       // Check if this property typically references other entities
       if (REFERENCE_PROPERTIES.has(key)) {
-        this.validateReferenceValue(
-          value,
-          entityId,
-          key,
-          entityIndex,
-          errors,
-          warnings
-        );
+        this.validateReferenceValue(value, entityId, key, entityIndex, errors, warnings);
       }
     });
   }
@@ -535,7 +464,7 @@ export class RoCrateValidator {
     propertyName: string,
     entityIndex: Map<string, any>,
     errors: string[],
-    warnings: string[]
+    warnings: string[],
   ): void {
     if (Array.isArray(value)) {
       value.forEach((item, index) => {
@@ -545,18 +474,11 @@ export class RoCrateValidator {
           `${propertyName}[${index}]`,
           entityIndex,
           errors,
-          warnings
+          warnings,
         );
       });
     } else {
-      this.validateSingleReference(
-        value,
-        entityId,
-        propertyName,
-        entityIndex,
-        errors,
-        warnings
-      );
+      this.validateSingleReference(value, entityId, propertyName, entityIndex, errors, warnings);
     }
   }
 
@@ -566,7 +488,7 @@ export class RoCrateValidator {
     propertyName: string,
     entityIndex: Map<string, any>,
     errors: string[],
-    warnings: string[]
+    warnings: string[],
   ): void {
     if (value === null || value === undefined) return;
 
@@ -577,7 +499,7 @@ export class RoCrateValidator {
         return; // Allow URL strings for license
       }
       warnings.push(
-        `Entity "${entityId}" property ${propertyName} should use {"@id": "..."} form instead of string (line 653)`
+        `Entity "${entityId}" property ${propertyName} should use {"@id": "..."} form instead of string (line 653)`,
       );
       return;
     }
@@ -587,7 +509,7 @@ export class RoCrateValidator {
       const targetId = value["@id"];
       if (!targetId.startsWith("http") && !entityIndex.has(targetId)) {
         warnings.push(
-          `Entity "${entityId}" ${propertyName} references "${targetId}" which is not described in the RO-Crate (line 431)`
+          `Entity "${entityId}" ${propertyName} references "${targetId}" which is not described in the RO-Crate (line 431)`,
         );
       }
     }
@@ -600,7 +522,7 @@ export class RoCrateValidator {
     graph: any[],
     entityIndex: Map<string, any>,
     rootEntity: any,
-    warnings: string[]
+    warnings: string[],
   ): void {
     // Build a set of all referenced entity IDs
     const referencedIds = new Set<string>();
@@ -616,17 +538,11 @@ export class RoCrateValidator {
     graph.forEach((entity: any) => {
       const id = entity["@id"];
       if (!id) return;
-      if (
-        id === "./" ||
-        id === "ro-crate-metadata.json" ||
-        id === "ro-crate-metadata.jsonld"
-      )
+      if (id === "./" || id === "ro-crate-metadata.json" || id === "ro-crate-metadata.jsonld")
         return;
 
       if (!referencedIds.has(id)) {
-        warnings.push(
-          `Entity "${id}" is not referenced by any other entity (line 431, 654)`
-        );
+        warnings.push(`Entity "${id}" is not referenced by any other entity (line 431, 654)`);
       }
     });
   }
@@ -647,17 +563,15 @@ export class RoCrateValidator {
     entityIndex: Map<string, any>,
     rootEntity: any,
     errors: string[],
-    warnings: string[]
+    warnings: string[],
   ): void {
     if (!rootEntity) return;
 
     // Collect all data entities (Files and Datasets that are not root)
     const dataEntities = graph.filter((entity: any) => {
       const id = entity["@id"];
-      if (!id || id === "./" || id.startsWith("#") || id.startsWith("_:"))
-        return false;
-      if (id === "ro-crate-metadata.json" || id === "ro-crate-metadata.jsonld")
-        return false;
+      if (!id || id === "./" || id.startsWith("#") || id.startsWith("_:")) return false;
+      if (id === "ro-crate-metadata.json" || id === "ro-crate-metadata.jsonld") return false;
       if (id.startsWith("http")) return false; // Web-based entities don't need hasPart
 
       const types = this.normalizeTypeList(entity["@type"]);
@@ -673,7 +587,7 @@ export class RoCrateValidator {
       const id = entity["@id"];
       if (!reachableFromRoot.has(id)) {
         warnings.push(
-          `Data entity "${id}" is not linked from Root Data Entity via hasPart (line 1032)`
+          `Data entity "${id}" is not linked from Root Data Entity via hasPart (line 1032)`,
         );
       }
     });
@@ -683,7 +597,7 @@ export class RoCrateValidator {
     entity: any,
     entityIndex: Map<string, any>,
     collected: Set<string>,
-    visited: Set<string> = new Set()
+    visited: Set<string> = new Set(),
   ): void {
     const id = entity["@id"];
     if (!id || visited.has(id)) return;
@@ -700,12 +614,7 @@ export class RoCrateValidator {
         // Recursively collect from nested datasets
         const partEntity = entityIndex.get(partId);
         if (partEntity) {
-          this.collectHasPartEntities(
-            partEntity,
-            entityIndex,
-            collected,
-            visited
-          );
+          this.collectHasPartEntities(partEntity, entityIndex, collected, visited);
         }
       }
     });
@@ -719,16 +628,14 @@ export class RoCrateValidator {
   private validateHasPartTypes(
     graph: any[],
     entityIndex: Map<string, any>,
-    errors: string[]
+    errors: string[],
   ): void {
     graph.forEach((entity: any) => {
       const entityId = entity["@id"] || "(unknown)";
 
       // Check hasPart references
       if (entity.hasPart) {
-        const hasParts = Array.isArray(entity.hasPart)
-          ? entity.hasPart
-          : [entity.hasPart];
+        const hasParts = Array.isArray(entity.hasPart) ? entity.hasPart : [entity.hasPart];
         hasParts.forEach((partRef: any) => {
           const partId = typeof partRef === "object" ? partRef["@id"] : partRef;
           if (partId) {
@@ -740,8 +647,8 @@ export class RoCrateValidator {
               if (!isFileOrDataset) {
                 errors.push(
                   `Entity "${entityId}" has hasPart reference to "${partId}" which is type "${targetTypes.join(
-                    ", "
-                  )}" - hasPart should only reference File or Dataset entities`
+                    ", ",
+                  )}" - hasPart should only reference File or Dataset entities`,
                 );
               }
             }
@@ -751,12 +658,9 @@ export class RoCrateValidator {
 
       // Check isPartOf references
       if (entity.isPartOf) {
-        const isPartOfRefs = Array.isArray(entity.isPartOf)
-          ? entity.isPartOf
-          : [entity.isPartOf];
+        const isPartOfRefs = Array.isArray(entity.isPartOf) ? entity.isPartOf : [entity.isPartOf];
         isPartOfRefs.forEach((partOfRef: any) => {
-          const partOfId =
-            typeof partOfRef === "object" ? partOfRef["@id"] : partOfRef;
+          const partOfId = typeof partOfRef === "object" ? partOfRef["@id"] : partOfRef;
           if (partOfId) {
             const targetEntity = entityIndex.get(partOfId);
             if (targetEntity) {
@@ -767,8 +671,8 @@ export class RoCrateValidator {
               if (!isFileOrDataset) {
                 errors.push(
                   `Entity "${entityId}" has isPartOf reference to "${partOfId}" which is type "${targetTypes.join(
-                    ", "
-                  )}" - isPartOf should only reference Dataset entities`
+                    ", ",
+                  )}" - isPartOf should only reference Dataset entities`,
                 );
               }
             }
@@ -782,16 +686,12 @@ export class RoCrateValidator {
    * RO-Crate 1.2 line 650: Validate @type includes Schema.org type
    * Also accepts known LDAC types as valid alternatives
    */
-  private validateSchemaOrgType(
-    types: string[],
-    entityId: string,
-    warnings: string[]
-  ): void {
+  private validateSchemaOrgType(types: string[], entityId: string, warnings: string[]): void {
     const hasSchemaOrgType = types.some((t) => SCHEMA_ORG_TYPES.has(t));
     const hasKnownLdacType = types.some((t) => KNOWN_LDAC_TYPES.has(t));
     if (!hasSchemaOrgType && !hasKnownLdacType) {
       warnings.push(
-        `Entity "${entityId}" @type should include at least one Schema.org type (line 650)`
+        `Entity "${entityId}" @type should include at least one Schema.org type (line 650)`,
       );
     }
   }
@@ -799,16 +699,10 @@ export class RoCrateValidator {
   /**
    * RO-Crate 1.2 line 429: Validate @context uses RO-Crate JSON-LD Context
    */
-  private validateContext(
-    roCrate: any,
-    errors: string[],
-    warnings: string[]
-  ): void {
+  private validateContext(roCrate: any, errors: string[], warnings: string[]): void {
     const context = roCrate["@context"];
     if (!context) {
-      errors.push(
-        "RO-Crate must have @context (line 429: must use RO-Crate JSON-LD Context)"
-      );
+      errors.push("RO-Crate must have @context (line 429: must use RO-Crate JSON-LD Context)");
       return;
     }
 
@@ -822,9 +716,7 @@ export class RoCrateValidator {
     });
 
     if (!hasRoCrateContext) {
-      warnings.push(
-        "RO-Crate @context should reference https://w3id.org/ro/crate/ (line 429)"
-      );
+      warnings.push("RO-Crate @context should reference https://w3id.org/ro/crate/ (line 429)");
     }
   }
 
@@ -838,7 +730,7 @@ export class RoCrateValidator {
       if (id) {
         if (seenIds.has(id)) {
           errors.push(
-            `Duplicate @id "${id}" found in @graph (line 1606: @graph MUST NOT list multiple entities with the same @id)`
+            `Duplicate @id "${id}" found in @graph (line 1606: @graph MUST NOT list multiple entities with the same @id)`,
           );
         } else {
           seenIds.set(id, index);
@@ -852,20 +744,15 @@ export class RoCrateValidator {
    * The RO-Crate Metadata Document MUST contain a self-describing RO-Crate Metadata Descriptor
    * with @id "ro-crate-metadata.json" and @type CreativeWork with about property
    */
-  private validateMetadataDescriptor(
-    graph: any[],
-    errors: string[],
-    warnings: string[]
-  ): any {
+  private validateMetadataDescriptor(graph: any[], errors: string[], warnings: string[]): any {
     const descriptor = graph.find(
       (item: any) =>
-        item["@id"] === "ro-crate-metadata.json" ||
-        item["@id"] === "ro-crate-metadata.jsonld"
+        item["@id"] === "ro-crate-metadata.json" || item["@id"] === "ro-crate-metadata.jsonld",
     );
 
     if (!descriptor) {
       errors.push(
-        'RO-Crate must have a metadata descriptor with @id "ro-crate-metadata.json" (line 822)'
+        'RO-Crate must have a metadata descriptor with @id "ro-crate-metadata.json" (line 822)',
       );
       return null;
     }
@@ -873,24 +760,20 @@ export class RoCrateValidator {
     // Check @type includes CreativeWork
     const types = this.normalizeTypeList(descriptor["@type"]);
     if (!types.includes("CreativeWork")) {
-      errors.push(
-        "Metadata descriptor must have @type CreativeWork (line 822)"
-      );
+      errors.push("Metadata descriptor must have @type CreativeWork (line 822)");
     }
 
     // Check about property references root data entity
     if (!descriptor.about) {
       errors.push(
-        "Metadata descriptor must have about property referencing root data entity (line 822)"
+        "Metadata descriptor must have about property referencing root data entity (line 822)",
       );
     } else {
       const aboutId =
-        typeof descriptor.about === "object"
-          ? descriptor.about["@id"]
-          : descriptor.about;
+        typeof descriptor.about === "object" ? descriptor.about["@id"] : descriptor.about;
       if (!aboutId) {
         errors.push(
-          "Metadata descriptor about property must reference root data entity @id (line 822)"
+          "Metadata descriptor about property must reference root data entity @id (line 822)",
         );
       }
     }
@@ -906,13 +789,11 @@ export class RoCrateValidator {
       });
       if (!hasRoCrateConformsTo) {
         warnings.push(
-          "Metadata descriptor conformsTo should reference https://w3id.org/ro/crate/ (line 845)"
+          "Metadata descriptor conformsTo should reference https://w3id.org/ro/crate/ (line 845)",
         );
       }
     } else {
-      warnings.push(
-        "Metadata descriptor should have conformsTo property (line 845)"
-      );
+      warnings.push("Metadata descriptor should have conformsTo property (line 845)");
     }
 
     return descriptor;
@@ -921,18 +802,12 @@ export class RoCrateValidator {
   /**
    * RO-Crate 1.2 lines 648-654: Validate all entities have required properties
    */
-  private validateAllEntities(
-    graph: any[],
-    errors: string[],
-    warnings: string[]
-  ): void {
+  private validateAllEntities(graph: any[], errors: string[], warnings: string[]): void {
     graph.forEach((entity: any, index: number) => {
       // Line 648: Entity MUST have @id - with comprehensive edge case handling
       if (!this.hasValidId(entity)) {
         const reason = this.getIdInvalidReason(entity);
-        errors.push(
-          `Entity at index ${index} has invalid @id: ${reason} (line 648)`
-        );
+        errors.push(`Entity at index ${index} has invalid @id: ${reason} (line 648)`);
         return;
       }
 
@@ -941,16 +816,14 @@ export class RoCrateValidator {
       // Check @id is valid URI reference (line 1050)
       if (!this.isValidUriReference(entityId)) {
         errors.push(
-          `Entity "${entityId}" has invalid @id - must be valid URI reference (line 1050)`
+          `Entity "${entityId}" has invalid @id - must be valid URI reference (line 1050)`,
         );
       }
 
       // Line 649: Entity MUST have @type - with comprehensive edge case handling
       if (!this.hasValidType(entity)) {
         const reason = this.getTypeInvalidReason(entity);
-        errors.push(
-          `Entity "${entityId}" has invalid @type: ${reason} (line 649)`
-        );
+        errors.push(`Entity "${entityId}" has invalid @type: ${reason} (line 649)`);
         return;
       }
 
@@ -962,9 +835,7 @@ export class RoCrateValidator {
       ) {
         // Only warn for non-descriptor entities without http @id
         if (!entityId.startsWith("http")) {
-          warnings.push(
-            `Entity "${entityId}" should have a name property (line 651)`
-          );
+          warnings.push(`Entity "${entityId}" should have a name property (line 651)`);
         }
       }
 
@@ -991,69 +862,50 @@ export class RoCrateValidator {
   /**
    * RO-Crate 1.2 lines 1129-1138: Validate File data entity
    */
-  private validateFileEntity(
-    entity: any,
-    errors: string[],
-    warnings: string[]
-  ): void {
+  private validateFileEntity(entity: any, errors: string[], warnings: string[]): void {
     const entityId = entity["@id"];
-    const types = this.normalizeTypeList(entity["@type"]);
 
     // Line 1131: @type MUST be File or array where File is one value
     // We accept File aliases like AudioObject, VideoObject etc.
 
     // Line 1132: @id MUST be a relative or absolute URI
     if (!this.isValidUriReference(entityId)) {
-      errors.push(
-        `File "${entityId}" @id must be a valid URI reference (line 1132)`
-      );
+      errors.push(`File "${entityId}" @id must be a valid URI reference (line 1132)`);
     }
 
     // For local files (not starting with # or http), check path format
     const isLocalFile =
-      !entityId.startsWith("#") &&
-      !entityId.startsWith("http") &&
-      !entityId.startsWith("_:");
+      !entityId.startsWith("#") && !entityId.startsWith("http") && !entityId.startsWith("_:");
 
     if (isLocalFile) {
       // Line 1050: Paths should use / separator
       if (entityId.includes("\\")) {
-        errors.push(
-          `File "${entityId}" @id should use / separator, not \\ (line 1050)`
-        );
+        errors.push(`File "${entityId}" @id should use / separator, not \\ (line 1050)`);
       }
     }
 
     // Line 1144: File entities SHOULD have encodingFormat
     if (!entity.encodingFormat) {
-      warnings.push(
-        `File "${entityId}" should have encodingFormat property (line 1144)`
-      );
+      warnings.push(`File "${entityId}" should have encodingFormat property (line 1144)`);
     }
 
     // Line 1253: Web-based data entities SHOULD have sdDatePublished
     if (entityId.startsWith("http") && !entity.sdDatePublished) {
       warnings.push(
-        `Web-based File "${entityId}" should have sdDatePublished property (line 1253)`
+        `Web-based File "${entityId}" should have sdDatePublished property (line 1253)`,
       );
     }
 
     // Line 1154: Files with @id starting with # should have localPath
     if (entityId.startsWith("#") && !entity.localPath) {
-      warnings.push(
-        `File "${entityId}" with # @id should have localPath property (line 1154)`
-      );
+      warnings.push(`File "${entityId}" with # @id should have localPath property (line 1154)`);
     }
   }
 
   /**
    * RO-Crate 1.2 lines 1160-1165: Validate Dataset/Directory data entity
    */
-  private validateDatasetEntity(
-    entity: any,
-    errors: string[],
-    warnings: string[]
-  ): void {
+  private validateDatasetEntity(entity: any, errors: string[], warnings: string[]): void {
     const entityId = entity["@id"];
 
     // Line 1162: @type MUST be Dataset or array where Dataset is one value
@@ -1061,36 +913,30 @@ export class RoCrateValidator {
 
     // Line 1163-1164: For attached crates, @id should end with /
     const isLocalDataset =
-      !entityId.startsWith("#") &&
-      !entityId.startsWith("http") &&
-      !entityId.startsWith("_:");
+      !entityId.startsWith("#") && !entityId.startsWith("http") && !entityId.startsWith("_:");
 
     if (isLocalDataset) {
       if (!entityId.endsWith("/")) {
-        warnings.push(
-          `Dataset "${entityId}" @id should end with / (line 1164)`
-        );
+        warnings.push(`Dataset "${entityId}" @id should end with / (line 1164)`);
       }
     }
 
     // Line 1169: Dataset entities SHOULD have name and description
     if (!entity.name) {
-      warnings.push(
-        `Dataset "${entityId}" should have name property (line 1169)`
-      );
+      warnings.push(`Dataset "${entityId}" should have name property (line 1169)`);
     }
 
     // Line 1177: Datasets with # @id are not data entities but can describe file sets
     if (entityId.startsWith("#") && !entity.description) {
       warnings.push(
-        `Dataset "${entityId}" with # @id should have description property (line 1177)`
+        `Dataset "${entityId}" with # @id should have description property (line 1177)`,
       );
     }
 
     // Line 1175: Directories on the web SHOULD have distribution
     if (entityId.startsWith("http") && !entity.distribution) {
       warnings.push(
-        `Web-based Dataset "${entityId}" should have distribution property (line 1175)`
+        `Web-based Dataset "${entityId}" should have distribution property (line 1175)`,
       );
     }
   }
@@ -1098,12 +944,7 @@ export class RoCrateValidator {
   /**
    * RO-Crate 1.2 line 907: Validate PropertyValue identifier
    */
-  private validatePropertyValueIdentifier(
-    entity: any,
-    entityId: string,
-    errors: string[],
-    warnings: string[]
-  ): void {
+  private validatePropertyValueIdentifier(entity: any, entityId: string, errors: string[]): void {
     const identifier = entity.identifier;
     if (!identifier) return;
 
@@ -1112,7 +953,7 @@ export class RoCrateValidator {
       if (typeof id === "object" && id["@type"] === "PropertyValue") {
         if (!id.value) {
           errors.push(
-            `Entity "${entityId}" identifier[${index}] PropertyValue must have a human-readable value (line 907)`
+            `Entity "${entityId}" identifier[${index}] PropertyValue must have a human-readable value (line 907)`,
           );
         }
       }

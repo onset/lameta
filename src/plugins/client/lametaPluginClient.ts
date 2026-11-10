@@ -39,7 +39,7 @@ import {
   PluginProgressMessage,
   PluginResponseMessage,
   PluginTabProviderContext,
-  TabDescriptor
+  TabDescriptor,
 } from "../PluginApiTypes";
 
 export interface LametaConnection {
@@ -67,16 +67,13 @@ export interface TabProviderQuery {
 }
 
 export type TabProviderHandler = (
-  query: TabProviderQuery
+  query: TabProviderQuery,
 ) => TabDescriptor[] | Promise<TabDescriptor[]>;
 
 // Shared plumbing: a pending-response map + a `request()` and the typed `api` built on it.
 function makeApiPlumbing() {
   let nextId = 1;
-  const pending = new Map<
-    number,
-    { resolve: (v: any) => void; reject: (e: any) => void }
-  >();
+  const pending = new Map<number, { resolve: (v: any) => void; reject: (e: any) => void }>();
   // onProgress callbacks are functions (not serializable), so they never cross the wire —
   // the client stashes them by request id and invokes them on `lameta:progress`.
   const progress = new Map<number, (fraction: number) => void>();
@@ -86,8 +83,7 @@ function makeApiPlumbing() {
     progress.delete(data.id); // the response is terminal: drop any progress cb for this id
     if (!entry) return;
     pending.delete(data.id);
-    if (data.error !== undefined && data.error !== null)
-      entry.reject(new Error(data.error));
+    if (data.error !== undefined && data.error !== null) entry.reject(new Error(data.error));
     else entry.resolve(data.result);
   }
 
@@ -105,26 +101,23 @@ function makeApiPlumbing() {
     method: string,
     params: any[],
     transfer?: Transferable[],
-    onProgress?: (fraction: number) => void
+    onProgress?: (fraction: number) => void,
   ): Promise<any> {
     const id = nextId++;
     if (onProgress) progress.set(id, onProgress);
     return new Promise((res, rej) => {
       pending.set(id, { resolve: res, reject: rej });
       const message = { type: "lameta:request", id, method, params };
-      if (transfer && transfer.length)
-        window.parent.postMessage(message, "*", transfer);
+      if (transfer && transfer.length) window.parent.postMessage(message, "*", transfer);
       else window.parent.postMessage(message, "*");
     });
   }
 
   const api: PluginHostApiV1 = {
     getFileBytes: () => request("getFileBytes", []),
-    readFileRange: (offset: number, length: number) =>
-      request("readFileRange", [offset, length]),
+    readFileRange: (offset: number, length: number) => request("readFileRange", [offset, length]),
     readSidecar: (name?: string) => request("readSidecar", [name]),
-    writeSidecar: (contents: string, name?: string) =>
-      request("writeSidecar", [contents, name]),
+    writeSidecar: (contents: string, name?: string) => request("writeSidecar", [contents, name]),
     listSidecars: () => request("listSidecars", []),
     selectFile: (relPath: string) => request("selectFile", [relPath]),
     companions: {
@@ -139,7 +132,7 @@ function makeApiPlumbing() {
       rename: (fromRelPath: string, toRelPath: string) =>
         request("companions.rename", [fromRelPath, toRelPath]),
       delete: (relPath: string) => request("companions.delete", [relPath]),
-      stat: (relPath: string) => request("companions.stat", [relPath])
+      stat: (relPath: string) => request("companions.stat", [relPath]),
     },
     ffmpeg: {
       probe: (relPath?: string) => request("ffmpeg.probe", [relPath]),
@@ -153,8 +146,8 @@ function makeApiPlumbing() {
         // onProgress isn't serializable: keep it client-side and send only the rest.
         const { onProgress, ...params } = spec;
         return request("ffmpeg.run", [params], undefined, onProgress);
-      }
-    }
+      },
+    },
   };
 
   return { api, handleResponse, handleProgress };
@@ -184,9 +177,7 @@ export function serveTabProvider(handler: TabProviderHandler): void {
  * The message loop stays alive after connecting to service API responses and (for a provider)
  * `lameta:getTabs` queries.
  */
-export function connectToLameta(
-  timeoutMs = 10000
-): Promise<LametaConnection> {
+export function connectToLameta(timeoutMs = 10000): Promise<LametaConnection> {
   return new Promise((resolve, reject) => {
     const { api, handleResponse, handleProgress } = makeApiPlumbing();
     let connected = false;
@@ -253,7 +244,7 @@ export function connectToLameta(
  */
 export function connectAsTabProvider(
   handler: TabProviderHandler,
-  timeoutMs = 10000
+  timeoutMs = 10000,
 ): Promise<void> {
   serveTabProvider(handler);
   return connectToLameta(timeoutMs).then(() => undefined);

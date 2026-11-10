@@ -5,9 +5,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CloseIcon from "@mui/icons-material/Close";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import SyntaxHighlighter, {
-  registerLanguage
-} from "react-syntax-highlighter/light";
+import SyntaxHighlighter, { registerLanguage } from "react-syntax-highlighter/light";
 import xmlLang from "react-syntax-highlighter/languages/hljs/xml";
 import jsonLang from "react-syntax-highlighter/languages/hljs/json";
 
@@ -43,7 +41,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
   content,
   language = "xml",
   autoFocusSearch = true,
-  headerContent
+  headerContent,
 }) => {
   const [searchText, setSearchText] = useState("");
   const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
@@ -117,7 +115,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
 
           foundMatches.push({
             range,
-            index: matchIndex++
+            index: matchIndex++,
           });
 
           startPos = matchPos + 1;
@@ -128,9 +126,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
 
       if (foundMatches.length > 0) {
         // Create highlight for all matches
-        const allMatchesHighlight = new Highlight(
-          ...foundMatches.map((m) => m.range)
-        );
+        const allMatchesHighlight = new Highlight(...foundMatches.map((m) => m.range));
         CSS.highlights.set("search-results", allMatchesHighlight);
 
         // Set current match to first one
@@ -139,7 +135,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
         setCurrentMatchIndex(0);
       }
     },
-    [getTextNodes]
+    [getTextNodes],
   );
 
   // Update current match highlight
@@ -162,15 +158,12 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
         if (container) {
           const containerRect = container.getBoundingClientRect();
           const isVisible =
-            rangeRect.top >= containerRect.top &&
-            rangeRect.bottom <= containerRect.bottom;
+            rangeRect.top >= containerRect.top && rangeRect.bottom <= containerRect.bottom;
 
           if (!isVisible) {
             // Calculate scroll position to center the match
             const scrollTop =
-              container.scrollTop +
-              (rangeRect.top - containerRect.top) -
-              containerRect.height / 2;
+              container.scrollTop + (rangeRect.top - containerRect.top) - containerRect.height / 2;
             container.scrollTo({ top: scrollTop, behavior: "smooth" });
           }
         }
@@ -213,9 +206,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
 
   const goToPreviousMatch = () => {
     if (matches.length === 0) return;
-    setCurrentMatchIndex(
-      (prev) => (prev - 1 + matches.length) % matches.length
-    );
+    setCurrentMatchIndex((prev) => (prev - 1 + matches.length) % matches.length);
   };
 
   const handleClear = () => {
@@ -235,7 +226,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
   // Custom style for syntax highlighter - lameta theme
   // lameta_orange (#e69664) for XML elements/tags
   // lameta_green (#cff09f) for attributes
-  // lameta_blue (#becde4) for links
+  // lameta_blue (#becde4) for attribute values and links
   // white for text content
   const syntaxStyle: { [key: string]: React.CSSProperties } = {
     hljs: {
@@ -243,19 +234,19 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
       overflowX: "auto",
       padding: "12px",
       background: "#2d2d2d",
-      color: "white"
+      color: "white",
     },
     "hljs-tag": { color: "#e69664" }, // lameta_orange
     "hljs-name": { color: "#e69664" }, // lameta_orange
     "hljs-attr": { color: "#cff09f" }, // lameta_green
-    "hljs-string": { color: "white" },
+    "hljs-string": { color: "#becde4" }, // lameta_blue - attribute values
     "hljs-number": { color: "#becde4" }, // lameta_blue
     "hljs-literal": { color: "#becde4" }, // lameta_blue
     "hljs-keyword": { color: "#e69664" }, // lameta_orange
     "hljs-comment": { color: "#888888", fontStyle: "italic" },
     "hljs-doctag": { color: "#888888" },
     "hljs-meta": { color: "#becde4" }, // lameta_blue
-    "hljs-link": { color: "#becde4" } // lameta_blue
+    "hljs-link": { color: "#becde4" }, // lameta_blue
   };
 
   return (
@@ -287,7 +278,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
           gap: 0.5,
           p: 0.5,
           borderBottom: "1px solid #e0e0e0",
-          flexShrink: 0
+          flexShrink: 0,
         }}
       >
         {headerContent}
@@ -302,9 +293,7 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
               text-align: right;
             `}
           >
-            {hasMatches
-              ? `${currentMatchIndex + 1} of ${matches.length}`
-              : "No matches"}
+            {hasMatches ? `${currentMatchIndex + 1} of ${matches.length}` : "No matches"}
           </Typography>
         )}
         <input
@@ -411,8 +400,8 @@ export const SearchableCodeViewer: React.FC<SearchableCodeViewerProps> = ({
             padding: 4px;
           `}
         >
-          Note: Your browser doesn't support the CSS Custom Highlight API.
-          Search highlighting may not work.
+          Note: Your browser doesn't support the CSS Custom Highlight API. Search highlighting may
+          not work.
         </Typography>
       )}
     </div>

@@ -37,18 +37,11 @@ function mimeMatches(pattern: string, mimeType: string): boolean {
 
 /** True if a single tab's match criteria hit the file. A tab matches if ANY criterion
  * hits; a tab with no (or empty) match object never matches. */
-export function tabMatchesFile(
-  tab: PluginTabManifest,
-  file: MatchableFile
-): boolean {
+export function tabMatchesFile(tab: PluginTabManifest, file: MatchableFile): boolean {
   const match = tab.match;
   if (!match) return false;
 
-  if (
-    match.lametaTypes &&
-    file.lametaType &&
-    match.lametaTypes.includes(file.lametaType)
-  )
+  if (match.lametaTypes && file.lametaType && match.lametaTypes.includes(file.lametaType))
     return true;
 
   if (
@@ -75,10 +68,10 @@ export function tabMatchesFile(
  */
 export function getPluginTabsForFile(
   file: MatchableFile,
-  enabledPlugins: MatchablePlugin[]
+  enabledPlugins: MatchablePlugin[],
 ): MatchedPluginTab[] {
   const sortedPlugins = [...enabledPlugins].sort((a, b) =>
-    a.manifest.id < b.manifest.id ? -1 : a.manifest.id > b.manifest.id ? 1 : 0
+    a.manifest.id < b.manifest.id ? -1 : a.manifest.id > b.manifest.id ? 1 : 0,
   );
 
   const result: MatchedPluginTab[] = [];
@@ -89,7 +82,7 @@ export function getPluginTabsForFile(
           pluginId: plugin.manifest.id,
           pluginVersion: plugin.manifest.version,
           permissions: plugin.manifest.permissions ?? [],
-          tab
+          tab,
         });
       }
     }

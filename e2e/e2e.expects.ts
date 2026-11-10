@@ -1,47 +1,29 @@
 import { ElectronApplication, Page, expect } from "@playwright/test";
 
-export async function expectMenuWithLabel(
-  app: ElectronApplication,
-  label: string
-) {
+export async function expectMenuWithLabel(app: ElectronApplication, label: string) {
   const menu = await app.evaluate(
     async ({ Menu }, params) => {
       const menubar = Menu.getApplicationMenu();
 
-      const menu = menubar?.items.find(
-        (item) => item.label.replace(/&/g, "") === params.label
-      );
+      const menu = menubar?.items.find((item) => item.label.replace(/&/g, "") === params.label);
       return menu;
     },
-    { label }
+    { label },
   );
   expect(menu).toBeTruthy();
 }
-export async function shouldSeeExactlyOnce(
-  page: Page,
-  labels: string[],
-  exact = true
-) {
+export async function shouldSeeExactlyOnce(page: Page, labels: string[], exact = true) {
   for (const label of labels) {
     await expect(page.getByText(label, { exact: exact })).toBeVisible();
   }
 }
-export async function shouldAtLeastOnce(
-  page: Page,
-  labels: string[],
-  exact = true
-) {
+export async function shouldAtLeastOnce(page: Page, labels: string[], exact = true) {
   for (const label of labels) {
-    await expect(page.getByText(label, { exact: exact })).toBeTruthy();
+    await expect(page.getByText(label, { exact: exact }).first()).toBeVisible();
   }
 }
-export async function shouldHaveMultiple(
-  page: Page,
-  label: string,
-  count: number,
-  exact = true
-) {
-  const x = await page.getByText(label, { exact: exact });
+export async function shouldHaveMultiple(page: Page, label: string, count: number, exact = true) {
+  const x = page.getByText(label, { exact: exact });
   const c = await x.count();
-  await expect(c).toBe(count);
+  expect(c).toBe(count);
 }

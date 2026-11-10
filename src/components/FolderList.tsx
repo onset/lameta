@@ -1,25 +1,25 @@
-import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
 import * as React from "react";
 import { default as ReactTable, Resize } from "react-table-6";
 
 import { Folder } from "../model/Folder/Folder";
-import { FolderGroup } from "src/model/Folder/FolderGroup";
+import { FolderGroup } from "../model/Folder/FolderGroup";
 // tslint:disable-next-line:no-submodule-imports
 import { FieldType, HasConsentField } from "../model/field/Field";
+import { statusIconPath } from "./statusIconPath";
 import "./FolderList.css";
 
 import { ReactTableColumnWidthManager } from "./ReactTableColumnWidthManager";
 import { Session } from "../model/Project/Session/Session";
 import { Person } from "../model/Project/Person/Person";
-import { i18n } from "../other/localization";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import { SearchContext } from "./SearchContext";
 import scrollSelectedIntoView from "./FixReactTableScroll";
 import HighlightSearchTerm from "./HighlightSearchTerm";
 import { observer } from "mobx-react";
 import { SearchBar } from "./FolderList.Search";
+import { describeUnreadableMetadata } from "../model/file/FileStatus";
 
 export interface IProps {
   nameForPersistingUsersTableConfiguration: string;
@@ -37,30 +37,28 @@ class FolderList extends React.Component<IProps, any> {
     this.columnWidthManager = new ReactTableColumnWidthManager(
       this.props.nameForPersistingUsersTableConfiguration + ".columnWidths",
       this.props.columns,
-      this.props.columnWidths
+      this.props.columnWidths,
     );
     this.state = {
       // searchText removed from parent state; we now only track committed searches
       lastSearch: props.folders.searchTerm || "",
       searchCount: 0,
-      lastSearchResetCounter: 0
+      lastSearchResetCounter: 0,
     };
   }
 
-  componentDidUpdate(prevProps: IProps) {
+  componentDidUpdate() {
     // no-op now; reset handled in getDerivedStateFromProps to avoid relying on mutable prop object reference
   }
 
   static getDerivedStateFromProps(nextProps: IProps, prevState: any) {
-    if (
-      nextProps.folders.searchResetCounter !== prevState.lastSearchResetCounter
-    ) {
+    if (nextProps.folders.searchResetCounter !== prevState.lastSearchResetCounter) {
       // Only clear the search if the searchTerm is also empty, which indicates an intentional clear
       // If searchTerm has a value, we should preserve it (e.g., during tab switching)
       const shouldClearSearch = nextProps.folders.searchTerm === "";
       return {
         lastSearchResetCounter: nextProps.folders.searchResetCounter,
-        lastSearch: shouldClearSearch ? "" : nextProps.folders.searchTerm
+        lastSearch: shouldClearSearch ? "" : nextProps.folders.searchTerm,
       };
     }
     // When the persisted search term changes externally we treat that as lastSearch for data-* attributes
@@ -89,21 +87,19 @@ class FolderList extends React.Component<IProps, any> {
     this.props.folders.items.map((folder) => {
       // Access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
       // when the user does something that causes a rename.
-      const dummy = folder.displayName;
+      void folder.displayName;
       if (folder instanceof Session) {
-        const dummyId = folder.properties.getTextStringOrEmpty("id");
-        const dummyChecked = folder.marked;
+        folder.properties.getTextStringOrEmpty("id");
+        void folder.marked;
       } else if (folder instanceof Person) {
-        const dummyId = folder.properties.getTextStringOrEmpty("name");
-        const dummyChecked = folder.marked;
+        folder.properties.getTextStringOrEmpty("name");
+        void folder.marked;
       }
       // Similarly, the Person consent mark is derived from having some child file that has the word "Consent" in the file name.
       // We explicitly do something with each file name, so that mobx will know it should re-run the render function
       // as needed.
       if (folder instanceof Person) {
-        folder.files.forEach(
-          (child) => child.pathInFolderToLinkFileOrLocalCopy
-        );
+        folder.files.forEach((child) => child.pathInFolderToLinkFileOrLocalCopy);
       }
       // The Session status also needs to be immediately updated in the table view.
       if (folder instanceof Session) {
@@ -112,13 +108,11 @@ class FolderList extends React.Component<IProps, any> {
     });
 
     // Access normalized search term from context (hooks not allowed in class component)
-    const searchTerm: string =
-      (this.context && (this.context as any).searchTerm) || "";
-    const highlightIfMatch = (text: string) => (
-      <HighlightSearchTerm text={text} />
-    );
+    const highlightIfMatch = (text: string) => <HighlightSearchTerm text={text} />;
 
-    const columns = this.props.columns.map((key, index) => {
+    // the column that flags a folder whose metadata file could not be read
+    const flagColumn = this.props.columns.find((key) => key !== "checked");
+    const columns = this.props.columns.map((key) => {
       const header =
         key === "checked" ? (
           <input
@@ -135,8 +129,7 @@ class FolderList extends React.Component<IProps, any> {
             }}
           /> // Don't give a header for the checkbox column
         ) : this.props.folders.items.length > 0 ? (
-          this.props.folders.items[0].properties.getValueOrThrow(key)
-            .labelInUILanguage
+          this.props.folders.items[0].properties.getValueOrThrow(key).labelInUILanguage
         ) : (
           // Enhance: This is a design flaw. If we don't have any items in the folder list, then the above
           // cannot ask one of them for the labelInUiLanguage.
@@ -175,16 +168,20 @@ class FolderList extends React.Component<IProps, any> {
               />
             );
           }
+          const unreadable = f.metadataFile && describeUnreadableMetadata(f.metadataFile);
+          if (key === flagColumn && unreadable) {
+            return (
+              <span title={unreadable} data-testid="unreadable-metadata-flag">
+                <img src="assets/error.png" className="unreadableMetadataFlag" />
+                {highlightIfMatch(f.properties.getValueOrThrow(key).text)}
+              </span>
+            );
+          }
           const field = f.properties.getValueOrThrow(key);
           if (field.type === FieldType.Text) {
             switch (key) {
               case "status":
-                return (
-                  <img
-                    title={field.text}
-                    src={this.getStatusIcon(field.text)}
-                  />
-                );
+                return <img title={field.text} src={statusIconPath(field.text, field.choices)} />;
               case "title":
                 return highlightIfMatch(field.getTextForSimpleDisplay());
               default:
@@ -218,7 +215,7 @@ class FolderList extends React.Component<IProps, any> {
             return highlightIfMatch(field.text);
           }
           return "ERROR";
-        }
+        },
       };
       return c;
     });
@@ -234,7 +231,7 @@ class FolderList extends React.Component<IProps, any> {
           onCommitted={(s) =>
             this.setState((prev: any) => ({
               lastSearch: s,
-              searchCount: prev.searchCount + 1
+              searchCount: prev.searchCount + 1,
             }))
           }
         />
@@ -257,24 +254,32 @@ class FolderList extends React.Component<IProps, any> {
               : this.props.folders.items
             ).length
           } // show all rows. Watch https://github.com/react-tools/react-table/issues/1054 for a better way someday?
-          getTrProps={(state: any, rowInfo: any, column: any) => {
+          getTrProps={(state: any, rowInfo: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
             return {
-              onClick: (e: any, x: any) => {
-                // Save current selection before changing
+              onClick: () => {
+                // Save current selection before changing. This must never abort
+                // the selection change: if saving the outgoing folder throws
+                // (e.g. its folder vanished from disk externally), we still want
+                // the user to be able to move to another folder. save() already
+                // fails softly, but guard here too so no future throw can wedge
+                // the UI on the old, now-unusable selection.
                 if (selectedFolderIndex > -1) {
-                  this.props.folders.items[
-                    selectedFolderIndex
-                  ].saveAllFilesInFolder();
+                  try {
+                    this.props.folders.items[selectedFolderIndex].saveAllFilesInFolder();
+                  } catch (err) {
+                    console.error(
+                      "Error saving the outgoing folder while switching selection; continuing anyway.",
+                      err,
+                    );
+                  }
                 }
                 // rowInfo.index refers to the index within the currently displayed (possibly filtered) data set.
                 // We need to store the index relative to the full, unfiltered items array, because other code
                 // (e.g. the FolderPane) dereferences selectedIndex against folders.items.
-                const clickedFolder: Folder | undefined =
-                  rowInfo && rowInfo.original;
+                const clickedFolder: Folder | undefined = rowInfo && rowInfo.original;
                 if (clickedFolder) {
-                  const absoluteIndex =
-                    this.props.folders.items.indexOf(clickedFolder);
+                  const absoluteIndex = this.props.folders.items.indexOf(clickedFolder);
                   if (absoluteIndex !== -1) {
                     this.props.folders.selectedIndex = absoluteIndex;
                   }
@@ -282,25 +287,14 @@ class FolderList extends React.Component<IProps, any> {
                 this.setState({}); // force re-render so updated selection styling applies
               },
               className:
-                rowInfo &&
-                this.props.folders.items[selectedFolderIndex] ===
-                  rowInfo.original
+                rowInfo && this.props.folders.items[selectedFolderIndex] === rowInfo.original
                   ? "selected"
-                  : ""
+                  : "",
             };
           }}
         />
       </div>
     );
-  }
-
-  private getStatusIcon(status: string) {
-    try {
-      return `assets/status-${status}.png`;
-    } catch (e) {
-      // there is some status this version doesn't understand
-      return "assets/warning.png";
-    }
   }
 
   // folder label logic moved to ComponentTab

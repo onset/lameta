@@ -46,7 +46,7 @@ function zipToLmplug(srcFolder: string, outPath: string): Promise<void> {
     archive.on("error", reject);
     archive.pipe(output);
     archive.directory(srcFolder, false); // contents at zip root
-    archive.finalize();
+    void archive.finalize();
   });
 }
 
@@ -57,16 +57,15 @@ async function addSampleAudio(lameta: LametaE2ERunner, page: Page) {
     "Edolo sample",
     "Sessions",
     "ETR009",
-    AUDIO_NAME
+    AUDIO_NAME,
   );
-  if (!fs.existsSync(sourceAudio))
-    throw new Error(`Sample audio not found at ${sourceAudio}`);
+  if (!fs.existsSync(sourceAudio)) throw new Error(`Sample audio not found at ${sourceAudio}`);
   const destAudio = Path.join(process.env.E2ERoot!, AUDIO_NAME);
   fs.copyFileSync(sourceAudio, destAudio);
   await lameta.mockShowOpenDialog([destAudio]);
   await page.getByRole("button", { name: "Add Files" }).click();
   await expect(page.getByRole("gridcell", { name: AUDIO_NAME })).toBeVisible({
-    timeout: 10000
+    timeout: 10000,
   });
 }
 
@@ -82,7 +81,7 @@ test.describe("File-handler plugins (fixture)", () => {
     // Install the buildless fixture plugin.
     copyDir(
       Path.join(__dirname, "fixtures", "test-plugin"),
-      Path.join(pluginsDir(), "test-plugin")
+      Path.join(pluginsDir(), "test-plugin"),
     );
 
     lameta = new LametaE2ERunner();
@@ -106,18 +105,16 @@ test.describe("File-handler plugins (fixture)", () => {
     // Because it claims the default, its iframe content shows without clicking the tab.
     const frame = page.frameLocator('iframe[data-testid="plugin-frame"]');
     await expect(frame.getByTestId("test-plugin-loaded")).toBeVisible({
-      timeout: 10000
+      timeout: 10000,
     });
 
     const sidecar = Path.join(
       findSessionDir(project.projectDirectory),
       "plugin-data",
       PLUGIN_ID,
-      `${AUDIO_NAME}.e2e.json`
+      `${AUDIO_NAME}.e2e.json`,
     );
-    await expect
-      .poll(() => fs.existsSync(sidecar), { timeout: 10000 })
-      .toBe(true);
+    await expect.poll(() => fs.existsSync(sidecar), { timeout: 10000 }).toBe(true);
     const data = JSON.parse(fs.readFileSync(sidecar, "utf8"));
     expect(data.ok).toBe(true);
     expect(data.file).toBe(AUDIO_NAME);
@@ -142,10 +139,7 @@ test.describe("File-handler plugins (fixture)", () => {
     const cell = page.getByRole("gridcell", { name: AUDIO_NAME });
     await expect(cell).toBeVisible();
     await cell.click();
-    await expect(page.getByRole("tab", { name: "Test Plugin" })).toHaveCount(
-      0,
-      { timeout: 10000 }
-    );
+    await expect(page.getByRole("tab", { name: "Test Plugin" })).toHaveCount(0, { timeout: 10000 });
   });
 });
 
@@ -162,7 +156,7 @@ test.describe("Waveform plugin annotations persist", () => {
     cleanPluginsDir();
     copyDir(
       Path.join(process.cwd(), "example-plugins", "waveform-annotator"),
-      Path.join(pluginsDir(), "waveform-annotator")
+      Path.join(pluginsDir(), "waveform-annotator"),
     );
 
     lameta = new LametaE2ERunner();
@@ -199,7 +193,7 @@ test.describe("Waveform plugin annotations persist", () => {
       findSessionDir(project.projectDirectory),
       "plugin-data",
       PLUGIN_ID,
-      `${AUDIO_NAME}.annotations.json`
+      `${AUDIO_NAME}.annotations.json`,
     );
     await expect
       .poll(
@@ -210,7 +204,7 @@ test.describe("Waveform plugin annotations persist", () => {
             return 0;
           }
         },
-        { timeout: 10000 }
+        { timeout: 10000 },
       )
       .toBeGreaterThan(0);
 
@@ -250,14 +244,14 @@ test.describe("Developer plugin folder hot-reloads on save", () => {
       Path.join(devDir, "plugin.json5"),
       `{ id: "org.lameta.test.dev", name: "Dev Plugin", version: "1.0.0", apiVersion: 1,
          tabs: [{ id: "main", label: "Dev Plugin", entry: "index.html",
-                  match: { lametaTypes: ["Audio"] }, claimDefault: true, defaultPriority: 200 }] }`
+                  match: { lametaTypes: ["Audio"] }, claimDefault: true, defaultPriority: 200 }] }`,
     );
     fs.writeFileSync(
       Path.join(devDir, "index.html"),
       `<!doctype html><html><body>
          <div data-testid="dev-marker">${marker}</div>
          <script>parent.postMessage({type:"lameta:ready"},"*");</script>
-       </body></html>`
+       </body></html>`,
     );
   }
 
@@ -288,9 +282,9 @@ test.describe("Developer plugin folder hot-reloads on save", () => {
     await dialog.getByRole("button", { name: "Change..." }).click();
     // Wait for discovery (async: showOpenDialog -> setDeveloperPluginPath -> reload) to finish,
     // evidenced by the dev plugin appearing in the dialog, before we close it.
-    await expect(
-      dialog.locator('input[aria-label="enable org.lameta.test.dev"]')
-    ).toBeVisible({ timeout: 10000 });
+    await expect(dialog.locator('input[aria-label="enable org.lameta.test.dev"]')).toBeVisible({
+      timeout: 10000,
+    });
     await dialog.getByRole("button", { name: "Close" }).click();
     await expect(dialog).toBeHidden({ timeout: 5000 });
     // Wait for the MUI dialog backdrop to fully clear so it can't intercept the next click.
@@ -309,7 +303,7 @@ test.describe("Developer plugin folder hot-reloads on save", () => {
     await devTab.click();
     const frame = page.frameLocator('iframe[data-testid="plugin-frame"]');
     await expect(frame.getByTestId("dev-marker")).toHaveText("MARKER_V1", {
-      timeout: 10000
+      timeout: 10000,
     });
 
     // Edit the plugin source on disk — no manual reload.
@@ -318,7 +312,7 @@ test.describe("Developer plugin folder hot-reloads on save", () => {
     // The watcher (debounced) bumps the reload counter, remounting the iframe with the change.
     const frame2 = page.frameLocator('iframe[data-testid="plugin-frame"]');
     await expect(frame2.getByTestId("dev-marker")).toHaveText("MARKER_V2", {
-      timeout: 10000
+      timeout: 10000,
     });
   });
 });
@@ -336,10 +330,7 @@ test.describe("Installing a .lmplug", () => {
     // Build a .lmplug from the fixture into a temp folder.
     const tmp = fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-lmplug-"));
     lmplugPath = Path.join(tmp, "test-plugin.lmplug");
-    await zipToLmplug(
-      Path.join(__dirname, "fixtures", "test-plugin"),
-      lmplugPath
-    );
+    await zipToLmplug(Path.join(__dirname, "fixtures", "test-plugin"), lmplugPath);
 
     lameta = new LametaE2ERunner();
     page = await lameta.launch();
@@ -357,27 +348,21 @@ test.describe("Installing a .lmplug", () => {
     await expect(dialog).toBeVisible({ timeout: 10000 });
 
     // Install starts empty.
-    await expect(
-      dialog.locator(`input[aria-label="enable ${PLUGIN_ID}"]`)
-    ).toHaveCount(0);
+    await expect(dialog.locator(`input[aria-label="enable ${PLUGIN_ID}"]`)).toHaveCount(0);
 
     // Mock the file picker to return our .lmplug, then click Install.
     await lameta.mockShowOpenDialog([lmplugPath]);
     await dialog.getByRole("button", { name: "Install plugin…" }).click();
 
     // After extraction + rescan, the plugin appears in the dialog...
-    await expect(
-      dialog.locator(`input[aria-label="enable ${PLUGIN_ID}"]`)
-    ).toBeVisible({ timeout: 10000 });
+    await expect(dialog.locator(`input[aria-label="enable ${PLUGIN_ID}"]`)).toBeVisible({
+      timeout: 10000,
+    });
     // ...and is installed on disk under userData/plugins/<id>.
     await expect
-      .poll(
-        () =>
-          fs.existsSync(
-            Path.join(pluginsDir(), PLUGIN_ID, "plugin.json5")
-          ),
-        { timeout: 10000 }
-      )
+      .poll(() => fs.existsSync(Path.join(pluginsDir(), PLUGIN_ID, "plugin.json5")), {
+        timeout: 10000,
+      })
       .toBe(true);
   });
 });

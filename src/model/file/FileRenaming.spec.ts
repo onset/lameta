@@ -3,16 +3,7 @@ import * as fs from "fs-extra";
 import * as Path from "path";
 import * as temp from "temp";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
-import {
-  setCurrentProjectId,
-  setMediaFolderOrEmptyForThisProjectAndMachine
-} from "../Project/MediaFolderAccess";
-
-function getPretendAudioFile(): string {
-  const path = temp.path({ suffix: ".mp3" }) as string;
-  fs.writeFileSync(path, "pretend contents");
-  return path;
-}
+import { setCurrentProjectId } from "../Project/MediaFolderAccess";
 
 let mp3Path;
 let testSessionFolder;
@@ -25,11 +16,7 @@ beforeEach(() => {
   fs.mkdirpSync(testSessionFolder);
   mp3Path = Path.join(testSessionFolder, "test.mp3");
   fs.writeFileSync(mp3Path, "pretend contents");
-  mp3FileObject = new OtherFile(
-    mp3Path,
-    new EncounteredVocabularyRegistry(),
-    testSessionFolder
-  );
+  mp3FileObject = new OtherFile(mp3Path, new EncounteredVocabularyRegistry(), testSessionFolder);
 });
 
 test("renames correctly", () => {

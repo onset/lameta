@@ -1,0 +1,259 @@
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import * as fs from "fs-extra";
+import * as os from "os";
+import * as Path from "path";
+import { Project, ProjectHolder } from "./Project";
+import { Folder } from "../Folder/Folder";
+import { Person } from "./Person/Person";
+import { setupLanguageFinderForTests } from "../../languageFinder/LanguageFinder";
+
+// The user moves, renames or deletes the project folder while lameta has the
+// project open, then lameta saves (on blur, tab change, closing the project...).
+// Sentry LAMETA-25D: ENOENT from readdirSync in findZombieMetadataFiles.
+
+let parentDir: string;
+let projectDir: string;
+let missingFolders: Folder[];
+const originalHandler = Folder.onDirectoryMissingWhenSaving;
+
+beforeAll(() => {
+  setupLanguageFinderForTests();
+});
+
+beforeEach(() => {
+  parentDir = fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-missing-folder-"));
+  projectDir = Path.join(parentDir, "TestProject");
+  fs.copySync("sample data/Edolo sample", projectDir);
+  // lameta finds the project file by the folder name
+  fs.renameSync(
+    Path.join(projectDir, "Edolo sample.sprj"),
+    Path.join(projectDir, "TestProject.sprj"),
+  );
+  missingFolders = [];
+  Folder.onDirectoryMissingWhenSaving = (folder) => missingFolders.push(folder);
+});
+
+afterEach(() => {
+  Folder.onDirectoryMissingWhenSaving = originalHandler;
+  new ProjectHolder().setProject(null);
+  fs.removeSync(parentDir);
+});
+
+function loadThenMoveProjectFolder(): Project {
+  const project = Project.fromDirectory(projectDir);
+  expect(project.loadingError).toBeUndefined();
+  fs.moveSync(projectDir, Path.join(parentDir, "Moved"));
+  return project;
+}
+
+describe("saving a project whose folder has gone", () => {
+  it("does not throw from saveAllFilesInFolder", () => {
+    const project = loadThenMoveProjectFolder();
+    expect(() => project.saveAllFilesInFolder()).not.toThrow();
+  });
+
+  it("does not throw from saveFolderMetaData", () => {
+    const project = loadThenMoveProjectFolder();
+    project.properties.setText("title", "changed");
+    expect(() => project.saveFolderMetaData()).not.toThrow();
+  });
+
+  it("does not recreate the folder", () => {
+    const project = loadThenMoveProjectFolder();
+    project.properties.setText("title", "changed");
+    project.sessions.items[0].properties.setText("title", "changed");
+    project.saveAllFilesInFolder();
+    expect(fs.existsSync(projectDir)).toBe(false);
+  });
+
+  it("reports the missing folder", () => {
+    const project = loadThenMoveProjectFolder();
+    project.saveAllFilesInFolder();
+    expect(missingFolders).toContain(project);
+  });
+
+  it("reports the missing folder when only the metadata is saved", () => {
+    const project = loadThenMoveProjectFolder();
+    project.saveFolderMetaData();
+    expect(missingFolders).toEqual([project]);
+  });
+
+  it("reports the missing folder when a session in it is saved", () => {
+    const project = loadThenMoveProjectFolder();
+    const session = project.sessions.items[0];
+    session.properties.setText("title", "changed");
+    expect(() => session.saveAllFilesInFolder()).not.toThrow();
+    expect(missingFolders).toEqual([session]);
+  });
+
+  it("reports the missing folder when a session's own folder has gone", () => {
+    const project = Project.fromDirectory(projectDir);
+    const session = project.sessions.items[0];
+    fs.moveSync(session.directory, session.directory + "-renamed");
+    session.properties.setText("title", "changed");
+    session.saveAllFilesInFolder();
+    expect(missingFolders).toEqual([session]);
+    expect(fs.existsSync(session.directory)).toBe(false);
+  });
+
+  it("does not report when the folder is still there", () => {
+    const project = Project.fromDirectory(projectDir);
+    project.properties.setText("title", "changed");
+    project.saveAllFilesInFolder();
+    expect(missingFolders).toEqual([]);
+  });
+
+  it("saves again once the folder is back", () => {
+    const project = loadThenMoveProjectFolder();
+    project.properties.setText("title", "changed while missing");
+    project.saveAllFilesInFolder();
+    fs.moveSync(Path.join(parentDir, "Moved"), projectDir);
+    project.saveAllFilesInFolder();
+    expect(fs.readFileSync(Path.join(projectDir, "TestProject.sprj"), "utf8")).toContain(
+      "changed while missing",
+    );
+  });
+
+  it("lets ProjectHolder close the project without throwing", () => {
+    const holder = new ProjectHolder();
+    holder.setProject(Project.fromDirectory(projectDir));
+    fs.moveSync(projectDir, Path.join(parentDir, "Moved"));
+    expect(() => holder.setProject(null)).not.toThrow();
+    expect(holder.project).toBeNull();
+  });
+});
+
+// HomePage wires Folder.onDirectoryMissingWhenSaving to ProjectHolder.handleMissingFolder,
+// and shows a dialog when it says "close" and a warning when it says "warn".
+describe("closing a project whose folder has gone", () => {
+  let holder: ProjectHolder;
+  let timesToldUser: number;
+  let warned: Folder[];
+
+  beforeEach(() => {
+    holder = new ProjectHolder();
+    timesToldUser = 0;
+    warned = [];
+    Folder.onDirectoryMissingWhenSaving = (folder) => {
+      const outcome = holder.handleMissingFolder(folder);
+      if (outcome === "close") timesToldUser++;
+      if (outcome === "warn") warned.push(folder);
+    };
+    holder.setProject(Project.fromDirectory(projectDir));
+  });
+
+  it("closes the project and tells the user once when the project folder has gone", () => {
+    fs.moveSync(projectDir, Path.join(parentDir, "Moved"));
+    holder.loadedProject!.properties.setText("title", "changed");
+    holder.loadedProject!.saveAllFilesInFolder();
+    expect(holder.project).toBeNull();
+    expect(timesToldUser).toBe(1);
+  });
+
+  it("keeps the project open and warns once when only a session folder has gone", () => {
+    const session = holder.loadedProject!.sessions.items[0];
+    fs.moveSync(session.directory, session.directory + "-renamed");
+    session.properties.setText("title", "changed");
+    session.saveAllFilesInFolder();
+    session.saveAllFilesInFolder();
+    expect(holder.project).not.toBeNull();
+    expect(timesToldUser).toBe(0);
+    expect(warned).toEqual([session]);
+    // nothing was written into a new folder of the old name
+    expect(fs.existsSync(session.directory)).toBe(false);
+  });
+
+  it("saves the rest of the project when only a session folder has gone", () => {
+    const project = holder.loadedProject!;
+    const session = project.sessions.items[0];
+    fs.moveSync(session.directory, session.directory + "-renamed");
+    project.properties.setText("title", "kept");
+    session.saveAllFilesInFolder();
+    // the project's own folder is still there, so its next save writes it
+    project.saveAllFilesInFolder();
+    expect(fs.readFileSync(Path.join(projectDir, "TestProject.sprj"), "utf8")).toContain("kept");
+  });
+
+  it("does not tell the user again when later saves find the folder gone", () => {
+    const project = holder.loadedProject!;
+    fs.moveSync(projectDir, Path.join(parentDir, "Moved"));
+    project.saveAllFilesInFolder();
+    project.saveAllFilesInFolder();
+    project.sessions.items[0].saveAllFilesInFolder();
+    expect(timesToldUser).toBe(1);
+  });
+
+  it("does nothing for a session whose folder is gone because it is being deleted", () => {
+    const project = holder.loadedProject!;
+    const session = project.sessions.items[0];
+    session.beingDeleted = true; // as deleteFolder sets it while trashing the folder
+    fs.removeSync(session.directory);
+    session.saveAllFilesInFolder();
+    project.saveAllFilesInFolder();
+    expect(holder.project).not.toBeNull();
+    expect(timesToldUser).toBe(0);
+  });
+
+  it("deleting a session leaves the project open", async () => {
+    const project = holder.loadedProject!;
+    const session = project.sessions.items[0];
+    await project.deleteFolder(session, true);
+    project.saveAllFilesInFolder();
+    expect(holder.project).not.toBeNull();
+    expect(timesToldUser).toBe(0);
+  });
+
+  it("does not create a session folder that has gone again when a file is added to it", async () => {
+    const session = holder.loadedProject!.sessions.items[0];
+    fs.moveSync(session.directory, session.directory + "-renamed");
+    const source = Path.join(parentDir, "added.txt");
+    fs.writeFileSync(source, "x");
+    await expect(session.copyInOneFileAsync(source)).rejects.toThrow();
+    expect(fs.existsSync(session.directory)).toBe(false);
+    expect(holder.project).not.toBeNull();
+    expect(warned).toEqual([session]);
+  });
+
+  it("warns again when a session folder that came back goes again", () => {
+    const session = holder.loadedProject!.sessions.items[0];
+    const renamed = session.directory + "-renamed";
+    fs.moveSync(session.directory, renamed);
+    session.saveAllFilesInFolder();
+    fs.moveSync(renamed, session.directory);
+    session.saveAllFilesInFolder();
+    fs.moveSync(session.directory, renamed);
+    session.saveAllFilesInFolder();
+    session.saveAllFilesInFolder();
+    expect(warned).toEqual([session, session]);
+    expect(holder.project).not.toBeNull();
+  });
+
+  it("keeps a person's photo when their folder has gone and a new photo is chosen", async () => {
+    const person = holder.loadedProject!.persons.items[0] as Person;
+    const photo = person.mugshotPath;
+    expect(photo).toBeTruthy();
+    fs.moveSync(person.directory, person.directory + "-renamed");
+    const source = Path.join(parentDir, "new photo.jpg");
+    fs.writeFileSync(source, "x");
+    await expect(person.copyInMugshot(source)).rejects.toThrow();
+    expect(person.mugshotPath).toBe(photo);
+    expect(fs.existsSync(person.directory)).toBe(false);
+    expect(warned).toEqual([person]);
+  });
+
+  it("does nothing while the folder is still there", () => {
+    holder.loadedProject!.saveAllFilesInFolder();
+    expect(holder.project).not.toBeNull();
+    expect(timesToldUser).toBe(0);
+  });
+
+  it("does nothing when the project's document folders were never created", () => {
+    holder.setProject(null);
+    fs.removeSync(Path.join(projectDir, "DescriptionDocuments"));
+    fs.removeSync(Path.join(projectDir, "OtherDocuments"));
+    holder.setProject(Project.fromDirectory(projectDir));
+    holder.loadedProject!.saveAllFilesInFolder();
+    expect(holder.project).not.toBeNull();
+    expect(timesToldUser).toBe(0);
+  });
+});

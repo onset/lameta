@@ -6,9 +6,10 @@ import { revealInFolder } from "../other/crossPlatformUtilities";
 import * as React from "react";
 import userSettings from "../other/UserSettings";
 import { sentryException } from "../other/errorHandling";
-import { t } from "@lingui/macro";
-import * as remote from "@electron/remote";
+import { t } from "@lingui/core/macro";
+import { quitApp } from "../other/windowIpc";
 import { ipcRenderer } from "electron";
+import log from "../other/log";
 
 import { Theme, ToastOptions, toast } from "react-toastify";
 const activeToasts: string[] = [];
@@ -16,17 +17,23 @@ const activeToasts: string[] = [];
 const errorToastProps: ToastOptions = {
   type: "error",
   theme: "colored" as Theme,
-  autoClose: 10000
+  autoClose: 10000,
 };
 
-function notify(
-  message: string,
-  details?: string | React.ReactNode,
-  options?: ToastOptions
-) {
+function notify(message: string, details?: string | React.ReactNode, options?: ToastOptions) {
+  // what the user saw, in lameta.log, with where it came from
+  if (options?.type === "error" || options?.type === "warning") {
+    try {
+      const text = [message, typeof details === "string" ? details : ""]
+        .filter((x) => x)
+        .join(" | ");
+      const stack = (new Error().stack ?? "").split("\n").slice(2).join("\n");
+      log.log(options.type === "error" ? "error" : "warn", `${text}\n${stack}`);
+    } catch {}
+  }
   // the delay helps with messages that we wouldn't see on startup becuase the react window isn't ready for it
   window.setTimeout(() => {
-    const key = message + details;
+    const key = typeof details === "string" ? message + details : message;
     // don't show a message again if it's still showing
     if (activeToasts.indexOf(key) < 0) {
       activeToasts.push(key);
@@ -37,6 +44,7 @@ function notify(
             css={css`
               font-size: 8pt;
               margin-top: 1em;
+              white-space: pre-line;
               overflow-wrap: anywhere;
               * {
                 overflow-wrap: anywhere;
@@ -52,8 +60,8 @@ function notify(
 
           onClose: () => {
             activeToasts.splice(activeToasts.indexOf(key), 1);
-          }
-        }
+          },
+        },
       );
     }
   }, 0);
@@ -69,7 +77,7 @@ export function NotifyError(message: string, details?: string) {
 export function getCannotRenameFileMsg() {
   return t`lameta  was not able to rename that file.`;
 }
-export function NotifyRenameProblem(err: any, path: string) {
+export function NotifyRenameProblem(err: any) {
   const msg = getCannotRenameFileMsg();
   if (err.code === "EPERM" || err.code === "EACCES" || err.code === "EBUSY") {
     NotifyFileAccessProblem(msg, err);
@@ -77,99 +85,11 @@ export function NotifyRenameProblem(err: any, path: string) {
     NotifyException(err, msg);
   }
 }
-function getEBUSYProblemsTips(): JSX.Element {
-  return (
-    <ul>
-      <li>
-        Are your files managed by a synchronization software like OneDrive or
-        Dropbox? These programs can grab onto lameta files and interfere.
-      </li>
-      <li>
-        Is the file open in another program? If not, try restarting your
-        computer.
-      </li>
-      <li>
-        Is your anti-virus interfering with lameta? Normally there is a way to
-        tell it that lameta is safe.
-      </li>
-    </ul>
-  );
-}
-
-// I haven't figured out the difference between eacces and eperm, or at least not enough to customize the tips yet.
-function getEACCESProblemsTips(): JSX.Element {
-  return (
-    <ul>
-      {/* I get this error with file meddler grabbing, thus this message */}
-      <li>
-        Are your files managed by a synchronization software like OneDrive or
-        Dropbox? These programs can grab onto lameta files and interfere.
-      </li>
-      <li>
-        Is your anti-virus interfering with lameta? Normally there is a way to
-        tell it that lameta is safe.
-      </li>
-      <li>
-        Is the file marked as 'read-only' in Finder/File Explorer? You can
-        change that.
-      </li>
-      <li>
-        Are you on a computer network where an administrator may have limited
-        lameta's write permissions? Look at the permissions in Finder/File
-        Explorer. Ask a network administrator for help.
-      </li>
-    </ul>
-  );
-}
-// translateMessage(
-//     /*i18n*/ {
-//       id:
-//         "Troubleshooting tips: Is the file open in another program -- try restarting your computer. Does your anti-virus software trust lameta -- you can tell it to. Are your files managed by a synchronization software like Dropbox -- just try again. Is the file marked as 'read-only' in Finder/File Explorer? Are you on a computer network where an administrator may have limited lameta's write permissions -- ask a network administrator for help.",
-//     }
-
 export function NotifyFileAccessProblem(message: string, err: any) {
-  const x = [];
-  x["EACCESS"] = getEACCESProblemsTips();
-  x["EPERM"] = getEACCESProblemsTips();
-  x["EBUSY"] = getEBUSYProblemsTips();
-  const tips = (
-    <div>
-      <div>Troubleshooting tips:</div>
-      {x[err.code]
-        ? x[err.code]
-        : t`We don't have specific tips for this error. If you cannot solve it by
-          restarting your computer, please report the problem to
-          https://github.com/onset/lameta/issues.`}
-    </div>
-  );
-
   notify(message, err.toString(), errorToastProps);
-  //     toast.error(
-  //       <div>
-  //         <p>{message}</p>
-
-  //         {/* Enhance: can we get this html into the localization system somehow? For now I think the benefit of the structure outweigh the English-only nature. */}
-  //         {tips}
-  //         <div
-  //           css={css`
-  //             font-size: 8pt;
-  //             margin-top: 1em;
-  //           `}
-  //         >
-  //           {err && <div>{err.toString()}</div>}
-  //         </div>
-  //       </div>,
-  //       {
-  //         ...errorToastProps
-  //       }
-  //     );
 }
 
-export function NotifyException(
-  err: Error,
-  message?: string,
-  details?: string
-) {
+export function NotifyException(err: Error, message?: string, details?: string) {
   const errWas = ` Error was: ${err.message}`;
   NotifyError(message ? message : errWas, details ?? "" + errWas);
   sentryException(err);
@@ -179,41 +99,65 @@ export function NotifyNoBigDeal(message: string) {
     type: "warning",
     autoClose: 2000,
     hideProgressBar: true,
-    closeButton: false
+    closeButton: false,
   });
 }
 
 export function NotifyErrorWithClick(message: string, onClick: () => void) {
   notify(message, "", { ...errorToastProps, onClick: onClick });
 }
-export function NotifyWarning(message: string) {
+export function NotifyWarning(message: string, details?: string) {
   // Always mirror to console with a stack for diagnostics
   try {
     const stack = new Error("NotifyWarning stack").stack;
-    console.warn("[NotifyWarning]", message, { stack });
+    console.warn("[NotifyWarning]", message, details ?? "", { stack });
   } catch {}
-  notify(message, "", { type: "warning" });
+  notify(message, details, { type: "warning" });
 }
 export function NotifySuccess(message: string, onClick?: () => void) {
   notify(message, "", {
     type: "success",
     onClick: onClick,
     autoClose: 2000,
-    hideProgressBar: true
+    hideProgressBar: true,
   });
 }
 export function NotifyUpdateAvailable(
-  open: () => void
+  open: () => void,
   //download: DownloadFunction
 ) {
-  notify(t`Update available`, <a onClick={open}>{t`View Release Notes`}</a>);
+  // stays until closed, so someone who looked away at startup still sees it
+  notify(t`Update available`, <a onClick={open}>{t`View Release Notes`}</a>, {
+    autoClose: false,
+  });
+}
+
+export function NotifyAlphaUpdateDownloaded(version: string) {
+  notify(t`lameta ${version} has been downloaded. It will install when you quit lameta.`, "", {
+    type: "info",
+    autoClose: 10000,
+  });
+}
+
+export function NotifyAlphaUpdateDownloading(version: string) {
+  notify(t`Downloading lameta ${version}. It will install when you quit lameta.`, "", {
+    type: "info",
+    autoClose: 10000,
+  });
+}
+
+export function NotifyUpToDate(version: string) {
+  notify(t`You have the newest version of lameta (${version}).`, "", {
+    type: "success",
+    autoClose: 5000,
+  });
 }
 
 export function NotifyMultipleProjectFiles(
   displayName: string,
   projectType: string,
   name: string,
-  folder: string
+  folder: string,
 ) {
   NotifyErrorWithClick(
     t`There is a problem with the files in the folder for ${displayName}. Click for more information.`,
@@ -223,16 +167,17 @@ export function NotifyMultipleProjectFiles(
           buttons: [t`Cancel`, t`Show me the folder with the problem`],
           title: t`Something is wrong here...`,
           message: t`There are more than one files of type "${projectType}" in this folder, and there can only be one.`,
-          detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`
+          detail: t`lameta will now open this folder on your hard disk and then exit. You should open these ${projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named ${name}.`,
         })
         .then((response) => {
           if (response > 0) {
             revealInFolder(folder);
             if (!userSettings.DeveloperMode) {
-              window.setTimeout(() => remote.app.quit(), 1000);
+              window.setTimeout(() => quitApp(), 1000);
             }
           }
-        });
-    }
+        })
+        .catch((err) => NotifyException(err as Error));
+    },
   );
 }

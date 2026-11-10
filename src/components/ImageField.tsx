@@ -5,9 +5,7 @@ export interface IProps {
   path: string;
 }
 
-class ImageField extends React.Component<
-  IProps & React.HTMLAttributes<HTMLDivElement>
-> {
+class ImageField extends React.Component<IProps & React.HTMLAttributes<HTMLDivElement>> {
   constructor(props: IProps) {
     super(props);
   }

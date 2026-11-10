@@ -3,25 +3,48 @@ import { css } from "@emotion/react";
 import * as React from "react";
 import ReactModal from "react-modal";
 import CloseOnEscape from "react-close-on-escape";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import * as _ from "lodash";
 import pkg from "package.json";
 const ReactMarkdown = require("react-markdown");
-import Semver from "semver";
 import { sentryException } from "../other/errorHandling";
-import { i18n } from "../other/localization";
 import axios from "axios";
-import { NotifyNoBigDeal, NotifyUpdateAvailable } from "./Notify";
+import {
+  NotifyAlphaUpdateDownloaded,
+  NotifyAlphaUpdateDownloading,
+  NotifyNoBigDeal,
+  NotifyUpdateAvailable,
+  NotifyUpToDate,
+  NotifyWarning,
+} from "./Notify";
+import { CopyManager } from "../other/CopyManager";
 import { lameta_blue, lameta_orange } from "../containers/theme";
 import { getTestEnvironment } from "../getTestEnvironment";
+import {
+  getNewerReleases,
+  getReleaseToInstall,
+  newestOfEachChannel,
+  sortNewestFirst,
+} from "./releaseChannels";
+import {
+  canInstallUpdates,
+  checkForAlphaUpdate,
+  downloadRelease,
+  installNow,
+  installOnQuit,
+  onAlphaUpdateDownloaded,
+} from "../other/updaterIpc";
 
-type Mode =
-  | "querying"
-  | "update-available"
-  | "just-show-release-notes"
-  | "closed";
+type Mode = "querying" | "update-available" | "just-show-release-notes" | "closed";
 
-type Channel = "alpha" | "beta" | "release";
+type InstallState =
+  | { kind: "idle" }
+  | { kind: "downloading"; percent: number }
+  | { kind: "ready"; version: string }
+  | { kind: "preparing-for-quit"; version: string }
+  | { kind: "on-quit"; version: string }
+  | { kind: "failed"; step: "download" | "install"; message: string };
 
 interface IGithubRelease {
   assets: { browser_download_url: string }[];
@@ -35,11 +58,16 @@ interface IGithubRelease {
   tag_name: string;
 }
 
-let checkForUpdates: () => void = () => {};
+// manual: the user chose Help > Check for Updates, so open the dialog straight away instead of
+// showing a toast, and say so when there is nothing newer.
+let checkForUpdates: (manual: boolean) => void = () => {};
 let showDialogManually: () => void;
 export { showDialogManually as ShowReleasesDialog };
+export function CheckForUpdates() {
+  checkForUpdates(true);
+}
 
-export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
+export const ReleasesDialog: React.FunctionComponent<{}> = () => {
   const [mode, setMode] = React.useState<Mode>("querying");
   const [allReleases, setAllReleases] = React.useState<IGithubRelease[]>([]);
   const [showNewReleasesOnly, setShowNewReleasesOnly] = React.useState(true);
@@ -48,13 +76,20 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
     setVersion(pkg.version);
   }, []);
   //  console.log("Version = " + version);
-  const channelsToRecommend = getChannelsToRecommend();
   //checkForUpdates = (callback: (haveUpdates: boolean) => void) => {
-  checkForUpdates = () => {
-    axios
-      .get("https://api.github.com/repos/onset/lameta/releases")
+  checkForUpdates = (manual: boolean) => {
+    allowRetryAfterFailure();
+    const github = axios
+      // GitHub's maximum page; a running release missing from the page loses its cross-channel news
+      .get(
+        `https://api.github.com/repos/${getTestEnvironment().LAMETA_RELEASES_REPO}/releases?per_page=100`,
+      )
       .then((result) => {
-        const all = sortReleases(result.data).filter((r) => r.draft === false);
+        // Newest first by date: each channel numbers its versions separately, so the
+        // numbers cannot order releases from different channels.
+        const all = sortNewestFirst<IGithubRelease>(
+          result.data.filter((r: IGithubRelease) => r.draft === false),
+        );
 
         // const all = [
         //   {
@@ -70,33 +105,77 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
         //   },
         // ];
         setAllReleases(all);
-        if (getNewerReleases(all, channelsToRecommend).length) {
-          NotifyUpdateAvailable(() => setMode("update-available"));
+        const newer = getNewerReleases(all, pkg.version).length > 0;
+        if (newer) {
+          if (manual) {
+            setShowNewReleasesOnly(true);
+            setMode("update-available");
+          } else NotifyUpdateAvailable(() => setMode("update-available"));
         }
+        return newer;
       })
       .catch((error) => {
         NotifyNoBigDeal("Could not check for updates");
         console.error(`There was an error checking for updates.`);
         sentryException(error);
+        return undefined;
       });
+    if (!manual) return;
+    // At startup, main.ts has already started the alpha check.
+    const alpha = checkForAlphaUpdate().catch((error) => {
+      sentryException(error);
+      return "failed" as const;
+    });
+    Promise.all([github, alpha])
+      .then(([newerOnGitHub, alphaUpdate]) => {
+        if (alphaUpdate === "failed") NotifyNoBigDeal("Could not check for updates");
+        else if (alphaUpdate?.downloaded) NotifyAlphaUpdateDownloaded(alphaUpdate.version);
+        else if (alphaUpdate) NotifyAlphaUpdateDownloading(alphaUpdate.version);
+        else if (newerOnGitHub === false) NotifyUpToDate(pkg.version);
+      })
+      .catch((error) => sentryException(error));
   };
 
   React.useEffect(() => {
     showDialogManually = () => {
+      allowRetryAfterFailure();
       setShowNewReleasesOnly(false);
       setMode("just-show-release-notes");
     };
   });
 
+  const [canInstall, setCanInstall] = React.useState(false);
+  const [install, setInstall] = React.useState<InstallState>({ kind: "idle" });
+  // brings back the Install button after a failed download
+  const allowRetryAfterFailure = () =>
+    setInstall((current) => (current.kind === "failed" ? { kind: "idle" } : current));
+
   // run once on startup
   React.useEffect(() => {
     // this is works fine in e2e test but the notification covers stuff up that we may want to click so it slows things down
-    if (!getTestEnvironment().E2E) checkForUpdates();
+    if (!getTestEnvironment().E2E) checkForUpdates(false);
+    canInstallUpdates()
+      .then(setCanInstall)
+      .catch(() => setCanInstall(false));
+    onAlphaUpdateDownloaded(NotifyAlphaUpdateDownloaded);
   }, []);
 
+  const releaseToInstall = canInstall ? getReleaseToInstall(allReleases, pkg.version) : undefined;
+
+  const startInstall = (release: IGithubRelease) => {
+    setInstall({ kind: "downloading", percent: 0 });
+    downloadRelease(release.tag_name, (percent) => setInstall({ kind: "downloading", percent }))
+      .then((version) => setInstall({ kind: "ready", version }))
+      .catch((error) => {
+        console.error("Could not download the update:", error);
+        setInstall({ kind: "failed", step: "download", message: String(error?.message ?? error) });
+      });
+  };
+
   const releasesToShow = showNewReleasesOnly
-    ? getNewerReleases(allReleases, channelsToRecommend)
+    ? getNewerReleases(allReleases, pkg.version)
     : allReleases;
+  const releasesToOfferForDownload = newestOfEachChannel(releasesToShow);
 
   //const notes = notesArray ? notesArray!.map((n) => n.note).join("<br/>") : "";
   return (
@@ -104,9 +183,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
       <ReactModal
         ariaHideApp={false}
         className="releaseDialog" // this cannot be empty, even if you don't use it, else the dialog is shoved to the upper left
-        isOpen={
-          mode === "just-show-release-notes" || mode === "update-available"
-        }
+        isOpen={mode === "just-show-release-notes" || mode === "update-available"}
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => setMode("closed")}
       >
@@ -124,11 +201,7 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
             `}
           >
             {/* I couldn't get version to show up inside this string in a packaged lameta, just dev. That's why it is now outside. */}
-            {i18n._(
-              /*i18n*/ {
-                id: "You are running lameta version:"
-              }
-            )}
+            {t`You are running lameta version:`}
             &nbsp;{version}
           </div>
         </div>
@@ -149,12 +222,9 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
           >
             {!allReleases ||
               (allReleases.length === 0 && (
-                <p>
-                  Sorry, lameta could not retrieve the release notes from
-                  github.
-                </p>
+                <p>Sorry, lameta could not retrieve the release notes from github.</p>
               ))}
-            {releasesToShow.map((release, index) => (
+            {releasesToShow.map((release) => (
               <div
                 key={release.name}
                 css={css`
@@ -174,8 +244,20 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                   `}
                 >
                   {release.name}
-                  {/* If we're showing the dialog prompting them to upgrade, only give the top option of their current channel for Downloading */}
-                  {(index === 0 || mode === "just-show-release-notes") &&
+                  {/* If we're showing the dialog prompting them to upgrade, only offer the newest release of each channel for Downloading */}
+                  {release === releaseToInstall && install.kind !== "failed" ? (
+                    <button
+                      css={css`
+                        float: right;
+                      `}
+                      disabled={install.kind !== "idle"}
+                      onClick={() => startInstall(release)}
+                    >
+                      <Trans>Install</Trans>
+                    </button>
+                  ) : (
+                    (releasesToOfferForDownload.has(release) ||
+                      mode === "just-show-release-notes") &&
                     getDownloadUrl(release) && (
                       <a
                         css={css`
@@ -185,7 +267,8 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
                       >
                         <Trans>Download</Trans>
                       </a>
-                    )}
+                    )
+                  )}
                 </h1>
 
                 <ReactMarkdown
@@ -224,12 +307,71 @@ export const ReleasesDialog: React.FunctionComponent<{}> = (props) => {
               {t`Show more releases`}
             </label>
           )}
+          {install.kind === "downloading" && (
+            <span>{t`Downloading the update: ${Math.round(install.percent)}%`}</span>
+          )}
+          {install.kind === "failed" && install.step === "download" && (
+            <span>{t`lameta could not download the update. Use the Download link instead.`}</span>
+          )}
+          {install.kind === "failed" && install.step === "install" && (
+            <span>{t`lameta could not install the update. Use the Download link instead.`}</span>
+          )}
+          {install.kind === "preparing-for-quit" && <span>{t`Getting the update ready…`}</span>}
+          {install.kind === "on-quit" && (
+            <span>{t`lameta ${install.version} will install when you quit lameta.`}</span>
+          )}
           <div
             className={"reverseOrderOnMac"}
             css={css`
               margin-left: auto;
             `}
           >
+            {install.kind === "ready" && (
+              <button
+                className="default"
+                onClick={() => {
+                  // On Windows the installer starts before lameta quits, so a quit that the
+                  // copy-in-progress question cancels would still be cut off by the installer.
+                  if (CopyManager.filesAreStillCopying()) {
+                    NotifyWarning(
+                      t`Files are still being copied into your project. Install the update once they are done.`,
+                    );
+                    return;
+                  }
+                  installNow().catch((error) => {
+                    sentryException(error);
+                    setInstall({
+                      kind: "failed",
+                      step: "install",
+                      message: String(error?.message ?? error),
+                    });
+                  });
+                }}
+              >
+                {t`Restart and install now`}
+              </button>
+            )}
+            {install.kind === "ready" && (
+              <button
+                onClick={() => {
+                  const version = install.version;
+                  // on the Mac, getting the update ready takes a few seconds
+                  setInstall({ kind: "preparing-for-quit", version });
+                  installOnQuit()
+                    .then(() => setInstall({ kind: "on-quit", version }))
+                    .catch((error) => {
+                      sentryException(error);
+                      setInstall({
+                        kind: "failed",
+                        step: "install",
+                        message: String(error?.message ?? error),
+                      });
+                    });
+                }}
+              >
+                {t`Install when I quit lameta`}
+              </button>
+            )}
             <button onClick={() => setMode("closed")}>
               <Trans>Close</Trans>
             </button>
@@ -245,58 +387,11 @@ function getDownloadUrl(release: any) {
     const platformToExtension = { win32: "exe", darwin: "dmg" };
     const installerExtension = platformToExtension[process.platform];
     const url = (release.assets as Array<any>).find((a) =>
-      _.endsWith(a.browser_download_url, installerExtension)
+      _.endsWith(a.browser_download_url, installerExtension),
     );
     return url?.browser_download_url;
   } catch (error) {
     sentryException(error);
     return undefined;
   }
-}
-
-function getChannel(version: string): Channel {
-  if (_.includes(version, "alpha")) return "alpha";
-  if (_.includes(version, "beta")) return "beta";
-  return "release";
-}
-
-// this isn't ideal... once someone goes up to a release, they'll never be
-// informed about betas. To improve this, we will need some more UI so that
-// people can specify what channels they are interested in hearing about.
-function getChannelsToRecommend(): Channel[] {
-  const current = getChannel(pkg.version as string);
-  if (current === "alpha") return ["alpha", "beta", "release"];
-  if (current === "beta") return ["beta", "release"];
-  return ["release"];
-}
-
-function getNewerReleases(
-  releasesNewestFirst: IGithubRelease[],
-  channelsToInclude: Channel[]
-) {
-  const current = pkg.version as string;
-  return releasesNewestFirst.filter(
-    (r) =>
-      channelsToInclude.includes(getChannel(r.tag_name)) &&
-      Semver.compare(r.tag_name, current) > 0
-  );
-}
-
-function sortReleases(releases: IGithubRelease[]) {
-  try {
-    // Here we call "coerce" to make it a bit more tolerant of accidents like an upper-case V or a missing 3rd digit.
-    // But if we really screw up, an get an error here,  just give up on the sorting.
-    releases.sort(
-      (a, b) =>
-        Semver.compare(
-          Semver.coerce(a.tag_name) || a.tag_name,
-          Semver.coerce(b.tag_name) || b.tag_name
-        ) * -1
-    );
-  } catch (err) {
-    console.error("Error while trying to sort releases.");
-    console.error(err);
-    sentryException(err);
-  }
-  return releases;
 }

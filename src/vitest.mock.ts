@@ -1,5 +1,9 @@
-import { app } from "electron";
-import { beforeAll, vi } from "vitest";
+import { vi } from "vite-plus/test";
+import { i18n } from "@lingui/core";
+
+// Lingui throws if a translation function runs before a locale is active; with no
+// catalog loaded, messages come out in English.
+i18n.loadAndActivate({ locale: "en", messages: {} });
 
 // Mock electron bindings and global window object for tests first
 Object.defineProperty(global, "window", {
@@ -7,7 +11,7 @@ Object.defineProperty(global, "window", {
     __electronCall: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    setTimeout: vi.fn((fn: () => void, delay?: number) => {
+    setTimeout: vi.fn((fn: () => void) => {
       // Execute immediately in tests
       fn();
       return 1; // return a mock timer id
@@ -16,28 +20,27 @@ Object.defineProperty(global, "window", {
     location: { href: "http://localhost:3000" },
     document: {
       createElement: vi.fn(() => ({ style: {} })),
-      body: { appendChild: vi.fn() }
-    }
+      body: { appendChild: vi.fn() },
+    },
   },
-  writable: true
+  writable: true,
 });
 
-// Mock the specific file that's causing issues
-vi.mock("@electron/remote/dist/src/common/get-electron-binding", () => ({
-  getElectronBinding: vi.fn(() => ({
-    getHiddenValue: vi.fn(() => "test-context-id")
-  }))
+// Unit tests have no main process to ask
+vi.mock("./other/windowIpc", () => ({
+  getPath: vi.fn(() => ""),
+  getAppPath: vi.fn(() => ""),
+  getStartupArguments: vi.fn(() => null),
+  setWindowTitle: vi.fn(),
+  quitApp: vi.fn(),
+  toggleDevTools: vi.fn(),
+  addWordToSpellCheckerDictionary: vi.fn(),
+  runWebContentsCommand: vi.fn(),
+  setApplicationMenu: vi.fn(),
+  popupMenu: vi.fn(),
+  onContextMenu: vi.fn(),
+  onWindowBlur: vi.fn(),
 }));
-
-// Mock the entire @electron/remote module
-vi.mock("@electron/remote", () => ({
-  exec: vi.fn(),
-  process: vi.fn(),
-  app: { getAppPath: () => "" },
-  getElectronBinding: vi.fn(() => ({
-    getHiddenValue: vi.fn(() => "test-context-id")
-  }))
-})); //See commit msg for info
 //
 //   getTestEnvironment: () => ({
 //     E2E: false,

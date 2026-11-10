@@ -5,29 +5,29 @@ import * as React from "react";
 // tslint:disable-next-line: no-duplicate-imports
 import { useState } from "react";
 import { i18n } from "@lingui/core";
-import { t, Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { ipcRenderer, OpenDialogOptions } from "electron";
-import * as remote from "@electron/remote";
 import {
   getMediaFolderOrEmptyForThisProjectAndMachine,
-  setMediaFolderOrEmptyForThisProjectAndMachine
+  setMediaFolderOrEmptyForThisProjectAndMachine,
 } from "../model/Project/MediaFolderAccess";
 import { lameta_dark_green } from "../containers/theme";
+import { NotifyException } from "./Notify";
 import {
   DialogBottomButtons,
   DialogButton,
   DialogCancelButton,
   DialogMiddle,
   DialogTitle,
-  LametaDialog
+  LametaDialog,
 } from "./LametaDialog";
 
 let staticShowMediaFolderDialog: () => void = () => {};
 export { staticShowMediaFolderDialog as ShowMediaFolderDialog };
 
-export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
+export const MediaFolderDialog: React.FunctionComponent<{}> = () => {
   const [path, setPath] = useState<string>(
-    getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)"
+    getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)",
   );
   const [open, setOpen] = useState(false);
   staticShowMediaFolderDialog = () => {
@@ -42,26 +42,24 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
         <div>
           <p>
             <Trans>
-              Normally, when you add a file to a project, session, or person,
-              that file is copied into the same folder as you lameta project.
-              For some of your files, you might prefer to instead leave the
-              files where they are and just 'link' to them.
+              Normally, when you add a file to a project, session, or person, that file is copied
+              into the same folder as you lameta project. For some of your files, you might prefer
+              to instead leave the files where they are and just 'link' to them.
             </Trans>
           </p>
           <p>
             <Trans>
-              lameta allows you to specify one 'Media Folder'. When you add
-              files that are somewhere within that folder, lameta will create a
-              link instead of making a copy. This folder can be anywhere,
-              including the root of an external drive where you keep large video
+              lameta allows you to specify one 'Media Folder'. When you add files that are somewhere
+              within that folder, lameta will create a link instead of making a copy. This folder
+              can be anywhere, including the root of an external drive where you keep large video
               recordings.
             </Trans>
           </p>
           <p>
             <Trans>
-              This setting is unique to the account you are using on this
-              computer. A colleague on another computer will need to set this
-              value to the correct location on their computer.
+              This setting is unique to the account you are using on this computer. A colleague on
+              another computer will need to set this value to the correct location on their
+              computer.
             </Trans>
           </p>
           <h4
@@ -103,18 +101,17 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
               onClick={() => {
                 const options: OpenDialogOptions = {
                   properties: ["openDirectory"],
-                  defaultPath: require("os").homedir()
+                  defaultPath: require("os").homedir(),
                 };
 
-                ipcRenderer.invoke("showOpenDialog", options).then((result) => {
-                  if (
-                    result &&
-                    result.filePaths &&
-                    result.filePaths.length > 0
-                  ) {
-                    setPath(result.filePaths[0]);
-                  }
-                });
+                ipcRenderer
+                  .invoke("showOpenDialog", options)
+                  .then((result) => {
+                    if (result && result.filePaths && result.filePaths.length > 0) {
+                      setPath(result.filePaths[0]);
+                    }
+                  })
+                  .catch((err) => NotifyException(err as Error));
               }}
             >
               <Trans>Change...</Trans>
@@ -140,14 +137,11 @@ export const MediaFolderDialog: React.FunctionComponent<{}> = (props) => {
       <DialogBottomButtons>
         <DialogButton
           default={true}
-          disabled={
-            path ===
-            (getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)")
-          }
+          disabled={path === (getMediaFolderOrEmptyForThisProjectAndMachine() || "(not set)")}
           onClick={() => {
             setMediaFolderOrEmptyForThisProjectAndMachine(path);
             setOpen(false);
-            remote.getCurrentWindow().reload();
+            window.location.reload();
           }}
         >
           <Trans>OK</Trans>

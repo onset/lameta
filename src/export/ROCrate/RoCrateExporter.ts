@@ -3,18 +3,19 @@ import { Session } from "../../model/Project/Session/Session";
 import { fieldDefinitionsOfCurrentConfig } from "../../model/field/ConfiguredFieldDefinitions";
 import * as Path from "path";
 import * as fs from "fs-extra";
-import {
-  getMimeType,
-  GetFileFormatInfoForExtension
-} from "../../model/file/FileTypeInfo";
+import { getMimeType, GetFileFormatInfoForExtension } from "../../model/file/FileTypeInfo";
 import { Project } from "../../model/Project/Project";
-import { Person, PersonMetadataFile } from "../../model/Project/Person/Person";
+import { exportableSessions } from "../../model/Project/exportableFolders";
+import { Person } from "../../model/Project/Person/Person";
+import { File } from "../../model/file/File";
+import { getStatusOfFile } from "../../model/file/FileStatus";
+import { NotifyWarning } from "../../components/Notify";
+import { collectExportWarning } from "../ExportWarningCollector";
 import {
   resolvePublisher,
   resolveDepositor,
   getContactPersonReference,
-  setContactPersonProperties,
-  createUnknownContributorEntity
+  createUnknownContributorEntity,
 } from "./RoCrateEntityResolver";
 
 // Re-export getContactPersonReference for backward compatibility
@@ -24,11 +25,7 @@ export { getContactPersonReference } from "./RoCrateEntityResolver";
  * Helper function to get a text property with proper handling of empty/whitespace values.
  * Returns the default value if the field is empty or contains only whitespace.
  */
-function getTextPropertyWithDefault(
-  metadataFile: any,
-  key: string,
-  defaultValue: string
-): string {
+function getTextPropertyWithDefault(metadataFile: any, key: string, defaultValue: string): string {
   const value = metadataFile?.getTextProperty(key, defaultValue);
   // If the value is empty or only whitespace, use the default
   if (!value || !value.trim()) {
@@ -39,27 +36,23 @@ function getTextPropertyWithDefault(
 
 import _ from "lodash";
 import {
-  getVocabularyMapping,
-  createTermDefinition,
-  getTermSets,
-  getCustomUri,
   sanitizeForIri,
   createFileId,
   createPersonId,
   createPersonFilesDatasetId,
   createSessionId,
+  createSessionDirectoryId,
   expandLdacId,
-  isLdacIdentifier,
   linkContainment,
   createHasPartReferences,
   createIsPartOfReference,
-  addToHasPart
 } from "./RoCrateUtils";
 
 import {
   createLdacAccessTypeDefinitions,
   createDistinctLicenses,
-  RoCrateLicense
+  getFileAccessValue,
+  RoCrateLicense,
 } from "./RoCrateLicenseManager";
 import { createSessionEntry } from "./RoCrateSessions";
 import { makeLdacCompliantPersonEntry } from "./RoCratePeople";
@@ -74,7 +67,6 @@ import {
   handlePlainValueField,
   shouldSkipField,
   getFieldValues,
-  getElementUsingTemplate
 } from "./RoCrateFieldHandlers";
 
 // Re-export getElementUsingTemplate for other modules that import it from here
@@ -95,17 +87,11 @@ const DESCRIPTION_PROTOCOL_NODE_ID = "#descriptionDocuments";
 // https://www.researchobject.org/ro-crate/
 // https://github.com/Language-Research-Technology/ldac-profile/blob/master/profile/profile.md
 
-export async function getRoCrate(
-  project: Project,
-  folder: Folder
-): Promise<object> {
+export async function getRoCrate(project: Project, folder: Folder): Promise<object> {
   // For top-level entities (Project or Session when called directly),
   // we need to create the full RO-Crate structure with context and graph
 
-  if (
-    folder instanceof Project ||
-    (!(folder instanceof Person) && !(folder instanceof Project))
-  ) {
+  if (folder instanceof Project || (!(folder instanceof Person) && !(folder instanceof Project))) {
     const roCrate: { "@context": any[]; "@graph": object[] } = {
       "@context": [
         "https://w3id.org/ro/crate/1.2/context",
@@ -118,19 +104,14 @@ export async function getRoCrate(
           name: "http://schema.org/name",
           description: "http://schema.org/description",
           datePublished: "http://schema.org/datePublished",
-          license: "http://schema.org/license"
-        }
+          license: "http://schema.org/license",
+        },
       ],
-      "@graph": []
+      "@graph": [],
     };
 
-    const isStandaloneSession =
-      !(folder instanceof Project) && !(folder instanceof Person);
-    const entries = await getRoCrateInternal(
-      project,
-      folder,
-      isStandaloneSession
-    );
+    const isStandaloneSession = !(folder instanceof Project) && !(folder instanceof Person);
+    const entries = await getRoCrateInternal(project, folder, isStandaloneSession);
     roCrate["@graph"] = Array.isArray(entries) ? entries : [entries];
     roCrate["@graph"] = getUniqueEntries(roCrate["@graph"]);
 
@@ -147,7 +128,7 @@ export async function getRoCrate(
 async function getRoCrateInternal(
   project: Project,
   folder: Folder,
-  isStandaloneSession: boolean = false
+  isStandaloneSession: boolean = false,
 ): Promise<object | object[]> {
   // Initialize managers
   const rocrateLanguages = new RoCrateLanguages();
@@ -156,25 +137,15 @@ async function getRoCrateInternal(
   if (folder instanceof Person || (folder as any).folderType === "person") {
     const entry: RoCrateEntity = {
       "@id": createPersonId(folder),
-      "@type": "Person"
+      "@type": "Person",
     };
     const otherEntries: object[] = [];
-    await addFieldEntries(
-      project,
-      folder,
-      entry,
-      otherEntries,
-      rocrateLanguages
-    );
-    if (
-      !entry.inLanguage ||
-      (Array.isArray(entry.inLanguage) && entry.inLanguage.length === 0)
-    ) {
+    await addFieldEntries(project, folder, entry, otherEntries, rocrateLanguages);
+    if (!entry.inLanguage || (Array.isArray(entry.inLanguage) && entry.inLanguage.length === 0)) {
       // Always expose inLanguage; fall back to Lexvo's UND identifier whenever
       // no working language was captured so LDAC validators stay satisfied.
       rocrateLanguages.getLanguageEntity("und");
-      const undeterminedLanguageReference =
-        rocrateLanguages.getLanguageReference("und");
+      const undeterminedLanguageReference = rocrateLanguages.getLanguageReference("und");
       rocrateLanguages.trackUsage("und", entry["@id"] || "./");
       entry.inLanguage = undeterminedLanguageReference;
     }
@@ -200,15 +171,13 @@ async function getRoCrateInternal(
       "@id": "./",
       "@type": RoCrateLicense.getRepositoryCollectionTypes(),
       conformsTo: {
-        "@id": "https://w3id.org/ldac/profile#Collection"
+        "@id": "https://w3id.org/ldac/profile#Collection",
       },
-      name:
-        folder.metadataFile?.getTextProperty("title") ||
-        "No title provided for this project.",
+      name: folder.metadataFile?.getTextProperty("title") || "No title provided for this project.",
       description: getTextPropertyWithDefault(
         folder.metadataFile,
-        "collectionDescription",
-        "No description provided for this project."
+        "projectDescription",
+        "No description provided for this project.",
       ),
       datePublished: new Date().toISOString(),
       // Add required LDAC fields using contactPerson (structured entity reference for better linked data)
@@ -218,7 +187,7 @@ async function getRoCrateInternal(
       // Add a default collection-level license - individual sessions may have their own licenses
       license: { "@id": "#collection-license" },
       hasPart: [],
-      "pcdm:hasMember": []
+      "pcdm:hasMember": [],
     };
 
     const boilerplateGraph = [
@@ -226,18 +195,12 @@ async function getRoCrateInternal(
         "@id": "ro-crate-metadata.json",
         "@type": "CreativeWork",
         conformsTo: { "@id": "https://w3id.org/ro/crate/1.2" },
-        about: { "@id": "./" }
-      }
+        about: { "@id": "./" },
+      },
     ];
 
     const otherEntries: object[] = [];
-    await addFieldEntries(
-      project,
-      folder,
-      entry,
-      otherEntries,
-      rocrateLanguages
-    );
+    await addFieldEntries(project, folder, entry, otherEntries, rocrateLanguages);
     addChildFileEntries(folder, entry, otherEntries, rocrateLicense, project);
 
     const publisher = resolvePublisher(project);
@@ -260,21 +223,17 @@ async function getRoCrateInternal(
     const contentLocationPlaces: any[] = [];
 
     // Check for country field
-    const countryValue = folder.metadataFile
-      ?.getTextProperty("country", "")
-      .trim();
+    const countryValue = folder.metadataFile?.getTextProperty("country", "").trim();
     if (countryValue && countryValue !== "unspecified") {
       const countryPlaceId = `#place-country-${sanitizeForIri(countryValue)}`;
       const countryPlace: any = {
         "@id": countryPlaceId,
         "@type": "Place",
-        name: countryValue
+        name: countryValue,
       };
 
       // Check if we also have continent to add to description
-      const continentValue = folder.metadataFile
-        ?.getTextProperty("continent", "")
-        .trim();
+      const continentValue = folder.metadataFile?.getTextProperty("continent", "").trim();
       if (continentValue && continentValue !== "unspecified") {
         countryPlace.description = `Located in ${continentValue}`;
       }
@@ -283,17 +242,13 @@ async function getRoCrateInternal(
       contentLocationPlaces.push({ "@id": countryPlaceId });
     } else {
       // If no country but we have continent, create a Place for continent
-      const continentValue = folder.metadataFile
-        ?.getTextProperty("continent", "")
-        .trim();
+      const continentValue = folder.metadataFile?.getTextProperty("continent", "").trim();
       if (continentValue && continentValue !== "unspecified") {
-        const continentPlaceId = `#place-continent-${sanitizeForIri(
-          continentValue
-        )}`;
+        const continentPlaceId = `#place-continent-${sanitizeForIri(continentValue)}`;
         const continentPlace: any = {
           "@id": continentPlaceId,
           "@type": "Place",
-          name: continentValue
+          name: continentValue,
         };
 
         otherEntries.push(continentPlace);
@@ -316,23 +271,23 @@ async function getRoCrateInternal(
     }
 
     const sessionEntries = await Promise.all(
-      project.sessions.items.map(async (session) => {
+      exportableSessions(project).map(async (session) => {
         return await createSessionEntry(
           project,
           session as Session,
           false,
           rocrateLanguages,
           rocrateLicense,
-          publisher
+          publisher,
         );
-      })
+      }),
     );
     const flattenedSessionEntries = sessionEntries.flat();
 
     // Link to session events in the root dataset using pcdm:hasMember
-    project.sessions.items.forEach((session) => {
+    exportableSessions(project).forEach((session) => {
       entry["pcdm:hasMember"].push({
-        "@id": createSessionId(session)
+        "@id": createSessionId(session),
       });
     });
 
@@ -342,7 +297,7 @@ async function getRoCrateInternal(
     const sessionsDatasetEntries = createSessionsDatasetHierarchy(
       project,
       flattenedSessionEntries,
-      entry.license
+      entry.license,
     );
     if (sessionsDatasetEntries.length > 0) {
       // Add Sessions/ to root pcdm:hasMember
@@ -355,17 +310,14 @@ async function getRoCrateInternal(
     // but files' isPartOf points to the Dataset.
     // See: https://linear.app/lameta/issue/LAM-102/add-descriptiondocuments-dataset
     let descDocsDatasetEntry: RoCrateEntity | undefined;
-    if (
-      project.descriptionFolder &&
-      project.descriptionFolder.files.length > 0
-    ) {
+    if (project.descriptionFolder && project.descriptionFolder.files.length > 0) {
       // First, create the DescriptionDocuments/ Dataset (this also creates file entries)
       descDocsDatasetEntry = createDescriptionDocumentsDataset(
         project.descriptionFolder,
         otherEntries,
         rocrateLicense,
         entry,
-        project
+        project,
       );
 
       if (descDocsDatasetEntry) {
@@ -374,9 +326,7 @@ async function getRoCrateInternal(
 
         // Get file IDs from the Dataset's hasPart
         const fileIds = descDocsDatasetEntry.hasPart
-          ? (descDocsDatasetEntry.hasPart as { "@id": string }[]).map(
-              (p) => p["@id"]
-            )
+          ? (descDocsDatasetEntry.hasPart as { "@id": string }[]).map((p) => p["@id"])
           : [];
 
         // Find earliest file date from the created file entries
@@ -399,7 +349,7 @@ async function getRoCrateInternal(
             fileIds,
             contactPersonReference,
             entry.datePublished,
-            earliestFileDate
+            earliestFileDate,
           );
 
           otherEntries.push(protocolEntry);
@@ -411,16 +361,13 @@ async function getRoCrateInternal(
             entry["ldac:hasCollectionProtocol"] = [protocolReference];
           } else if (Array.isArray(currentProtocols)) {
             const alreadyPresent = currentProtocols.some(
-              (item: any) => item?.["@id"] === protocolReference["@id"]
+              (item: any) => item?.["@id"] === protocolReference["@id"],
             );
             if (!alreadyPresent) {
               currentProtocols.push(protocolReference);
             }
           } else if (currentProtocols["@id"] !== protocolReference["@id"]) {
-            entry["ldac:hasCollectionProtocol"] = [
-              currentProtocols,
-              protocolReference
-            ];
+            entry["ldac:hasCollectionProtocol"] = [currentProtocols, protocolReference];
           }
         }
       }
@@ -436,7 +383,7 @@ async function getRoCrateInternal(
         otherEntries,
         rocrateLicense,
         entry,
-        project
+        project,
       );
       if (otherDocsDatasetEntry) {
         entry["pcdm:hasMember"].push({ "@id": otherDocsDatasetEntry["@id"] });
@@ -446,13 +393,13 @@ async function getRoCrateInternal(
     // Create unique licenses for all sessions
     const documentAccessValues = collectDocumentAccessValues([
       project.descriptionFolder,
-      project.otherDocsFolder
+      project.otherDocsFolder,
     ]);
 
     const uniqueLicenses = createDistinctLicenses(
-      project.sessions.items as Session[],
+      exportableSessions(project),
       project,
-      documentAccessValues
+      documentAccessValues,
     );
 
     // Add a collection-level license definition
@@ -462,7 +409,7 @@ async function getRoCrateInternal(
       name: "Collection License",
       description:
         "License for the collection as a whole. Individual items may have their own specific licenses.",
-      "ldac:access": { "@id": expandLdacId("ldac:OpenAccess") }
+      "ldac:access": { "@id": expandLdacId("ldac:OpenAccess") },
     };
 
     // LAM-92: Collect used access types from all licenses to avoid orphaned entities
@@ -480,8 +427,7 @@ async function getRoCrateInternal(
     }
 
     // Add LDAC access type definitions for only the types that are actually used
-    const ldacAccessDefinitions =
-      createLdacAccessTypeDefinitions(usedAccessTypes);
+    const ldacAccessDefinitions = createLdacAccessTypeDefinitions(usedAccessTypes);
 
     const uniqueOtherEntries = getUniqueEntries(otherEntries);
 
@@ -494,7 +440,7 @@ async function getRoCrateInternal(
       ...uniqueLicenses,
       collectionLicense,
       ...rocrateLanguages.getUsedLanguageEntities(),
-      ...uniqueOtherEntries
+      ...uniqueOtherEntries,
     ];
 
     // LAM-102: Add DescriptionDocuments/ Dataset if it exists
@@ -513,7 +459,7 @@ async function getRoCrateInternal(
       project,
       flattenedSessionEntries,
       uniqueOtherEntries,
-      entry.license
+      entry.license,
     );
     if (peopleDatasetEntries && peopleDatasetEntries.length > 0) {
       // The first entry is always the People/ Dataset
@@ -534,7 +480,7 @@ async function getRoCrateInternal(
     isStandaloneSession,
     rocrateLanguages,
     rocrateLicense,
-    resolvePublisher(project)
+    resolvePublisher(project),
   );
 }
 
@@ -542,7 +488,7 @@ export function addFieldIfNotEmpty(
   folder: Folder,
   fieldKey: string,
   outputProperty: string,
-  entry: any
+  entry: any,
 ) {
   const value = folder.metadataFile?.getTextProperty(fieldKey, "").trim();
   if (value) entry[outputProperty] = value;
@@ -556,7 +502,7 @@ export async function addFieldEntries(
   folder: Folder,
   folderEntry: object,
   otherEntries: object[],
-  rocrateLanguages: RoCrateLanguages
+  rocrateLanguages: RoCrateLanguages,
 ) {
   // First handle the known fields
   for (const field of folder.knownFields) {
@@ -578,7 +524,7 @@ export async function addFieldEntries(
       folderEntry,
       otherEntries,
       rocrateLanguages,
-      propertyKey
+      propertyKey,
     };
 
     // Try each handler in priority order - first one to return true wins
@@ -624,11 +570,7 @@ function handleCustomFields(folder: Folder, folderEntry: object): void {
 
     // don't export if we know it has been migrated
     const definition = folder.metadataFile!.properties.getFieldDefinition(key);
-    if (
-      definition &&
-      definition.deprecated &&
-      definition.deprecated.indexOf("migrated") > -1
-    ) {
+    if (definition && definition.deprecated && definition.deprecated.indexOf("migrated") > -1) {
       return;
     }
 
@@ -641,16 +583,12 @@ function handleCustomFields(folder: Folder, folderEntry: object): void {
 
 export function getRoCrateTemplate(field: any): any {
   if (field.rocrate?.handler === "languages") {
-    const languageField = fieldDefinitionsOfCurrentConfig.common.find(
-      (f) => f.key === "language"
-    );
+    const languageField = fieldDefinitionsOfCurrentConfig.common.find((f) => f.key === "language");
     return languageField?.rocrate?.template;
   }
 
   if (field.rocrate?.handler === "person") {
-    const personField = fieldDefinitionsOfCurrentConfig.common.find(
-      (f) => f.key === "person"
-    );
+    const personField = fieldDefinitionsOfCurrentConfig.common.find((f) => f.key === "person");
     return personField?.rocrate?.template;
   }
 
@@ -669,11 +607,10 @@ function addFileLicenseProperty(
   folder?: Folder,
   parentEntry?: any,
   project?: Project,
-  file?: any
+  file?: any,
 ): void {
   if (!(folder instanceof Session) && file && project) {
-    const documentLicenseId =
-      rocrateLicense.ensureDocumentAccessLicense(file, project);
+    const documentLicenseId = rocrateLicense.ensureDocumentAccessLicense(file, project);
     if (documentLicenseId) {
       fileEntry.license = { "@id": documentLicenseId };
       return;
@@ -683,7 +620,6 @@ function addFileLicenseProperty(
   // For session files, ensure they inherit the session license first
   // This must happen before checking existing licenses to normalize any raw values
   if (folder instanceof Session) {
-    const file = folder.files.find((f) => f.getActualFilePath() === filePath);
     if (file) {
       rocrateLicense.ensureFileLicense(file, folder as Session, project);
       const inheritedLicense = rocrateLicense.getFileLicense(filePath);
@@ -718,6 +654,8 @@ function addFileLicenseProperty(
 interface BuildFileEntryOptions {
   /** The file object from the folder */
   file: any;
+  /** The file's stats, from filesToExport */
+  stats: fs.Stats;
   /** The @id to use for this file entity */
   fileId: string;
   /** The RoCrateLicense manager for license handling */
@@ -731,13 +669,44 @@ interface BuildFileEntryOptions {
 }
 
 /**
- * Result from building a file entry.
+ * A file that belongs in the crate, with the stats read when it was chosen.
  */
-interface BuildFileEntryResult {
-  /** The built file entry object for the RO-Crate graph */
-  fileEntry: any;
-  /** File stats (birthtime, mtime) for optional further processing */
+interface FileToExport {
+  file: File;
   stats: fs.Stats;
+}
+
+/**
+ * The files of a folder that belong in the crate. RO-Crate metadata files are left out to avoid
+ * circular references, and so is a listed file that is not on disk (a link whose media folder is
+ * not on this machine, or a file removed after lameta loaded it), with the warning that IMDI
+ * export gives for it.
+ */
+function filesToExport(folder: Folder): FileToExport[] {
+  const result: FileToExport[] = [];
+  folder.files.forEach((file) => {
+    let stats: fs.Stats;
+    try {
+      // for a link, getActualFilePath reads the .link file, which can be missing too
+      const path = file.getActualFilePath();
+      if (Path.basename(path).startsWith("ro-crate")) {
+        return;
+      }
+      stats = fs.statSync(path);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+        throw error;
+      }
+      const message =
+        file.getNameToUseWhenExportingUsingTheActualFile() + ": " + getStatusOfFile(file).info;
+      if (!collectExportWarning(message)) {
+        NotifyWarning(message);
+      }
+      return;
+    }
+    result.push({ file, stats });
+  });
+  return result;
 }
 
 /**
@@ -745,11 +714,10 @@ interface BuildFileEntryResult {
  * duplicate logic between session exports and project document exports.
  *
  * @param options - Configuration for building the file entry
- * @returns The built file entry and file stats
+ * @returns The built file entry
  */
-function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
-  const { file, fileId, rocrateLicense, folder, parentEntry, project } =
-    options;
+function buildFileEntry(options: BuildFileEntryOptions): any {
+  const { file, stats, fileId, rocrateLicense, folder, parentEntry, project } = options;
   const path = file.getActualFilePath();
   const fileName = Path.basename(path);
   const fileExt = Path.extname(fileName).toLowerCase();
@@ -760,9 +728,7 @@ function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
   const fileTypes: string[] = ["File"];
 
   // Use FileTypeInfo to get the file format information
-  const fileFormatInfo = GetFileFormatInfoForExtension(
-    fileExt.replace(".", "")
-  );
+  const fileFormatInfo = GetFileFormatInfoForExtension(fileExt.replace(".", ""));
 
   if (fileFormatInfo?.type === "Video") {
     fileTypes.push("VideoObject");
@@ -781,7 +747,6 @@ function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
 
   const normalizedFileType = fileTypes.length === 1 ? fileTypes[0] : fileTypes;
 
-  const stats = fs.statSync(path);
   const fileEntry: any = {
     "@id": fileId,
     "@type": normalizedFileType,
@@ -789,21 +754,13 @@ function buildFileEntry(options: BuildFileEntryOptions): BuildFileEntryResult {
     dateCreated: stats.birthtime.toISOString(),
     dateModified: file.getModifiedDate()?.toISOString(),
     encodingFormat: getMimeType(fileExt.replace(/\./g, "")),
-    name: fileName
+    name: fileName,
   };
 
   // Add license information - per LDAC spec, files must have license properties
-  addFileLicenseProperty(
-    fileEntry,
-    path,
-    rocrateLicense,
-    folder,
-    parentEntry,
-    project,
-    file
-  );
+  addFileLicenseProperty(fileEntry, path, rocrateLicense, folder, parentEntry, project, file);
 
-  return { fileEntry, stats };
+  return fileEntry;
 }
 
 export function addChildFileEntries(
@@ -811,7 +768,7 @@ export function addChildFileEntries(
   folderEntry: object,
   otherEntries: object[],
   rocrateLicense: RoCrateLicense,
-  project?: Project
+  project?: Project,
 ): void {
   if (folder.files.length === 0) return;
   const isPersonFolder = (folder as any).folderType === "person";
@@ -822,8 +779,7 @@ export function addChildFileEntries(
   // Only standalone sessions (exported alone, where @id is "./") need hasPart.
   // https://linear.app/lameta/issue/LAM-103/fix-relation
   const folderId = (folderEntry as any)["@id"];
-  const isNonStandaloneSession =
-    typeof folderId === "string" && folderId.startsWith("#session-");
+  const isNonStandaloneSession = typeof folderId === "string" && folderId.startsWith("#session-");
 
   const shouldAssignHasPart = !isPersonFolder && !isNonStandaloneSession;
 
@@ -838,7 +794,7 @@ export function addChildFileEntries(
     }
     if (Array.isArray(current)) {
       const alreadyPresent = current.some(
-        (entry) => typeof entry === "object" && entry["@id"] === fileId
+        (entry) => typeof entry === "object" && entry["@id"] === fileId,
       );
       if (!alreadyPresent) {
         current.push(reference);
@@ -851,26 +807,21 @@ export function addChildFileEntries(
     return [current, reference];
   };
 
-  folder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    const fileName = Path.basename(path);
-
-    // Skip RO-Crate metadata files to avoid circular references
-    if (fileName.startsWith("ro-crate")) {
-      return;
-    }
+  filesToExport(folder).forEach(({ file, stats }) => {
+    const fileName = Path.basename(file.getActualFilePath());
 
     // Use centralized file ID generation to ensure consistency
     const fileId = createFileId(folder, fileName);
 
     // Use the shared helper so file metadata, licenses, and @type logic stay consistent
-    const { fileEntry } = buildFileEntry({
+    const fileEntry = buildFileEntry({
       file,
+      stats,
       fileId,
       rocrateLicense,
       folder,
       parentEntry: folderEntry,
-      project
+      project,
     });
 
     otherEntries.push(fileEntry);
@@ -904,11 +855,11 @@ export function addProjectDocumentFolderEntries(
   otherEntries: object[],
   rocrateLicense: RoCrateLicense,
   project?: Project,
-  options?: { attachToRootHasPart?: boolean; parentId?: string }
+  options?: { attachToRootHasPart?: boolean; parentId?: string },
 ): { fileIds: string[]; earliestFileDate?: Date } {
   const result: { fileIds: string[]; earliestFileDate?: Date } = {
     fileIds: [],
-    earliestFileDate: undefined
+    earliestFileDate: undefined,
   };
 
   if (folder.files.length === 0) return result;
@@ -916,14 +867,8 @@ export function addProjectDocumentFolderEntries(
   const attachToRootHasPart = options?.attachToRootHasPart !== false;
   const parentId = options?.parentId || "./";
 
-  folder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    const fileName = Path.basename(path);
-
-    // Skip RO-Crate metadata files to avoid circular references
-    if (fileName.startsWith("ro-crate")) {
-      return;
-    }
+  filesToExport(folder).forEach(({ file, stats }) => {
+    const fileName = Path.basename(file.getActualFilePath());
 
     // Create file ID using folder type
     const fileId = `${folderType}/${sanitizeForIri(fileName)}`;
@@ -931,20 +876,21 @@ export function addProjectDocumentFolderEntries(
     // Use the shared helper to build the file entry. Description and other project documents should
     // not declare ldac:materialType because these files describe the collection rather than serving
     // as LDAC annotations.
-    const { fileEntry, stats } = buildFileEntry({
+    const fileEntry = buildFileEntry({
       file,
+      stats,
       fileId,
       rocrateLicense,
       folder: undefined, // No folder for project documents - license inheritance differs
       parentEntry: projectEntry,
-      project
+      project,
     });
 
     otherEntries.push(fileEntry);
     // Use utility function for consistent containment relationship handling
     linkContainment(projectEntry, fileEntry, {
       skipHasPart: !attachToRootHasPart,
-      parentIdOverride: parentId
+      parentIdOverride: parentId,
     });
 
     const preferredDate = file.getModifiedDate?.() || stats.birthtime;
@@ -994,9 +940,9 @@ function deduplicateHasPartArrays(graph: any[]): any[] {
 function createSessionsDatasetHierarchy(
   project: Project,
   flattenedSessionEntries: any[],
-  license?: any
+  license?: any,
 ): RoCrateEntity[] {
-  if (project.sessions.items.length === 0) {
+  if (exportableSessions(project).length === 0) {
     return [];
   }
 
@@ -1006,7 +952,11 @@ function createSessionsDatasetHierarchy(
   // Group file entries by session directory
   // Files have IDs like "Sessions/ETR008/ETR008.session"
   // Session events have IDs like "#session-ETR008"
-  const filesBySessionDir = new Map<string, any[]>();
+  // every session gets its directory, even one whose files are all missing, because the
+  // session's subjectOf points at it
+  const filesBySessionDir = new Map<string, any[]>(
+    exportableSessions(project).map((session) => [createSessionDirectoryId(session), []]),
+  );
 
   flattenedSessionEntries.forEach((entry: any) => {
     const id = entry["@id"];
@@ -1047,7 +997,7 @@ function createSessionsDatasetHierarchy(
       description: `Files for session ${sessionName}.`,
       hasPart: createHasPartReferences(fileIds),
       "pcdm:memberOf": { "@id": "Sessions/" },
-      about: { "@id": sessionEventId } // LAM-100: Dataset is about the CollectionEvent
+      about: { "@id": sessionEventId }, // LAM-100: Dataset is about the CollectionEvent
     };
 
     if (license && typeof license === "object") {
@@ -1074,7 +1024,7 @@ function createSessionsDatasetHierarchy(
     name: "Sessions",
     description: "Directory of sessions in this collection.",
     "pcdm:hasMember": sessionsDatasetHasPart,
-    "pcdm:memberOf": { "@id": "./" }
+    "pcdm:memberOf": { "@id": "./" },
   };
 
   if (license && typeof license === "object") {
@@ -1101,9 +1051,10 @@ function createDescriptionDocumentsDataset(
   otherEntries: object[],
   rocrateLicense: RoCrateLicense,
   projectEntry: any,
-  project?: Project
+  project?: Project,
 ): RoCrateEntity | undefined {
-  if (!descriptionFolder || descriptionFolder.files.length === 0) {
+  const files = descriptionFolder ? filesToExport(descriptionFolder) : [];
+  if (files.length === 0) {
     return undefined;
   }
 
@@ -1111,25 +1062,20 @@ function createDescriptionDocumentsDataset(
   const fileIds: string[] = [];
 
   // Process each file in the DescriptionDocuments folder
-  descriptionFolder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    const fileName = Path.basename(path);
-
-    // Skip RO-Crate metadata files to avoid circular references
-    if (fileName.startsWith("ro-crate")) {
-      return;
-    }
+  files.forEach(({ file, stats }) => {
+    const fileName = Path.basename(file.getActualFilePath());
 
     const fileId = `DescriptionDocuments/${sanitizeForIri(fileName)}`;
 
     // Build the file entry using shared helper
-    const { fileEntry } = buildFileEntry({
+    const fileEntry = buildFileEntry({
       file,
+      stats,
       fileId,
       rocrateLicense,
       folder: undefined, // No folder for project documents
       parentEntry: projectEntry,
-      project
+      project,
     });
 
     // LAM-102: File's isPartOf points to the DescriptionDocuments/ Dataset
@@ -1144,10 +1090,9 @@ function createDescriptionDocumentsDataset(
     "@id": datasetId,
     "@type": "Dataset",
     name: "Description Documents",
-    description:
-      "Documents describing the collection methodology and protocols.",
+    description: "Documents describing the collection methodology and protocols.",
     hasPart: createHasPartReferences(fileIds),
-    "pcdm:memberOf": { "@id": "./" }
+    "pcdm:memberOf": { "@id": "./" },
   };
 
   // Inherit collection license
@@ -1174,9 +1119,10 @@ function createOtherDocumentsDataset(
   otherEntries: object[],
   rocrateLicense: RoCrateLicense,
   projectEntry: any,
-  project?: Project
+  project?: Project,
 ): RoCrateEntity | undefined {
-  if (!otherDocsFolder || otherDocsFolder.files.length === 0) {
+  const files = otherDocsFolder ? filesToExport(otherDocsFolder) : [];
+  if (files.length === 0) {
     return undefined;
   }
 
@@ -1184,25 +1130,20 @@ function createOtherDocumentsDataset(
   const fileIds: string[] = [];
 
   // Process each file in the OtherDocuments folder
-  otherDocsFolder.files.forEach((file) => {
-    const path = file.getActualFilePath();
-    const fileName = Path.basename(path);
-
-    // Skip RO-Crate metadata files to avoid circular references
-    if (fileName.startsWith("ro-crate")) {
-      return;
-    }
+  files.forEach(({ file, stats }) => {
+    const fileName = Path.basename(file.getActualFilePath());
 
     const fileId = `OtherDocuments/${sanitizeForIri(fileName)}`;
 
     // Build the file entry using shared helper
-    const { fileEntry } = buildFileEntry({
+    const fileEntry = buildFileEntry({
       file,
+      stats,
       fileId,
       rocrateLicense,
       folder: undefined, // No folder for project documents
       parentEntry: projectEntry,
-      project
+      project,
     });
 
     // LAM-101: File's isPartOf points to the OtherDocuments/ Dataset, not root
@@ -1219,7 +1160,7 @@ function createOtherDocumentsDataset(
     name: "Other Documents",
     description: "Additional documents associated with this collection.",
     hasPart: createHasPartReferences(fileIds),
-    "pcdm:memberOf": { "@id": "./" }
+    "pcdm:memberOf": { "@id": "./" },
   };
 
   // Inherit collection license
@@ -1238,7 +1179,7 @@ function createPeopleDatasetEntry(
   project: Project,
   flattenedSessionEntries: any[],
   otherEntries: object[],
-  license?: any
+  license?: any,
 ): RoCrateEntity[] | undefined {
   const collectPersonRecords = (source: any): any[] => {
     if (!source) {
@@ -1258,9 +1199,7 @@ function createPeopleDatasetEntry(
 
   // Get actual person records from project (people with folders)
   const personRecords = collectPersonRecords((project as any).persons);
-  const knownPeopleWithFolders = new Set(
-    personRecords.map((person) => createPersonId(person))
-  );
+  const knownPeopleWithFolders = new Set(personRecords.map((person) => createPersonId(person)));
 
   const candidateEntries = [...flattenedSessionEntries, ...otherEntries];
 
@@ -1269,7 +1208,7 @@ function createPeopleDatasetEntry(
   // 2. Unresolved contributors (people mentioned in sessions without person folders)
   // 3. #unknown-contributor entity
   const allPersonEntries = candidateEntries.filter(
-    (entry: any) => isPersonEntity(entry) && typeof entry["@id"] === "string"
+    (entry: any) => isPersonEntity(entry) && typeof entry["@id"] === "string",
   );
 
   if (allPersonEntries.length === 0) {
@@ -1317,8 +1256,7 @@ function createPeopleDatasetEntry(
 
     // Person has files - create an intermediate Dataset
     // Get the person's display name for the Dataset name
-    const personName =
-      personRecord?.filePrefix || personEntry.name || "Unknown";
+    const personName = personRecord?.filePrefix || personEntry.name || "Unknown";
 
     // Create a dataset ID based on whether this is a known person with folder or not
     const datasetId = personRecord
@@ -1335,7 +1273,7 @@ function createPeopleDatasetEntry(
       description: `Files associated with ${personName}.`,
       about: { "@id": personId },
       hasPart: personFiles.map((file: any) => ({ "@id": file["@id"] })),
-      isPartOf: { "@id": "People/" }
+      isPartOf: { "@id": "People/" },
     };
 
     // Add the inverse subjectOf reference from person to the dataset
@@ -1372,7 +1310,7 @@ function createPeopleDatasetEntry(
     name: "People",
     description: "Directory of people associated with this collection.",
     hasPart: peopleDatasetHasPart,
-    "pcdm:memberOf": { "@id": "./" }
+    "pcdm:memberOf": { "@id": "./" },
   };
 
   if (license && typeof license === "object") {
@@ -1387,9 +1325,7 @@ function isPersonEntity(entry: any): boolean {
     return false;
   }
 
-  const types = Array.isArray(entry["@type"])
-    ? entry["@type"]
-    : [entry["@type"]];
+  const types = Array.isArray(entry["@type"]) ? entry["@type"] : [entry["@type"]];
   return types.includes("Person");
 }
 
@@ -1419,22 +1355,16 @@ function getUniqueEntries(otherEntries: object[]) {
   return unique;
 }
 
-function collectDocumentAccessValues(
-  folders: Array<Folder | undefined>
-): string[] {
+function collectDocumentAccessValues(folders: Array<Folder | undefined>): string[] {
   const uniqueValues = new Set<string>();
   folders.forEach((folder) => {
     if (!folder || !folder.files) {
       return;
     }
-    folder.files.forEach((file: any) => {
-      const rawAccess =
-        file.getTextProperty?.("access") ||
-        file.properties?.getTextStringOrEmpty?.("access") ||
-        "";
-      const trimmed = rawAccess.trim();
-      if (trimmed && trimmed !== "unspecified") {
-        uniqueValues.add(trimmed);
+    folder.files.forEach((file) => {
+      const access = getFileAccessValue(file);
+      if (access) {
+        uniqueValues.add(access);
       }
     });
   });
@@ -1446,25 +1376,19 @@ function createDescriptionCollectionProtocolEntry(
   fileIds: string[],
   authorReference: any,
   fallbackDatePublished?: string,
-  earliestFileDate?: Date
+  earliestFileDate?: Date,
 ): RoCrateEntity {
-  const projectTitle = project.metadataFile
-    ?.getTextProperty("title", "")
-    ?.trim();
+  const projectTitle = project.metadataFile?.getTextProperty("title", "")?.trim();
   const protocolName = projectTitle
     ? `${projectTitle} collection protocol`
     : "Collection protocol documents";
-  const descriptionSource = project.metadataFile
-    ?.getTextProperty("collectionDescription", "")
-    ?.trim();
+  const descriptionSource = project.metadataFile?.getTextProperty("projectDescription", "")?.trim();
   const protocolDescription =
     descriptionSource && descriptionSource.length > 0
       ? descriptionSource
       : "DescriptionDocuments exported from lameta summarizing how this collection was gathered.";
   const datePublished =
-    earliestFileDate?.toISOString() ||
-    fallbackDatePublished ||
-    new Date().toISOString();
+    earliestFileDate?.toISOString() || fallbackDatePublished || new Date().toISOString();
 
   return {
     "@id": DESCRIPTION_PROTOCOL_NODE_ID,
@@ -1474,7 +1398,7 @@ function createDescriptionCollectionProtocolEntry(
     author: authorReference,
     datePublished,
     hasPart: createHasPartReferences(fileIds),
-    isPartOf: createIsPartOfReference("./")
+    isPartOf: createIsPartOfReference("./"),
   };
 }
 
@@ -1485,11 +1409,7 @@ function createDescriptionCollectionProtocolEntry(
  * @returns The date of the first session with a date, or undefined if none found
  */
 export function findFirstSessionWithDate(project: Project): Date | undefined {
-  if (
-    !project ||
-    !(project as any).sessions ||
-    !(project as any).sessions.items
-  ) {
+  if (!project || !(project as any).sessions || !(project as any).sessions.items) {
     return undefined;
   }
 

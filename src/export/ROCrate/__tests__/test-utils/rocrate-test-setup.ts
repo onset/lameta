@@ -1,13 +1,97 @@
-import { vi } from "vitest";
+import { vi } from "vite-plus/test";
 import { Project } from "../../../../model/Project/Project";
 import { Session } from "../../../../model/Project/Session/Session";
 import { Person } from "../../../../model/Project/Person/Person";
 import { FieldDefinition } from "../../../../model/field/FieldDefinition";
 import {
   fieldDefinitionsOfCurrentConfig,
-  prepareGlobalFieldDefinitionCatalog
+  prepareGlobalFieldDefinitionCatalog,
 } from "../../../../model/field/ConfiguredFieldDefinitions";
 import { expandLdacId } from "../../RoCrateUtils";
+
+// Vitest hoists vi.mock(), so these mocks are installed for every test file
+// that imports this module. Paths are relative to this file.
+vi.mock("../../../../languageFinder/LanguageFinder", () => ({
+  staticLanguageFinder: {
+    findOneLanguageNameFromCode_Or_ReturnCode: vi.fn().mockImplementation((code: string) => {
+      const languageMap: { [key: string]: string } = {
+        eng: "English",
+        en: "English",
+        fra: "French",
+        fr: "French",
+        deu: "German",
+        de: "German",
+        etr: "Edolo",
+        spa: "Spanish",
+        es: "Spanish",
+        ita: "Italian",
+        it: "Italian",
+      };
+      return languageMap[code] || code;
+    }),
+  },
+}));
+
+vi.mock("fs-extra", () => ({
+  default: {
+    existsSync: vi.fn().mockReturnValue(true),
+    readFileSync: vi.fn().mockReturnValue("mock file content"),
+    writeFileSync: vi.fn(),
+    mkdirSync: vi.fn(),
+    statSync: vi.fn().mockReturnValue({
+      size: 1024,
+      birthtime: new Date("2024-01-01T00:00:00.000Z"),
+    }),
+    readdirSync: vi.fn().mockReturnValue([]),
+  },
+  existsSync: vi.fn().mockReturnValue(true),
+  readFileSync: vi.fn().mockReturnValue("mock file content"),
+  writeFileSync: vi.fn(),
+  mkdirSync: vi.fn(),
+  statSync: vi.fn().mockReturnValue({
+    size: 1024,
+    birthtime: new Date("2024-01-01T00:00:00.000Z"),
+  }),
+  readdirSync: vi.fn().mockReturnValue([]),
+}));
+
+vi.mock("../../../../localization/LocalizationManager", () => ({
+  default: {
+    getLocalizedText: vi.fn().mockImplementation((key: string) => key),
+  },
+}));
+
+vi.mock("../LanguageManager", () => ({
+  languageManager: {
+    clear: vi.fn(),
+    getLanguageEntity: vi.fn(),
+    getLanguageReference: vi.fn(),
+    trackUsage: vi.fn(),
+    getUsedLanguageEntities: vi.fn().mockReturnValue([]),
+    getUnusedLanguageEntities: vi.fn().mockReturnValue([]),
+  },
+  LanguageManager: vi.fn(),
+}));
+
+vi.mock("../LicenseManager", () => ({
+  LicenseManager: vi.fn().mockImplementation(() => ({
+    setDefaultLicense: vi.fn(),
+    setFileLicense: vi.fn(),
+    getFileLicense: vi.fn(),
+    getFileLicenseReference: vi.fn(),
+    ensureFileLicense: vi.fn(),
+    clear: vi.fn(),
+    getAllFileLicenses: vi.fn(),
+  })),
+  getSessionLicenseId: vi.fn().mockReturnValue("https://creativecommons.org/licenses/by/4.0/"),
+}));
+
+vi.mock("../RoCrateValidator", () => ({
+  RoCrateValidator: vi.fn().mockImplementation(() => ({
+    validate: vi.fn().mockReturnValue({ isValid: true, errors: [], warnings: [] }),
+  })),
+  ensureSubjectLanguage: vi.fn(),
+}));
 
 export const expandLdacTestValue = (value: any): any => {
   if (typeof value === "string") {
@@ -20,7 +104,7 @@ export const expandLdacTestValue = (value: any): any => {
 
   if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value).map(([key, val]) => [key, expandLdacTestValue(val)])
+      Object.entries(value).map(([key, val]) => [key, expandLdacTestValue(val)]),
     );
   }
 
@@ -53,62 +137,6 @@ export const expandLdacTestValue = (value: any): any => {
  */
 
 /**
- * Common mock for staticLanguageFinder used across multiple test files
- */
-export const createStaticLanguageFinderMock = () => {
-  return vi.mock("../../../../languageFinder/LanguageFinder", () => ({
-    staticLanguageFinder: {
-      findOneLanguageNameFromCode_Or_ReturnCode: vi
-        .fn()
-        .mockImplementation((code: string) => {
-          const languageMap: { [key: string]: string } = {
-            eng: "English",
-            en: "English",
-            fra: "French",
-            fr: "French",
-            deu: "German",
-            de: "German",
-            etr: "Edolo",
-            spa: "Spanish",
-            es: "Spanish",
-            ita: "Italian",
-            it: "Italian"
-          };
-          return languageMap[code] || code;
-        })
-    }
-  }));
-};
-
-/**
- * Common mock for fs-extra used in file-related tests
- */
-export const createFsExtraMock = () => {
-  return vi.mock("fs-extra", () => ({
-    default: {
-      existsSync: vi.fn().mockReturnValue(true),
-      readFileSync: vi.fn().mockReturnValue("mock file content"),
-      writeFileSync: vi.fn(),
-      mkdirSync: vi.fn(),
-      statSync: vi.fn().mockReturnValue({
-        size: 1024,
-        birthtime: new Date("2024-01-01T00:00:00.000Z")
-      }),
-      readdirSync: vi.fn().mockReturnValue([])
-    },
-    existsSync: vi.fn().mockReturnValue(true),
-    readFileSync: vi.fn().mockReturnValue("mock file content"),
-    writeFileSync: vi.fn(),
-    mkdirSync: vi.fn(),
-    statSync: vi.fn().mockReturnValue({
-      size: 1024,
-      birthtime: new Date("2024-01-01T00:00:00.000Z")
-    }),
-    readdirSync: vi.fn().mockReturnValue([])
-  }));
-};
-
-/**
  * Common field definitions used across tests
  */
 export const getCommonFieldDefinitions = (): FieldDefinition[] => [
@@ -118,9 +146,9 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        "@id": "[v]"
-      }
-    }
+        "@id": "[v]",
+      },
+    },
   } as FieldDefinition,
   {
     key: "title",
@@ -128,9 +156,9 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        name: "[v]"
-      }
-    }
+        name: "[v]",
+      },
+    },
   } as FieldDefinition,
   {
     key: "description",
@@ -138,9 +166,9 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        description: "[v]"
-      }
-    }
+        description: "[v]",
+      },
+    },
   } as FieldDefinition,
   {
     key: "language",
@@ -151,9 +179,9 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
         "@id": "#language_[code]",
         "@type": "Language",
         code: "[code]",
-        name: "[languageName]"
-      }
-    }
+        name: "[languageName]",
+      },
+    },
   } as FieldDefinition,
   {
     key: "person",
@@ -162,9 +190,9 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
     rocrate: {
       template: {
         "@id": "[v]",
-        "@type": "Person"
-      }
-    }
+        "@type": "Person",
+      },
+    },
   } as FieldDefinition,
   {
     key: "genre",
@@ -172,10 +200,10 @@ export const getCommonFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        genre: "[v]"
-      }
-    }
-  } as FieldDefinition
+        genre: "[v]",
+      },
+    },
+  } as FieldDefinition,
 ];
 
 /**
@@ -188,9 +216,9 @@ export const getSessionFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        "@id": "[v]"
-      }
-    }
+        "@id": "[v]",
+      },
+    },
   } as FieldDefinition,
   {
     key: "title",
@@ -198,9 +226,9 @@ export const getSessionFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        name: "[v]"
-      }
-    }
+        name: "[v]",
+      },
+    },
   } as FieldDefinition,
   {
     key: "date",
@@ -208,9 +236,9 @@ export const getSessionFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        dateCreated: "[v]"
-      }
-    }
+        dateCreated: "[v]",
+      },
+    },
   } as FieldDefinition,
   {
     key: "genre",
@@ -218,9 +246,9 @@ export const getSessionFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        genre: "[v]"
-      }
-    }
+        genre: "[v]",
+      },
+    },
   } as FieldDefinition,
   {
     key: "subjectLanguages",
@@ -228,10 +256,10 @@ export const getSessionFieldDefinitions = (): FieldDefinition[] => [
     persist: true,
     rocrate: {
       template: {
-        "ldac:subjectLanguage": "[languageObject]"
-      }
-    }
-  } as FieldDefinition
+        "ldac:subjectLanguage": "[languageObject]",
+      },
+    },
+  } as FieldDefinition,
 ];
 
 /**
@@ -262,11 +290,11 @@ export const getSessionFieldDefinitions = (): FieldDefinition[] => [
  */
 export const setupFieldDefinitionMocks = () => {
   vi.spyOn(fieldDefinitionsOfCurrentConfig, "common", "get").mockReturnValue(
-    getCommonFieldDefinitions()
+    getCommonFieldDefinitions(),
   );
 
   vi.spyOn(fieldDefinitionsOfCurrentConfig, "session", "get").mockReturnValue(
-    getSessionFieldDefinitions()
+    getSessionFieldDefinitions(),
   );
 
   vi.spyOn(fieldDefinitionsOfCurrentConfig, "person", "get").mockReturnValue([
@@ -276,15 +304,15 @@ export const setupFieldDefinitionMocks = () => {
       persist: true,
       rocrate: {
         template: {
-          name: "[v]"
-        }
-      }
+          name: "[v]",
+        },
+      },
     } as FieldDefinition,
     {
       key: "nickname",
       englishLabel: "Nickname",
-      persist: true
-    } as FieldDefinition
+      persist: true,
+    } as FieldDefinition,
   ]);
 };
 
@@ -335,21 +363,17 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
     description: "Test project description",
     id: "test-project-001",
     archiveConfigurationName: "lameta",
-    ...overrides.metadata
+    ...overrides.metadata,
   };
 
-  (mockProperties as any).getHasValue = vi
-    .fn()
-    .mockImplementation((key: string) => {
-      const value = defaultMetadata[key];
-      return value !== undefined && value !== "";
-    });
+  (mockProperties as any).getHasValue = vi.fn().mockImplementation((key: string) => {
+    const value = defaultMetadata[key];
+    return value !== undefined && value !== "";
+  });
 
-  (mockProperties as any).getTextStringOrEmpty = vi
-    .fn()
-    .mockImplementation((key: string) => {
-      return defaultMetadata[key] || "";
-    });
+  (mockProperties as any).getTextStringOrEmpty = vi.fn().mockImplementation((key: string) => {
+    return defaultMetadata[key] || "";
+  });
 
   const mockProject = {
     displayName: "Test Project",
@@ -358,8 +382,8 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
     authorityLists: {
       accessChoicesOfCurrentProtocol: [
         { label: "CC BY 4.0", value: "CC BY 4.0" },
-        { label: "CC BY-SA 4.0", value: "CC BY-SA 4.0" }
-      ]
+        { label: "CC BY-SA 4.0", value: "CC BY-SA 4.0" },
+      ],
     },
     metadataFile: {
       properties: mockProperties, // Add the Map for properties
@@ -369,21 +393,17 @@ export const createMockProject = (overrides: Partial<any> = {}): Project => {
       getValue: vi.fn().mockImplementation((key: string) => {
         return defaultMetadata[key];
       }),
-      getTextProperty: vi
-        .fn()
-        .mockImplementation((key: string, defaultValue: string = "") => {
-          // Return the value if it exists, otherwise return the defaultValue (which might be "")
-          return defaultMetadata[key] !== undefined
-            ? defaultMetadata[key]
-            : defaultValue;
-        }),
+      getTextProperty: vi.fn().mockImplementation((key: string, defaultValue: string = "") => {
+        // Return the value if it exists, otherwise return the defaultValue (which might be "")
+        return defaultMetadata[key] !== undefined ? defaultMetadata[key] : defaultValue;
+      }),
       setTextStringProperty: vi.fn(),
-      hasValue: vi.fn().mockReturnValue(true)
+      hasValue: vi.fn().mockReturnValue(true),
     },
     sessions: { items: [] },
     persons: { items: [] },
     files: [], // Add files array
-    ...overrides
+    ...overrides,
   } as unknown as Project;
 
   return mockProject;
@@ -402,21 +422,17 @@ export const createMockSession = (overrides: Partial<any> = {}): Session => {
     date: "2024-01-01",
     genre: "Conversation",
     access: "CC BY 4.0",
-    ...overrides.metadata
+    ...overrides.metadata,
   };
 
   // Add the required methods to mockProperties
-  (mockProperties as any).getHasValue = vi
-    .fn()
-    .mockImplementation((key: string) => {
-      return defaults[key] !== undefined && defaults[key] !== "";
-    });
+  (mockProperties as any).getHasValue = vi.fn().mockImplementation((key: string) => {
+    return defaults[key] !== undefined && defaults[key] !== "";
+  });
 
-  (mockProperties as any).getTextStringOrEmpty = vi
-    .fn()
-    .mockImplementation((key: string) => {
-      return defaults[key] || "";
-    });
+  (mockProperties as any).getTextStringOrEmpty = vi.fn().mockImplementation((key: string) => {
+    return defaults[key] || "";
+  });
 
   const mockSession = {
     displayName: "Test Session",
@@ -432,7 +448,7 @@ export const createMockSession = (overrides: Partial<any> = {}): Session => {
           description: "Test session description",
           date: "2024-01-01",
           genre: "Conversation",
-          ...overrides.metadata
+          ...overrides.metadata,
         };
         return defaults[key] || "";
       }),
@@ -444,32 +460,30 @@ export const createMockSession = (overrides: Partial<any> = {}): Session => {
           date: "2024-01-01",
           genre: "Conversation",
           subjectLanguages: "eng",
-          ...overrides.metadata
+          ...overrides.metadata,
         };
         return defaults[key];
       }),
-      getTextProperty: vi
-        .fn()
-        .mockImplementation((key: string, defaultValue: string = "") => {
-          const defaults: { [key: string]: any } = {
-            id: "test-session-001",
-            title: "Test Session Title",
-            description: "Test session description",
-            date: "2024-01-01",
-            genre: "Conversation",
-            access: "CC BY 4.0",
-            ...overrides.metadata
-          };
-          // Return the value if it exists, otherwise return the defaultValue (which might be "")
-          return defaults[key] !== undefined ? defaults[key] : defaultValue;
-        }),
+      getTextProperty: vi.fn().mockImplementation((key: string, defaultValue: string = "") => {
+        const defaults: { [key: string]: any } = {
+          id: "test-session-001",
+          title: "Test Session Title",
+          description: "Test session description",
+          date: "2024-01-01",
+          genre: "Conversation",
+          access: "CC BY 4.0",
+          ...overrides.metadata,
+        };
+        // Return the value if it exists, otherwise return the defaultValue (which might be "")
+        return defaults[key] !== undefined ? defaults[key] : defaultValue;
+      }),
       setTextStringProperty: vi.fn(),
-      hasValue: vi.fn().mockReturnValue(true)
+      hasValue: vi.fn().mockReturnValue(true),
     },
     files: [],
     participants: [],
     getAllContributionsToAllFiles: vi.fn().mockReturnValue([]),
-    ...overrides
+    ...overrides,
   } as unknown as Session;
 
   return mockSession;
@@ -485,21 +499,17 @@ export const createMockPerson = (overrides: Partial<any> = {}): Person => {
     fullName: "John Doe",
     nickname: "John",
     howToContact: "john@example.com",
-    ...overrides.metadata
+    ...overrides.metadata,
   };
 
   // Add the required methods to mockProperties
-  (mockProperties as any).getHasValue = vi
-    .fn()
-    .mockImplementation((key: string) => {
-      return defaults[key] !== undefined && defaults[key] !== "";
-    });
+  (mockProperties as any).getHasValue = vi.fn().mockImplementation((key: string) => {
+    return defaults[key] !== undefined && defaults[key] !== "";
+  });
 
-  (mockProperties as any).getTextStringOrEmpty = vi
-    .fn()
-    .mockImplementation((key: string) => {
-      return defaults[key] || "";
-    });
+  (mockProperties as any).getTextStringOrEmpty = vi.fn().mockImplementation((key: string) => {
+    return defaults[key] || "";
+  });
 
   const mockPerson = {
     displayName: "Test Person",
@@ -513,7 +523,7 @@ export const createMockPerson = (overrides: Partial<any> = {}): Person => {
           fullName: "John Doe",
           nickname: "John",
           howToContact: "john@example.com",
-          ...overrides.metadata
+          ...overrides.metadata,
         };
         return defaults[key] || "";
       }),
@@ -522,27 +532,25 @@ export const createMockPerson = (overrides: Partial<any> = {}): Person => {
           fullName: "John Doe",
           nickname: "John",
           howToContact: "john@example.com",
-          ...overrides.metadata
+          ...overrides.metadata,
         };
         return defaults[key];
       }),
-      getTextProperty: vi
-        .fn()
-        .mockImplementation((key: string, defaultValue: string = "") => {
-          const defaults: { [key: string]: any } = {
-            fullName: "John Doe",
-            nickname: "John",
-            howToContact: "john@example.com",
-            ...overrides.metadata
-          };
-          // Return the value if it exists, otherwise return the defaultValue (which might be "")
-          return defaults[key] !== undefined ? defaults[key] : defaultValue;
-        }),
+      getTextProperty: vi.fn().mockImplementation((key: string, defaultValue: string = "") => {
+        const defaults: { [key: string]: any } = {
+          fullName: "John Doe",
+          nickname: "John",
+          howToContact: "john@example.com",
+          ...overrides.metadata,
+        };
+        // Return the value if it exists, otherwise return the defaultValue (which might be "")
+        return defaults[key] !== undefined ? defaults[key] : defaultValue;
+      }),
       setTextStringProperty: vi.fn(),
-      hasValue: vi.fn().mockReturnValue(true)
+      hasValue: vi.fn().mockReturnValue(true),
     },
     files: [],
-    ...overrides
+    ...overrides,
   } as unknown as Person;
 
   return mockPerson;
@@ -588,59 +596,9 @@ export const createMockPerson = (overrides: Partial<any> = {}): Person => {
  * - **Mock fields**: ~10 basic stubs for controlled testing scenarios
  */
 export const setupCommonMocks = (useRealFieldDefinitions: boolean = true) => {
-  createStaticLanguageFinderMock();
-
   if (useRealFieldDefinitions) {
     setupRealFieldDefinitions();
   } else {
     setupFieldDefinitionMocks();
   }
-
-  // Mock other common dependencies
-  vi.mock("../../../../localization/LocalizationManager", () => ({
-    default: {
-      getLocalizedText: vi.fn().mockImplementation((key: string) => key)
-    }
-  }));
-};
-
-/**
- * Common RO-Crate exporter mocks
- */
-export const setupExporterMocks = () => {
-  vi.mock("../LanguageManager", () => ({
-    languageManager: {
-      clear: vi.fn(),
-      getLanguageEntity: vi.fn(),
-      getLanguageReference: vi.fn(),
-      trackUsage: vi.fn(),
-      getUsedLanguageEntities: vi.fn().mockReturnValue([]),
-      getUnusedLanguageEntities: vi.fn().mockReturnValue([])
-    },
-    LanguageManager: vi.fn()
-  }));
-
-  vi.mock("../LicenseManager", () => ({
-    LicenseManager: vi.fn().mockImplementation(() => ({
-      setDefaultLicense: vi.fn(),
-      setFileLicense: vi.fn(),
-      getFileLicense: vi.fn(),
-      getFileLicenseReference: vi.fn(),
-      ensureFileLicense: vi.fn(),
-      clear: vi.fn(),
-      getAllFileLicenses: vi.fn()
-    })),
-    getSessionLicenseId: vi
-      .fn()
-      .mockReturnValue("https://creativecommons.org/licenses/by/4.0/")
-  }));
-
-  vi.mock("../RoCrateValidator", () => ({
-    RoCrateValidator: vi.fn().mockImplementation(() => ({
-      validate: vi
-        .fn()
-        .mockReturnValue({ isValid: true, errors: [], warnings: [] })
-    })),
-    ensureSubjectLanguage: vi.fn()
-  }));
 };

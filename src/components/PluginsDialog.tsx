@@ -3,12 +3,13 @@ import * as React from "react";
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { i18n } from "@lingui/core";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { ipcRenderer, OpenDialogOptions } from "electron";
 import Path from "path";
 import fs from "fs-extra";
 import extract from "extract-zip";
-import { app } from "@electron/remote";
+import { getPath } from "../other/windowIpc";
 import pluginManager, { PluginRecord } from "../plugins/PluginManager";
 import { parsePluginManifest } from "../plugins/PluginManifest";
 import { asyncTrash } from "../other/crossPlatformUtilities";
@@ -22,7 +23,7 @@ import {
   DialogBottomLeftButtons,
   DialogMiddle,
   DialogTitle,
-  LametaDialog
+  LametaDialog,
 } from "./LametaDialog";
 
 let staticShowPluginsDialog: () => void = () => {};
@@ -56,9 +57,9 @@ function readManifestText(folder: string): string | undefined {
 
 async function installPluginFromZip(zipPath: string): Promise<void> {
   const tempRoot = Path.join(
-    app.getPath("userData"),
+    getPath("userData"),
     "plugins-install-tmp",
-    Path.basename(zipPath, Path.extname(zipPath)) + "-" + process.pid
+    Path.basename(zipPath, Path.extname(zipPath)) + "-" + process.pid,
   );
   try {
     await fs.remove(tempRoot);
@@ -68,9 +69,7 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
     const pluginFolder = findPluginFolderInExtract(tempRoot);
     if (!pluginFolder) {
       NotifyError(
-        i18n._(
-          t`That zip does not contain a plugin.json5 at its root or one level deep.`
-        )
+        i18n._(t`That zip does not contain a plugin.json5 at its root or one level deep.`),
       );
       return;
     }
@@ -78,26 +77,20 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
     const manifestText = readManifestText(pluginFolder)!;
     const result = parsePluginManifest(manifestText);
     if (result.errors) {
-      NotifyError(
-        i18n._(t`The plugin's manifest has problems:`) +
-          "\n" +
-          result.errors.join("\n")
-      );
+      NotifyError(i18n._(t`The plugin's manifest has problems:`) + "\n" + result.errors.join("\n"));
       return;
     }
 
     const id = result.manifest!.id;
-    const target = Path.join(app.getPath("userData"), "plugins", id);
+    const target = Path.join(getPath("userData"), "plugins", id);
 
     if (fs.existsSync(target)) {
       const choice = await ipcRenderer.invoke("showMessageBox", {
         type: "question",
-        message: i18n._(
-          t`A plugin with id "${id}" is already installed. Replace it?`
-        ),
+        message: i18n._(t`A plugin with id "${id}" is already installed. Replace it?`),
         buttons: [i18n._(t`Replace`), i18n._(t`Cancel`)],
         cancelId: 1,
-        defaultId: 0
+        defaultId: 0,
       });
       if (choice !== 0) return;
       await fs.remove(target);
@@ -107,9 +100,7 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
     await fs.move(pluginFolder, target, { overwrite: true });
     pluginManager.reload();
   } catch (e: any) {
-    NotifyError(
-      i18n._(t`Could not install the plugin.`) + " " + (e?.message || e)
-    );
+    NotifyError(i18n._(t`Could not install the plugin.`) + " " + (e?.message || e));
   } finally {
     await fs.remove(tempRoot).catch(() => {});
   }
@@ -119,65 +110,87 @@ const PluginRow: React.FunctionComponent<{
   record: PluginRecord;
   showSource: boolean;
 }> = observer(({ record, showSource }) => {
-    const name = record.manifest?.name || record.id;
-    const version = record.manifest?.version || "";
-    const description = record.manifest?.description || "";
+  const name = record.manifest?.name || record.id;
+  const version = record.manifest?.version || "";
+  const description = record.manifest?.description || "";
 
-    return (
-      <tr>
-        <td>
-          <input
-            type="checkbox"
-            checked={record.enabled}
-            disabled={!!record.errors}
-            onChange={(e) =>
-              pluginManager.setEnabled(record.id, e.target.checked)
-            }
-            aria-label={`enable ${record.id}`}
-          />
-        </td>
-        <td>
-          <div css={css`font-weight: 600;`}>{name}</div>
-          <div css={css`font-size: 0.85em; color: #6b6b6b;`}>{record.id}</div>
-          {record.errors && (
-            <div css={css`color: #dc322f; font-size: 0.85em;`}>
-              {record.errors.join("; ")}
-            </div>
-          )}
-        </td>
-        <td>{version}</td>
-        <td css={css`max-width: 260px;`}>{description}</td>
-        {showSource && <td>{record.source}</td>}
-        <td>
-          {record.source === "user" && (
-            <a
-              css={css`color: ${lameta_dark_green}; cursor: pointer;`}
-              onClick={async () => {
-                const choice = await ipcRenderer.invoke("showMessageBox", {
-                  type: "question",
-                  message: i18n._(t`Uninstall "${name}"?`),
-                  buttons: [i18n._(t`Uninstall`), i18n._(t`Cancel`)],
-                  cancelId: 1,
-                  defaultId: 0
-                });
-                if (choice !== 0) return;
-                const r = await asyncTrash(record.directory);
-                if (!r.succeeded) {
-                  NotifyWarning(
-                    i18n._(t`lameta could not remove the plugin folder.`)
-                  );
-                }
-                pluginManager.reload();
-              }}
-            >
-              <Trans>Uninstall</Trans>
-            </a>
-          )}
-        </td>
-      </tr>
-    );
-  }
-);
+  return (
+    <tr>
+      <td>
+        <input
+          type="checkbox"
+          checked={record.enabled}
+          disabled={!!record.errors}
+          onChange={(e) => pluginManager.setEnabled(record.id, e.target.checked)}
+          aria-label={`enable ${record.id}`}
+        />
+      </td>
+      <td>
+        <div
+          css={css`
+            font-weight: 600;
+          `}
+        >
+          {name}
+        </div>
+        <div
+          css={css`
+            font-size: 0.85em;
+            color: #6b6b6b;
+          `}
+        >
+          {record.id}
+        </div>
+        {record.errors && (
+          <div
+            css={css`
+              color: #dc322f;
+              font-size: 0.85em;
+            `}
+          >
+            {record.errors.join("; ")}
+          </div>
+        )}
+      </td>
+      <td>{version}</td>
+      <td
+        css={css`
+          max-width: 260px;
+        `}
+      >
+        {description}
+      </td>
+      {showSource && <td>{record.source}</td>}
+      <td>
+        {record.source === "user" && (
+          <a
+            css={css`
+              color: ${lameta_dark_green};
+              cursor: pointer;
+            `}
+            onClick={async () => {
+              const choice = await ipcRenderer.invoke("showMessageBox", {
+                type: "question",
+                message: i18n._(t`Uninstall "${name}"?`),
+                buttons: [i18n._(t`Uninstall`), i18n._(t`Cancel`)],
+                cancelId: 1,
+                defaultId: 0,
+              });
+              if (choice !== 0) return;
+              const r = await asyncTrash(record.directory);
+              if (!r.succeeded) {
+                NotifyWarning(i18n._(t`lameta could not remove the plugin folder.`));
+              }
+              pluginManager.reload();
+            }}
+          >
+            <Trans>Uninstall</Trans>
+          </a>
+        )}
+      </td>
+    </tr>
+  );
+});
 
 export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
   const [open, setOpen] = useState(false);
@@ -190,15 +203,10 @@ export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
   };
 
   const plugins = pluginManager.plugins;
-  const showDeveloperUi =
-    userSettings.DeveloperMode || getTestEnvironment().E2E;
+  const showDeveloperUi = userSettings.DeveloperMode || getTestEnvironment().E2E;
 
   return (
-    <LametaDialog
-      requestClose={() => setOpen(false)}
-      open={open}
-      data-testid="plugins-dialog"
-    >
+    <LametaDialog requestClose={() => setOpen(false)} open={open} data-testid="plugins-dialog">
       <DialogTitle title={i18n._(t`Plugins`)}></DialogTitle>
       <DialogMiddle>
         {plugins.length === 0 ? (
@@ -241,11 +249,7 @@ export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
             </thead>
             <tbody>
               {plugins.map((record) => (
-                <PluginRow
-                  key={record.id}
-                  record={record}
-                  showSource={showDeveloperUi}
-                />
+                <PluginRow key={record.id} record={record} showSource={showDeveloperUi} />
               ))}
             </tbody>
           </table>
@@ -259,13 +263,23 @@ export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
               border-top: 1px solid #ddd;
             `}
           >
-            <h4 css={css`margin-bottom: 4px;`}>
+            <h4
+              css={css`
+                margin-bottom: 4px;
+              `}
+            >
               <Trans>Developer plugin folder</Trans>
             </h4>
-            <p css={css`font-size: 0.85em; color: #6b6b6b; margin-top: 0;`}>
+            <p
+              css={css`
+                font-size: 0.85em;
+                color: #6b6b6b;
+                margin-top: 0;
+              `}
+            >
               <Trans>
-                Point this at a plugin folder you are developing. lameta watches
-                it and reloads the open tab whenever you save a change.
+                Point this at a plugin folder you are developing. lameta watches it and reloads the
+                open tab whenever you save a change.
               </Trans>
             </p>
             <div
@@ -276,29 +290,35 @@ export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
                 gap: 12px;
               `}
             >
-              <div css={css`overflow-wrap: anywhere; flex: 1;`}>
+              <div
+                css={css`
+                  overflow-wrap: anywhere;
+                  flex: 1;
+                `}
+              >
                 {devPath || i18n._(t`(not set)`)}
               </div>
               <button
                 onClick={() => {
                   const options: OpenDialogOptions = {
-                    properties: ["openDirectory"]
+                    properties: ["openDirectory"],
                   };
-                  ipcRenderer
-                    .invoke("showOpenDialog", options)
-                    .then((r) => {
-                      if (r && r.filePaths && r.filePaths.length > 0) {
-                        pluginManager.setDeveloperPluginPath(r.filePaths[0]);
-                        setDevPath(r.filePaths[0]);
-                      }
-                    });
+                  void ipcRenderer.invoke("showOpenDialog", options).then((r) => {
+                    if (r && r.filePaths && r.filePaths.length > 0) {
+                      pluginManager.setDeveloperPluginPath(r.filePaths[0]);
+                      setDevPath(r.filePaths[0]);
+                    }
+                  });
                 }}
               >
                 <Trans>Change...</Trans>
               </button>
               {devPath && (
                 <a
-                  css={css`color: ${lameta_dark_green}; cursor: pointer;`}
+                  css={css`
+                    color: ${lameta_dark_green};
+                    cursor: pointer;
+                  `}
                   onClick={() => {
                     pluginManager.setDeveloperPluginPath("");
                     setDevPath("");
@@ -320,12 +340,12 @@ export const PluginsDialog: React.FunctionComponent<{}> = observer(() => {
                 properties: ["openFile"],
                 filters: [
                   { name: "lameta plugin", extensions: ["lmplug"] },
-                  { name: "Zip", extensions: ["zip"] }
-                ]
+                  { name: "Zip", extensions: ["zip"] },
+                ],
               };
-              ipcRenderer.invoke("showOpenDialog", options).then((r) => {
+              void ipcRenderer.invoke("showOpenDialog", options).then((r) => {
                 if (r && r.filePaths && r.filePaths.length > 0) {
-                  installPluginFromZip(r.filePaths[0]);
+                  void installPluginFromZip(r.filePaths[0]);
                 }
               });
             }}

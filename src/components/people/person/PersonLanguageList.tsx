@@ -1,38 +1,20 @@
 import { css } from "@emotion/react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 /* removed emotion jsx declaration */
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import ReactDOM from "react-dom";
+import React, { useState, useEffect, useMemo } from "react";
 //import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import {
-  SortableContainer,
-  SortableElement,
-  SortableHandle
-} from "react-sortable-hoc";
+import { SortableContainer, SortableElement, SortableHandle } from "react-sortable-hoc";
 // @ts-ignore
 import dragIcon from "@assets/drag-affordance.svg";
-import {
-  Person,
-  maxOtherLanguages
-} from "../../../model/Project/Person/Person";
+import { Person } from "../../../model/Project/Person/Person";
 import { LanguageFinder } from "../../../languageFinder/LanguageFinder";
-import { OldPersonLanguagesEditor } from "./OldPersonLanguagesEditor";
 import arrayMove from "array-move";
 import { OnePersonLanguageEditor } from "./OnePersonLanguageEditor";
 import { IPersonLanguage } from "../../../model/PersonLanguage";
 import { observer } from "mobx-react";
 import { FieldLabel } from "../../FieldLabel";
 
-const reorder = (list: string[], startIndex, endIndex): string[] => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-};
-
-const grid = 8;
 const DragHandle = SortableHandle(() => (
   <img
     src={dragIcon}
@@ -78,10 +60,11 @@ export const PersonLanguageList: React.FunctionComponent<{
   const slots = [...props.person.languages];
   const languagesDefinition = useMemo(
     () => props.person.properties.getFieldDefinition("languages"),
-    []
+    [],
   );
-  const [newLanguagePlaceholder, setNewLanguagePlaceholder] =
-    useState<IPersonLanguage | undefined>(undefined);
+  const [newLanguagePlaceholder, setNewLanguagePlaceholder] = useState<IPersonLanguage | undefined>(
+    undefined,
+  );
   const [focusOnPlaceholder, setFocusOnPlaceholder] = useState(false);
   // Show an empty slot if there are no languages listed at all
   useEffect(() => {
@@ -120,25 +103,18 @@ export const PersonLanguageList: React.FunctionComponent<{
         useDragHandle
         onSortEnd={({ oldIndex, newIndex }, event) => {
           // don't allow drag of an empty box
-          if (
-            oldIndex >= props.person.languages.length ||
-            !props.person.languages[oldIndex].code
-          ) {
+          if (oldIndex >= props.person.languages.length || !props.person.languages[oldIndex].code) {
             event.preventDefault();
           } else {
             //setLangElements(arrayMove(langElements, oldIndex, newIndex));
-            props.person.languages = arrayMove(
-              props.person.languages,
-              oldIndex,
-              newIndex
-            );
+            props.person.languages = arrayMove(props.person.languages, oldIndex, newIndex);
           }
         }}
       />
       {/* Show a new language link if there is not already an empty slot */}
       {!!newLanguagePlaceholder || (
         <a
-          onClick={(x) => {
+          onClick={() => {
             setNewLanguagePlaceholder({} as any as IPersonLanguage);
             setFocusOnPlaceholder(true);
           }}

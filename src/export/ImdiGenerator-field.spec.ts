@@ -1,14 +1,10 @@
-import { describe, it, beforeAll, afterAll, expect } from "vitest";
+import { describe, it, expect } from "vite-plus/test";
 import { printResultXml, setResultXml } from "../other/xmlUnitTestUtils";
 import * as XmlBuilder from "xmlbuilder";
-import { fieldElement } from "./Imdi-static-fns.ts";
-import { Field, FieldType } from "../model/field/Field.ts";
-import { FieldDefinition } from "../model/field/FieldDefinition.ts";
-import {
-  getImdiConformantBirthDate,
-  isTildeBirthYear,
-  resetTildeBirthYearWarning
-} from "./ImdiGenerator.ts";
+import { fieldElement, textElement } from "./Imdi-static-fns";
+import { Field, FieldType } from "../model/field/Field";
+import { FieldDefinition } from "../model/field/FieldDefinition";
+import { getImdiConformantBirthDate, isTildeBirthYear } from "./ImdiGenerator";
 import { setupLanguageFinderForTests } from "../languageFinder/LanguageFinder";
 
 // Set up staticLanguageFinder for ISO639-3 code lookups
@@ -30,14 +26,38 @@ describe("imdi monolingual field export", () => {
 
   it("exports value of a simple string Field", () => {
     run((builder) => {
-      fieldElement(
-        "wallcolor",
-        new Field("color", FieldType.Text, "yellow"),
-        builder,
-        builder
-      );
+      fieldElement("wallcolor", new Field("color", FieldType.Text, "yellow"), builder, builder);
     });
     expect("//wallcolor").toHaveText("yellow");
+  });
+  it("exports a value without the spaces around it", () => {
+    run((builder) => {
+      fieldElement("Name", new Field("name", FieldType.Text, " Ana López "), builder, builder);
+      fieldElement("FullName", " Ana López ", builder, builder);
+    });
+    expect("//Name").toHaveText("Ana López");
+    expect("//FullName").toHaveText("Ana López");
+  });
+  it("writes an element's text without the spaces around it", () => {
+    run((builder) => {
+      textElement(builder, "Title", "  Documentos de consentimiento ");
+      textElement(builder, "Description", undefined);
+    });
+    expect("//Title").toHaveText("Documentos de consentimiento");
+    expect("//Description").toHaveText("");
+  });
+  it("exports the default for a required value that is only spaces", () => {
+    run((builder) => {
+      fieldElement(
+        "Name",
+        new Field("name", FieldType.Text, "   "),
+        builder,
+        builder,
+        true,
+        "Unspecified",
+      );
+    });
+    expect("//Name").toHaveText("Unspecified");
   });
   it("exports imdirange with attributes", () => {
     const field = new Field("unused", FieldType.Text, "Guatemala");
@@ -45,17 +65,14 @@ describe("imdi monolingual field export", () => {
       key: "unused",
       englishLabel: "unused",
       persist: true,
-      imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml"
+      imdiRange: "http://www.mpi.nl/IMDI/Schema/Countries.xml",
     });
 
     run((builder) => {
       fieldElement("country", field, builder, builder);
     });
     expect("//country").toHaveText("Guatemala");
-    expect("//country").toHaveAttributeValue(
-      "Link",
-      "http://www.mpi.nl/IMDI/Schema/Countries.xml"
-    );
+    expect("//country").toHaveAttributeValue("Link", "http://www.mpi.nl/IMDI/Schema/Countries.xml");
     expect("//country").toHaveAttributeValue("Type", "OpenVocabulary");
   });
 });
@@ -96,7 +113,7 @@ describe("xmlElementIsRequired & default handling", () => {
         new Field("color", FieldType.Text, "yellow"),
         builder,
         builder,
-        true
+        true,
       );
     });
     printResultXml();
@@ -111,7 +128,7 @@ describe("imdi multilingual field export", () => {
     run((builder) => {
       fieldElement("description", field, builder);
     });
-    expect("//description").toHaveAttributeValue("LanguageId", "ISO639-1:en");
+    expect("//description").toHaveAttributeValue("LanguageId", "ISO639-3:eng");
   });
   */
   it("exports both English and language with 3 letter code", () => {
@@ -123,9 +140,24 @@ describe("imdi multilingual field export", () => {
     expect("//description[@LanguageId]").toHaveCount(2);
     //printResultXml();
     expect("//description[@LanguageId='ISO639-3:eng']").toHaveText("a house");
-    expect("//description[@LanguageId='ISO639-3:etr']").toHaveText(
-      "house in edolo"
-    );
+    expect("//description[@LanguageId='ISO639-3:etr']").toHaveText("house in edolo");
+  });
+
+  it("exports slash-syntax multilingual values using metadata slot order", () => {
+    const field = new Field("description", FieldType.Text, "a house / una casa");
+    field.definition = new FieldDefinition({
+      key: "description",
+      englishLabel: "Description",
+      persist: true,
+      type: "Text",
+      multilingual: true,
+    });
+    run((builder) => {
+      fieldElement("description", field, builder, builder, true, "", true, undefined, ["en", "es"]);
+    });
+    expect("//description[@LanguageId]").toHaveCount(2);
+    expect("//description[@LanguageId='ISO639-3:eng']").toHaveText("a house");
+    expect("//description[@LanguageId='ISO639-3:spa']").toHaveText("una casa");
   });
 });
 
@@ -176,9 +208,7 @@ describe("imdi monolingual field export", () => {
     });
     // Should have multiple Title elements with LanguageId attributes
     expect("//title[@LanguageId]").toHaveCount(3);
-    expect("//title[@LanguageId='ISO639-3:eng']").toHaveText(
-      "idea for tomorrow"
-    );
+    expect("//title[@LanguageId='ISO639-3:eng']").toHaveText("idea for tomorrow");
     expect("//title[@LanguageId='ISO639-3:spa']").toHaveText("idea para mañana");
     expect("//title[@LanguageId='ISO639-3:fra']").toHaveText("idée pour demain");
   });
@@ -193,6 +223,23 @@ describe("imdi monolingual field export", () => {
     });
     // Should have multiple Description elements with LanguageId attributes
     expect("//description[@LanguageId]").toHaveCount(2);
+  });
+
+  it("uses the first virtual slash-syntax language when standard IMDI allows only one value", () => {
+    const field = new Field("title", FieldType.Text, "idea for tomorrow / idea para manana");
+    field.definition = new FieldDefinition({
+      key: "title",
+      englishLabel: "Title",
+      persist: true,
+      type: "Text",
+      multilingual: true,
+    });
+    run((builder) => {
+      fieldElement("title", field, builder, builder, true, "", false, undefined, ["en", "es"]);
+    });
+    expect("//title").toHaveCount(1);
+    expect("//title[@LanguageId]").toNotExist();
+    expect("//title").toHaveText("idea for tomorrow");
   });
 });
 

@@ -5,7 +5,7 @@ import { Project } from "../model/Project/Project";
 import { Contribution } from "../model/file/File";
 import ReactTable from "react-table-6";
 import { translateRole } from "../other/localization";
-import { t } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
 import Tooltip from "react-tooltip-lite";
 import { HighlightSearchTerm } from "./HighlightSearchTerm";
 
@@ -26,30 +26,25 @@ export const PersonContributions = observer(
           id: "name",
           Header: t`Session`,
           width: 300,
-          accessor: (row: Contribution) => row.sessionName
+          accessor: (row: Contribution) => row.sessionName,
         },
         {
           id: "role",
           Header: t`Role`,
           width: 100,
-          accessor: (row: Contribution) =>
-            row && row.role ? translateRole(row.role) : "",
-          Cell: (cellInfo: any) => (
-            <HighlightSearchTerm text={cellInfo.value || ""} />
-          )
+          accessor: (row: Contribution) => (row && row.role ? translateRole(row.role) : ""),
+          Cell: (cellInfo: any) => <HighlightSearchTerm text={cellInfo.value || ""} />,
         },
         {
           id: "comments",
           Header: t`Comments`,
           //width: 200,
           accessor: (row: Contribution) => row.comments,
-          Cell: (cellInfo: any) => (
-            <HighlightSearchTerm text={cellInfo.value || ""} />
-          )
-        }
+          Cell: (cellInfo: any) => <HighlightSearchTerm text={cellInfo.value || ""} />,
+        },
       ];
       const rows = this.props.project.getContributionsMatchingPerson(
-        this.props.person.getIdToUseForReferences()
+        this.props.person.getIdToUseForReferences(),
       );
 
       return (
@@ -69,5 +64,5 @@ export const PersonContributions = observer(
         </Tooltip>
       );
     }
-  }
+  },
 );

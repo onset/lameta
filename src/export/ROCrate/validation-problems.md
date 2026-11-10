@@ -236,10 +236,7 @@ Dataset "subfolder" @id should end with / (line 1164)
 {
   "@id": "./",
   "@type": ["Dataset", "RepositoryCollection"],
-  "hasPart": [
-    { "@id": "Sessions/ETR001/audio.wav" },
-    { "@id": "#session-ETR001" }
-  ]
+  "hasPart": [{ "@id": "Sessions/ETR001/audio.wav" }, { "@id": "#session-ETR001" }]
 }
 ```
 

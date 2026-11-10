@@ -8,7 +8,7 @@
 import { observable, runInAction, makeObservable } from "mobx";
 import Path from "path";
 import fs from "fs-extra";
-import { app } from "@electron/remote";
+import { getPath } from "../other/windowIpc";
 import userSettings from "../other/UserSettings";
 import { parsePluginManifest, PluginManifest } from "./PluginManifest";
 import { MatchablePlugin } from "./pluginMatching";
@@ -56,7 +56,7 @@ export class PluginManager {
 
   /** The directory where installed (zipped) plugins are unpacked. */
   public get userPluginsDir(): string {
-    return Path.join(app.getPath("userData"), "plugins");
+    return Path.join(getPath("userData"), "plugins");
   }
 
   /** The optional single dev-plugin folder (contains plugin.json5 directly). */
@@ -99,7 +99,7 @@ export class PluginManager {
   private loadRecordFromFolder(
     dir: string,
     source: PluginSource,
-    disabledIds: Set<string>
+    disabledIds: Set<string>,
   ): PluginRecord | undefined {
     const manifestPath = findManifestFile(dir);
     if (!manifestPath) {
@@ -118,7 +118,7 @@ export class PluginManager {
           manifestPath,
           errors: result.errors,
           enabled: false,
-          reloadCounter: 0
+          reloadCounter: 0,
         };
       } else {
         record = {
@@ -128,7 +128,7 @@ export class PluginManager {
           manifestPath,
           manifest: result.manifest,
           enabled: !disabledIds.has(result.manifest!.id),
-          reloadCounter: 0
+          reloadCounter: 0,
         };
       }
     } catch (e: any) {
@@ -139,7 +139,7 @@ export class PluginManager {
         manifestPath,
         errors: [`Could not read manifest: ${e.message || e}`],
         enabled: false,
-        reloadCounter: 0
+        reloadCounter: 0,
       };
     }
     return observable(record);
@@ -157,11 +157,7 @@ export class PluginManager {
       if (fs.existsSync(base)) {
         for (const entry of fs.readdirSync(base, { withFileTypes: true })) {
           if (!entry.isDirectory()) continue;
-          const rec = this.loadRecordFromFolder(
-            Path.join(base, entry.name),
-            "user",
-            disabledIds
-          );
+          const rec = this.loadRecordFromFolder(Path.join(base, entry.name), "user", disabledIds);
           if (rec) records.push(rec);
         }
       }
@@ -195,7 +191,7 @@ export class PluginManager {
       const { ipcRenderer } = require("electron");
       ipcRenderer.invoke(
         "plugins:registerDirs",
-        records.map((r) => ({ id: r.id, directory: r.directory }))
+        records.map((r) => ({ id: r.id, directory: r.directory })),
       );
     } catch (e) {
       console.warn("PluginManager: could not register plugin dirs with main", e);
@@ -231,22 +227,15 @@ export class PluginManager {
     for (const record of this.plugins) {
       if (record.source !== "dev") continue;
       try {
-        const watcher = fs.watch(
-          record.directory,
-          { recursive: true },
-          () => {
-            if (this.watchDebounce) clearTimeout(this.watchDebounce);
-            this.watchDebounce = setTimeout(() => {
-              this.refreshDevPlugin(record);
-            }, 300);
-          }
-        );
+        const watcher = fs.watch(record.directory, { recursive: true }, () => {
+          if (this.watchDebounce) clearTimeout(this.watchDebounce);
+          this.watchDebounce = setTimeout(() => {
+            this.refreshDevPlugin(record);
+          }, 300);
+        });
         this.watchers.push(watcher);
       } catch (e) {
-        console.warn(
-          `PluginManager: could not watch dev plugin at ${record.directory}`,
-          e
-        );
+        console.warn(`PluginManager: could not watch dev plugin at ${record.directory}`, e);
       }
     }
   }

@@ -6,9 +6,11 @@ import { File } from "./File";
 import { EncounteredVocabularyRegistry } from "../Project/EncounteredVocabularyRegistry";
 import {
   fieldDefinitionsOfCurrentConfig,
-  prepareGlobalFieldDefinitionCatalog
+  prepareGlobalFieldDefinitionCatalog,
 } from "../field/ConfiguredFieldDefinitions";
 import { PatientFS } from "../../other/patientFile";
+import { hasMetadataExtension, isMacOSMetadataFile } from "../../other/crossPlatformUtilities";
+import { isMissingCloudPlaceholder } from "../../other/cloudFileStatus";
 
 // project, sessions, and person folders have a single metadata file describing their contents, and this ends
 // in a special extension (.sprj, .session, .person)
@@ -19,40 +21,50 @@ export class FolderMetadataFile extends File {
     doOutputTypeInXmlTags: boolean,
     fileExtensionForMetadata: string,
     fieldCatalog: FieldDefinition[],
-    customVocabularies: EncounteredVocabularyRegistry
+    customVocabularies: EncounteredVocabularyRegistry,
   ) {
-    const name = Path.basename(directory);
+    const expectedName = Path.basename(directory) + fileExtensionForMetadata;
 
-    let metadataPath = Path.join(directory, name + fileExtensionForMetadata);
-    //if the metadata file doesn't exist yet or has the wrong name
-    if (!fs.existsSync(metadataPath)) {
+    let metadataPath = Path.join(directory, expectedName);
+    //if the metadata file doesn't exist yet or has the wrong name, including a
+    // name that differs only in case. A file that the cloud provider evicted
+    // (only an iCloud ".<name>.icloud" sibling is left) does exist;
+    // readMetadataFile requests it instead.
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+    if (!entries.some((e) => e.name === expectedName) && !isMissingCloudPlaceholder(metadataPath)) {
       // does a file exist here with the right extension but the wrong name?
-      const files = fs.readdirSync(directory);
-      const possibleFiles = files.filter((f) =>
-        f.endsWith(fileExtensionForMetadata)
-      );
+      const possibleFiles = entries
+        .filter(
+          (e) =>
+            e.isFile() &&
+            hasMetadataExtension(e.name, fileExtensionForMetadata) &&
+            !isMacOSMetadataFile(e.name),
+        )
+        .map((e) => e.name);
       if (possibleFiles.length > 0) {
-        // use the first one. The next save will try to sort out the names
-        const pathToFileWithUnexpectedName = Path.join(
-          directory,
-          possibleFiles[0]
-        );
+        // prefer the one that differs only in case, else use the first one.
+        // The next save will try to sort out the names
+        const unexpectedName =
+          possibleFiles.find((f) => f.toLowerCase() === expectedName.toLowerCase()) ??
+          possibleFiles[0];
+        const pathToFileWithUnexpectedName = Path.join(directory, unexpectedName);
         try {
           PatientFS.renameSync(pathToFileWithUnexpectedName, metadataPath);
-          console.log(
-            `renamed ${pathToFileWithUnexpectedName} to ${metadataPath}`
-          );
+          console.log(`renamed ${pathToFileWithUnexpectedName} to ${metadataPath}`);
           // ok good, we're all set
-        } catch (err) {
+        } catch {
           // ah well
           console.error(
-            `Could not rename ${pathToFileWithUnexpectedName} to ${metadataPath}, using ${pathToFileWithUnexpectedName} instead`
+            `Could not rename ${pathToFileWithUnexpectedName} to ${metadataPath}, using ${pathToFileWithUnexpectedName} instead`,
           );
           metadataPath = pathToFileWithUnexpectedName;
         }
       } else {
         // ok, just make an empty one.
-        fs.writeFileSync(metadataPath, `<${xmlRootName}></${xmlRootName}>`); // NO: break SayMore Classic <${xmlRootName}/>
+        PatientFS.writeFileSyncWithNotifyThenRethrow(
+          metadataPath,
+          `<${xmlRootName}></${xmlRootName}>`, // NO: break SayMore Classic <${xmlRootName}/>
+        );
       }
     }
     super(
@@ -61,12 +73,12 @@ export class FolderMetadataFile extends File {
       xmlRootName,
       doOutputTypeInXmlTags,
       fileExtensionForMetadata,
-      false
+      false,
     );
     this.encounteredVocabularyRegistry = customVocabularies;
     this.readDefinitionsFromJson(fieldCatalog);
 
-    /* NB: don't do this within the constructor. subclass fields are not initialized until after super(): 
+    /* NB: don't do this within the constructor. subclass fields are not initialized until after super():
     this.finishLoading();
 
     Bizarrly, the only place this problem showed up is with Wallabyjs, when something downstream of finishLoading() was trying to access PersonMetadtaFile.languages,
@@ -109,10 +121,7 @@ export class FolderMetadataFile extends File {
       //console.log("Setting prop from fields.json5: " + field.key);
     });
   }
-  protected specialLoadingOfField(
-    tag: string,
-    propertiesFromXml: any
-  ): boolean {
+  protected specialLoadingOfField(_tag: string, _propertiesFromXml: any): boolean {
     //console.log("FolderMetaDataFile.specialHandlingOfField");
     return false;
   }

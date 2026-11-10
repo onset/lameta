@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 /* removed emotion jsx declaration */
 
 import * as React from "react";
@@ -14,12 +15,11 @@ import {
   DialogCancelButton,
   DialogMiddle,
   DialogTitle,
-  LametaDialog
+  LametaDialog,
 } from "../LametaDialog";
 import { error_color } from "../../containers/theme";
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
-import { Project } from "../../model/Project/Project";
 const sanitizeFilename = require("sanitize-filename");
 
 let staticShowRenameDialog: (file: File, folder: Folder) => void = () => {};
@@ -36,11 +36,11 @@ enum Mode {
   closed = 0,
   unchanged = 1,
   valid = 2,
-  invalid = 3
+  invalid = 3,
 }
 export const RenameFileDialog: React.FunctionComponent<{}> = () => {
   const [file, setFile] = useState<File>();
-  const [filename, setFilename] = useState<string>("");
+  const [, setFilename] = useState<string>("");
   const [folder, setFolder] = useState<Folder>();
   const [fileNameParts, setFileNameParts] = useState<FileNameParts>();
   const [mode, setMode] = useState<Mode>(Mode.closed);
@@ -52,7 +52,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     setFolder(folder);
     const parts = getFileNameParts(
       Path.basename(file.pathInFolderToLinkFileOrLocalCopy),
-      folder.filePrefix
+      folder.filePrefix,
     );
 
     setFileNameParts(parts);
@@ -73,10 +73,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
 
   const renameAndClose = () => {
     {
-      const didRename = folder!.renameChildWithFilenameMinusExtension(
-        file!,
-        getNewFileName(false)
-      );
+      const didRename = folder!.renameChildWithFilenameMinusExtension(file!, getNewFileName(false));
       if (didRename)
         // doesn't close if we do this right away
         window.setImmediate(() => setMode(Mode.closed));
@@ -88,10 +85,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     const sanitizedForArchive = sanitizeForArchive(pendingNewName);
     let m = "";
 
-    if (
-      sanitizeForArchive(fileNameParts!.prefix + ".txt") !==
-      fileNameParts!.prefix + ".txt"
-    ) {
+    if (sanitizeForArchive(fileNameParts!.prefix + ".txt") !== fileNameParts!.prefix + ".txt") {
       m = t`"${
         fileNameParts!.prefix
         // ughh this is such a bad message.
@@ -100,10 +94,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
       m = t`Please remove characters that not allowed by the Archive Settings.`;
     } else if (pendingNewName !== sanitizeFilename(pendingNewName)) {
       m = t`Some operating systems would not allow that name.`;
-    } else if (
-      pendingNewName.indexOf("/") > -1 ||
-      pendingNewName.indexOf("\\") > -1
-    ) {
+    } else if (pendingNewName.indexOf("/") > -1 || pendingNewName.indexOf("\\") > -1) {
       m = t`Sorry, no slashes are allowed`;
     } else if (mode != Mode.unchanged && fs.existsSync(getNewPath())) {
       m = t`A file with the same name already exists at that location.`;
@@ -121,7 +112,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
     return Path.join(
       Path.dirname(file!.pathInFolderToLinkFileOrLocalCopy),
 
-      getNewFileName()
+      getNewFileName(),
     );
   }
 
@@ -184,7 +175,7 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
             onChange={(e) =>
               setFileNameParts({
                 ...fileNameParts!,
-                core: e.target.value
+                core: e.target.value,
               })
             }
           />
@@ -203,10 +194,9 @@ export const RenameFileDialog: React.FunctionComponent<{}> = () => {
         {file?.isLinkFile() && (
           <p>
             <Trans>
-              Note that this is a link to a file in your Media Files directory.
-              Here, you are renaming this link, not the original file that it
-              points to. If you later create an export that includes this file,
-              the export will use this name.
+              Note that this is a link to a file in your Media Files directory. Here, you are
+              renaming this link, not the original file that it points to. If you later create an
+              export that includes this file, the export will use this name.
             </Trans>
           </p>
         )}
@@ -246,25 +236,18 @@ function getUneditablePrefix(filename: string, folderID: string): string {
   return folderID;
 }
 
-function getUneditableSuffix(
-  fileName: string,
-  stripLinkSuffix: boolean
-): string {
+function getUneditableSuffix(fileName: string, stripLinkSuffix: boolean): string {
   let p = fileName;
   const isLink = fileName.endsWith(kLinkExtensionWithFullStop);
   if (isLink) {
     p = p.replace(kLinkExtensionWithFullStop, "");
   }
 
-  const matchExtension = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+  const matchExtension = /\.([0-9a-z]+)(?:[?#]|$)/i;
   // if it's a link file, this will give us ".link"
   const sfx = stringMatchOrEmptyString(p, matchExtension);
 
-  return stripLinkSuffix
-    ? sfx
-    : isLink
-    ? sfx + kLinkExtensionWithFullStop
-    : sfx;
+  return stripLinkSuffix ? sfx : isLink ? sfx + kLinkExtensionWithFullStop : sfx;
 }
 
 export function getFileNameParts(fileName: string, folderId: string) {
@@ -272,7 +255,7 @@ export function getFileNameParts(fileName: string, folderId: string) {
     prefix: getUneditablePrefix(fileName, folderId),
     core: getCore(fileName, folderId),
     suffix: getUneditableSuffix(fileName, false),
-    suffixWithNoLink: getUneditableSuffix(fileName, true)
+    suffixWithNoLink: getUneditableSuffix(fileName, true),
   };
 }
 function getCore(fileName: string, folderId: string): string {

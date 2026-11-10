@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { observer } from "mobx-react";
 import { Field } from "../model/field/Field";
 import LanguagePickerDialog from "./LanguagePickerDialog/LanguagePickerDialog";
@@ -9,9 +9,7 @@ export interface IProps {
   field: Field;
 }
 
-class IsoLanguageEdit extends React.Component<
-  IProps & React.HTMLAttributes<HTMLDivElement>
-> {
+class IsoLanguageEdit extends React.Component<IProps & React.HTMLAttributes<HTMLDivElement>> {
   constructor(props: IProps) {
     super(props);
   }
@@ -22,10 +20,7 @@ class IsoLanguageEdit extends React.Component<
     return (
       <div className={"field " + this.props.className}>
         <label>{label}</label>
-        <a
-          className="languageEdit"
-          onClick={() => LanguagePickerDialog.show(this.props.field)}
-        >
+        <a className="languageEdit" onClick={() => LanguagePickerDialog.show(this.props.field)}>
           {this.props.field.text && this.props.field.text.length > 0 ? (
             this.props.field.text
           ) : (

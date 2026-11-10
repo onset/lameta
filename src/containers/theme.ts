@@ -1,5 +1,9 @@
 import { createTheme, Theme } from "@mui/material";
 
+// Text colors - use these instead of pure black for better readability
+export const textPrimary = "rgba(0, 0, 0, 0.87)";
+export const textSecondary = "rgba(0, 0, 0, 0.6)";
+
 export const lameta_orange = "#e69664";
 export const lameta_blue = "#becde4";
 export const lameta_dark_blue = "#3D5E90";
@@ -23,28 +27,28 @@ export function createLametaTheme(): Theme {
         // NB: if you change this to lameta_green, then we have to figure out how
         // to get the import checkboxes to go to a darker shade
         main: lameta_dark_green,
-        contrastText: "white"
+        contrastText: "white",
       },
       warning: { main: "#F3AA18" },
-      info: { main: "#FFFF00" /* todo */ }
+      info: { main: "#FFFF00" /* todo */ },
     },
     components: {
       MuiAlert: {
         styleOverrides: {
           standardWarning: {
-            color: "#0c0c0ce1", // black with some transparency
+            color: textPrimary,
             backgroundColor: "#f8ea2d",
             "& .MuiAlert-icon": {
-              color: "#0c0c0ce1" // Your folder orange, keeps theme
+              color: textPrimary,
             },
             "& .MuiAlert-icon svg": {
               width: "1.5em",
-              height: "1.5em"
-            }
-          }
-        }
-      }
-    }
+              height: "1.5em",
+            },
+          },
+        },
+      },
+    },
   });
 }
 
@@ -56,10 +60,10 @@ export function createProjectTheme(): Theme {
         // NB: if you change this to lameta_green, then we have to figure out how
         // to get the import checkboxes to go to a darker shade
         main: lameta_orange,
-        contrastText: "white"
+        contrastText: "white",
       },
       warning: { main: "#F3AA18" },
-      info: { main: "#f6dbcb" }
+      info: { main: "#f6dbcb" },
     },
     components: {
       MuiAlert: {
@@ -68,11 +72,11 @@ export function createProjectTheme(): Theme {
             color: "#8B4513",
             backgroundColor: "#FFF8DC",
             "& .MuiAlert-icon": {
-              color: "#B8860B"
-            }
-          }
-        }
-      }
-    }
+              color: "#B8860B",
+            },
+          },
+        },
+      },
+    },
   });
 }

@@ -18,9 +18,7 @@ export type ValidationResult = {
  * @param json The RO-Crate JSON object to validate
  * @returns A promise that resolves to an array of validation entries
  */
-export const validateRoCrate = async (
-  json: object
-): Promise<ValidationEntry[]> => {
+export const validateRoCrate = async (json: object): Promise<ValidationEntry[]> => {
   return await rocrate.validate(json);
 };
 
@@ -29,15 +27,13 @@ export const validateRoCrate = async (
  * @param json The RO-Crate JSON object to validate
  * @returns A promise that resolves to validation results categorized by severity
  */
-export const validateRoCrateWithCategories = async (
-  json: object
-): Promise<ValidationResult> => {
+export const validateRoCrateWithCategories = async (json: object): Promise<ValidationResult> => {
   try {
     const entries = await rocrate.validate(json);
     return {
       errors: entries.filter((entry) => entry.status === "error"),
       warnings: entries.filter((entry) => entry.status === "warning"),
-      info: entries.filter((entry) => entry.status === "info")
+      info: entries.filter((entry) => entry.status === "info"),
     };
   } catch (e) {
     return {
@@ -46,11 +42,11 @@ export const validateRoCrateWithCategories = async (
           message: `${e.message} ${e.stack || ""}`,
           id: "validation-error",
           status: "error",
-          clause: "validation-exception"
-        }
+          clause: "validation-exception",
+        },
       ],
       warnings: [],
-      info: []
+      info: [],
     };
   }
 };

@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { css } from "@emotion/react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { PluginHostBridge } from "../plugins/PluginHostBridge";
 import { pluginAssetUrl } from "../plugins/pluginScheme";
 import pluginIcon from "@assets/plugin.svg";
 import {
   LAMETA_PLUGIN_API_VERSIONS_SUPPORTED,
   PluginFolderType,
-  PluginInitContext
+  PluginInitContext,
 } from "../plugins/PluginApiTypes";
 
 export interface PluginTabPanelProps {
@@ -52,19 +52,14 @@ const HANDSHAKE_TIMEOUT_MS = 10000;
 // PluginHostBridge for the typed postMessage API. Mounts when its tab is selected (react-tabs
 // lazily renders only the selected panel) and unmounts on file/tab change, so each iframe is
 // bound to exactly one file for its lifetime.
-export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
-  props
-) => {
+export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (props) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [status, setStatus] = useState<"connecting" | "ready" | "timeout">(
-    "connecting"
-  );
+  const [status, setStatus] = useState<"connecting" | "ready" | "timeout">("connecting");
   // Local remount counter: combined with reloadCounter to force a fresh iframe on demand
   // (dev hot-reload, or the user clicking "Reload" after a handshake timeout).
   const [attempt, setAttempt] = useState(0);
 
-  const apiSupported =
-    LAMETA_PLUGIN_API_VERSIONS_SUPPORTED.includes(props.apiVersion);
+  const apiSupported = LAMETA_PLUGIN_API_VERSIONS_SUPPORTED.includes(props.apiVersion);
 
   const iframeKey = `${props.pluginId}:${props.tabId ?? ""}:${props.reloadCounter}:${attempt}`;
 
@@ -82,7 +77,7 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
       plugin: {
         id: props.pluginId,
         version: props.pluginVersion,
-        grantedPermissions: props.permissions
+        grantedPermissions: props.permissions,
       },
       file: {
         path: props.filePath,
@@ -90,16 +85,16 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
         extension: props.fileExtension,
         mimeType: props.fileMimeType,
         lametaType: props.fileLametaType,
-        uri: props.fileUri
+        uri: props.fileUri,
       },
       folder: {
         type: props.folderType,
-        directory: props.folderDirectory
+        directory: props.folderDirectory,
       },
       ui: {
         languageCode: props.languageCode,
-        appVersion: props.appVersion
-      }
+        appVersion: props.appVersion,
+      },
     };
 
     const bridge = new PluginHostBridge({
@@ -110,7 +105,7 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
       folderDirectory: props.folderDirectory,
       pluginId: props.pluginId,
       permissions: props.permissions,
-      onSelectFile: props.onSelectFile
+      onSelectFile: props.onSelectFile,
     });
 
     // Watch for evidence the plugin is alive so we can clear the timeout / hide the overlay.
@@ -146,8 +141,7 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (
       <div className="plugin-unsupported" css={messageCss}>
         <p>
           <Trans>
-            This plugin requires a newer version of lameta (plugin API version{" "}
-            {props.apiVersion}).
+            This plugin requires a newer version of lameta (plugin API version {props.apiVersion}).
           </Trans>
         </p>
       </div>

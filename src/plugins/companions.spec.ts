@@ -1,10 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as Path from "path";
-import {
-  isAllowedCompanionPath,
-  resolveCompanionPath,
-  companionAnchor
-} from "./companions";
+import { isAllowedCompanionPath, resolveCompanionPath, companionAnchor } from "./companions";
 
 // The generic prefix rule: A = selected file's name up to its first "."; a relPath is allowed
 // iff it's relative, <=2 segments, and its first segment either equals the selected file's whole
@@ -40,24 +36,18 @@ describe("isAllowedCompanionPath", () => {
     `${S}.annotations.eaf`,
     `${S}.annotations.pfsx`,
     `${S}.annotations.psfx`,
-    `${S}.oralAnnotations.wav`
+    `${S}.oralAnnotations.wav`,
   ])("accepts top-level companion %s", (p) => {
     expect(isAllowedCompanionPath(F, p)).toBe(true);
   });
 
   it("accepts files one level inside annotation dirs (F and S families)", () => {
-    expect(
-      isAllowedCompanionPath(F, `${F}_Annotations/1.2_to_3.4_Careful.wav`)
-    ).toBe(true);
-    expect(isAllowedCompanionPath(F, `${S}_Annotations/seg_Translation.wav`)).toBe(
-      true
-    );
+    expect(isAllowedCompanionPath(F, `${F}_Annotations/1.2_to_3.4_Careful.wav`)).toBe(true);
+    expect(isAllowedCompanionPath(F, `${S}_Annotations/seg_Translation.wav`)).toBe(true);
   });
 
   it("accepts comma-decimal segment names inside annotation dirs (comma-locale machines)", () => {
-    expect(
-      isAllowedCompanionPath(F, `${F}_Annotations/1,5_to_2,5_Careful.wav`)
-    ).toBe(true);
+    expect(isAllowedCompanionPath(F, `${F}_Annotations/1,5_to_2,5_Careful.wav`)).toBe(true);
   });
 
   it("accepts NON-wav files inside annotation dirs (the .wav-only restriction is dropped)", () => {
@@ -74,35 +64,25 @@ describe("isAllowedCompanionPath", () => {
   });
 
   it("accepts case-insensitively", () => {
-    expect(isAllowedCompanionPath(F, "etr009_source.MP3.ANNOTATIONS.EAF")).toBe(
-      true
-    );
-    expect(
-      isAllowedCompanionPath(F, `${F.toUpperCase()}_ANNOTATIONS/SEG.WAV`)
-    ).toBe(true);
+    expect(isAllowedCompanionPath(F, "etr009_source.MP3.ANNOTATIONS.EAF")).toBe(true);
+    expect(isAllowedCompanionPath(F, `${F.toUpperCase()}_ANNOTATIONS/SEG.WAV`)).toBe(true);
   });
 
   // --- an .eaf selection re-anchors on the media with no special case ---
   it("scopes an .eaf selection to the underlying media", () => {
     const EAF = "longerSound.wav.annotations.eaf"; // A = "longerSound"
     expect(isAllowedCompanionPath(EAF, "longerSound.wav")).toBe(true); // media itself
-    expect(isAllowedCompanionPath(EAF, "longerSound.wav.annotations.eaf")).toBe(
-      true
-    ); // the eaf
+    expect(isAllowedCompanionPath(EAF, "longerSound.wav.annotations.eaf")).toBe(true); // the eaf
     expect(
-      isAllowedCompanionPath(EAF, "longerSound.wav_Annotations/1.25_to_2.121_Careful.wav")
+      isAllowedCompanionPath(EAF, "longerSound.wav_Annotations/1.25_to_2.121_Careful.wav"),
     ).toBe(true); // segment recordings
-    expect(isAllowedCompanionPath(EAF, "longerSound_StandardAudio.wav")).toBe(
-      true
-    );
+    expect(isAllowedCompanionPath(EAF, "longerSound_StandardAudio.wav")).toBe(true);
   });
 
   // --- rejections ---
   it("rejects a first segment that does not anchor on the stem (boundary char must be . or _)", () => {
     // "ETR009_SourceX..." shares a prefix but the next char is not "." or "_"
-    expect(isAllowedCompanionPath(F, "ETR009_SourceX.annotations.eaf")).toBe(
-      false
-    );
+    expect(isAllowedCompanionPath(F, "ETR009_SourceX.annotations.eaf")).toBe(false);
     // classic foo/foobar case
     expect(isAllowedCompanionPath("foo.wav", "foobar.wav")).toBe(false);
   });
@@ -130,9 +110,7 @@ describe("isAllowedCompanionPath", () => {
 
   it("rejects absolute paths", () => {
     expect(isAllowedCompanionPath(F, `/etc/${F}.annotations.eaf`)).toBe(false);
-    expect(isAllowedCompanionPath(F, `C:\\evil\\${F}.annotations.eaf`)).toBe(
-      false
-    );
+    expect(isAllowedCompanionPath(F, `C:\\evil\\${F}.annotations.eaf`)).toBe(false);
   });
 
   it("rejects empty and non-matching paths", () => {
@@ -146,25 +124,25 @@ describe("resolveCompanionPath", () => {
 
   it("returns the absolute path under the file's directory", () => {
     expect(resolveCompanionPath(dir, F, `${F}.annotations.eaf`)).toBe(
-      Path.join(dir, `${F}.annotations.eaf`)
+      Path.join(dir, `${F}.annotations.eaf`),
     );
     expect(resolveCompanionPath(dir, F, `${F}_Annotations/seg.wav`)).toBe(
-      Path.join(dir, `${F}_Annotations`, "seg.wav")
+      Path.join(dir, `${F}_Annotations`, "seg.wav"),
     );
   });
 
   it("normalizes backslash separators", () => {
     expect(resolveCompanionPath(dir, F, `${F}_Annotations\\seg.wav`)).toBe(
-      Path.join(dir, `${F}_Annotations`, "seg.wav")
+      Path.join(dir, `${F}_Annotations`, "seg.wav"),
     );
   });
 
   it("throws a clear message on a disallowed path", () => {
     expect(() => resolveCompanionPath(dir, F, "../evil.eaf")).toThrow(
-      /not an allowed companion path/
+      /not an allowed companion path/,
     );
     expect(() => resolveCompanionPath(dir, F, "whatever.txt")).toThrow(
-      /not an allowed companion path/
+      /not an allowed companion path/,
     );
   });
 });

@@ -28,9 +28,7 @@ class FieldNameEdit extends React.Component<
   }
   private onChange(event: React.FormEvent<HTMLTextAreaElement>, field: Field) {
     // note, we don't want to change the key, we leave that up to the parent component
-    field.definition.englishLabel = this.processLabel(
-      event.currentTarget.value
-    );
+    field.definition.englishLabel = this.processLabel(event.currentTarget.value);
     this.setState({ invalid: false });
   }
   private processLabel(label: string): string {

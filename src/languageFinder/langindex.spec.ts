@@ -1,8 +1,8 @@
 import fs from "fs";
 import { ILangIndexEntry } from "./LanguageFinder";
-import { describe, beforeAll, it, expect } from "vitest";
+import { describe, beforeAll, it, expect } from "vite-plus/test";
 
-// langindex.json is created by `yarn make-langindex`. We will need to run that whenever we take in an updated langtags.json from
+// langindex.json is created by `pnpm run make-langindex`. We will need to run that whenever we take in an updated langtags.json from
 describe("Check langindex.json", () => {
   let index: ILangIndexEntry[] = [];
   beforeAll(() => {
@@ -10,16 +10,12 @@ describe("Check langindex.json", () => {
     index = JSON.parse(json);
   });
   it("has expected stuff", () => {
-    expect(index.find((i) => i.iso639_3 === "qaa")?.englishName).toBe(
-      "Unlisted Language"
-    );
+    expect(index.find((i) => i.iso639_3 === "qaa")?.englishName).toBe("Unlisted Language");
 
     expect(
       index.find(
-        (i) =>
-          i.iso639_3 === "mza-Latn-MX" &&
-          i.englishName === "Mixtec, Santa María Zacatepec"
-      )
+        (i) => i.iso639_3 === "mza-Latn-MX" && i.englishName === "Mixtec, Santa María Zacatepec",
+      ),
     );
   });
 
@@ -27,10 +23,8 @@ describe("Check langindex.json", () => {
     expect(
       index.find(
         (i) =>
-          i.iso639_3 === "abt" &&
-          i.englishName === "Ambulas" &&
-          i.altNames?.includes("Abelam")
-      )
+          i.iso639_3 === "abt" && i.englishName === "Ambulas" && i.altNames?.includes("Abelam"),
+      ),
     ).toBeTruthy();
   });
 
@@ -41,8 +35,8 @@ describe("Check langindex.json", () => {
           i.iso639_3 === "abt" &&
           // should gather names from two following different tags: "abt-Latn-PG-x-maprik" and  "abt-Latn-PG-x-woserak"
           i.altNames?.includes("Ambulas - Maprik") &&
-          i.altNames?.includes("Ambulas - Wosera Kamu")
-      )
+          i.altNames?.includes("Ambulas - Wosera Kamu"),
+      ),
     ).toBeTruthy();
   });
 
@@ -63,6 +57,6 @@ describe("Check langindex.json", () => {
   it("removes duplicate names", () => {
     const abt = index.find((i) => i.iso639_3 === "abt");
     expect(!!abt).toBeTruthy();
-    expect(abt.altNames?.filter((n) => n === "Abulas").length).toBe(1);
+    expect(abt!.altNames?.filter((n) => n === "Abulas").length).toBe(1);
   });
 });

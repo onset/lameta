@@ -37,10 +37,7 @@ export function companionAnchor(fileName: string): string {
 /** True if a single path segment is an allowed companion first-segment for the selected file:
  * it equals the selected file's whole name, or it starts with the anchor A immediately followed
  * by "." or "_". Case-insensitive. */
-export function isAllowedCompanionFirstSegment(
-  fileName: string,
-  segment: string
-): boolean {
+export function isAllowedCompanionFirstSegment(fileName: string, segment: string): boolean {
   const s = segment.toLowerCase();
   const name = fileName.toLowerCase();
   if (s === name) return true;
@@ -55,10 +52,7 @@ export function isAllowedCompanionFirstSegment(
  * True if `relPath` (relative to the selected file's directory) names an allowed companion of
  * `fileName` under the generic prefix rule. Case-insensitive; "\" and "/" are equivalent.
  */
-export function isAllowedCompanionPath(
-  fileName: string,
-  relPath: string
-): boolean {
+export function isAllowedCompanionPath(fileName: string, relPath: string): boolean {
   if (typeof relPath !== "string" || relPath.length === 0) return false;
   const normalized = relPath.replace(/\\/g, "/");
   // Reject absolute paths in either flavor (leading slash or a drive letter).
@@ -79,24 +73,16 @@ export function isAllowedCompanionPath(
  * Validate `relPath` against the rule and return the absolute path under `fileDir`.
  * Throws with a clear message if the path is not an allowed companion of `fileName`.
  */
-export function resolveCompanionPath(
-  fileDir: string,
-  fileName: string,
-  relPath: string
-): string {
+export function resolveCompanionPath(fileDir: string, fileName: string, relPath: string): string {
   if (!isAllowedCompanionPath(fileName, relPath)) {
-    throw new Error(
-      `"${relPath}" is not an allowed companion path for "${fileName}"`
-    );
+    throw new Error(`"${relPath}" is not an allowed companion path for "${fileName}"`);
   }
   const fullPath = Path.join(fileDir, relPath.replace(/\\/g, "/"));
 
   // Defense in depth: ensure we stay inside the file's directory.
   const rel = Path.relative(fileDir, fullPath);
   if (rel.startsWith("..") || Path.isAbsolute(rel)) {
-    throw new Error(
-      `Refusing companion path outside the file's directory: "${relPath}"`
-    );
+    throw new Error(`Refusing companion path outside the file's directory: "${relPath}"`);
   }
   return fullPath;
 }

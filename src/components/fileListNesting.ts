@@ -53,7 +53,7 @@ export function computeNestedFileOrder(fileNames: string[]): NestedFileRow[] {
 
   // Resolve each file's parent (or null for top-level). A parent name is always
   // strictly shorter than its child's, so the parent graph is acyclic.
-  const parentOf: (number | null)[] = new Array(n).fill(null);
+  const parentOf: (number | null)[] = Array.from({ length: n }, () => null);
   lower.forEach((name, i) => {
     let parentIndex: number | undefined;
 
@@ -86,7 +86,7 @@ export function computeNestedFileOrder(fileNames: string[]): NestedFileRow[] {
   });
 
   // Depth via the parent chain (memoized).
-  const depthCache: number[] = new Array(n).fill(-1);
+  const depthCache: number[] = Array.from({ length: n }, () => -1);
   const depthOf = (i: number): number => {
     if (depthCache[i] >= 0) return depthCache[i];
     const p = parentOf[i];

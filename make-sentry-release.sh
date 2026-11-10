@@ -1,31 +1,31 @@
 #!/bin/bash
 
-# you must have LAMETA_SENTRY_AUTH_TOKEN in environment that has 
-# permissions org:read, project:read, project:releases
-# These Auth Tokens are found under the *user* settings in Sentry, not the project settings.
+# Makes the Sentry release for the version in package.json and uploads the source maps that
+# `vp run build` left in dist/. CI runs this on each publish, once per platform; running it twice
+# for one version is harmless.
 
-# Note: The commands also rely on .sentryclirc being in the same directory and configured appropriately.
+# Needs SENTRY_AUTH_TOKEN, or LAMETA_SENTRY_AUTH_TOKEN, holding a Sentry auth token with
+# permissions org:read, project:read, project:releases. These tokens are under the *user*
+# settings in Sentry, not the project settings.
 
-export SENTRY_AUTH_TOKEN=$LAMETA_SENTRY_AUTH_TOKEN
+set -euo pipefail
 
-commitSHA=$(sentry-cli releases propose-version)
-VERSION=$(grep version package.json | sed 's/.*"version": "\(.*\)".*/\1/')
-# I don't know if this works, suddenly started getting an error about a missing --org in the Action
-ORG=onset-org
+export SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN:-${LAMETA_SENTRY_AUTH_TOKEN:-}}
+export SENTRY_ORG=onset-org
+export SENTRY_PROJECT=lameta
 
-echo COMMIT: ${commitSHA}
-echo VERSION: ${VERSION}
+VERSION=$(node -p "require('./package.json').version")
+COMMIT=$(git rev-parse HEAD)
+sentry() { vp dlx @sentry/cli@2.39.1 "$@"; }
 
-sentry-cli info
+echo "VERSION: $VERSION"
+echo "COMMIT: $COMMIT"
 
-sentry-cli releases list
+sentry releases new "$VERSION"
 
- sentry-cli releases new -p lameta $VERSION
+# errorHandling.ts rewrites each stack frame's file name to start at "dist", as ~/dist/...
+sentry sourcemaps upload --release "$VERSION" --url-prefix "~/dist" dist
 
- sentry-cli releases set-commits $VERSION --commit "onset/lameta"@$commitSHA
+sentry releases set-commits "$VERSION" --commit "onset/lameta@$COMMIT"
 
- sentry-cli releases finalize "$VERSION"
-
-# We need render-bundle.js, render-bundle.js.map, and all source code:
-
-sentry-cli releases files $VERSION upload-sourcemaps ./app/ --rewrite --ext map --ext js --ext ts --ext tsx --ignore *.spec.ts --ignore *.css.map --ignore **/*Icon.tsx
+sentry releases finalize "$VERSION"

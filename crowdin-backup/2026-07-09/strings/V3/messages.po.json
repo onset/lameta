@@ -1,0 +1,1570 @@
+[
+ {
+  "id": 6158,
+  "identifier": "A file with the same name already exists at that location.",
+  "text": "A file with the same name already exists at that location.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 2",
+  "isHidden": true
+ },
+ {
+  "id": 6160,
+  "identifier": "A folder containing all the project's archivable files, with IMDI wrapped for OPEX.",
+  "text": "A folder containing all the project's archivable files, with IMDI wrapped for OPEX.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 3",
+  "isHidden": true
+ },
+ {
+  "id": 6162,
+  "identifier": "A folder with an IMDI file for the project and each session.",
+  "text": "A folder with an IMDI file for the project and each session.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 4",
+  "isHidden": true
+ },
+ {
+  "id": 6164,
+  "identifier": "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted.",
+  "text": "A single comma-separated file with project information followed by one row per session. Many lameta fields are omitted.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 5",
+  "isHidden": true
+ },
+ {
+  "id": 6166,
+  "identifier": "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People.",
+  "text": "A single zip archive that contains one comma-separated file for each of Project, Sessions, and People.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 6",
+  "isHidden": true
+ },
+ {
+  "id": 6168,
+  "identifier": "Abandon files that are still copying",
+  "text": "Abandon files that are still copying",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 7",
+  "isHidden": true
+ },
+ {
+  "id": 6170,
+  "identifier": "About This Project",
+  "text": "About This Project",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 8",
+  "isHidden": true
+ },
+ {
+  "id": 6172,
+  "identifier": "About lameta",
+  "text": "About lameta",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 9",
+  "isHidden": true
+ },
+ {
+  "id": 6174,
+  "identifier": "Access",
+  "text": "Access",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 10",
+  "isHidden": true
+ },
+ {
+  "id": 6178,
+  "identifier": "Add Files",
+  "text": "Add Files",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 11",
+  "isHidden": true
+ },
+ {
+  "id": 6180,
+  "identifier": "Add Language",
+  "text": "Add Language",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 12",
+  "isHidden": true
+ },
+ {
+  "id": 6182,
+  "identifier": "Add documents here that describe the projects and corpus.",
+  "text": "Add documents here that describe the projects and corpus.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 13",
+  "isHidden": true
+ },
+ {
+  "id": 6184,
+  "identifier": "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded.",
+  "text": "Add documents here that don't seem to fit anywhere else. An example would be documents explaining how the project was funded.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 14",
+  "isHidden": true
+ },
+ {
+  "id": 6186,
+  "identifier": "All Sessions",
+  "text": "All Sessions",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 15",
+  "isHidden": true
+ },
+ {
+  "id": 6188,
+  "identifier": "As a curator",
+  "text": "As a curator",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 17",
+  "isHidden": true
+ },
+ {
+  "id": 6190,
+  "identifier": "As a developer",
+  "text": "As a developer",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 18",
+  "isHidden": true
+ },
+ {
+  "id": 6192,
+  "identifier": "As a trainer",
+  "text": "As a trainer",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 19",
+  "isHidden": true
+ },
+ {
+  "id": 6194,
+  "identifier": "Audio",
+  "text": "Audio",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 20",
+  "isHidden": true
+ },
+ {
+  "id": 6196,
+  "identifier": "Cancel",
+  "text": "Cancel",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 21",
+  "isHidden": true
+ },
+ {
+  "id": 6198,
+  "identifier": "Cannot add files of that type",
+  "text": "Cannot add files of that type",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 22",
+  "isHidden": true
+ },
+ {
+  "id": 6200,
+  "identifier": "Change Name To:",
+  "text": "Change Name To:",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 23",
+  "isHidden": true
+ },
+ {
+  "id": 6202,
+  "identifier": "Change...",
+  "text": "Change...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 24",
+  "isHidden": true
+ },
+ {
+  "id": 6204,
+  "identifier": "Choose File",
+  "text": "Choose File",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 25",
+  "isHidden": true
+ },
+ {
+  "id": 6206,
+  "identifier": "Choose Language",
+  "text": "Choose Language",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 26",
+  "isHidden": true
+ },
+ {
+  "id": 6208,
+  "identifier": "Choose Spreadsheet Mapping:",
+  "text": "Choose Spreadsheet Mapping:",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 27",
+  "isHidden": true
+ },
+ {
+  "id": 6210,
+  "identifier": "Choose an export format:",
+  "text": "Choose an export format:",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 28",
+  "isHidden": true
+ },
+ {
+  "id": 6212,
+  "identifier": "Choose which Sessions to export:",
+  "text": "Choose which Sessions to export:",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 29",
+  "isHidden": true
+ },
+ {
+  "id": 6214,
+  "identifier": "Clear",
+  "text": "Clear",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 30",
+  "isHidden": true
+ },
+ {
+  "id": 6216,
+  "identifier": "Close",
+  "text": "Close",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 31",
+  "isHidden": true
+ },
+ {
+  "id": 6218,
+  "identifier": "Collection",
+  "text": "Collection",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 32",
+  "isHidden": false
+ },
+ {
+  "id": 6220,
+  "identifier": "Comments",
+  "text": "Comments",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 33",
+  "isHidden": true
+ },
+ {
+  "id": 6222,
+  "identifier": "Confirm Delete",
+  "text": "Confirm Delete",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 34",
+  "isHidden": true
+ },
+ {
+  "id": 6224,
+  "identifier": "Contributions",
+  "text": "Contributions",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 35",
+  "isHidden": true
+ },
+ {
+  "id": 6226,
+  "identifier": "Contributors",
+  "text": "Contributors",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 36",
+  "isHidden": true
+ },
+ {
+  "id": 6228,
+  "identifier": "Copy",
+  "text": "Copy",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 37",
+  "isHidden": true
+ },
+ {
+  "id": 6230,
+  "identifier": "Copy Requested...",
+  "text": "Copy Requested...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 38",
+  "isHidden": true
+ },
+ {
+  "id": 6232,
+  "identifier": "Copying in Files...",
+  "text": "Copying in Files...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 39",
+  "isHidden": true
+ },
+ {
+  "id": 6234,
+  "identifier": "Copying...",
+  "text": "Copying...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 40",
+  "isHidden": true
+ },
+ {
+  "id": 6236,
+  "identifier": "Create",
+  "text": "Create",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 41",
+  "isHidden": true
+ },
+ {
+  "id": 6238,
+  "identifier": "Create New Project",
+  "text": "Create New Project",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 42",
+  "isHidden": true
+ },
+ {
+  "id": 6240,
+  "identifier": "Create New Project with Sample Data",
+  "text": "Create New Project with Sample Data",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 43",
+  "isHidden": true
+ },
+ {
+  "id": 6242,
+  "identifier": "Create New lameta Project",
+  "text": "Create New lameta Project",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 44",
+  "isHidden": true
+ },
+ {
+  "id": 6244,
+  "identifier": "Create Project Using Sample Data",
+  "text": "Create Project Using Sample Data",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 45",
+  "isHidden": true
+ },
+ {
+  "id": 6246,
+  "identifier": "Create Project...",
+  "text": "Create Project...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 46",
+  "isHidden": true
+ },
+ {
+  "id": 6248,
+  "identifier": "Credits",
+  "text": "Credits",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 47",
+  "isHidden": true
+ },
+ {
+  "id": 6250,
+  "identifier": "Custom Access Choices",
+  "text": "Custom Access Choices",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 48",
+  "isHidden": true
+ },
+ {
+  "id": 6252,
+  "identifier": "Custom Field",
+  "text": "Custom Field",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 49",
+  "isHidden": true
+ },
+ {
+  "id": 6254,
+  "identifier": "Cut",
+  "text": "Cut",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 50",
+  "isHidden": true
+ },
+ {
+  "id": 6256,
+  "identifier": "Delete",
+  "text": "Delete",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 51",
+  "isHidden": true
+ },
+ {
+  "id": 6258,
+  "identifier": "Delete All Marked People...",
+  "text": "Delete All Marked People...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 52",
+  "isHidden": true
+ },
+ {
+  "id": 6260,
+  "identifier": "Delete All Marked Sessions...",
+  "text": "Delete All Marked Sessions...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 53",
+  "isHidden": true
+ },
+ {
+  "id": 6262,
+  "identifier": "Delete File...",
+  "text": "Delete File...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 54",
+  "isHidden": true
+ },
+ {
+  "id": 6264,
+  "identifier": "Delete Person...",
+  "text": "Delete Person...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 55",
+  "isHidden": true
+ },
+ {
+  "id": 6266,
+  "identifier": "Delete Session",
+  "text": "Delete Session",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 56",
+  "isHidden": true
+ },
+ {
+  "id": 6268,
+  "identifier": "Delete Session...",
+  "text": "Delete Session...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 57",
+  "isHidden": true
+ },
+ {
+  "id": 6270,
+  "identifier": "Delete link to file...",
+  "text": "Delete link to file...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 58",
+  "isHidden": true
+ },
+ {
+  "id": 6272,
+  "identifier": "Deleting...",
+  "text": "Deleting...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 59",
+  "isHidden": true
+ },
+ {
+  "id": 6274,
+  "identifier": "Description Documents",
+  "text": "Description Documents",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 60",
+  "isHidden": true
+ },
+ {
+  "id": 6276,
+  "identifier": "Do not quit",
+  "text": "Do not quit",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 61",
+  "isHidden": true
+ },
+ {
+  "id": 6278,
+  "identifier": "Done",
+  "text": "Done",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 62",
+  "isHidden": true
+ },
+ {
+  "id": 6280,
+  "identifier": "Download",
+  "text": "Download",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 63",
+  "isHidden": true
+ },
+ {
+  "id": 6282,
+  "identifier": "Duplicate Person",
+  "text": "Duplicate Person",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 64",
+  "isHidden": true
+ },
+ {
+  "id": 6284,
+  "identifier": "Duplicate Session",
+  "text": "Duplicate Session",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 65",
+  "isHidden": true
+ },
+ {
+  "id": 6286,
+  "identifier": "Edit",
+  "text": "Edit",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 66",
+  "isHidden": true
+ },
+ {
+  "id": 6288,
+  "identifier": "Email Address",
+  "text": "Email Address",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 67",
+  "isHidden": true
+ },
+ {
+  "id": 6290,
+  "identifier": "Enter each choice, separated by commas",
+  "text": "Enter each choice, separated by commas",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 68",
+  "isHidden": true
+ },
+ {
+  "id": 6292,
+  "identifier": "Error",
+  "text": "Error",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 69",
+  "isHidden": false
+ },
+ {
+  "id": 6294,
+  "identifier": "Export",
+  "text": "Export",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 70",
+  "isHidden": true
+ },
+ {
+  "id": 6296,
+  "identifier": "Export Project",
+  "text": "Export Project",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 71",
+  "isHidden": true
+ },
+ {
+  "id": 6298,
+  "identifier": "Export Project...",
+  "text": "Export Project...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 72",
+  "isHidden": true
+ },
+ {
+  "id": 6300,
+  "identifier": "Exporting...",
+  "text": "Exporting...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 73",
+  "isHidden": true
+ },
+ {
+  "id": 6302,
+  "identifier": "Field",
+  "text": "Field",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 74",
+  "isHidden": true
+ },
+ {
+  "id": 6304,
+  "identifier": "File",
+  "text": "File",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 75",
+  "isHidden": true
+ },
+ {
+  "id": 6306,
+  "identifier": "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
+  "text": "File locking can happen when a media player is holding on to a video file. It can also be caused by anti-virus or file synchronization. If the problem continues, please restart lameta and try again.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 76",
+  "isHidden": true
+ },
+ {
+  "id": 6308,
+  "identifier": "File to Import:",
+  "text": "File to Import:",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 77",
+  "isHidden": true
+ },
+ {
+  "id": 6310,
+  "identifier": "Font Size",
+  "text": "Font Size",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 78",
+  "isHidden": true
+ },
+ {
+  "id": 6312,
+  "identifier": "For a course or workshop",
+  "text": "For a course or workshop",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 79",
+  "isHidden": true
+ },
+ {
+  "id": 6314,
+  "identifier": "For documenting another language",
+  "text": "For documenting another language",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 80",
+  "isHidden": true
+ },
+ {
+  "id": 6316,
+  "identifier": "For documenting my own language",
+  "text": "For documenting my own language",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 81",
+  "isHidden": true
+ },
+ {
+  "id": 6318,
+  "identifier": "Found file with a name containing 'Consent'",
+  "text": "Found file with a name containing 'Consent'",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 82",
+  "isHidden": true
+ },
+ {
+  "id": 6320,
+  "identifier": "Found no file with a name containing 'Consent'",
+  "text": "Found no file with a name containing 'Consent'",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 83",
+  "isHidden": true
+ },
+ {
+  "id": 6322,
+  "identifier": "Full Name",
+  "text": "Full Name",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 84",
+  "isHidden": true
+ },
+ {
+  "id": 6324,
+  "identifier": "Help",
+  "text": "Help",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 85",
+  "isHidden": true
+ },
+ {
+  "id": 6326,
+  "identifier": "Help translate",
+  "text": "Help translate",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 86",
+  "isHidden": true
+ },
+ {
+  "id": 6328,
+  "identifier": "Hide Others",
+  "text": "Hide Others",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 87",
+  "isHidden": true
+ },
+ {
+  "id": 6330,
+  "identifier": "Hide lameta",
+  "text": "Hide lameta",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 88",
+  "isHidden": true
+ },
+ {
+  "id": 6332,
+  "identifier": "How are you using lameta?",
+  "text": "How are you using lameta?",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 89",
+  "isHidden": true
+ },
+ {
+  "id": 6334,
+  "identifier": "ID",
+  "text": "ID",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 90",
+  "isHidden": true
+ },
+ {
+  "id": 6336,
+  "identifier": "IMDI Mode",
+  "text": "IMDI Mode",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 91",
+  "isHidden": false
+ },
+ {
+  "id": 6338,
+  "identifier": "IMDI Only",
+  "text": "IMDI Only",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 92",
+  "isHidden": true
+ },
+ {
+  "id": 6340,
+  "identifier": "Image",
+  "text": "Image",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 93",
+  "isHidden": true
+ },
+ {
+  "id": 6342,
+  "identifier": "Import Spreadsheet of People",
+  "text": "Import Spreadsheet of People",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 94",
+  "isHidden": true
+ },
+ {
+  "id": 6344,
+  "identifier": "Import Spreadsheet of Sessions",
+  "text": "Import Spreadsheet of Sessions",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 95",
+  "isHidden": true
+ },
+ {
+  "id": 6346,
+  "identifier": "Import {chosenCount} People",
+  "text": "Import {chosenCount} People",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 96",
+  "isHidden": true
+ },
+ {
+  "id": 6348,
+  "identifier": "Import {chosenCount} Sessions",
+  "text": "Import {chosenCount} Sessions",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 97",
+  "isHidden": true
+ },
+ {
+  "id": 6350,
+  "identifier": "Importing...",
+  "text": "Importing...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 98",
+  "isHidden": true
+ },
+ {
+  "id": 6352,
+  "identifier": "Indicates that this is the father or mother's primary language.",
+  "text": "Indicates that this is the father or mother's primary language.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 99",
+  "isHidden": true
+ },
+ {
+  "id": 6354,
+  "identifier": "Interface Language",
+  "text": "Interface Language",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 100",
+  "isHidden": true
+ },
+ {
+  "id": 6356,
+  "identifier": "Language Code",
+  "text": "Language Code",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 101",
+  "isHidden": true
+ },
+ {
+  "id": 6358,
+  "identifier": "Larger",
+  "text": "Larger",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 102",
+  "isHidden": true
+ },
+ {
+  "id": 6360,
+  "identifier": "Learner",
+  "text": "Learner",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 103",
+  "isHidden": true
+ },
+ {
+  "id": 6362,
+  "identifier": "Linked to {p}",
+  "text": "Linked to {p}",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 104",
+  "isHidden": true
+ },
+ {
+  "id": 6364,
+  "identifier": "Mark as a primary language of the mother.",
+  "text": "Mark as a primary language of the mother.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 105",
+  "isHidden": true
+ },
+ {
+  "id": 6366,
+  "identifier": "Mark as a primary language.",
+  "text": "Mark as a primary language.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 106",
+  "isHidden": true
+ },
+ {
+  "id": 6368,
+  "identifier": "Mark as primary language of the father.",
+  "text": "Mark as primary language of the father.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 107",
+  "isHidden": true
+ },
+ {
+  "id": 6370,
+  "identifier": "Mark for Deletion or Export",
+  "text": "Mark for Deletion or Export",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 108",
+  "isHidden": true
+ },
+ {
+  "id": 6372,
+  "identifier": "Mark for Export or Deletion",
+  "text": "Mark for Export or Deletion",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 109",
+  "isHidden": true
+ },
+ {
+  "id": 6374,
+  "identifier": "Media Folder",
+  "text": "Media Folder",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 110",
+  "isHidden": true
+ },
+ {
+  "id": 6376,
+  "identifier": "Media Folder Settings...",
+  "text": "Media Folder Settings...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 111",
+  "isHidden": true
+ },
+ {
+  "id": 6378,
+  "identifier": "Modified",
+  "text": "Modified",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 112",
+  "isHidden": true
+ },
+ {
+  "id": 6380,
+  "identifier": "More Fields",
+  "text": "More Fields",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 113",
+  "isHidden": true
+ },
+ {
+  "id": 6382,
+  "identifier": "Name",
+  "text": "Name",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 114",
+  "isHidden": true
+ },
+ {
+  "id": 6384,
+  "identifier": "New Person",
+  "text": "New Person",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 115",
+  "isHidden": true
+ },
+ {
+  "id": 6386,
+  "identifier": "New Session",
+  "text": "New Session",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 116",
+  "isHidden": true
+ },
+ {
+  "id": 6388,
+  "identifier": "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them.",
+  "text": "Normally, when you add a file to a project, session, or person, that file is copied into the same folder as you lameta project. For some of your files, you might prefer to instead leave the files where they are and just 'link' to them.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 117",
+  "isHidden": true
+ },
+ {
+  "id": 6390,
+  "identifier": "Not important to the archive, but will be included",
+  "text": "Not important to the archive, but will be included",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 118",
+  "isHidden": false
+ },
+ {
+  "id": 6392,
+  "identifier": "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name.",
+  "text": "Note that this is a link to a file in your Media Files directory. Here, you are renaming this link, not the original file that it points to. If you later create an export that includes this file, the export will use this name.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 119",
+  "isHidden": true
+ },
+ {
+  "id": 6394,
+  "identifier": "Notes",
+  "text": "Notes",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 120",
+  "isHidden": true
+ },
+ {
+  "id": 6396,
+  "identifier": "OK",
+  "text": "OK",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 121",
+  "isHidden": true
+ },
+ {
+  "id": 6398,
+  "identifier": "OPEX + Files",
+  "text": "OPEX + Files",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 122",
+  "isHidden": true
+ },
+ {
+  "id": 6400,
+  "identifier": "One or more files are still being copied into your project.",
+  "text": "One or more files are still being copied into your project.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 123",
+  "isHidden": true
+ },
+ {
+  "id": 6402,
+  "identifier": "Open",
+  "text": "Open",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 124",
+  "isHidden": true
+ },
+ {
+  "id": 6404,
+  "identifier": "Open Project",
+  "text": "Open Project",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 125",
+  "isHidden": true
+ },
+ {
+  "id": 6406,
+  "identifier": "Open Project...",
+  "text": "Open Project...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 126",
+  "isHidden": true
+ },
+ {
+  "id": 6408,
+  "identifier": "Open in ELAN",
+  "text": "Open in ELAN",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 127",
+  "isHidden": true
+ },
+ {
+  "id": 6410,
+  "identifier": "Open in program associated with this file type",
+  "text": "Open in program associated with this file type",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 128",
+  "isHidden": true
+ },
+ {
+  "id": 6412,
+  "identifier": "Other Documents",
+  "text": "Other Documents",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 129",
+  "isHidden": true
+ },
+ {
+  "id": 6414,
+  "identifier": "PARADISEC Mode",
+  "text": "PARADISEC Mode",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 130",
+  "isHidden": false
+ },
+ {
+  "id": 6416,
+  "identifier": "Paradisec CSV",
+  "text": "Paradisec CSV",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 131",
+  "isHidden": true
+ },
+ {
+  "id": 6418,
+  "identifier": "Paste",
+  "text": "Paste",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 132",
+  "isHidden": true
+ },
+ {
+  "id": 6420,
+  "identifier": "People",
+  "text": "People",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 133",
+  "isHidden": true
+ },
+ {
+  "id": 6422,
+  "identifier": "Person",
+  "text": "Person",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 134",
+  "isHidden": true
+ },
+ {
+  "id": 6424,
+  "identifier": "Please Register",
+  "text": "Please Register",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 135",
+  "isHidden": true
+ },
+ {
+  "id": 6426,
+  "identifier": "Please remove characters that not allowed by the Archive Settings.",
+  "text": "Please remove characters that not allowed by the Archive Settings.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 136",
+  "isHidden": true
+ },
+ {
+  "id": 6428,
+  "identifier": "Please wait until all files are finished copying into this folder",
+  "text": "Please wait until all files are finished copying into this folder",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 137",
+  "isHidden": true
+ },
+ {
+  "id": 6430,
+  "identifier": "Project",
+  "text": "Project",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 138",
+  "isHidden": true
+ },
+ {
+  "id": 6432,
+  "identifier": "Project will be created in: {path}.",
+  "text": "Project will be created in: {path}.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 139",
+  "isHidden": true
+ },
+ {
+  "id": 6434,
+  "identifier": "Properties",
+  "text": "Properties",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 140",
+  "isHidden": true
+ },
+ {
+  "id": 6436,
+  "identifier": "Quit",
+  "text": "Quit",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 141",
+  "isHidden": true
+ },
+ {
+  "id": 6438,
+  "identifier": "Redo",
+  "text": "Redo",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 142",
+  "isHidden": true
+ },
+ {
+  "id": 6440,
+  "identifier": "Registration",
+  "text": "Registration",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 143",
+  "isHidden": true
+ },
+ {
+  "id": 6442,
+  "identifier": "Registration...",
+  "text": "Registration...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 144",
+  "isHidden": true
+ },
+ {
+  "id": 6444,
+  "identifier": "Release Notes",
+  "text": "Release Notes",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 145",
+  "isHidden": true
+ },
+ {
+  "id": 6446,
+  "identifier": "Rename",
+  "text": "Rename",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 146",
+  "isHidden": true
+ },
+ {
+  "id": 6448,
+  "identifier": "Rename File",
+  "text": "Rename File",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 147",
+  "isHidden": true
+ },
+ {
+  "id": 6450,
+  "identifier": "Rename for Consent",
+  "text": "Rename for Consent",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 148",
+  "isHidden": true
+ },
+ {
+  "id": 6452,
+  "identifier": "Rename...",
+  "text": "Rename...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 149",
+  "isHidden": true
+ },
+ {
+  "id": 6454,
+  "identifier": "Renaming failed because there is already a file with that name.",
+  "text": "Renaming failed because there is already a file with that name.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 150",
+  "isHidden": true
+ },
+ {
+  "id": 6456,
+  "identifier": "Report a problem",
+  "text": "Report a problem",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 151",
+  "isHidden": true
+ },
+ {
+  "id": 6458,
+  "identifier": "Restart lameta and do the rename before playing the video again.",
+  "text": "Restart lameta and do the rename before playing the video again.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 152",
+  "isHidden": true
+ },
+ {
+  "id": 6460,
+  "identifier": "Role",
+  "text": "Role",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 153",
+  "isHidden": true
+ },
+ {
+  "id": 6462,
+  "identifier": "Save As",
+  "text": "Save As",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 154",
+  "isHidden": true
+ },
+ {
+  "id": 6464,
+  "identifier": "Saving",
+  "text": "Saving",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 155",
+  "isHidden": true
+ },
+ {
+  "id": 6466,
+  "identifier": "Saving before rename...",
+  "text": "Saving before rename...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 156",
+  "isHidden": true
+ },
+ {
+  "id": 6468,
+  "identifier": "Select All",
+  "text": "Select All",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 157",
+  "isHidden": true
+ },
+ {
+  "id": 6470,
+  "identifier": "Services",
+  "text": "Services",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 158",
+  "isHidden": true
+ },
+ {
+  "id": 6472,
+  "identifier": "Session",
+  "text": "Session",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 159",
+  "isHidden": true
+ },
+ {
+  "id": 6474,
+  "identifier": "Sessions",
+  "text": "Sessions",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 160",
+  "isHidden": true
+ },
+ {
+  "id": 6476,
+  "identifier": "Show All",
+  "text": "Show All",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 161",
+  "isHidden": true
+ },
+ {
+  "id": 6478,
+  "identifier": "Show Release Notes",
+  "text": "Show Release Notes",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 162",
+  "isHidden": true
+ },
+ {
+  "id": 6480,
+  "identifier": "Show export",
+  "text": "Show export",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 163",
+  "isHidden": true
+ },
+ {
+  "id": 6482,
+  "identifier": "Show in File Explorer",
+  "text": "Show in File Explorer",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 164",
+  "isHidden": true
+ },
+ {
+  "id": 6484,
+  "identifier": "Show in Finder",
+  "text": "Show in Finder",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 165",
+  "isHidden": true
+ },
+ {
+  "id": 6486,
+  "identifier": "Show me the folder with the problem",
+  "text": "Show me the folder with the problem",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 166",
+  "isHidden": true
+ },
+ {
+  "id": 6488,
+  "identifier": "Show more releases",
+  "text": "Show more releases",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 167",
+  "isHidden": true
+ },
+ {
+  "id": 6490,
+  "identifier": "Size",
+  "text": "Size",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 168",
+  "isHidden": true
+ },
+ {
+  "id": 6492,
+  "identifier": "Smaller",
+  "text": "Smaller",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 169",
+  "isHidden": true
+ },
+ {
+  "id": 6494,
+  "identifier": "Some operating systems would not allow that name.",
+  "text": "Some operating systems would not allow that name.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 170",
+  "isHidden": true
+ },
+ {
+  "id": 6496,
+  "identifier": "Something is wrong here...",
+  "text": "Something is wrong here...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 171",
+  "isHidden": true
+ },
+ {
+  "id": 6498,
+  "identifier": "Sorry, no slashes are allowed",
+  "text": "Sorry, no slashes are allowed",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 172",
+  "isHidden": true
+ },
+ {
+  "id": 6500,
+  "identifier": "Start Screen",
+  "text": "Start Screen",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 173",
+  "isHidden": true
+ },
+ {
+  "id": 6502,
+  "identifier": "Status",
+  "text": "Status",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 174",
+  "isHidden": true
+ },
+ {
+  "id": 6504,
+  "identifier": "Text",
+  "text": "Text",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 175",
+  "isHidden": true
+ },
+ {
+  "id": 6506,
+  "identifier": "That name would lead to an empty filename.",
+  "text": "That name would lead to an empty filename.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 176",
+  "isHidden": true
+ },
+ {
+  "id": 6508,
+  "identifier": "The IMDI files were validated.",
+  "text": "The IMDI files were validated.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 177",
+  "isHidden": true
+ },
+ {
+  "id": 6510,
+  "identifier": "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
+  "text": "The file is missing from its expected location in the Media Folder. The Media Folder is set to {m} and this file is supposed to be at {e}",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 178",
+  "isHidden": true
+ },
+ {
+  "id": 6512,
+  "identifier": "The {fieldNameInUiLanguage} cannot be empty",
+  "text": "The {fieldNameInUiLanguage} cannot be empty",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 179",
+  "isHidden": true
+ },
+ {
+  "id": 6514,
+  "identifier": "There are more than one files of type \"{projectType}\" in this folder, and there can only be one.",
+  "text": "There are more than one files of type \"{projectType}\" in this folder, and there can only be one.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 180",
+  "isHidden": true
+ },
+ {
+  "id": 6516,
+  "identifier": "There is a problem with {displayName}. Click for more information.",
+  "text": "There is a problem with {displayName}. Click for more information.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 181",
+  "isHidden": false
+ },
+ {
+  "id": 6518,
+  "identifier": "There is already a Person with that name or code.",
+  "text": "There is already a Person with that name or code.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 182",
+  "isHidden": true
+ },
+ {
+  "id": 6520,
+  "identifier": "There is already a file here with the name",
+  "text": "There is already a file here with the name",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 183",
+  "isHidden": true
+ },
+ {
+  "id": 6522,
+  "identifier": "There is already a project at: {path}.",
+  "text": "There is already a project at: {path}.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 184",
+  "isHidden": true
+ },
+ {
+  "id": 6524,
+  "identifier": "There is already a {folderKind} \"{value}\".",
+  "text": "There is already a {folderKind} \"{value}\".",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 185",
+  "isHidden": true
+ },
+ {
+  "id": 6526,
+  "identifier": "There was a problem exporting:",
+  "text": "There was a problem exporting:",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 186",
+  "isHidden": true
+ },
+ {
+  "id": 6528,
+  "identifier": "This Personally Identifiable Information may not be exported by some formats.",
+  "text": "This Personally Identifiable Information may not be exported by some formats.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 187",
+  "isHidden": false
+ },
+ {
+  "id": 6530,
+  "identifier": "This XML conforms to the IMDI schema.",
+  "text": "This XML conforms to the IMDI schema.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 188",
+  "isHidden": false
+ },
+ {
+  "id": 6532,
+  "identifier": "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings.",
+  "text": "This is a link, but lameta does not know where to find the Media Folder for this project. See File:Media Folder Settings.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 189",
+  "isHidden": true
+ },
+ {
+  "id": 6534,
+  "identifier": "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer.",
+  "text": "This setting is unique to the account you are using on this computer. A colleague on another computer will need to set this value to the correct location on their computer.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 190",
+  "isHidden": true
+ },
+ {
+  "id": 6536,
+  "identifier": "This will not be consumed by the archive. It is only for the use of the researcher.",
+  "text": "This will not be consumed by the archive. It is only for the use of the researcher.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 191",
+  "isHidden": false
+ },
+ {
+  "id": 6538,
+  "identifier": "Type",
+  "text": "Type",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 192",
+  "isHidden": true
+ },
+ {
+  "id": 6540,
+  "identifier": "Undo",
+  "text": "Undo",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 193",
+  "isHidden": true
+ },
+ {
+  "id": 6542,
+  "identifier": "Update available",
+  "text": "Update available",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 194",
+  "isHidden": true
+ },
+ {
+  "id": 6544,
+  "identifier": "Value",
+  "text": "Value",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 195",
+  "isHidden": true
+ },
+ {
+  "id": 6546,
+  "identifier": "Video",
+  "text": "Video",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 196",
+  "isHidden": true
+ },
+ {
+  "id": 6548,
+  "identifier": "View",
+  "text": "View",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 197",
+  "isHidden": true
+ },
+ {
+  "id": 6550,
+  "identifier": "View Release Notes",
+  "text": "View Release Notes",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 198",
+  "isHidden": true
+ },
+ {
+  "id": 6552,
+  "identifier": "Warning",
+  "text": "Warning",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 199",
+  "isHidden": false
+ },
+ {
+  "id": 6554,
+  "identifier": "We don't have specific tips for this error. If you cannot solve it by\nrestarting your computer, please report the problem to\nhttps://github.com/onset/lameta/issues.",
+  "text": "We don't have specific tips for this error. If you cannot solve it by\nrestarting your computer, please report the problem to\nhttps://github.com/onset/lameta/issues.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 200",
+  "isHidden": true
+ },
+ {
+  "id": 6556,
+  "identifier": "What would you like to call this project?",
+  "text": "What would you like to call this project?",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 201",
+  "isHidden": true
+ },
+ {
+  "id": 6558,
+  "identifier": "You are running lameta version:",
+  "text": "You are running lameta version:",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 202",
+  "isHidden": true
+ },
+ {
+  "id": 6560,
+  "identifier": "You cannot add files of that type",
+  "text": "You cannot add files of that type",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 203",
+  "isHidden": true
+ },
+ {
+  "id": 6562,
+  "identifier": "You cannot add folders.",
+  "text": "You cannot add folders.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 204",
+  "isHidden": true
+ },
+ {
+  "id": 6564,
+  "identifier": "ZIP Archive",
+  "text": "ZIP Archive",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 205",
+  "isHidden": true
+ },
+ {
+  "id": 6566,
+  "identifier": "Zip of CSVs",
+  "text": "Zip of CSVs",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 206",
+  "isHidden": true
+ },
+ {
+  "id": 6568,
+  "identifier": "choose...",
+  "text": "choose...",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 207",
+  "isHidden": true
+ },
+ {
+  "id": 6570,
+  "identifier": "lameta",
+  "text": "lameta",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 208",
+  "isHidden": true
+ },
+ {
+  "id": 6572,
+  "identifier": "lameta  was not able to rename that file.",
+  "text": "lameta  was not able to rename that file.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 209",
+  "isHidden": true
+ },
+ {
+  "id": 6574,
+  "identifier": "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings.",
+  "text": "lameta allows you to specify one 'Media Folder'. When you add files that are somewhere within that folder, lameta will create a link instead of making a copy. This folder can be anywhere, including the root of an external drive where you keep large video recordings.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 210",
+  "isHidden": true
+ },
+ {
+  "id": 6576,
+  "identifier": "lameta and SayMore Project Files",
+  "text": "lameta and SayMore Project Files",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 211",
+  "isHidden": true
+ },
+ {
+  "id": 6578,
+  "identifier": "lameta cannot export files while files are still being copied in.",
+  "text": "lameta cannot export files while files are still being copied in.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 212",
+  "isHidden": true
+ },
+ {
+  "id": 6580,
+  "identifier": "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
+  "text": "lameta cannot find the Media Folder {m}. See the File:Media Folder Settings.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 213",
+  "isHidden": true
+ },
+ {
+  "id": 6582,
+  "identifier": "lameta could not find a matching Person for the following contributors:",
+  "text": "lameta could not find a matching Person for the following contributors:",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 214",
+  "isHidden": false
+ },
+ {
+  "id": 6584,
+  "identifier": "lameta could not rename the directory.",
+  "text": "lameta could not rename the directory.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 215",
+  "isHidden": true
+ },
+ {
+  "id": 6586,
+  "identifier": "lameta expected to find a .link file at {e}",
+  "text": "lameta expected to find a .link file at {e}",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 216",
+  "isHidden": true
+ },
+ {
+  "id": 6588,
+  "identifier": "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name.",
+  "text": "lameta tried to rename the folder \"{oldFolderName}\" to \"{newFolderName}\", but there is already a folder with that name.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 217",
+  "isHidden": true
+ },
+ {
+  "id": 6590,
+  "identifier": "lameta was not able to delete the file.",
+  "text": "lameta was not able to delete the file.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 218",
+  "isHidden": true
+ },
+ {
+  "id": 6592,
+  "identifier": "lameta was not able to put this file in the trash",
+  "text": "lameta was not able to put this file in the trash",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 219",
+  "isHidden": true
+ },
+ {
+  "id": 6594,
+  "identifier": "lameta was not able to rename one of the files in the folder.",
+  "text": "lameta was not able to rename one of the files in the folder.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 220",
+  "isHidden": true
+ },
+ {
+  "id": 6596,
+  "identifier": "lameta was not able to rename the folder.",
+  "text": "lameta was not able to rename the folder.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 221",
+  "isHidden": true
+ },
+ {
+  "id": 6598,
+  "identifier": "lameta will not export Notes to MIDI",
+  "text": "lameta will not export Notes to MIDI",
+  "context": "#. Shows in a tooltip on an info icon in the Notes tab\n",
+  "isHidden": true
+ },
+ {
+  "id": 6600,
+  "identifier": "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}.",
+  "text": "lameta will now open this folder on your hard disk and then exit. You should open these {projectType} files in a text editor and decide which one you want, and delete the others. The one you choose should be named {name}.",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 223",
+  "isHidden": true
+ },
+ {
+  "id": 6602,
+  "identifier": "{0} Marked Sessions",
+  "text": "{0} Marked Sessions",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 224",
+  "isHidden": true
+ },
+ {
+  "id": 6604,
+  "identifier": "{descriptionOfWhatWillBeDeleted} will be moved to the Trash",
+  "text": "{descriptionOfWhatWillBeDeleted} will be moved to the Trash",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 225",
+  "isHidden": true
+ },
+ {
+  "id": 7420,
+  "identifier": "Archive Configuration",
+  "text": "Archive Configuration",
+  "context": "This text has no context info. The text is used in messages.po. Position in file: 16",
+  "isHidden": false
+ }
+]

@@ -1,0 +1,352 @@
+[
+ {
+  "id": 5552,
+  "identifier": null,
+  "text": "Annotator",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5554,
+  "identifier": null,
+  "text": "The participant produced an annotation of this or a related resource.",
+  "context": "Description of contributor role 'Annotator'",
+  "isHidden": false
+ },
+ {
+  "id": 5556,
+  "identifier": null,
+  "text": "Author",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5558,
+  "identifier": null,
+  "text": "The participant contributed original writings to the resource.",
+  "context": "Description of contributor role 'Author'",
+  "isHidden": false
+ },
+ {
+  "id": 5560,
+  "identifier": null,
+  "text": "Careful Speech Speaker",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5562,
+  "identifier": null,
+  "text": "The participant carefully re-speaks the words recorded in an source recording.",
+  "context": "Description of contributor role 'Careful Speech Speaker'",
+  "isHidden": false
+ },
+ {
+  "id": 5564,
+  "identifier": null,
+  "text": "Compiler",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5566,
+  "identifier": null,
+  "text": "The participant is responsible for collecting the sub-parts of the  resource together.",
+  "context": "Description of contributor role 'Compiler'",
+  "isHidden": false
+ },
+ {
+  "id": 5568,
+  "identifier": null,
+  "text": "Consultant",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5570,
+  "identifier": null,
+  "text": "The participant contributes expertise to the creation of a work.",
+  "context": "Description of contributor role 'Consultant'",
+  "isHidden": false
+ },
+ {
+  "id": 5572,
+  "identifier": null,
+  "text": "Data Inputter",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5574,
+  "identifier": null,
+  "text": "The participant was responsible for entering, re-typing, and/or structuring the data  contained in the resource.",
+  "context": "Description of contributor role 'Data Inputter'",
+  "isHidden": false
+ },
+ {
+  "id": 5576,
+  "identifier": null,
+  "text": "Depositor",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5578,
+  "identifier": null,
+  "text": "The participant was responsible for depositing the resource in an archive.",
+  "context": "Description of contributor role 'Depositor'",
+  "isHidden": false
+ },
+ {
+  "id": 5580,
+  "identifier": null,
+  "text": "Developer",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5582,
+  "identifier": null,
+  "text": "The participant developed the methodology or tools that constitute the resource, or that were used to create the resource.",
+  "context": "Description of contributor role 'Developer'",
+  "isHidden": false
+ },
+ {
+  "id": 5584,
+  "identifier": null,
+  "text": "Editor",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5586,
+  "identifier": null,
+  "text": "The participant reviewed, corrected, and/or tested the resource.",
+  "context": "Description of contributor role 'Editor'",
+  "isHidden": false
+ },
+ {
+  "id": 5588,
+  "identifier": null,
+  "text": "Illustrator",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5590,
+  "identifier": null,
+  "text": "The participant contributed drawings or other illustrations to the resource.",
+  "context": "Description of contributor role 'Illustrator'",
+  "isHidden": false
+ },
+ {
+  "id": 5592,
+  "identifier": null,
+  "text": "Interpreter",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5594,
+  "identifier": null,
+  "text": "The participant translates in real-time or explains the discourse recorded in the resource.",
+  "context": "Description of contributor role 'Interpreter'",
+  "isHidden": false
+ },
+ {
+  "id": 5596,
+  "identifier": null,
+  "text": "Interviewer",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5598,
+  "identifier": null,
+  "text": "The participant conducted an interview that forms part of the resource.",
+  "context": "Description of contributor role 'Interviewer'",
+  "isHidden": false
+ },
+ {
+  "id": 5600,
+  "identifier": null,
+  "text": "Participant",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5602,
+  "identifier": null,
+  "text": "The participant was present during the creation of the resource, but did not contribute substantially to its content.",
+  "context": "Description of contributor role 'Participant'",
+  "isHidden": false
+ },
+ {
+  "id": 5604,
+  "identifier": null,
+  "text": "Performer",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5606,
+  "identifier": null,
+  "text": "The participant performed some portion of a recorded, filmed, or transcribed resource.",
+  "context": "Description of contributor role 'Performer'",
+  "isHidden": false
+ },
+ {
+  "id": 5608,
+  "identifier": null,
+  "text": "Photographer",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5610,
+  "identifier": null,
+  "text": "The participant took the photograph, or shot the film, that appears in or  constitutes the resource.",
+  "context": "Description of contributor role 'Photographer'",
+  "isHidden": false
+ },
+ {
+  "id": 5612,
+  "identifier": null,
+  "text": "Recorder",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5614,
+  "identifier": null,
+  "text": "The participant operated the recording machinery used to create the resource.",
+  "context": "Description of contributor role 'Recorder'",
+  "isHidden": false
+ },
+ {
+  "id": 5616,
+  "identifier": null,
+  "text": "Researcher",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5618,
+  "identifier": null,
+  "text": "The resource was created as part of the participant's research, or the research presents interim or final results from the participant's research.",
+  "context": "Description of contributor role 'Researcher'",
+  "isHidden": false
+ },
+ {
+  "id": 5620,
+  "identifier": null,
+  "text": "Research Participant",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5622,
+  "identifier": null,
+  "text": "The participant acted as a research subject or responded to a questionnaire, the results of which study form the basis of the resource.",
+  "context": "Description of contributor role 'Research Participant'",
+  "isHidden": false
+ },
+ {
+  "id": 5624,
+  "identifier": null,
+  "text": "Responder",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5626,
+  "identifier": null,
+  "text": "The participant was an interlocutor in some sort of discourse event.",
+  "context": "Description of contributor role 'Responder'",
+  "isHidden": false
+ },
+ {
+  "id": 5628,
+  "identifier": null,
+  "text": "Signer",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5630,
+  "identifier": null,
+  "text": "The participant was a principal signer in a resource that consists of a recording, a film, or a transcription of a recorded resource.",
+  "context": "Description of contributor role 'Signer'",
+  "isHidden": false
+ },
+ {
+  "id": 5632,
+  "identifier": null,
+  "text": "Singer",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5634,
+  "identifier": null,
+  "text": "The participant sang, either individually or as part of a group, in  a resource that consists of a recording, a film, or a transcription of a recorded resource.",
+  "context": "Description of contributor role 'Singer'",
+  "isHidden": false
+ },
+ {
+  "id": 5636,
+  "identifier": null,
+  "text": "Speaker",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5638,
+  "identifier": null,
+  "text": "The participant was a principal speaker in a resource that consists of a recording, a film, or a transcription of a recorded resource.",
+  "context": "Description of contributor role 'Speaker'",
+  "isHidden": false
+ },
+ {
+  "id": 5640,
+  "identifier": null,
+  "text": "Sponsor",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5642,
+  "identifier": null,
+  "text": "The participant contributed financial support to the creation of the resource.",
+  "context": "Description of contributor role 'Sponsor'",
+  "isHidden": false
+ },
+ {
+  "id": 5644,
+  "identifier": null,
+  "text": "Transcriber",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5646,
+  "identifier": null,
+  "text": "The participant produced a transcription of this or a related resource.",
+  "context": "Description of contributor role 'Transcriber'",
+  "isHidden": false
+ },
+ {
+  "id": 5648,
+  "identifier": null,
+  "text": "Translator",
+  "context": "Contributor Role",
+  "isHidden": false
+ },
+ {
+  "id": 5650,
+  "identifier": null,
+  "text": "The participant produced a translation of this or a related resource.",
+  "context": "Description of contributor role 'Translator'",
+  "isHidden": false
+ }
+]

@@ -1,0 +1,184 @@
+[
+ {
+  "id": 6820,
+  "identifier": null,
+  "text": "Incoming",
+  "context": "Session.Status.Incoming",
+  "isHidden": true
+ },
+ {
+  "id": 6822,
+  "identifier": null,
+  "text": "In Progress",
+  "context": "Session.Status.InProgress",
+  "isHidden": true
+ },
+ {
+  "id": 6824,
+  "identifier": null,
+  "text": "Finished",
+  "context": "Session.Status.Finished",
+  "isHidden": true
+ },
+ {
+  "id": 6826,
+  "identifier": null,
+  "text": "Skipped",
+  "context": "Session.Status. Here skipped means that the user has decided not to continue working with this session",
+  "isHidden": true
+ },
+ {
+  "id": 6828,
+  "identifier": null,
+  "text": "Male",
+  "context": "Male",
+  "isHidden": true
+ },
+ {
+  "id": 6830,
+  "identifier": null,
+  "text": "Female",
+  "context": "Female",
+  "isHidden": true
+ },
+ {
+  "id": 6832,
+  "identifier": null,
+  "text": "Unknown",
+  "context": "Unknown",
+  "isHidden": true
+ },
+ {
+  "id": 6834,
+  "identifier": null,
+  "text": "Other",
+  "context": "Other",
+  "isHidden": true
+ },
+ {
+  "id": 6836,
+  "identifier": null,
+  "text": "Africa",
+  "context": "Continent.Africa",
+  "isHidden": true
+ },
+ {
+  "id": 6838,
+  "identifier": null,
+  "text": "Asia",
+  "context": "Continent.Asia",
+  "isHidden": true
+ },
+ {
+  "id": 6840,
+  "identifier": null,
+  "text": "Australia",
+  "context": "Continent.Australia",
+  "isHidden": true
+ },
+ {
+  "id": 6842,
+  "identifier": null,
+  "text": "Europe",
+  "context": "Continent.Europe",
+  "isHidden": true
+ },
+ {
+  "id": 6844,
+  "identifier": null,
+  "text": "North-America",
+  "context": "Continent.North-America",
+  "isHidden": true
+ },
+ {
+  "id": 6846,
+  "identifier": null,
+  "text": "Middle-America",
+  "context": "Continent.Middle-America",
+  "isHidden": true
+ },
+ {
+  "id": 6848,
+  "identifier": null,
+  "text": "Oceania",
+  "context": "Continent.Oceania",
+  "isHidden": true
+ },
+ {
+  "id": 6850,
+  "identifier": null,
+  "text": "South-America",
+  "context": "Continent.South-America",
+  "isHidden": true
+ },
+ {
+  "id": 6852,
+  "identifier": null,
+  "text": "elicited",
+  "context": "involvement.elicited",
+  "isHidden": true
+ },
+ {
+  "id": 6854,
+  "identifier": null,
+  "text": "non-elicited",
+  "context": "involvement.non-elicited",
+  "isHidden": true
+ },
+ {
+  "id": 6856,
+  "identifier": null,
+  "text": "no-observer",
+  "context": "involvement.no-observer",
+  "isHidden": true
+ },
+ {
+  "id": 6858,
+  "identifier": null,
+  "text": "spontaneous",
+  "context": "planningType.spontaneous",
+  "isHidden": true
+ },
+ {
+  "id": 6860,
+  "identifier": null,
+  "text": "semi-spontaneous",
+  "context": "planningType.semi-spontaneous",
+  "isHidden": true
+ },
+ {
+  "id": 6862,
+  "identifier": null,
+  "text": "planned",
+  "context": "planningType.planned",
+  "isHidden": true
+ },
+ {
+  "id": 6864,
+  "identifier": null,
+  "text": "family",
+  "context": "socialContext.family",
+  "isHidden": true
+ },
+ {
+  "id": 6866,
+  "identifier": null,
+  "text": "private",
+  "context": "socialContext.private",
+  "isHidden": true
+ },
+ {
+  "id": 6868,
+  "identifier": null,
+  "text": "public",
+  "context": "socialContext.public",
+  "isHidden": true
+ },
+ {
+  "id": 6870,
+  "identifier": null,
+  "text": "controlled environment",
+  "context": "socialContext.controlled environment",
+  "isHidden": true
+ }
+]

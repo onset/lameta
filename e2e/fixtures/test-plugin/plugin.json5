@@ -12,7 +12,7 @@
       entry: "index.html",
       match: { lametaTypes: ["Audio"] },
       claimDefault: true,
-      defaultPriority: 100
-    }
-  ]
+      defaultPriority: 100,
+    },
+  ],
 }

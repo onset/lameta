@@ -103,12 +103,8 @@ it("should load real field definitions without errors", () => {
   setupCommonMocks(true);
 
   // Verify essential fields exist
-  expect(
-    fieldDefinitionsOfCurrentConfig.session.find((f) => f.key === "genre")
-  ).toBeDefined();
-  expect(
-    fieldDefinitionsOfCurrentConfig.project.find((f) => f.key === "title")
-  ).toBeDefined();
+  expect(fieldDefinitionsOfCurrentConfig.session.find((f) => f.key === "genre")).toBeDefined();
+  expect(fieldDefinitionsOfCurrentConfig.project.find((f) => f.key === "title")).toBeDefined();
 });
 ```
 

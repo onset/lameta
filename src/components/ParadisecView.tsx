@@ -1,13 +1,12 @@
 import { css } from "@emotion/react";
 /* removed emotion jsx declaration */
 
-import { default as React, useState, useEffect } from "react";
+import { default as React } from "react";
 import { Folder } from "../model/Folder/Folder";
-import { Session } from "../model/Project/Session/Session";
 import { Project } from "../model/Project/Project";
 import {
   makeParadisecProjectFields,
-  makeParadisecSessionFields
+  makeParadisecSessionFields,
 } from "../export/ParadisecCsvExporter";
 
 //const HtmlTree = require("react-htmltree");
@@ -23,9 +22,6 @@ export interface IProps {
   project: Project;
 
   folder: Folder;
-}
-interface IState {
-  manualRefresh: number;
 }
 
 export const ParadisecView: React.FunctionComponent<{
@@ -52,15 +48,10 @@ export const ParadisecView: React.FunctionComponent<{
   const rows =
     props.target instanceof Project
       ? makeParadisecProjectFields(props.project)
-      : transpose(
-          makeParadisecSessionFields(props.project, (f) => f === props.target)
-        );
+      : transpose(makeParadisecSessionFields(props.project, (f) => f === props.target));
   return (
     <div>
-      <h3>
-        This is a preview of what will be export by File:Export
-        Project:PARADISEC
-      </h3>
+      <h3>This is a preview of what will be export by File:Export Project:PARADISEC</h3>
       <table
         className={"paradisecView"}
         css={css`
@@ -91,7 +82,5 @@ export const ParadisecView: React.FunctionComponent<{
   );
 };
 function transpose(matrix: string[][]): string[][] {
-  return Object.keys(matrix[0]).map((colNumber) =>
-    matrix.map((rowNumber) => rowNumber[colNumber])
-  );
+  return Object.keys(matrix[0]).map((colNumber) => matrix.map((rowNumber) => rowNumber[colNumber]));
 }

@@ -12,11 +12,7 @@ export const LAMETA_PLUGIN_API_VERSIONS_SUPPORTED: number[] = [1];
 /** Folder kinds a plugin might be shown in. v1 only ever runs plugins for content files
  * inside session/person/project/project-documents folders (never for the Session or
  * Person metadata "files" themselves). */
-export type PluginFolderType =
-  | "session"
-  | "person"
-  | "project"
-  | "project documents";
+export type PluginFolderType = "session" | "person" | "project" | "project documents";
 
 /** Fields common to every `lameta:init` context, regardless of the iframe's role. */
 export interface PluginContextBase {
@@ -173,7 +169,7 @@ export interface PluginFfmpegApiV1 {
 export interface FfprobeResult {
   format: { durationSec?: number; formatName?: string; formatLongName?: string };
   streams: Array<{
-    codecType?: "audio" | "video" | string;
+    codecType?: "audio" | "video" | (string & {});
     codecName?: string;
     channels?: number;
     sampleRate?: number;
@@ -301,10 +297,7 @@ export interface PluginProgressMessage {
   fraction: number; // 0..1, monotonic-ish
 }
 
-export type PluginToHostMessage =
-  | PluginReadyMessage
-  | PluginRequestMessage
-  | PluginTabsMessage;
+export type PluginToHostMessage = PluginReadyMessage | PluginRequestMessage | PluginTabsMessage;
 export type HostToPluginMessage =
   | PluginInitMessage
   | PluginResponseMessage

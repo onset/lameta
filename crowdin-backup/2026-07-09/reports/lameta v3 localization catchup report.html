@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>lameta v3 localization — report &amp; plan</title>
+  <style>
+    :root {
+      --paper: #fbfaf7;
+      --ink: #23282e;
+      --ink-2: #5a6068;
+      --ink-3: #8a9098;
+      --line: #e3e1da;
+      --card: #ffffff;
+      --card-tint: #f4f2ec;
+      --v2: #b4690e; /* amber — the v2 / root track */
+      --v2-soft: #f7ebdb;
+      --v3: #00919b; /* teal — the v3 / branch track */
+      --v3-soft: #e0f1f2;
+      --good: #3e7a4e;
+      --good-soft: #e5f0e7;
+      --warn-bg: #faf3e4;
+      --warn-edge: #b4690e;
+      --danger: #a2483c;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #15181b;
+        --ink: #e7e4dd;
+        --ink-2: #a8adb4;
+        --ink-3: #767c84;
+        --line: #2c3136;
+        --card: #1c2024;
+        --card-tint: #22262b;
+        --v2: #c97f22;
+        --v2-soft: #2e2415;
+        --v3: #0aa3a3;
+        --v3-soft: #10282b;
+        --good: #6fae7e;
+        --good-soft: #1d2a20;
+        --warn-bg: #262115;
+        --warn-edge: #c97f22;
+        --danger: #c9756a;
+      }
+    }
+    :root[data-theme="light"] {
+      --paper: #fbfaf7;
+      --ink: #23282e;
+      --ink-2: #5a6068;
+      --ink-3: #8a9098;
+      --line: #e3e1da;
+      --card: #ffffff;
+      --card-tint: #f4f2ec;
+      --v2: #b4690e;
+      --v2-soft: #f7ebdb;
+      --v3: #00919b;
+      --v3-soft: #e0f1f2;
+      --good: #3e7a4e;
+      --good-soft: #e5f0e7;
+      --warn-bg: #faf3e4;
+      --warn-edge: #b4690e;
+      --danger: #a2483c;
+    }
+    :root[data-theme="dark"] {
+      --paper: #15181b;
+      --ink: #e7e4dd;
+      --ink-2: #a8adb4;
+      --ink-3: #767c84;
+      --line: #2c3136;
+      --card: #1c2024;
+      --card-tint: #22262b;
+      --v2: #c97f22;
+      --v2-soft: #2e2415;
+      --v3: #0aa3a3;
+      --v3-soft: #10282b;
+      --good: #6fae7e;
+      --good-soft: #1d2a20;
+      --warn-bg: #262115;
+      --warn-edge: #c97f22;
+      --danger: #c9756a;
+    }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font:
+        16px/1.6 system-ui,
+        "Segoe UI",
+        sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+    h1,
+    h2,
+    h3 {
+      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-weight: 600;
+      line-height: 1.25;
+      text-wrap: balance;
+      margin: 0;
+    }
+    h1 {
+      font-size: 2.1rem;
+      letter-spacing: -0.01em;
+    }
+    h2 {
+      font-size: 1.45rem;
+      margin: 3.2rem 0 0.9rem;
+      padding-top: 1.6rem;
+      border-top: 1px solid var(--line);
+    }
+    h3 {
+      font-size: 1.08rem;
+      margin: 1.6rem 0 0.5rem;
+    }
+    p {
+      margin: 0.65rem 0;
+      max-width: 68ch;
+    }
+    code,
+    .mono {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 0.86em;
+      background: var(--card-tint);
+      padding: 0.08em 0.35em;
+      border-radius: 4px;
+    }
+    a {
+      color: var(--v3);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.72rem;
+      color: var(--ink-3);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.1rem;
+    }
+    .chip {
+      font-size: 0.78rem;
+      padding: 0.22rem 0.7rem;
+      border-radius: 99px;
+      border: 1px solid var(--line);
+      color: var(--ink-2);
+      background: var(--card);
+    }
+    .chip b {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .chip.done {
+      background: var(--good-soft);
+      color: var(--good);
+      border-color: var(--good);
+      font-weight: 700;
+    }
+
+    .lede {
+      font-size: 1.08rem;
+      color: var(--ink-2);
+      max-width: 62ch;
+      margin-top: 1rem;
+    }
+
+    .findings {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.8rem;
+      margin: 1.6rem 0 0;
+    }
+    .finding {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+    }
+    .finding .num {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .finding .cap {
+      font-size: 0.84rem;
+      color: var(--ink-2);
+      line-height: 1.45;
+      margin-top: 0.15rem;
+    }
+
+    .tracks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.4rem 0;
+    }
+    @media (max-width: 640px) {
+      .tracks {
+        grid-template-columns: 1fr;
+      }
+    }
+    .track {
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      overflow: hidden;
+    }
+    .track header {
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+    .track.v2 header {
+      background: var(--v2-soft);
+      border-bottom: 2px solid var(--v2);
+    }
+    .track.v3 header {
+      background: var(--v3-soft);
+      border-bottom: 2px solid var(--v3);
+    }
+    .track header .name {
+      font-weight: 700;
+    }
+    .track.v2 header .name {
+      color: var(--v2);
+    }
+    .track.v3 header .name {
+      color: var(--v3);
+    }
+    .track header .state {
+      font-size: 0.76rem;
+      color: var(--ink-2);
+    }
+    .track ul {
+      list-style: none;
+      margin: 0;
+      padding: 0.6rem 1rem 0.9rem;
+    }
+    .track li {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.28rem 0;
+      font-size: 0.88rem;
+      border-bottom: 1px dotted var(--line);
+      font-variant-numeric: tabular-nums;
+    }
+    .track li:last-child {
+      border-bottom: none;
+    }
+    .track li .note {
+      color: var(--ink-3);
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+    .track-foot {
+      padding: 0.55rem 1rem 0.8rem;
+      font-size: 0.8rem;
+      color: var(--ink-2);
+      border-top: 1px solid var(--line);
+      background: var(--card-tint);
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.88rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1.2rem 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+    th {
+      text-align: left;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      font-weight: 600;
+    }
+    th,
+    td {
+      padding: 0.55rem 0.85rem;
+      border-bottom: 1px solid var(--line);
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    thead tr {
+      background: var(--card-tint);
+    }
+    td.num,
+    th.num {
+      text-align: right;
+    }
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.1rem 0.5rem;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .tag.auto {
+      background: var(--v3-soft);
+      color: var(--v3);
+    }
+    .tag.script {
+      background: var(--v2-soft);
+      color: var(--v2);
+    }
+    .tag.human {
+      background: var(--card-tint);
+      color: var(--ink-2);
+      border: 1px solid var(--line);
+    }
+
+    .phases {
+      list-style: none;
+      margin: 1.4rem 0;
+      padding: 0;
+    }
+    .phase {
+      display: grid;
+      grid-template-columns: 2.6rem 1fr;
+      gap: 0.9rem;
+      padding: 0.95rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .phase:last-child {
+      border-bottom: none;
+    }
+    .phase .n {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 50%;
+      background: var(--good-soft);
+      color: var(--good);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+    }
+    .phase h3 {
+      margin: 0.2rem 0 0.25rem;
+    }
+    .phase p {
+      font-size: 0.92rem;
+      color: var(--ink-2);
+      margin: 0.25rem 0;
+      max-width: 66ch;
+    }
+
+    .callout {
+      background: var(--warn-bg);
+      border-left: 3px solid var(--warn-edge);
+      border-radius: 0 10px 10px 0;
+      padding: 0.9rem 1.1rem;
+      margin: 1.4rem 0;
+      font-size: 0.93rem;
+      max-width: 66ch;
+    }
+    .callout b:first-child {
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .rails {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+      display: grid;
+      gap: 0.55rem;
+      max-width: 68ch;
+    }
+    .rails li {
+      display: grid;
+      grid-template-columns: 1.2rem 1fr;
+      gap: 0.6rem;
+      font-size: 0.93rem;
+    }
+    .rails li::before {
+      content: "▸";
+      color: var(--v3);
+      font-weight: 700;
+    }
+
+    footer {
+      margin-top: 3.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.8rem;
+      color: var(--ink-3);
+    }
+  </style>
+
+  <main>
+    <div class="eyebrow">lameta · localization migration · executed 2026-07-09</div>
+    <h1>v3 localization on Crowdin: sorted out</h1>
+    <p class="lede">
+      The v2 → v3 transition has been completed end-to-end: every current v3 string is on Crowdin,
+      every recoverable v2 translation has been carried over, the junk and naming messes are gone,
+      and the sync pipeline is verified idempotent. This page is the audit, the plan, and the
+      measured results.
+    </p>
+    <div class="meta-row">
+      <span class="chip done">✓ EXECUTED</span>
+      <span class="chip">Crowdin project <b>324607 “laMeta”</b></span>
+      <span class="chip">branch <b>V3</b> · 6 files</span>
+      <span class="chip">7 target languages</span>
+      <span class="chip">backup: <b>crowdin-backup/2026-07-09/</b> in git</span>
+    </div>
+
+    <h2>The short version</h2>
+    <p>
+      There were <strong>not</strong> separate Crowdin projects for v2 and v3 — there is
+      <strong>one project</strong> with the v2 files at its <em>root</em> (still alive; edits as
+      recent as February 2026) and a
+      <strong>V3 branch that had been frozen since March 2024</strong> while the app's catalogs kept
+      growing (a fresh extraction found 286 UI strings, not the 250 in the last committed catalog).
+      The V3 branch is now fully current, and three mechanisms carried the v2 work across:
+    </p>
+
+    <div class="findings">
+      <div class="finding">
+        <div class="num" style="color: var(--v3)">280 / 286</div>
+        <div class="cap">
+          UI strings that inherit their v2 translations <em>automatically</em> — Crowdin hides them
+          as duplicates of the root strings and shares translations
+        </div>
+      </div>
+      <div class="finding">
+        <div class="num" style="color: var(--v2)">79 + 371</div>
+        <div class="cap">
+          translations recovered by script: 79 field strings (exact-English match from the v2 CSVs)
+          + 371 CSV cells merged from Crowdin-root translator edits
+        </div>
+      </div>
+      <div class="finding">
+        <div class="num">2,514</div>
+        <div class="cap">
+          translation-memory units exported as TMX and committed to git, along with every file and
+          every string, before anything was mutated
+        </div>
+      </div>
+      <div class="finding">
+        <div class="num" style="color: var(--good)">0</div>
+        <div class="cap">
+          files changed when the full extract → sync → compile cycle runs a second time — the
+          pipeline is idempotent and release-ready
+        </div>
+      </div>
+    </div>
+
+    <h2>What's on Crowdin now</h2>
+    <div class="tracks">
+      <div class="track v2">
+        <header>
+          <span class="name">Project root — v2</span
+          ><span class="state">UNTOUCHED · still live</span>
+        </header>
+        <ul>
+          <li>
+            <span class="mono">messages.po</span
+            ><span class="note">225 strings · zh 223 · es 217 · ru 46</span>
+          </li>
+          <li>
+            <span class="mono">fields / choices / tips.csv</span
+            ><span class="note">95 rows · harvested read-only</span>
+          </li>
+          <li>
+            <span class="mono">genres / roles / accessProtocols.csv</span
+            ><span class="note">translator edits merged into repo</span>
+          </li>
+        </ul>
+        <div class="track-foot">
+          Zero writes, zero deletions — v2 keeps shipping from here. Its translations reach v3
+          through duplicate-sharing and the recovery scripts.
+        </div>
+      </div>
+      <div class="track v3">
+        <header>
+          <span class="name">V3 branch</span><span class="state">CURRENT · synced today</span>
+        </header>
+        <ul>
+          <li>
+            <span class="mono">messages.po</span
+            ><span class="note">286 strings · 280 auto-share v2</span>
+          </li>
+          <li>
+            <span class="mono">fields.po</span
+            ><span class="note">118 strings · es 91 / zh 105 / ru 81</span>
+          </li>
+          <li>
+            <span class="mono">vocabularies.po</span
+            ><span class="note">49 strings · new, for translators</span>
+          </li>
+          <li>
+            <span class="mono">genres / roles / accessProtocols.csv</span
+            ><span class="note">93 / 50 / 58 rows · current</span>
+          </li>
+          <li>
+            <span class="mono">choices / fields / tips.csv</span
+            ><span class="note" style="color: var(--good)">junk — deleted ✓</span>
+          </li>
+        </ul>
+        <div class="track-foot">
+          Exactly the six files the pipeline expects.
+          <code>yarn strings:extract && yarn strings:sync && yarn strings:compile</code> now just
+          works.
+        </div>
+      </div>
+    </div>
+
+    <h2>Translation coverage after migration</h2>
+    <p>
+      Measured from the downloaded catalogs (translated / total strings). “Messages” inherit v2
+      work; “fields” combine surviving 2024 translations, the scripted CSV recovery, and a
+      perfect-match TM pass.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Language</th>
+            <th class="num">messages.po (286)</th>
+            <th class="num">fields.po (118)</th>
+            <th class="num">vocabularies.po (49)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Chinese (zh-CN)</td>
+            <td class="num">222</td>
+            <td class="num">105</td>
+            <td class="num">0</td>
+          </tr>
+          <tr>
+            <td>Indonesian (id)</td>
+            <td class="num">213</td>
+            <td class="num">105</td>
+            <td class="num">0</td>
+          </tr>
+          <tr>
+            <td>Spanish (es-ES)</td>
+            <td class="num">212</td>
+            <td class="num">91</td>
+            <td class="num">0</td>
+          </tr>
+          <tr>
+            <td>Portuguese (pt-BR)</td>
+            <td class="num">210</td>
+            <td class="num">81</td>
+            <td class="num">0</td>
+          </tr>
+          <tr>
+            <td>French (fr)</td>
+            <td class="num">202</td>
+            <td class="num">87</td>
+            <td class="num">0</td>
+          </tr>
+          <tr>
+            <td>Persian (fa)</td>
+            <td class="num">162</td>
+            <td class="num">81</td>
+            <td class="num">0</td>
+          </tr>
+          <tr>
+            <td>Russian (ru)</td>
+            <td class="num">42</td>
+            <td class="num">81</td>
+            <td class="num">0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      What remains is genuinely new v3 content that needs human translators: roughly 64–124 UI
+      strings per language (Russian, always the laggard, needs 244), 13–37 field strings, and all 49
+      vocabulary strings. These now sit cleanly visible on the V3 branch with TM suggestions
+      available in the editor. Nothing machine-translated was added anywhere, per your call.
+    </p>
+
+    <h2>How the v2 work was carried over</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Catalog</th>
+            <th>Mechanism</th>
+            <th>Outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="mono">messages.po</span></td>
+            <td>
+              <span class="tag auto">automatic</span> duplicate-sharing (project setting hides
+              branch strings whose English matches root and shares translations)
+            </td>
+            <td>
+              280 of 286 strings covered with zero uploads; the scripted top-up pass found
+              <em>nothing left to add</em> — the mechanism is complete
+            </td>
+          </tr>
+          <tr>
+            <td><span class="mono">fields.po</span></td>
+            <td>
+              <span class="tag script">scripted</span> exact-English match against v2
+              <span class="mono">fields/choices/tips.csv</span> + stale local dirs, uploaded as
+              unapproved suggestions to empty strings only; then TM perfect-match pre-translate
+            </td>
+            <td>
+              79 uploaded (ru +34, fr/fa/pt-BR +9 each…); every fill's source is recorded in
+              <span class="mono">recovery-report-V3.json</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="mono">vocabularies.po</span></td>
+            <td><span class="tag human">translators</span> — only 1 of 49 had any v2 ancestor</td>
+            <td>49 source strings live on V3; TM offers suggestions in-editor</td>
+          </tr>
+          <tr>
+            <td><span class="mono">3 CSVs</span></td>
+            <td>
+              <span class="tag script">scripted</span> merge of Crowdin-root edits into the repo
+              columns, then re-upload with <span class="mono">import_translations</span>
+            </td>
+            <td>
+              302 empty cells filled + 69 newer translator edits taken (conflicts logged); keys and
+              English byte-identical
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <b>The pt/zh folder mess is fixed.</b> Downloads used to land in <code>locale/pt</code> and
+      <code>locale/zh</code> while the build expected <code>pt-BR</code>/<code>zh-cn</code>, papered
+      over by a runtime remap. Now <code>crowdin.yml</code> maps downloads straight to
+      <code>pt-BR/</code> and <code>zh-CN/</code>, the remap in <code>localization.ts</code> is
+      deleted, and the stale dirs are gone — after a script proved every stale translation was
+      either already covered, retired with its string, or moved to an already-translated context.
+    </div>
+
+    <h2>What was done, phase by phase</h2>
+    <ol class="phases">
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>0 · Complete backup before any mutation</h3>
+          <p>
+            <code>scripts/crowdin/backup.ts</code> exported the TM (exactly 2,514 units), glossary,
+            full translation builds of root and V3, all 16 source files, 112 per-file-per-language
+            translation exports, and per-string dumps — committed to git as
+            <code>crowdin-backup/2026-07-09/</code>.
+          </p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>1 · Repo prep</h3>
+          <p>
+            <code>crowdin.yml</code> hardened (<code>languages_mapping</code>,
+            <code>update_as_unapproved</code>, <code>import_translations</code>, a “root belongs to
+            v2” warning); <code>locale/zh-cn → zh-CN</code>; runtime remap removed; fresh
+            extraction: 286 / 118 / 49 strings.
+          </p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>2 · Merge root CSV edits into the repo</h3>
+          <p>
+            371 translation cells updated across genres/roles/accessProtocols.csv, verified
+            cell-by-cell that keys and English never changed; 69 conflicts logged for review in
+            <code>csv-merge-conflicts.csv</code> (they're genuine improvements, e.g. ru
+            “Играть”→“Игра” for the noun “Play”).
+          </p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>3 · Rehearse on a scratch branch, then upload sources to V3</h3>
+          <p>
+            A throwaway <code>REHEARSAL-l10n</code> branch proved duplicate-sharing (212 inherited
+            Spanish translations on export), CSV column import (92/93), and the translation-upload
+            mechanics. The real upload then brought V3 fully current. (Correction, 2026-10-20: the
+            call to delete the rehearsal branch was blocked, even though the original version of
+            this page said it was deleted. It was deleted on 2026-10-20.)
+          </p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>4 · Recover v2 translations</h3>
+          <p>
+            79 field translations uploaded as unapproved suggestions to empty strings only, followed
+            by a TM perfect-match pre-translate (nothing auto-approved, no MT). The messages top-up
+            pass confirmed duplicate-sharing had already covered everything recoverable.
+          </p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>5 · Delete the junk</h3>
+          <p>
+            The three 0-string 2023 leftovers (<code>choices/fields/tips.csv</code>) deleted from
+            the V3 branch by a script that structurally cannot target root files (dry-run by
+            default, <code>--force</code> gate). V3 is exactly six files.
+          </p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>6 · Download with fixed mapping; retire stale dirs</h3>
+          <p>
+            Translations landed in <code>pt-BR/</code> and <code>zh-CN/</code>;
+            <code>locale/pt</code> and <code>locale/zh</code> removed after the subsumption proof
+            (every uncovered stale translation classified as retired-string or
+            context-moved-and-already-translated).
+          </p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>7 · Verify end-to-end</h3>
+          <p>
+            Compile + typecheck clean. Live smoke test in an isolated app instance: Spanish and
+            Chinese UIs verified — menu strings, field labels (“Explicación de Acceso”, 说明), genre
+            and vocabulary choices (“Narrativa”, “elicitado”) all render from the new catalogs.
+            Second full sync cycle: <strong>zero git churn</strong>.
+          </p>
+        </div>
+      </li>
+      <li class="phase">
+        <span class="n">✓</span>
+        <div>
+          <h3>8 · Document</h3>
+          <p>
+            <code>README-l10n.md</code> rewritten around the one-page picture: root=v2 warning,
+            duplicate-sharing explanation, the folder/code mapping table, and the
+            <code>scripts/crowdin/</code> tool reference (backup, report, po-stats, and the kept
+            one-time migration scripts).
+          </p>
+        </div>
+      </li>
+    </ol>
+
+    <h2>Safety rails that were enforced</h2>
+    <ul class="rails">
+      <li>
+        <strong>Backup-first, committed to git</strong> — TM, glossary, builds, every file, every
+        language, every string ID, before the first mutation. Verified against the audit numbers
+        before proceeding.
+      </li>
+      <li>
+        <strong>Root untouched</strong> — zero writes or deletions on the v2 files; the deletion
+        script asserts branch id 66 on every candidate.
+      </li>
+      <li>
+        <strong>Rehearsal branch</strong> — every mutating mechanic proven on a scratch branch
+        first.
+      </li>
+      <li>
+        <strong>Non-destructive defaults</strong> — source updates keep translations; translation
+        uploads add unapproved suggestions to empty strings only; TM pass perfect-match only.
+      </li>
+      <li>
+        <strong>Everything scripted and auditable</strong> — the recovery reports record the source
+        of every migrated translation; all scripts are committed and rerunnable.
+      </li>
+    </ul>
+
+    <h2>Decisions honored</h2>
+    <p>
+      <strong>v2 stays live</strong> (root read-only; V3 remains a branch) ·
+      <strong>TM-only pre-translate</strong> (no machine translation anywhere) ·
+      <strong>folder naming fixed</strong> (pt-BR/zh-CN, remap deleted).
+    </p>
+
+    <h2>What's left for humans</h2>
+    <p>
+      Purely translation work, now cleanly visible on the V3 branch: the new v3 strings (worst:
+      Russian at 244 untranslated UI strings; best: Chinese at 64) and the 49 vocabulary strings per
+      language. When you're ready, invite the translator community to the V3 branch — everything
+      they did for v2 is already in place, and the pipeline will carry their new work into the app
+      with the standard three yarn scripts.
+    </p>
+
+    <footer>
+      Executed live against Crowdin project 324607 and committed on branch
+      <span class="mono">sort-out-crowdin</span> (7 commits), 2026-07-09 · all numbers measured, not
+      estimated · full audit trail in <span class="mono">crowdin-backup/2026-07-09/</span>
+    </footer>
+  </main>
+</html>

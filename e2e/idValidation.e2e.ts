@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { LametaE2ERunner } from "./lametaE2ERunner";
-import { createNewProject, E2eProject } from "./various-e2e-helpers";
+import { launchWithProject, E2eProject } from "./various-e2e-helpers";
 
 let lameta: LametaE2ERunner;
 let page: Page;
@@ -9,9 +9,8 @@ let project: E2eProject;
 test.describe("ID Validation Tests", () => {
   test.beforeAll(async () => {
     lameta = new LametaE2ERunner();
-    page = await lameta.launch();
-    await lameta.cancelRegistration();
-    project = await createNewProject(lameta, `IDValidation_${Date.now()}`);
+    project = await launchWithProject(lameta, `IDValidation_${Date.now()}`);
+    page = lameta.page;
   });
 
   test.afterAll(async () => {
@@ -29,9 +28,7 @@ test.describe("ID Validation Tests", () => {
     await page.keyboard.press("Tab");
 
     // verify no validation message appears (if component exposes one)
-    const validationMessage = page.locator(
-      '[data-testid="validation-message"]'
-    );
+    const validationMessage = page.locator('[data-testid="validation-message"]');
     if (await validationMessage.count()) {
       await expect(validationMessage).not.toBeVisible();
     }
@@ -50,9 +47,7 @@ test.describe("ID Validation Tests", () => {
     await page.keyboard.press("Tab");
 
     // verify validation message appears
-    const validationMessage = page.locator(
-      '[data-testid="validation-message"]'
-    );
+    const validationMessage = page.locator('[data-testid="validation-message"]');
     if (await validationMessage.count()) {
       await expect(validationMessage).toBeVisible();
       await expect(validationMessage).toContainText("ID cannot be empty");
@@ -72,9 +67,7 @@ test.describe("ID Validation Tests", () => {
     await page.keyboard.press("Tab");
 
     // verify validation message appears
-    const validationMessage = page.locator(
-      '[data-testid="validation-message"]'
-    );
+    const validationMessage = page.locator('[data-testid="validation-message"]');
     if (await validationMessage.count()) {
       await expect(validationMessage).toBeVisible();
       await expect(validationMessage).toContainText("ID cannot contain spaces");

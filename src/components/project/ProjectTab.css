@@ -2,11 +2,17 @@
 
 form.project {
   max-width: 600px;
+  /* one column that scrolls down when the window is too short for it, instead of
+     the second column that Form.css's wrapping would start */
+  flex-wrap: nowrap;
+  & > * {
+    flex-shrink: 0;
+  }
 }
 
 .project {
   height: 100%;
-  color: black;
+  color: var(--color-text-primary);
   display: flex;
   & > ul {
     width: 200px;
@@ -46,10 +52,10 @@ form.project {
   }
 
   .primary,
-  .collection,
+  .project,
   .fundingProject,
   .languages,
-  .collectionLocation,
+  .projectLocation,
   .accessProtocol {
     .field {
       display: flex;

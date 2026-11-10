@@ -20,9 +20,33 @@ import { translateGenreToLanguage, translateRoleToLanguage } from "../../other/l
 
 // Built-in genre IDs from genres.json
 const builtInGenreIds = new Set(genresJSON.map((g: any) => g.id.toLowerCase()));
-const builtInGenreLabels = new Set(
-  genresJSON.map((g: any) => g.label.toLowerCase())
-);
+const builtInGenreLabels = new Set(genresJSON.map((g: any) => g.label.toLowerCase()));
+
+/**
+ * Genres that are hardcoded in export code (e.g., ImdiBundler).
+ * These need to always be included in vocabulary scanning so users
+ * can provide translations for them, even if they don't manually
+ * create sessions with these genres.
+ */
+export const HARDCODED_EXPORT_GENRES = ["Consent", "Collection description"];
+
+/**
+ * Roles that are hardcoded in export code (e.g., ImdiBundler).
+ * These need to always be included in vocabulary scanning so users
+ * can provide translations for them, even if they don't manually
+ * assign these roles to contributors.
+ *
+ * "Researcher" is used for the collection steward in project document bundles
+ * (OtherDocuments, DescriptionDocuments).
+ */
+export const HARDCODED_EXPORT_ROLES = ["Researcher"];
+
+/**
+ * Fixed strings used in IMDI export that need translation.
+ * Imported and re-exported from ExportStringDefinitions for backward compatibility.
+ */
+import { HARDCODED_EXPORT_STRINGS } from "../../export/ExportStringDefinitions";
+export { HARDCODED_EXPORT_STRINGS };
 
 /**
  * Check if a genre value is built-in (exists in genres.json).
@@ -39,23 +63,16 @@ export function isBuiltInGenre(value: string): boolean {
 export function isBuiltInRole(value: string): boolean {
   const olacRoles = loadOLACRoles();
   const lower = value.toLowerCase();
-  return olacRoles.some(
-    (r) => r.id.toLowerCase() === lower || r.label.toLowerCase() === lower
-  );
+  return olacRoles.some((r) => r.id.toLowerCase() === lower || r.label.toLowerCase() === lower);
 }
 
 /**
  * Check if a built-in genre is missing translations for any of the given languages.
  * Returns true if at least one language has no translation in genres.csv.
  */
-export function isBuiltInGenreMissingTranslations(
-  value: string,
-  languageCodes: string[]
-): boolean {
+export function isBuiltInGenreMissingTranslations(value: string, languageCodes: string[]): boolean {
   // Skip English since it's always available
-  const nonEnglishCodes = languageCodes.filter(
-    (code) => code !== "en" && code !== "eng"
-  );
+  const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
   if (nonEnglishCodes.length === 0) return false;
 
   return nonEnglishCodes.some((code) => {
@@ -68,14 +85,9 @@ export function isBuiltInGenreMissingTranslations(
  * Check if a built-in role is missing translations for any of the given languages.
  * Returns true if at least one language has no translation in roles.csv.
  */
-export function isBuiltInRoleMissingTranslations(
-  value: string,
-  languageCodes: string[]
-): boolean {
+export function isBuiltInRoleMissingTranslations(value: string, languageCodes: string[]): boolean {
   // Skip English since it's always available
-  const nonEnglishCodes = languageCodes.filter(
-    (code) => code !== "en" && code !== "eng"
-  );
+  const nonEnglishCodes = languageCodes.filter((code) => code !== "en" && code !== "eng");
   if (nonEnglishCodes.length === 0) return false;
 
   return nonEnglishCodes.some((code) => {
@@ -96,6 +108,8 @@ export interface ScanResult {
   customRoles: Set<string>;
   /** Built-in role values that are missing translations */
   builtInRolesMissingTranslations: Set<string>;
+  /** Fixed export strings that need translations */
+  exportStrings: Set<string>;
   /** Total sessions scanned */
   sessionsScanned: number;
   /** Total people scanned */
@@ -117,15 +131,16 @@ export interface ScanResult {
 export async function scanProjectForVocabulary(
   project: Project,
   languageCodes: string[],
-  progressCallback?: (progress: number, message: string) => void
+  progressCallback?: (progress: number, message: string) => void,
 ): Promise<ScanResult> {
   const result: ScanResult = {
     customGenres: new Set(),
     builtInGenresMissingTranslations: new Set(),
     customRoles: new Set(),
     builtInRolesMissingTranslations: new Set(),
+    exportStrings: new Set(),
     sessionsScanned: 0,
-    peopleScanned: 0
+    peopleScanned: 0,
   };
 
   const sessions = project.sessions.items as Session[];
@@ -177,6 +192,30 @@ export async function scanProjectForVocabulary(
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
 
+  // Always include hardcoded export genres (e.g., "Consent" for consent bundles)
+  // so users can provide translations for them even if they haven't manually
+  // created sessions with these genres. These are always added to ensure users
+  // can customize translations for their project's metadata languages.
+  for (const genre of HARDCODED_EXPORT_GENRES) {
+    // Always add hardcoded genres, bypassing the "missing translations" check
+    result.builtInGenresMissingTranslations.add(genre);
+  }
+
+  // Always include hardcoded export roles (e.g., "Researcher" for project document bundles)
+  // so users can provide translations for them even if they haven't manually
+  // assigned these roles to contributors. These are always added to ensure users
+  // can customize translations for their project's metadata languages.
+  for (const role of HARDCODED_EXPORT_ROLES) {
+    // Always add hardcoded roles, bypassing the "missing translations" check
+    result.builtInRolesMissingTranslations.add(role);
+  }
+
+  // Always include hardcoded export strings (titles and descriptions for
+  // pseudo-session bundles like DescriptionDocuments, OtherDocuments, ConsentDocuments)
+  for (const exportString of HARDCODED_EXPORT_STRINGS) {
+    result.exportStrings.add(exportString);
+  }
+
   if (progressCallback) {
     progressCallback(100, "Scan complete");
   }
@@ -187,11 +226,7 @@ export async function scanProjectForVocabulary(
 /**
  * Process a genre value and add it to the appropriate set in the result.
  */
-function processGenreValue(
-  genre: string,
-  languageCodes: string[],
-  result: ScanResult
-): void {
+function processGenreValue(genre: string, languageCodes: string[], result: ScanResult): void {
   if (isBuiltInGenre(genre)) {
     // Check if built-in genre is missing translations
     if (isBuiltInGenreMissingTranslations(genre, languageCodes)) {
@@ -206,11 +241,7 @@ function processGenreValue(
 /**
  * Process a role value and add it to the appropriate set in the result.
  */
-function processRoleValue(
-  role: string,
-  languageCodes: string[],
-  result: ScanResult
-): void {
+function processRoleValue(role: string, languageCodes: string[], result: ScanResult): void {
   if (isBuiltInRole(role)) {
     // Check if built-in role is missing translations
     if (isBuiltInRoleMissingTranslations(role, languageCodes)) {
@@ -229,26 +260,47 @@ function processRoleValue(
 export function updateTranslationsFromScan(
   translations: VocabularyTranslations,
   scanResult: ScanResult,
-  languageCodes: string[]
+  languageCodes: string[],
 ): void {
   // Add custom genres
   for (const genre of scanResult.customGenres) {
-    translations.ensureGenreEntry(genre, "project", languageCodes);
+    translations.ensureGenreEntry(genre, "custom", languageCodes);
   }
 
   // Add built-in genres with missing translations
   for (const genre of scanResult.builtInGenresMissingTranslations) {
-    translations.ensureGenreEntry(genre, "builtin", languageCodes);
+    // Determine the correct source: factory-value-used-by-export or factory-value-used-in-sessions
+    const isHardcodedExport = HARDCODED_EXPORT_GENRES.some(
+      (g) => g.toLowerCase() === genre.toLowerCase(),
+    );
+    translations.ensureGenreEntry(
+      genre,
+      isHardcodedExport ? "factory-value-used-by-export" : "factory-value-used-in-sessions",
+      languageCodes,
+    );
   }
 
   // Add custom roles
   for (const role of scanResult.customRoles) {
-    translations.ensureRoleEntry(role, "project", languageCodes);
+    translations.ensureRoleEntry(role, "custom", languageCodes);
   }
 
   // Add built-in roles with missing translations
   for (const role of scanResult.builtInRolesMissingTranslations) {
-    translations.ensureRoleEntry(role, "builtin", languageCodes);
+    // Determine the correct source: factory-value-used-by-export or factory-value-used-in-sessions
+    const isHardcodedExport = HARDCODED_EXPORT_ROLES.some(
+      (r) => r.toLowerCase() === role.toLowerCase(),
+    );
+    translations.ensureRoleEntry(
+      role,
+      isHardcodedExport ? "factory-value-used-by-export" : "factory-value-used-in-sessions",
+      languageCodes,
+    );
+  }
+
+  // Add export strings (fixed phrases used in IMDI export)
+  for (const exportString of scanResult.exportStrings) {
+    translations.ensureExportStringEntry(exportString, languageCodes);
   }
 
   // Save changes
@@ -263,7 +315,7 @@ export function updateTranslationsFromScan(
 export function getGenreEnglishLabel(value: string): string {
   const lower = value.toLowerCase();
   const builtIn = genresJSON.find(
-    (g: any) => g.id.toLowerCase() === lower || g.label.toLowerCase() === lower
+    (g: any) => g.id.toLowerCase() === lower || g.label.toLowerCase() === lower,
   );
   return builtIn ? builtIn.label : value;
 }
@@ -277,7 +329,7 @@ export function getRoleEnglishLabel(value: string): string {
   const olacRoles = loadOLACRoles();
   const lower = value.toLowerCase();
   const builtIn = olacRoles.find(
-    (r) => r.id.toLowerCase() === lower || r.label.toLowerCase() === lower
+    (r) => r.id.toLowerCase() === lower || r.label.toLowerCase() === lower,
   );
   return builtIn ? builtIn.label : value;
 }

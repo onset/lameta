@@ -6,17 +6,15 @@ import * as fs from "fs-extra";
 import { FolderMetadataFile } from "../../file/FolderMetaDataFile";
 import { EncounteredVocabularyRegistry } from "../EncounteredVocabularyRegistry";
 import { sanitizeForArchive } from "../../../other/sanitizeForArchive";
-import {
-  LanguageFinder,
-  staticLanguageFinder
-} from "../../../languageFinder/LanguageFinder";
+import { LanguageFinder, staticLanguageFinder } from "../../../languageFinder/LanguageFinder";
 import { IPersonLanguage } from "../../PersonLanguage";
 import {
   migrateLegacyPersonLanguagesFromNameToCode,
-  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages
+  migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages,
 } from "./PersonMigration";
 import xmlbuilder from "xmlbuilder";
 import { makeObservable, observable } from "mobx";
+import { personReferenceKey } from "./personReferenceKey";
 
 export type idChangeHandler = (oldId: string, newId: string) => void;
 export const maxOtherLanguages = 10;
@@ -25,8 +23,11 @@ export class Person extends Folder {
   protected updateExternalReferencesToThisPerson: idChangeHandler;
   protected previousId: string;
 
+  // The person's age in years on the date, or "" when it cannot be known, as when the
+  // birth year is after the date
   public ageOn(referenceDate: Date): string {
-    return this.properties.getDateField("birthYear").yearsSince(referenceDate);
+    const years = this.properties.getDateField("birthYear").yearsSince(referenceDate);
+    return Number(years) < 0 ? "" : years;
   }
 
   // checks either the name or the code
@@ -34,15 +35,16 @@ export class Person extends Folder {
   // which handles the common case where a contributor was added by name
   // before the person record was given a code.
   public referenceIdMatches(id: string): boolean {
-    const idLower = id.toLowerCase();
-    const name = this.properties.getTextStringOrEmpty("name").toLowerCase();
-    const code = this.properties.getTextStringOrEmpty("code").toLowerCase();
+    return this.referenceKeys().includes(personReferenceKey(id));
+  }
 
-    return (
-      idLower === this.getIdToUseForReferences().toLowerCase() ||
-      idLower === name ||
-      (code.length > 0 && idLower === code)
-    );
+  // the personReferenceKey of every reference that names this person
+  public referenceKeys(): string[] {
+    const name = personReferenceKey(this.properties.getTextStringOrEmpty("name"));
+    const code = personReferenceKey(this.properties.getTextStringOrEmpty("code"));
+    const keys = [personReferenceKey(this.getIdToUseForReferences()), name];
+    if (code.length > 0) keys.push(code);
+    return keys;
   }
 
   public get /*override*/ metadataFileExtensionWithDot(): string {
@@ -67,6 +69,10 @@ export class Person extends Folder {
   public copyInMugshot(path: string): Promise<void> {
     //console.log("photopath " + path);
 
+    // with the folder gone, leave the current photo in the list; adding the new one
+    // would fail anyway
+    if (this.reportIfDirectoryIsMissing())
+      return Promise.reject(new Error(`${this.directory} is missing`));
     const f = this.getMugshotFile();
     if (f) {
       fs.removeSync(f.pathInFolderToLinkFileOrLocalCopy);
@@ -91,9 +97,7 @@ export class Person extends Folder {
 
   public getIdToUseForReferences(): string {
     const code = this.properties.getTextStringOrEmpty("code").trim();
-    return code && code.length > 0
-      ? code
-      : this.properties.getTextStringOrEmpty("name");
+    return code && code.length > 0 ? code : this.properties.getTextStringOrEmpty("name");
   }
 
   public constructor(
@@ -101,7 +105,7 @@ export class Person extends Folder {
     metadataFile: FolderMetadataFile,
     files: File[],
     customVocabularies: EncounteredVocabularyRegistry,
-    updateExternalReferencesToThisProjectComponent: idChangeHandler
+    updateExternalReferencesToThisProjectComponent: idChangeHandler,
   ) {
     FolderMetadataFile.loadDefaultConfigIfInUnitTest();
     super(directory, metadataFile, files, customVocabularies);
@@ -114,9 +118,7 @@ export class Person extends Folder {
     this.properties.addHasConsentProperty(this);
     this.properties.addDisplayNameProperty(this);
 
-    this.currentFileNameBase = sanitizeForArchive(
-      this.properties.getTextStringOrEmpty("name")
-    );
+    this.currentFileNameBase = sanitizeForArchive(this.properties.getTextStringOrEmpty("name"));
     /* what did this ever do?
     this.properties
       .getValueOrThrow("name")
@@ -127,8 +129,7 @@ export class Person extends Folder {
       });
       */
     this.knownFields = fieldDefinitionsOfCurrentConfig.person; // for csv export
-    this.updateExternalReferencesToThisPerson =
-      updateExternalReferencesToThisProjectComponent;
+    this.updateExternalReferencesToThisPerson = updateExternalReferencesToThisProjectComponent;
     this.previousId = this.getIdToUseForReferences();
     this.migrateFromPreviousVersions();
   }
@@ -148,21 +149,17 @@ export class Person extends Folder {
     directory: string,
     customVocabularies: EncounteredVocabularyRegistry,
     updateExternalReferencesToThisProjectComponent: idChangeHandler,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    languageFinder: LanguageFinder
+    // oxlint-disable-next-line @typescript-eslint/no-unused-vars
+    languageFinder: LanguageFinder,
   ): Person {
     const metadataFile = new PersonMetadataFile(directory, customVocabularies);
-    const files = this.loadChildFiles(
-      directory,
-      metadataFile,
-      customVocabularies
-    );
+    const files = this.loadChildFiles(directory, metadataFile, customVocabularies);
     return new Person(
       directory,
       metadataFile,
       files,
       customVocabularies,
-      updateExternalReferencesToThisProjectComponent
+      updateExternalReferencesToThisProjectComponent,
     );
   }
   public static saveFolderMetaData() {
@@ -181,11 +178,13 @@ export class Person extends Folder {
   // This allowed users to create duplicate persons like "Alice" and "alice".
   // Now both fields are properly lowercased before comparison.
   // https://linear.app/lameta/issue/LAM-119
+  // Both fields go through personReferenceKey, as in referenceIdMatches: two people whose
+  // ids match the same references would share every contribution.
   public wouldCollideWithIdFields(value: string): boolean {
-    const normalized = value.trim().toLowerCase();
+    const key = personReferenceKey(value);
     return (
-      normalized === this.textValueThatControlsFolderName().toLowerCase() ||
-      normalized === this.properties.getTextStringOrEmpty("code").toLowerCase()
+      key === personReferenceKey(this.textValueThatControlsFolderName()) ||
+      key === personReferenceKey(this.properties.getTextStringOrEmpty("code"))
     );
   }
 
@@ -195,18 +194,11 @@ export class Person extends Folder {
   // the whole system.
   public IdMightHaveChanged() {
     if (this.previousId !== this.getIdToUseForReferences()) {
-      console.log(
-        `Updating References ${
-          this.previousId
-        } --> ${this.getIdToUseForReferences()}`
-      );
+      console.log(`Updating References ${this.previousId} --> ${this.getIdToUseForReferences()}`);
 
       // Let the project inform any sessions pointing at us to update their references
       if (this.updateExternalReferencesToThisPerson) {
-        this.updateExternalReferencesToThisPerson(
-          this.previousId,
-          this.getIdToUseForReferences()
-        );
+        this.updateExternalReferencesToThisPerson(this.previousId, this.getIdToUseForReferences());
       }
     }
     // save this for next time
@@ -218,21 +210,18 @@ export class PersonMetadataFile extends FolderMetadataFile {
   // only used for people files
   public languages: IPersonLanguage[] = [];
 
-  constructor(
-    directory: string,
-    customVocabularies: EncounteredVocabularyRegistry
-  ) {
+  constructor(directory: string, customVocabularies: EncounteredVocabularyRegistry) {
     super(
       directory,
       "Person",
       true,
       ".person",
       fieldDefinitionsOfCurrentConfig.person,
-      customVocabularies
+      customVocabularies,
     );
 
     makeObservable(this, {
-      languages: observable
+      languages: observable,
     });
 
     this.finishLoading();
@@ -243,15 +232,12 @@ export class PersonMetadataFile extends FolderMetadataFile {
     migrateLegacyPersonLanguagesFromNameToCode(this.properties);
     migrateLegacyIndividualPersonLanguageFieldsToCurrentListOfLanguages(
       this.properties,
-      this.languages
+      this.languages,
     );
   }
 
   // override
-  protected specialLoadingOfField(
-    tag: string,
-    propertiesFromXml: any
-  ): boolean {
+  protected specialLoadingOfField(tag: string, propertiesFromXml: any): boolean {
     //console.log("PersonMetadataFile.specialHandlingOfField");
     if (tag.toLocaleLowerCase() === "languages") {
       this.loadPersonLanguages(propertiesFromXml[tag]);
@@ -268,14 +254,14 @@ export class PersonMetadataFile extends FolderMetadataFile {
         code: lang.$.tag,
         primary: lang.$.primary === "true",
         mother: lang.$.mother === "true",
-        father: lang.$.father === "true"
+        father: lang.$.father === "true",
       });
     });
   }
 
   public writeXmlForComplexFields(root: xmlbuilder.XMLElementOrXMLNode) {
     const languageElement = root.element("languages", {
-      type: "xml"
+      type: "xml",
     });
 
     this.languages.forEach((language) => {
@@ -295,10 +281,7 @@ export class PersonMetadataFile extends FolderMetadataFile {
       "lameta does not use this field anymore. Lameta has included it here in case the user opens the file in SayMore.";
     this.languages.forEach((language) => {
       // the legacy format uses name, not code
-      const name =
-        staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(
-          language.code
-        );
+      const name = staticLanguageFinder!.findOneLanguageNameFromCode_Or_ReturnCode(language.code);
       if (language.code.trim().length > 0) {
         const fieldName =
           fieldNameIndex === 0
@@ -308,15 +291,11 @@ export class PersonMetadataFile extends FolderMetadataFile {
         ++fieldNameIndex;
         root.element(fieldName, name).attribute("deprecated", kNotice);
         if (!haveFatherLanguage && language.father) {
-          root
-            .element("fathersLanguage", name)
-            .attribute("deprecated", kNotice);
+          root.element("fathersLanguage", name).attribute("deprecated", kNotice);
           haveFatherLanguage = true;
         }
         if (!haveMotherLanguage && language.mother) {
-          root
-            .element("mothersLanguage", name)
-            .attribute("deprecated", kNotice);
+          root.element("mothersLanguage", name).attribute("deprecated", kNotice);
           haveMotherLanguage = true;
         }
       }

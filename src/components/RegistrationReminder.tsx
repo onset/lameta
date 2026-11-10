@@ -2,8 +2,10 @@ import * as React from "react";
 import userSettings from "../other/UserSettings";
 import "./RegistrationReminder.css";
 import RegistrationDialog from "./registration/RegistrationDialog";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { observer } from "mobx-react";
+import { lameta_dark_blue } from "../containers/theme";
 
 // This is in the upper right corner of the screen. It shows either
 // * A button asking you to register, or
@@ -28,7 +30,9 @@ class RegistrationReminder extends React.Component {
         );
         break;
       case "developer":
-        passiveText = <label style={{ color: "blue" }}>Developer Mode</label>;
+        passiveText = (
+          <label style={{ color: lameta_dark_blue, fontWeight: "normal" }}>Developer Mode</label>
+        );
         break;
       default:
         break;

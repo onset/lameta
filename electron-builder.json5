@@ -1,21 +1,20 @@
 {
   productName: "lameta",
   appId: "com.github.lameta.lameta",
-  afterSign: "electron-builder-notarize",
   dmg: {
     contents: [
       {
         x: 410,
         y: 150,
         type: "link",
-        path: "/Applications"
+        path: "/Applications",
       },
       {
         x: 130,
         y: 150,
-        type: "file"
-      }
-    ]
+        type: "file",
+      },
+    ],
   },
   files: [
     /* I started on this because it seems crazy to include it (most should be bundled into index.js),
@@ -44,37 +43,43 @@
     {
       from: "assets/",
       // "dist/" is the base directory (index.html is there), so the paths work out more simply if assets are there too. Then we can just say src="assets/whatever.png" in the html.
-      to: "dist/assets"
+      to: "dist/assets",
     },
     "dist/",
+    // the source maps go to Sentry, not to users
+    "!dist/**/*.map",
     "locale/",
     "archive-configurations/",
     "schemas/",
     "sample data/",
     // we only want ffprobe, not ffmpeg
     "!node_modules/ffmpeg-ffprobe-static/ffmpeg*",
-    "!node_modules/ffmpeg-ffprobe-static/bin/*/ffmpeg*"
+    "!node_modules/ffmpeg-ffprobe-static/bin/*/ffmpeg*",
   ],
   extraFiles: [],
+  // makes ffprobe universal for the universal Mac app
+  beforePack: "build/universalFfprobe.js",
+  // ffprobe has to live outside the asar archive, because a file inside an asar cannot be
+  // spawned. src/other/ffprobePath.ts builds the runtime path from this location.
+  asarUnpack: ["**/node_modules/fswin/**", "**/node_modules/ffmpeg-ffprobe-static/ffprobe*"],
   directories: {
     buildResources: "resources",
-    output: "release"
+    output: "release",
   },
   win: {
     target: "nsis",
     icon: "build/windows.ico",
-    fileAssociations: [
-      {
-        ext: "sprj",
-        name: "lameta/lameta project"
-      }
-    ]
+    // No fileAssociations: build/installer.nsh registers .sprj, so that uninstalling one
+    // channel leaves .sprj working for the others.
   },
   nsis: {
-    artifactName: "${productName} Windows Setup ${version}.${ext}"
+    artifactName: "${productName} Windows Setup ${version}.${ext}",
+    include: "build/installer.nsh",
   },
   mac: {
     target: { target: "default", arch: ["universal"] },
+    // the one file that is the same in the x64 and arm64 apps, because build/universalFfprobe.js made it universal
+    x64ArchFiles: "**/node_modules/ffmpeg-ffprobe-static/ffprobe",
     icon: "build/mac.icns",
     hardenedRuntime: true,
     artifactName: "${productName}-mac-${version}.${ext}",
@@ -84,18 +89,16 @@
     // repeated prompts unless the user denies access.
     extendInfo: {
       NSDocumentsFolderUsageDescription: "lameta needs access to your Documents folder so you can add and organise files in your lameta project folder(s).",
-      // Does not appear to work: Show version in Dock tooltip and app menu so users can distinguish beta from release
-      CFBundleDisplayName: "lameta ${version}"
     },
 
     fileAssociations: [
       {
         ext: "sprj",
         name: "lameta/lameta project",
-        role: "Editor"
-      }
+        role: "Editor",
+      },
     ],
-    notarize: true
+    notarize: true,
   },
   linux: {
     target: ["deb", "AppImage"],
@@ -104,8 +107,8 @@
     fileAssociations: [
       {
         ext: "sprj",
-        name: "lameta/lameta project"
-      }
-    ]
-  }
+        name: "lameta/lameta project",
+      },
+    ],
+  },
 }

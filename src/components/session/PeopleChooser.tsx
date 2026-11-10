@@ -1,5 +1,5 @@
 import ReactSelect, { MultiValueProps } from "react-select";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 import { default as React, useState } from "react";
 import { Folder } from "../../model/Folder/Folder";
 import { Contribution } from "../../model/file/File";
@@ -26,7 +26,7 @@ export const PeopleChooser: React.FunctionComponent<
       borderRadius: 0,
       borderColor: "rgb(169, 169, 169)",
       boxShadow: state.isFocused ? "0 0 0 1px " + saymore_orange : "unset",
-      "&:hover": { borderColor: saymore_orange }
+      "&:hover": { borderColor: saymore_orange },
     }),
     multiValue: (styles) => {
       return {
@@ -38,19 +38,19 @@ export const PeopleChooser: React.FunctionComponent<
         color: "lightgray", // for the "x"
         ":hover": {
           borderColor: saymore_orange,
-          cursor: "pointer"
-        }
+          cursor: "pointer",
+        },
       };
     },
 
-    multiValueRemove: (styles, { data }) => ({
+    multiValueRemove: (styles) => ({
       ...styles,
       //color: "white",
       ":hover": {
         backgroundColor: saymore_orange,
-        color: "white"
-      }
-    })
+        color: "white",
+      },
+    }),
   };
 
   //const label: string = props.field.labelInUILanguage;
@@ -58,7 +58,7 @@ export const PeopleChooser: React.FunctionComponent<
     return new Object({
       value: "choice" + index, // only function of this is as a unique key
       contribution: new Contribution(choice.label, "participant", ""),
-      label: choice
+      label: choice,
     });
   });
 
@@ -67,7 +67,7 @@ export const PeopleChooser: React.FunctionComponent<
     .map((c, index) => ({
       value: "existing" + index, // only function of this is as a unique key
       label: c.personReference + ":" + (c.role || ""),
-      contribution: c
+      contribution: c,
     }));
 
   interface PersonAndRoleOption {
@@ -76,12 +76,7 @@ export const PeopleChooser: React.FunctionComponent<
     contribution: Contribution;
   }
 
-  const PersonAndRolePill = ({
-    children,
-    data,
-    innerProps,
-    isDisabled
-  }: MultiValueProps<PersonAndRoleOption>) => {
+  const PersonAndRolePill = ({ data, innerProps }: MultiValueProps<PersonAndRoleOption>) => {
     return (
       <div
         onClick={(e) => {
@@ -110,9 +105,7 @@ export const PeopleChooser: React.FunctionComponent<
         name={"People"}
         placeholder=""
         value={currentValueArray}
-        noOptionsMessage={() =>
-          "Person not found. To add people, go to the People tab."
-        }
+        noOptionsMessage={() => "Person not found. To add people, go to the People tab."}
         isClearable={false} // don't need the extra "x" button
         onChange={(v: any[]) => {
           // if you delete the last member, you get null instead of []
@@ -126,10 +119,9 @@ export const PeopleChooser: React.FunctionComponent<
           // but the contributions array may contain entries without one (e.g., placeholder
           // contributions with just a role or comments). These must be preserved.
           // See https://linear.app/lameta/issue/LAM-114
-          const contributionsWithoutPersonRef =
-            props.folder.metadataFile!.contributions.filter(
-              (c) => !c.personReference
-            );
+          const contributionsWithoutPersonRef = props.folder.metadataFile!.contributions.filter(
+            (c) => !c.personReference,
+          );
 
           props.folder.metadataFile!.contributions = [];
           newChoices.forEach((c) => {

@@ -1,17 +1,11 @@
 import { css } from "@emotion/react";
-import { Trans } from "@lingui/macro";
+import { Trans } from "@lingui/react/macro";
 /* removed emotion jsx declaration */
 
 import * as React from "react";
-import ReactModal from "react-modal";
 import "./MessageDialog.css";
-import CloseOnEscape from "react-close-on-escape";
 
-import {
-  DialogBottomButtons,
-  DialogButton,
-  LametaDialog
-} from "../LametaDialog";
+import { DialogBottomButtons, DialogButton, LametaDialog } from "../LametaDialog";
 
 interface IConfig {
   title?: string;
@@ -21,29 +15,32 @@ interface IConfig {
   content?: React.ReactNode;
   width?: string;
   testId?: string;
+  buttonColor?: string;
+  // called once the user closes the dialog
+  onClose?: () => void;
 }
 
 let staticShowMessageDialog: (config: IConfig) => void = () => {};
 export { staticShowMessageDialog as ShowMessageDialog };
 
-export const MessageDialog: React.FunctionComponent<{}> = (props) => {
+export const MessageDialog: React.FunctionComponent<{}> = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [config, setConfig] = React.useState<IConfig>({
     title: "",
     text: "",
     buttonText: "",
-    width: ""
+    width: "",
   });
   staticShowMessageDialog = (c) => {
     setConfig(c);
     setIsOpen(true);
   };
+  const close = () => {
+    setIsOpen(false);
+    config.onClose?.();
+  };
   return (
-    <LametaDialog
-      open={isOpen}
-      requestClose={() => setIsOpen(false)}
-      data-testid={config.testId}
-    >
+    <LametaDialog open={isOpen} requestClose={close} data-testid={config.testId}>
       <div className={"dialogTitle "}>
         <div
           css={css`
@@ -76,7 +73,7 @@ export const MessageDialog: React.FunctionComponent<{}> = (props) => {
         {config.content}
       </div>
       <DialogBottomButtons>
-        <DialogButton onClick={() => setIsOpen(false)} default={true}>
+        <DialogButton onClick={close} default={true} backgroundColor={config.buttonColor}>
           {config.buttonText || <Trans>OK</Trans>}
         </DialogButton>
       </DialogBottomButtons>

@@ -24,11 +24,7 @@ describe("providerHandlesFile", () => {
   });
 
   it("supports mime wildcards", () => {
-    expect(
-      providerHandlesFile({ mimePatterns: ["audio/*"] }, audio)
-    ).toBe(true);
-    expect(
-      providerHandlesFile({ mimePatterns: ["audio/*"] }, image)
-    ).toBe(false);
+    expect(providerHandlesFile({ mimePatterns: ["audio/*"] }, audio)).toBe(true);
+    expect(providerHandlesFile({ mimePatterns: ["audio/*"] }, image)).toBe(false);
   });
 });

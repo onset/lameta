@@ -3,14 +3,11 @@ import {
   getPluginTabsForFile,
   computeDefaultIndex,
   tabMatchesFile,
-  MatchablePlugin
+  MatchablePlugin,
 } from "./pluginMatching";
 import { PluginManifest, PluginTabManifest } from "./PluginManifest";
 
-function plugin(
-  id: string,
-  tabs: Partial<PluginTabManifest>[]
-): MatchablePlugin {
+function plugin(id: string, tabs: Partial<PluginTabManifest>[]): MatchablePlugin {
   const manifest: PluginManifest = {
     id,
     name: id,
@@ -24,8 +21,8 @@ function plugin(
       entry: t.entry ?? "index.html",
       match: t.match,
       claimDefault: t.claimDefault ?? false,
-      defaultPriority: t.defaultPriority ?? 0
-    }))
+      defaultPriority: t.defaultPriority ?? 0,
+    })),
   };
   return { manifest };
 }
@@ -37,24 +34,24 @@ describe("tabMatchesFile", () => {
     expect(
       tabMatchesFile(
         { id: "t", label: "L", entry: "i", match: { lametaTypes: ["Audio"] } },
-        audioFile
-      )
+        audioFile,
+      ),
     ).toBe(true);
   });
   it("matches by extension (case-insensitive)", () => {
     expect(
       tabMatchesFile(
         { id: "t", label: "L", entry: "i", match: { extensions: ["wav"] } },
-        { ...audioFile, lametaType: "X" }
-      )
+        { ...audioFile, lametaType: "X" },
+      ),
     ).toBe(true);
   });
   it("matches by mime wildcard", () => {
     expect(
       tabMatchesFile(
         { id: "t", label: "L", entry: "i", match: { mimePatterns: ["audio/*"] } },
-        { ...audioFile, lametaType: "X", extension: "xyz" }
-      )
+        { ...audioFile, lametaType: "X", extension: "xyz" },
+      ),
     ).toBe(true);
   });
   it("matches by exact mime", () => {
@@ -64,16 +61,14 @@ describe("tabMatchesFile", () => {
           id: "t",
           label: "L",
           entry: "i",
-          match: { mimePatterns: ["audio/wav"] }
+          match: { mimePatterns: ["audio/wav"] },
         },
-        { ...audioFile, lametaType: "X", extension: "xyz" }
-      )
+        { ...audioFile, lametaType: "X", extension: "xyz" },
+      ),
     ).toBe(true);
   });
   it("does not match a tab with no match object", () => {
-    expect(
-      tabMatchesFile({ id: "t", label: "L", entry: "i" }, audioFile)
-    ).toBe(false);
+    expect(tabMatchesFile({ id: "t", label: "L", entry: "i" }, audioFile)).toBe(false);
   });
   it("does not match when nothing hits", () => {
     expect(
@@ -82,10 +77,10 @@ describe("tabMatchesFile", () => {
           id: "t",
           label: "L",
           entry: "i",
-          match: { lametaTypes: ["Video"], extensions: ["mp4"] }
+          match: { lametaTypes: ["Video"], extensions: ["mp4"] },
         },
-        audioFile
-      )
+        audioFile,
+      ),
     ).toBe(false);
   });
 });
@@ -95,15 +90,15 @@ describe("getPluginTabsForFile", () => {
     const plugins = [
       plugin("zzz.plugin", [
         { id: "z1", match: { lametaTypes: ["Audio"] } },
-        { id: "z2", match: { lametaTypes: ["Audio"] } }
+        { id: "z2", match: { lametaTypes: ["Audio"] } },
       ]),
-      plugin("aaa.plugin", [{ id: "a1", match: { lametaTypes: ["Audio"] } }])
+      plugin("aaa.plugin", [{ id: "a1", match: { lametaTypes: ["Audio"] } }]),
     ];
     const result = getPluginTabsForFile(audioFile, plugins);
     expect(result.map((r) => `${r.pluginId}/${r.tab.id}`)).toEqual([
       "aaa.plugin/a1",
       "zzz.plugin/z1",
-      "zzz.plugin/z2"
+      "zzz.plugin/z2",
     ]);
   });
 
@@ -111,17 +106,15 @@ describe("getPluginTabsForFile", () => {
     const plugins = [
       plugin("a.b", [
         { id: "audio", match: { lametaTypes: ["Audio"] } },
-        { id: "video", match: { lametaTypes: ["Video"] } }
-      ])
+        { id: "video", match: { lametaTypes: ["Video"] } },
+      ]),
     ];
     const result = getPluginTabsForFile(audioFile, plugins);
     expect(result.map((r) => r.tab.id)).toEqual(["audio"]);
   });
 
   it("returns empty when nothing matches", () => {
-    const plugins = [
-      plugin("a.b", [{ id: "video", match: { lametaTypes: ["Video"] } }])
-    ];
+    const plugins = [plugin("a.b", [{ id: "video", match: { lametaTypes: ["Video"] } }])];
     expect(getPluginTabsForFile(audioFile, plugins)).toEqual([]);
   });
 
@@ -135,9 +128,7 @@ describe("getPluginTabsForFile", () => {
 
 describe("computeDefaultIndex", () => {
   it("returns 0 (viewer) when no tab claims default", () => {
-    const plugins = [
-      plugin("a.b", [{ id: "t", match: { lametaTypes: ["Audio"] } }])
-    ];
+    const plugins = [plugin("a.b", [{ id: "t", match: { lametaTypes: ["Audio"] } }])];
     const matched = getPluginTabsForFile(audioFile, plugins);
     expect(computeDefaultIndex(matched)).toBe(0);
   });
@@ -146,8 +137,8 @@ describe("computeDefaultIndex", () => {
     const plugins = [
       plugin("a.b", [
         { id: "t0", match: { lametaTypes: ["Audio"] } },
-        { id: "t1", match: { lametaTypes: ["Audio"] }, claimDefault: true }
-      ])
+        { id: "t1", match: { lametaTypes: ["Audio"] }, claimDefault: true },
+      ]),
     ];
     const matched = getPluginTabsForFile(audioFile, plugins);
     // matched = [t0, t1]; t1 is index 1 -> default index 2
@@ -161,17 +152,17 @@ describe("computeDefaultIndex", () => {
           id: "low",
           match: { lametaTypes: ["Audio"] },
           claimDefault: true,
-          defaultPriority: 10
-        }
+          defaultPriority: 10,
+        },
       ]),
       plugin("b.plugin", [
         {
           id: "high",
           match: { lametaTypes: ["Audio"] },
           claimDefault: true,
-          defaultPriority: 100
-        }
-      ])
+          defaultPriority: 100,
+        },
+      ]),
     ];
     const matched = getPluginTabsForFile(audioFile, plugins);
     // matched order: a.plugin/low (idx0), b.plugin/high (idx1). Winner is high -> 1+1 = 2
@@ -185,17 +176,17 @@ describe("computeDefaultIndex", () => {
           id: "t",
           match: { lametaTypes: ["Audio"] },
           claimDefault: true,
-          defaultPriority: 50
-        }
+          defaultPriority: 50,
+        },
       ]),
       plugin("a.plugin", [
         {
           id: "t",
           match: { lametaTypes: ["Audio"] },
           claimDefault: true,
-          defaultPriority: 50
-        }
-      ])
+          defaultPriority: 50,
+        },
+      ]),
     ];
     const matched = getPluginTabsForFile(audioFile, plugins);
     // order: a.plugin/t (idx0), b.plugin/t (idx1). Tie in priority -> a.plugin wins -> 1+0 = 1

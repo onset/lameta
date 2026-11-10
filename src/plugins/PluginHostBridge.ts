@@ -17,14 +17,14 @@ import {
   FfprobeResult,
   PluginInitContext,
   PluginTabProviderContext,
-  TabDescriptor
+  TabDescriptor,
 } from "./PluginApiTypes";
 import {
   getSidecarPath,
   getPluginDataDir,
   parseSidecarName,
   isValidSidecarName,
-  DEFAULT_SIDECAR_NAME
+  DEFAULT_SIDECAR_NAME,
 } from "./sidecar";
 import { resolveCompanionPath, isAllowedCompanionPath } from "./companions";
 
@@ -163,7 +163,7 @@ export class PluginHostBridge {
     this.activeScope = {
       filePath: query.file.path,
       fileName: query.file.name,
-      folderDirectory: query.folder.directory
+      folderDirectory: query.folder.directory,
     };
     return new Promise<TabDescriptor[]>((resolve) => {
       let settled = false;
@@ -171,8 +171,7 @@ export class PluginHostBridge {
         if (settled) return;
         settled = true;
         this.tabQueries.delete(id);
-        if (this.activeScope && this.nextTabQueryId - 1 === id)
-          this.activeScope = null;
+        if (this.activeScope && this.nextTabQueryId - 1 === id) this.activeScope = null;
         resolve(tabs);
       };
       this.tabQueries.set(id, finish);
@@ -180,7 +179,7 @@ export class PluginHostBridge {
         type: "lameta:getTabs",
         id,
         file: query.file,
-        folder: query.folder
+        folder: query.folder,
       });
       // Graceful timeout: an unresponsive provider yields "no tabs", never a hang.
       setTimeout(() => finish([]), 8000);
@@ -250,13 +249,15 @@ export class PluginHostBridge {
     }
 
     if (data.type === "lameta:request") {
-      this.handleRequest(data.id, data.method, data.params || []);
+      void this.handleRequest(data.id, data.method, data.params || []);
     }
   }
 
   // Copy a Buffer into a standalone ArrayBuffer we can transfer (zero-copy) to the iframe.
   private static toTransferable(buf: Buffer): ArrayBuffer {
-    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+    const copy = new ArrayBuffer(buf.byteLength);
+    new Uint8Array(copy).set(buf);
+    return copy;
   }
 
   private async handleRequest(id: number, method: string, params: any[]) {
@@ -275,23 +276,13 @@ export class PluginHostBridge {
         case "getFileBytes": {
           const buf = await fs.readFile(this.sFilePath);
           const arrayBuffer = PluginHostBridge.toTransferable(buf);
-          this.post(
-            { type: "lameta:response", id, result: arrayBuffer },
-            [arrayBuffer]
-          );
+          this.post({ type: "lameta:response", id, result: arrayBuffer }, [arrayBuffer]);
           return;
         }
         case "readFileRange": {
           const [offset, length] = params;
-          if (
-            !Number.isInteger(offset) ||
-            offset < 0 ||
-            !Number.isInteger(length) ||
-            length < 0
-          )
-            throw new Error(
-              "readFileRange: offset and length must be non-negative integers"
-            );
+          if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(length) || length < 0)
+            throw new Error("readFileRange: offset and length must be non-negative integers");
           const { size } = await fs.stat(this.sFilePath);
           const clamped = Math.max(0, Math.min(length, size - offset));
           const buf = Buffer.alloc(clamped);
@@ -304,23 +295,13 @@ export class PluginHostBridge {
             }
           }
           const arrayBuffer = PluginHostBridge.toTransferable(buf);
-          this.post(
-            { type: "lameta:response", id, result: arrayBuffer },
-            [arrayBuffer]
-          );
+          this.post({ type: "lameta:response", id, result: arrayBuffer }, [arrayBuffer]);
           return;
         }
         case "readSidecar": {
           const name = params[0] || DEFAULT_SIDECAR_NAME;
-          const path = getSidecarPath(
-            this.sFolderDir,
-            this.opts.pluginId,
-            this.sFileName,
-            name
-          );
-          const result = (await fs.pathExists(path))
-            ? await fs.readFile(path, "utf8")
-            : null;
+          const path = getSidecarPath(this.sFolderDir, this.opts.pluginId, this.sFileName, name);
+          const result = (await fs.pathExists(path)) ? await fs.readFile(path, "utf8") : null;
           this.post({ type: "lameta:response", id, result });
           return;
         }
@@ -329,12 +310,7 @@ export class PluginHostBridge {
           const name = params[1] || DEFAULT_SIDECAR_NAME;
           if (typeof contents !== "string")
             throw new Error("writeSidecar: contents must be a string");
-          const path = getSidecarPath(
-            this.sFolderDir,
-            this.opts.pluginId,
-            this.sFileName,
-            name
-          );
+          const path = getSidecarPath(this.sFolderDir, this.opts.pluginId, this.sFileName, name);
           await fs.ensureDir(Path.dirname(path));
           await fs.writeFile(path, contents, "utf8");
           this.post({ type: "lameta:response", id, result: undefined });
@@ -353,9 +329,7 @@ export class PluginHostBridge {
             normalized.includes("..") ||
             normalized.includes("/")
           )
-            throw new Error(
-              `selectFile: "${relPath}" must be a bare file name in the folder`
-            );
+            throw new Error(`selectFile: "${relPath}" must be a bare file name in the folder`);
           if (!this.opts.onSelectFile)
             throw new Error("selectFile is not supported in this context");
           const selected = await this.opts.onSelectFile(relPath);
@@ -381,7 +355,7 @@ export class PluginHostBridge {
       this.post({
         type: "lameta:response",
         id,
-        error: e?.message || String(e)
+        error: e?.message || String(e),
       });
     }
   }
@@ -392,19 +366,12 @@ export class PluginHostBridge {
   // against the generic first-dot-stem rule in companions.ts (no plugin-specific naming
   // knowledge in the host). Called from inside handleRequest's try/catch, so throwing here
   // produces a normal error response.
-  private async handleCompanionRequest(
-    id: number,
-    method: string,
-    params: any[]
-  ) {
+  private async handleCompanionRequest(id: number, method: string, params: any[]) {
     if (!this.opts.permissions.includes("companionFiles"))
-      throw new Error(
-        "This plugin does not have the companionFiles permission"
-      );
+      throw new Error("This plugin does not have the companionFiles permission");
     const companionDir = Path.dirname(this.sFilePath);
     const scopeFileName = this.sFileName;
-    const resolve = (relPath: string) =>
-      resolveCompanionPath(companionDir, scopeFileName, relPath);
+    const resolve = (relPath: string) => resolveCompanionPath(companionDir, scopeFileName, relPath);
 
     switch (method) {
       case "companions.list": {
@@ -415,10 +382,8 @@ export class PluginHostBridge {
         if (subdir !== undefined && subdir !== null) {
           const rel = String(subdir);
           // A subdir must be a single allowed segment (no nesting / traversal).
-          if (rel.replace(/\\/g, "/").includes("/") || !isAllowedCompanionPath(scopeFileName,rel))
-            throw new Error(
-              `companions.list: "${subdir}" is not an allowed subdirectory`
-            );
+          if (rel.replace(/\\/g, "/").includes("/") || !isAllowedCompanionPath(scopeFileName, rel))
+            throw new Error(`companions.list: "${subdir}" is not an allowed subdirectory`);
           dir = Path.join(companionDir, rel);
         }
         if (await fs.pathExists(dir)) {
@@ -426,7 +391,7 @@ export class PluginHostBridge {
             // Top-level: only entries whose name passes the 1-segment rule. Inside a subdir:
             // every file (the plugin filters for what it cares about).
             if (subdir === undefined || subdir === null) {
-              if (!isAllowedCompanionPath(scopeFileName,name)) continue;
+              if (!isAllowedCompanionPath(scopeFileName, name)) continue;
             }
             const stats = await fs.stat(Path.join(dir, name));
             if (!stats.isFile()) continue;
@@ -457,10 +422,7 @@ export class PluginHostBridge {
       case "companions.readBytes": {
         const buf = await fs.readFile(resolve(params[0]));
         const arrayBuffer = PluginHostBridge.toTransferable(buf);
-        this.post(
-          { type: "lameta:response", id, result: arrayBuffer },
-          [arrayBuffer]
-        );
+        this.post({ type: "lameta:response", id, result: arrayBuffer }, [arrayBuffer]);
         return;
       }
       case "companions.writeText": {
@@ -475,10 +437,7 @@ export class PluginHostBridge {
         const data = params[1];
         if (!(data instanceof ArrayBuffer))
           throw new Error("companions.writeBytes: data must be an ArrayBuffer");
-        await this.writeCompanionAtomically(
-          resolve(params[0]),
-          Buffer.from(data)
-        );
+        await this.writeCompanionAtomically(resolve(params[0]), Buffer.from(data));
         this.post({ type: "lameta:response", id, result: undefined });
         return;
       }
@@ -535,16 +494,11 @@ export class PluginHostBridge {
           throw new Error("ffmpeg.run: args must be an array of strings");
         if (
           inputArgs !== undefined &&
-          (!Array.isArray(inputArgs) ||
-            inputArgs.some((a: any) => typeof a !== "string"))
+          (!Array.isArray(inputArgs) || inputArgs.some((a: any) => typeof a !== "string"))
         )
           throw new Error("ffmpeg.run: inputArgs must be an array of strings");
         const input = resolveInput(inputRelPath);
-        const output = resolveCompanionPath(
-          companionDir,
-          scopeFileName,
-          outputRelPath
-        );
+        const output = resolveCompanionPath(companionDir, scopeFileName, outputRelPath);
         await this.runFfmpeg(id, input, output, args, inputArgs || []);
         this.post({ type: "lameta:response", id, result: undefined });
         return;
@@ -566,7 +520,7 @@ export class PluginHostBridge {
           format: {
             durationSec: numOrUndef(fmt.duration),
             formatName: fmt.format_name,
-            formatLongName: fmt.format_long_name
+            formatLongName: fmt.format_long_name,
           },
           streams: streams.map((s: any) => ({
             codecType: s.codec_type,
@@ -575,8 +529,8 @@ export class PluginHostBridge {
             sampleRate: numOrUndef(s.sample_rate),
             width: numOrUndef(s.width),
             height: numOrUndef(s.height),
-            durationSec: numOrUndef(s.duration)
-          }))
+            durationSec: numOrUndef(s.duration),
+          })),
         });
       });
     });
@@ -591,7 +545,7 @@ export class PluginHostBridge {
     input: string,
     output: string,
     args: string[],
-    inputArgs: string[]
+    inputArgs: string[],
   ): Promise<void> {
     const ffmpeg = getFfmpeg();
     // Probe once up front for the input duration → lets us turn timemark into a fraction.
@@ -621,17 +575,8 @@ export class PluginHostBridge {
             }
           })
           .on("error", (err: any, _stdout: any, stderr: any) => {
-            const tail = (stderr || "")
-              .toString()
-              .trim()
-              .split("\n")
-              .slice(-8)
-              .join("\n");
-            reject(
-              new Error(
-                `ffmpeg failed: ${err?.message || err}${tail ? "\n" + tail : ""}`
-              )
-            );
+            const tail = (stderr || "").toString().trim().split("\n").slice(-8).join("\n");
+            reject(new Error(`ffmpeg failed: ${err?.message || err}${tail ? "\n" + tail : ""}`));
           })
           .on("end", () => resolve())
           .save(tmp);
@@ -645,10 +590,7 @@ export class PluginHostBridge {
 
   // Atomic write: to a temp file in the target's own directory, then rename over the
   // target, so a crash mid-write never leaves a truncated companion.
-  private async writeCompanionAtomically(
-    target: string,
-    data: string | Buffer
-  ) {
+  private async writeCompanionAtomically(target: string, data: string | Buffer) {
     await fs.ensureDir(Path.dirname(target));
     const tmp = `${target}.${Math.random().toString(36).slice(2)}.tmp`;
     try {

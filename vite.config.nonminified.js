@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vite-plus";
 import baseConfig from "./vite.config";
 
 export default defineConfig({
@@ -6,6 +6,6 @@ export default defineConfig({
   build: {
     ...baseConfig.build,
     minify: false,
-    cssMinify: false
-  }
+    cssMinify: false,
+  },
 });

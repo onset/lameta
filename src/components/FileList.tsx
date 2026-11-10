@@ -1,28 +1,24 @@
 import * as React from "react";
-import { default as ReactTable, RowInfo } from "react-table-6";
+import { default as ReactTable } from "react-table-6";
 import { Folder } from "../model/Folder/Folder";
 import { File } from "../model/file/File";
 import { ElectronDropZone } from "./ElectronDropZone";
 import { OpenDialogOptions, ipcRenderer } from "electron";
-import * as remote from "@electron/remote";
+import { popupMenu, runWebContentsCommand } from "../other/windowIpc";
 import "./FileList.css";
-import { revealInFolder } from "../other/crossPlatformUtilities";
+import { revealInFolder, revealInFolderLabel } from "../other/crossPlatformUtilities";
 import { ShowRenameDialog } from "./RenameFileDialog/RenameFileDialog";
-import { i18n, translateFileType } from "../other/localization";
-import { t, Trans } from "@lingui/macro";
+import { translateFileType } from "../other/localization";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import scrollSelectedIntoView from "./FixReactTableScroll";
-import { isNullOrUndefined } from "util";
 import userSettings from "../other/UserSettings";
 import { observer } from "mobx-react";
 import { NotifyError, NotifyWarning } from "./Notify";
-import * as fs from "fs-extra";
 import * as nodePath from "path";
-import { getExtension } from "../other/CopyManager";
+import { findPathsThatCannotBeAdded } from "./findPathsThatCannotBeAdded";
 import { getMediaFolderOrEmptyForThisProjectAndMachine } from "../model/Project/MediaFolderAccess";
-import {
-  getLinkStatusIconPath,
-  getStatusOfFile
-} from "../model/file/FileStatus";
+import { getLinkStatusIconPath, getStatusOfFile } from "../model/file/FileStatus";
 import { useLingui } from "@lingui/react";
 import { SearchContext } from "./SearchContext";
 import { css } from "@emotion/react";
@@ -31,7 +27,13 @@ import { lameta_orange } from "../containers/theme";
 import SearchIcon from "@mui/icons-material/Search";
 import { getTestEnvironment } from "../getTestEnvironment";
 import { computeNestedFileOrder } from "./fileListNesting";
+import { AutoFetchCloudFiles, mbToBytes } from "../other/autoFetchCloudFiles";
+import { CloudStatusIcon, getCloudDisplayStatusOfFile } from "./CloudStatusIcon";
 const electron = require("electron");
+
+// Throttle window-focus-triggered cloud status refreshes so that rapid
+// alt-tabbing doesn't hammer the filesystem for every file in the folder.
+const kWindowFocusRefreshThrottleMs = 5000;
 export const _FileList: React.FunctionComponent<{
   folder: Folder;
   extraButtons?: object[];
@@ -45,10 +47,10 @@ export const _FileList: React.FunctionComponent<{
     }
   }, [props.folder, props.folder?.files?.length]);
   useLingui();
-  const [selectedFile, setSelectedFile] = React.useState(undefined);
-  const [haveMediaFolder] = React.useState(
-    getMediaFolderOrEmptyForThisProjectAndMachine()
-  );
+  const [, setSelectedFile] = React.useState(undefined);
+  // Called only for its warning when the project id is empty; the lazy initializer runs it
+  // once per mount instead of on every render.
+  React.useState(() => getMediaFolderOrEmptyForThisProjectAndMachine());
   // What this mobxDummy is about:
   // What happens inside the component tables cells are invisible to mobx; it doesn't
   // have a way of knowing that these are reliant on the filename of the file.
@@ -56,15 +58,42 @@ export const _FileList: React.FunctionComponent<{
   // However the <Observer> wrapper suggested by that link messes up the display of the table.
   // So for now, we just access every filename right here, while mobx is watching. That's enough to get it to trigger a re-render
   // when the user does something that causes a rename.
-  const mobxDummy = props.folder.files.map((f) => {
+  props.folder.files.forEach((f) => {
     f.getTextProperty("filename");
     f.getTextProperty("access");
-    const unused = f.copyInProgress;
-    const progressUnused = f.copyProgress;
+    void f.copyInProgress;
+    void f.copyProgress;
   });
 
   const { searchTerm } = React.useContext(SearchContext);
   const highlight = (text: string) => <HighlightSearchTerm text={text} />;
+
+  // Debounced/capped auto-fetch of small cloud-only files as the selection
+  // rests on them. One scheduler per mounted FileList (i.e. per folder).
+  const autoFetchSchedulerRef = React.useRef<AutoFetchCloudFiles>();
+  if (!autoFetchSchedulerRef.current) {
+    autoFetchSchedulerRef.current = new AutoFetchCloudFiles();
+  }
+  React.useEffect(() => {
+    return () => autoFetchSchedulerRef.current?.dispose();
+  }, []);
+
+  // Refresh cloud status of this folder's files when the window regains
+  // focus (e.g. after OneDrive finishes syncing in the background), but no
+  // more often than every few seconds.
+  const lastFocusRefreshRef = React.useRef(0);
+  React.useEffect(() => {
+    const onFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusRefreshRef.current < kWindowFocusRefreshThrottleMs) {
+        return;
+      }
+      lastFocusRefreshRef.current = now;
+      props.folder.files.forEach((f) => f.updateCloudStatus());
+    };
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [props.folder]);
 
   // SayMore-style visual nesting: subordinate annotation files (F.annotations.eaf,
   // its prefs file, F.oralAnnotations.wav) are shown indented under the file they
@@ -72,13 +101,11 @@ export const _FileList: React.FunctionComponent<{
   // is untouched (exports etc. still iterate it), and every row still holds the real
   // File object, so selection/context-menu/drop behavior is unaffected.
   const nestedRows = computeNestedFileOrder(
-    props.folder.files.map((f) => f.getFilenameToShowInList())
+    props.folder.files.map((f) => f.getFilenameToShowInList()),
   );
   const nestedFiles = nestedRows.map((r) => props.folder.files[r.index]);
   const depthByFile = new Map<File, number>();
-  nestedRows.forEach((r) =>
-    depthByFile.set(props.folder.files[r.index], r.depth)
-  );
+  nestedRows.forEach((r) => depthByFile.set(props.folder.files[r.index], r.depth));
   const indentedName = (cell: any) => {
     const depth = depthByFile.get(cell.original as File) || 0;
     if (depth === 0) return highlight(cell.value);
@@ -122,8 +149,7 @@ export const _FileList: React.FunctionComponent<{
       if (!metadataMatch && Array.isArray(file.contributions)) {
         for (const c of file.contributions) {
           if (
-            (c.personReference &&
-              c.personReference.toLowerCase().includes(trimmed)) ||
+            (c.personReference && c.personReference.toLowerCase().includes(trimmed)) ||
             (c.role && c.role.toLowerCase().includes(trimmed)) ||
             (c.comments && c.comments.toLowerCase().includes(trimmed))
           ) {
@@ -136,6 +162,14 @@ export const _FileList: React.FunctionComponent<{
     return metadataMatch;
   };
 
+  // MobX tracking: deliberately touch getLinkStatusIconPath and the cloud
+  // display status (and through them cloudStatus and networkStatus) for
+  // EVERY file, with no short-circuit -- if a later file's status changes
+  // (e.g. OneDrive finishes hydrating it), this render must re-run so its
+  // row icon and cloudOnly row class update.
+  const linkStatusIconPaths = props.folder.files.map((f) => getLinkStatusIconPath(f));
+  const cloudDisplayStatuses = props.folder.files.map((f) => getCloudDisplayStatusOfFile(f));
+
   let columns: any[] = [
     {
       id: "icon",
@@ -145,7 +179,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return f.getIconPath();
       },
-      Cell: (p) => <img src={p.value} />
+      Cell: (p) => <img src={p.value} />,
     },
     {
       id: "name",
@@ -155,18 +189,21 @@ export const _FileList: React.FunctionComponent<{
         return f.getFilenameToShowInList();
       },
       className: "filename",
-      Cell: indentedName
+      Cell: indentedName,
     },
     {
       id: "linkStatus",
       Header: "",
       width: 30,
-      show: props.folder.files.some((f) => getLinkStatusIconPath(f)),
-      accessor: (d: any) => {
-        const f: File = d;
-        return getLinkStatusIconPath(f);
+      show: linkStatusIconPaths.some((p) => !!p) || cloudDisplayStatuses.some((s) => !!s),
+      accessor: (d: any) => d,
+      Cell: (p) => {
+        const f: File = p.value;
+        const iconPath = getLinkStatusIconPath(f);
+        // Link/missing/naming problems take precedence; otherwise show the
+        // OneDrive sync-state icon (or nothing for non-cloud files).
+        return iconPath ? <img src={iconPath} /> : <CloudStatusIcon file={f} />;
       },
-      Cell: (p) => (p.value ? <img src={p.value} /> : null)
     },
     {
       id: "type",
@@ -175,7 +212,7 @@ export const _FileList: React.FunctionComponent<{
       accessor: (d: any) => {
         const f: File = d;
         return translateFileType(f.getTextProperty("type", ""));
-      }
+      },
     },
     {
       id: "modifiedDate",
@@ -199,7 +236,7 @@ export const _FileList: React.FunctionComponent<{
             dt.getMinutes();
 
         return f.copyInProgress ? f.copyProgress : dateDisplay;
-      }
+      },
     },
     {
       id: "size",
@@ -209,8 +246,8 @@ export const _FileList: React.FunctionComponent<{
       accessor: (d: any) => {
         const f: File = d;
         return f.getTextProperty("size", "");
-      }
-    }
+      },
+    },
   ];
 
   // Add Access column for project documents when showAccessColumn is enabled
@@ -223,7 +260,7 @@ export const _FileList: React.FunctionComponent<{
         const f: File = d;
         return f.getTextProperty("access", "");
       },
-      Cell: (cell: any) => highlight(cell.value)
+      Cell: (cell: any) => highlight(cell.value),
     });
   }
 
@@ -270,20 +307,17 @@ export const _FileList: React.FunctionComponent<{
               </div>
             </div>
           ) : null;
-        }
+        },
       },
-      ...columns
+      ...columns,
     ];
   }
-  const isSpecialSayMoreFile =
-    props.folder.selectedFile === props.folder.metadataFile;
+  const isSpecialSayMoreFile = props.folder.selectedFile === props.folder.metadataFile;
   const filesPerPage = Math.min(300, props.folder.files.length);
 
   return (
     <ElectronDropZone
-      addFiles={(filePaths) =>
-        addFiles(props.folder, filePaths, setSelectedFile)
-      }
+      addFiles={(filePaths) => addFiles(props.folder, filePaths, setSelectedFile)}
       clickOpensChooser={false}
     >
       <div className="fileList">
@@ -291,17 +325,9 @@ export const _FileList: React.FunctionComponent<{
         <div className={"mask onlyIfInDropZone"}>Drop files here</div>
         <div className={"fileBar"}>
           <button
-            disabled={
-              isNullOrUndefined(props.folder.selectedFile) ||
-              isSpecialSayMoreFile
-            }
+            disabled={props.folder.selectedFile == null || isSpecialSayMoreFile}
             onClick={() => {
-              showFileMenu(
-                props.folder,
-                props.folder.selectedFile!,
-                false,
-                isSpecialSayMoreFile
-              );
+              showFileMenu(props.folder, props.folder.selectedFile!, false, isSpecialSayMoreFile);
             }}
           >
             <Trans>Open</Trans>
@@ -314,9 +340,7 @@ export const _FileList: React.FunctionComponent<{
           <button
             className={"cmd-rename"}
             disabled={isSpecialSayMoreFile}
-            onClick={() =>
-              ShowRenameDialog(props.folder.selectedFile!, props.folder)
-            }
+            onClick={() => ShowRenameDialog(props.folder.selectedFile!, props.folder)}
           >
             <Trans>Rename...</Trans>
           </button>
@@ -333,11 +357,9 @@ export const _FileList: React.FunctionComponent<{
             : null}
           <button
             className={"cmd-add-files"}
-            onClick={async () =>
-              await showAddFilesDialog(props.folder, setSelectedFile)
-            }
+            onClick={async () => await showAddFilesDialog(props.folder, setSelectedFile)}
           >
-            <Trans> Add Files</Trans>
+            <Trans>Add Files</Trans>
           </button>
         </div>
         <ReactTable
@@ -355,13 +377,10 @@ export const _FileList: React.FunctionComponent<{
           // is missing from its type definitions, hence the spread-with-cast.
           {...({ orderByMethod: sortThenRegroupCompanions } as any)}
           onFetchData={() => scrollSelectedIntoView("fileList")}
-          getTrProps={(state: any, rowInfo: any, column: any) => {
+          getTrProps={(state: any, rowInfo: any) => {
             //NB: "rowInfo.row" is a subset of things that are mentioned with an accessor. "original" is the original.
-            const { missing, status, info } = getStatusOfFile(rowInfo.original);
-            const metadataMatch = fileHasMetadataMatch(
-              rowInfo.original,
-              searchTerm
-            );
+            const { status, info } = getStatusOfFile(rowInfo.original);
+            const metadataMatch = fileHasMetadataMatch(rowInfo.original, searchTerm);
 
             return {
               title: info,
@@ -380,21 +399,19 @@ export const _FileList: React.FunctionComponent<{
                       props.folder,
                       rowInfo.original,
                       true,
-                      isSpecialSayMoreFile,
+                      rowInfo.original === props.folder.metadataFile,
                       x,
-                      y
+                      y,
                     ),
-                  0
+                  0,
                 );
               },
-              onClick: (e: any, x: any) => {
+              onClick: () => {
                 const file = rowInfo.original as File;
                 // if we're in a an e2e test and this click would be ignored because of the copyInProgress flag,
                 // just fail fast. The test probably needs some way of waiting
                 if (file.copyInProgress && getTestEnvironment().E2E) {
-                  throw new Error(
-                    "Click would have been ignored, becuase file copy in progress."
-                  );
+                  throw new Error("Click would have been ignored, becuase file copy in progress.");
                 }
                 if (!file.copyInProgress) {
                   if (props.folder.selectedFile != null) {
@@ -403,6 +420,11 @@ export const _FileList: React.FunctionComponent<{
                   }
                   props.folder.selectedFile = rowInfo.original;
                   setSelectedFile(rowInfo.original); // trigger re-render so that the following style: takes effect
+                  file.updateCloudStatus();
+                  autoFetchSchedulerRef.current?.onSelectionChanged(
+                    file,
+                    mbToBytes(userSettings.AutoFetchCloudFilesUnderMB),
+                  );
                 }
               },
               className:
@@ -410,12 +432,10 @@ export const _FileList: React.FunctionComponent<{
                 ((rowInfo.original as File).isLinkFile() ? "linkFile " : "") +
                 status +
                 " " +
-                (rowInfo && rowInfo.original === props.folder.selectedFile
-                  ? " selected "
-                  : "") +
+                (rowInfo && rowInfo.original === props.folder.selectedFile ? " selected " : "") +
                 (metadataMatch ? " metadataMatch " : ""),
               "data-testid": metadataMatch ? "file-metadata-match" : undefined,
-              style: undefined
+              style: undefined,
             };
           }}
         />
@@ -437,7 +457,7 @@ function sortThenRegroupCompanions(
   rows: any[],
   comparators: ((a: any, b: any) => number)[],
   ascending: boolean[],
-  indexKey: string
+  indexKey: string,
 ): any[] {
   const sorted = [...rows].sort((rowA, rowB) => {
     for (let i = 0; i < comparators.length; i++) {
@@ -447,12 +467,10 @@ function sortThenRegroupCompanions(
       }
     }
     // Use the row index for tie breakers, like react-table's default orderBy.
-    return ascending[0]
-      ? rowA[indexKey] - rowB[indexKey]
-      : rowB[indexKey] - rowA[indexKey];
+    return ascending[0] ? rowA[indexKey] - rowB[indexKey] : rowB[indexKey] - rowA[indexKey];
   });
   return computeNestedFileOrder(
-    sorted.map((row) => (row._original as File).getFilenameToShowInList())
+    sorted.map((row) => (row._original as File).getFilenameToShowInList()),
   ).map((r) => sorted[r.index]);
 }
 
@@ -462,9 +480,8 @@ function showFileMenu(
   contextMenu: boolean,
   isSpecialSayMoreFile: boolean,
   x: number = 0,
-  y: number = 0
+  y: number = 0,
 ) {
-  const mainWindow = remote.getCurrentWindow(); // as any;
   if (!file) {
     return;
   }
@@ -473,14 +490,11 @@ function showFileMenu(
 
   let items = [
     {
-      label:
-        process.platform === "darwin"
-          ? t`Show in Finder`
-          : t`Show in File Explorer`,
+      label: revealInFolderLabel(),
       click: () => {
         revealInFolder(file.getActualFilePath());
       },
-      enabled: !missing
+      enabled: !missing,
     },
     {
       label: t`Open in program associated with this file type`,
@@ -489,7 +503,7 @@ function showFileMenu(
         electron.shell.openPath("file://" + file.getActualFilePath());
       },
       enabled: !missing,
-      visible: !isSpecialSayMoreFile || showDevOnlyItems
+      visible: !isSpecialSayMoreFile || showDevOnlyItems,
     },
     {
       label: t`Rename...`,
@@ -497,7 +511,7 @@ function showFileMenu(
         ShowRenameDialog(file, folder);
       },
       enabled: !missing,
-      visible: contextMenu && !isSpecialSayMoreFile
+      visible: contextMenu && !isSpecialSayMoreFile,
     },
     { type: "separator", visible: !contextMenu },
     {
@@ -506,32 +520,32 @@ function showFileMenu(
       click: () => {
         folder.MoveFileToTrashWithUI(file);
       },
-      visible: contextMenu
+      visible: contextMenu,
     },
     {
       type: "separator",
-      visible: contextMenu && showDevOnlyItems
+      visible: contextMenu && showDevOnlyItems,
     },
     {
       label: "Inspect element",
       click() {
-        (mainWindow as any).inspectElement(x, y);
+        runWebContentsCommand("inspectElement", x, y);
       },
-      visible: contextMenu && showDevOnlyItems
-    }
+      visible: contextMenu && showDevOnlyItems,
+    },
   ];
 
   items = items.filter((item) => item.visible !== false);
 
-  remote.Menu.buildFromTemplate(items as any).popup({ window: mainWindow });
+  popupMenu(items as any);
 }
 
 async function showAddFilesDialog(
   folder: Folder,
-  setSelectedFile: React.Dispatch<React.SetStateAction<any>>
+  setSelectedFile: React.Dispatch<React.SetStateAction<any>>,
 ) {
   const options: OpenDialogOptions = {
-    properties: ["openFile", "multiSelections"]
+    properties: ["openFile", "multiSelections"],
   };
   const result = await ipcRenderer.invoke("showOpenDialog", options);
   if (result && result.filePaths && result.filePaths.length > 0) {
@@ -542,12 +556,10 @@ async function showAddFilesDialog(
 async function addFiles(
   folder: Folder,
   paths: string[],
-  setSelectedFile: React.Dispatch<React.SetStateAction<any>>
+  setSelectedFile: React.Dispatch<React.SetStateAction<any>>,
 ) {
   // Filter out anything without a usable string path
-  const rawPaths = (paths || []).filter(
-    (p): p is string => typeof p === "string" && p.length > 0
-  );
+  const rawPaths = (paths || []).filter((p): p is string => typeof p === "string" && p.length > 0);
   const validPaths = rawPaths.filter((p) => {
     try {
       return nodePath.isAbsolute(p);
@@ -556,37 +568,28 @@ async function addFiles(
     }
   });
 
-  // Block lameta internal file types by extension
-  if (
-    validPaths.some((path) =>
-      ["session", "person", "meta"].includes(getExtension(path))
-    )
-  ) {
-    try {
-      console.warn(
-        "[FileList:addFiles] Blocked internal lameta file type.",
-        validPaths
-      );
-    } catch {}
-    NotifyWarning(t`You cannot add files of that type`);
-    return;
-  }
-
-  // Disallow folders; catch and surface any fs errors as warnings
+  let refused: ReturnType<typeof findPathsThatCannotBeAdded>;
   try {
-    if (validPaths.some((path) => fs.lstatSync(path).isDirectory())) {
-      try {
-        console.warn(
-          "[FileList:addFiles] Folders are not allowed.",
-          validPaths
-        );
-      } catch {}
-      NotifyWarning(t`You cannot add folders.`);
-      return;
-    }
+    refused = findPathsThatCannotBeAdded(validPaths);
   } catch (err) {
     console.error("[FileList:addFiles] Error accessing file(s)", err);
     NotifyError(t`There was a problem adding files.`);
+    return;
+  }
+  if (refused.length > 0) {
+    NotifyWarning(
+      t`lameta did not add any of the files you chose.`,
+      refused
+        .map(
+          ({ path, reason }) =>
+            `${nodePath.basename(path)}: ${
+              reason === "folder"
+                ? t`You cannot add folders.`
+                : t`You cannot add files of that type`
+            }`,
+        )
+        .join("\n"),
+    );
     return;
   }
 

@@ -16,29 +16,24 @@ export const normalizeSearchTerm = (q: string | undefined | null): string => {
 
 export const SearchContext = React.createContext<ISearchContext>({
   rawSearchTerm: "",
-  searchTerm: ""
+  searchTerm: "",
 });
 
 // Returns true when the given value contains the normalized search term.
 // - Accepts either a plain string search term or an ISearchContext to ease use in class components.
 // - For function components, prefer the hook `useHasSearchHighlight` below.
-export const hasSearchMatch = (
-  value: unknown,
-  search: string | ISearchContext
-): boolean => {
-  const searchTerm =
-    typeof search === "string"
-      ? normalizeSearchTerm(search)
-      : search.searchTerm;
-  return (
-    typeof value === "string" &&
-    !!searchTerm &&
-    value.toLowerCase().includes(searchTerm)
-  );
+export const hasSearchMatch = (value: unknown, search: string | ISearchContext): boolean => {
+  const searchTerm = typeof search === "string" ? normalizeSearchTerm(search) : search.searchTerm;
+  return typeof value === "string" && !!searchTerm && value.toLowerCase().includes(searchTerm);
 };
 
 // React hook variant that reads the current search term from context.
 export const useHasSearchMatch = (value: unknown): boolean => {
   const { searchTerm } = useContext(SearchContext);
   return hasSearchMatch(value, searchTerm);
+};
+
+// Hook to access the search context directly
+export const useSearchContext = (): ISearchContext => {
+  return useContext(SearchContext);
 };
