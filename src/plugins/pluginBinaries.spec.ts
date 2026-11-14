@@ -5,6 +5,7 @@ import * as Path from "path";
 import {
   missingBinaryMessage,
   pluginBinaryPath,
+  prepareBinariesForPlatform,
   prepareBinary,
   resolveFfmpegPath,
 } from "./pluginBinaries";
@@ -174,6 +175,35 @@ describe("prepareBinary", () => {
       run: async () => ({ code: 0, stderr: "" }),
     });
     expect(fs.statSync(arm()).mode & 0o777).toBe(0o755);
+  });
+});
+
+describe("prepareBinariesForPlatform", () => {
+  it("prepares only the binaries named for this platform", async () => {
+    const chmod = vi.fn(async () => {});
+    await prepareBinariesForPlatform(pluginDir, binaries, "darwin-arm64", {
+      platform: "linux",
+      chmod,
+    });
+    expect(chmod.mock.calls).toEqual([[Path.join(pluginDir, "bin", "mac-arm", "ffmpeg"), 0o755]]);
+  });
+
+  it("fails when a binary cannot be prepared", async () => {
+    const chmod = vi.fn(async () => {
+      throw new Error("EPERM");
+    });
+    await expect(
+      prepareBinariesForPlatform(pluginDir, binaries, "darwin-arm64", { platform: "linux", chmod }),
+    ).rejects.toThrow(/EPERM/);
+  });
+
+  it("does nothing for a plugin without binaries", async () => {
+    const chmod = vi.fn(async () => {});
+    await prepareBinariesForPlatform(pluginDir, undefined, "darwin-arm64", {
+      platform: "darwin",
+      chmod,
+    });
+    expect(chmod).not.toHaveBeenCalled();
   });
 });
 

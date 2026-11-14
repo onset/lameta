@@ -350,7 +350,9 @@ ffmpeg in its package and names it in the manifest:
   include ffmpeg for this platform".
 - **Installing.** lameta asks the user nothing about your binaries. It refuses to install a
   package whose manifest names a binary for this computer's platform that the package does not
-  contain, and the message names the missing path.
+  contain, and the message names the missing path. On macOS and Linux it then prepares that
+  binary as described under **Running**, before it replaces any installed copy of your plugin;
+  if that fails, the install fails and the installed copy is kept.
 - **Running.** On macOS and Linux, each time `ffmpeg.run` runs a binary, lameta first sets it
   to mode `755`, because a zip made on Windows records no Unix permissions. On
   macOS it also removes the `com.apple.quarantine` attribute, so Gatekeeper does not block it. If

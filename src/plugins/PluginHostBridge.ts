@@ -674,9 +674,8 @@ export class PluginHostBridge {
       platformKey: currentPlatformKey(),
       fallbackPath: getFfmpegPath,
     });
-    // Made runnable before every spawn: this covers the Developer plugin folder, plugins copied
-    // in by hand, and a plugin reinstalled during the session, whose new binary arrives at the
-    // same path without its execute bit.
+    // Made runnable before every spawn as well as at install: the Developer plugin folder and
+    // plugins copied in by hand never pass through the install dialog.
     await prepareBinary(ffmpegPath);
     // Probe once up front for the input duration → lets us turn timemark into a fraction.
     let durationSec = 0;

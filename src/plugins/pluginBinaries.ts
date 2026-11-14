@@ -1,7 +1,7 @@
 // Native executables that a plugin carries inside its own package (manifest `binaries`).
 //
 // Pure path logic, the install-time check that a package contains its binaries, and the step that
-// makes a binary runnable before it is spawned. No electron imports, so it is unit-testable and
+// makes a binary runnable, which runs at install and again before each spawn. No electron imports, so it is unit-testable and
 // usable from both the install dialog and the host bridge.
 
 import Path from "path";
@@ -110,6 +110,33 @@ export async function prepareBinary(
 }
 
 /**
+ * Prepare each binary the manifest names for `platformKey` (see prepareBinary). The install
+ * dialog runs this in the staging folder, so a binary that cannot be made runnable stops the
+ * install before an already-installed copy of the plugin is deleted.
+ */
+export async function prepareBinariesForPlatform(
+  pluginDirectory: string,
+  binaries: PluginBinaries | undefined,
+  platformKey: string,
+  options: PrepareBinaryOptions = {},
+): Promise<void> {
+  for (const { full } of binariesForPlatform(pluginDirectory, binaries, platformKey))
+    await prepareBinary(full, options);
+}
+
+/** Each binary the manifest names for `platformKey`: its name, manifest path and absolute path. */
+function binariesForPlatform(
+  pluginDirectory: string,
+  binaries: PluginBinaries | undefined,
+  platformKey: string,
+): { name: string; rel: string; full: string }[] {
+  return Object.keys(binaries ?? {}).flatMap((name) => {
+    const full = pluginBinaryPath(pluginDirectory, binaries, name, platformKey);
+    return full ? [{ name, rel: binaries![name][platformKey], full }] : [];
+  });
+}
+
+/**
  * The message that refuses to install a package whose manifest names a binary for `platformKey`
  * that the unpacked package in `pluginDirectory` does not contain, or undefined when every such
  * binary is present.
@@ -120,13 +147,12 @@ export function missingBinaryMessage(
   platformKey: string,
   exists: (path: string) => boolean = (p) => fs.existsSync(p),
 ): string | undefined {
-  for (const name of Object.keys(binaries ?? {})) {
-    const full = pluginBinaryPath(pluginDirectory, binaries, name, platformKey);
-    if (!full || exists(full)) continue;
-    const rel = binaries![name][platformKey];
-    return i18n._(
-      t`This plugin package is missing ${rel}, the ${name} that its manifest names for ${platformKey}. Get a complete package from the plugin's author.`,
-    );
-  }
-  return undefined;
+  const missing = binariesForPlatform(pluginDirectory, binaries, platformKey).find(
+    (b) => !exists(b.full),
+  );
+  if (!missing) return undefined;
+  const { rel, name } = missing;
+  return i18n._(
+    t`This plugin package is missing ${rel}, the ${name} that its manifest names for ${platformKey}. Get a complete package from the plugin's author.`,
+  );
 }
