@@ -410,7 +410,8 @@ export class PluginHostBridge {
         case "setProjectSettings": {
           const path = this.projectSettingsPath();
           const value = params[0];
-          if (value === null || value === undefined) await fs.remove(path);
+          // Only an explicit null removes the settings; undefined is rejected by the serializer.
+          if (value === null) await fs.remove(path);
           else await this.writeFileAtomically(path, serializeProjectSettings(value));
           this.post({ type: "lameta:response", id, result: undefined });
           return;

@@ -574,6 +574,7 @@ describe("PluginHostBridge — project settings", () => {
     );
     expect((await h.raw("setProjectSettings", [{ n: NaN }])).error).toMatch(/finite/);
     expect((await h.raw("setProjectSettings", ["x".repeat(70 * 1024)])).error).toMatch(/limit/);
+    expect((await h.raw("setProjectSettings", [undefined])).error).toMatch(/plain object/);
     expect(await h.request("getProjectSettings")).toEqual({ kept: true });
   });
 
