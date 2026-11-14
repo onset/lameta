@@ -213,8 +213,46 @@ export interface PluginHostApiV1 {
    * in that folder (no `..`, no absolute paths, no subdirectories). Resolves to true if a file
    * was selected, false if it could not be found. Ungated (a plugin can only select a file the
    * user could select by hand).
+   *
+   * `options.tabId` opens one of this plugin's own tabs: an id its tab provider returns for the
+   * newly selected file. If the provider does not return that id, the file's default tab shows.
    */
-  selectFile(relPath: string): Promise<boolean>;
+  selectFile(relPath: string, options?: { tabId?: string }): Promise<boolean>;
+
+  /**
+   * Show lameta's native Save dialog, titled with the plugin's name, and write `bytes` to the
+   * file the user chooses. Requires the `saveFile` manifest permission.
+   *  - `suggestedName` is a bare file name (no folders) that the dialog offers.
+   *  - The dialog starts in the folder this plugin last saved into under `rememberFolderKey`
+   *    (default "default"; letters, digits, `_`, `.`, `-`, at most 64), remembered in lameta's
+   *    user settings on this machine; otherwise in the selected file's session/person folder.
+   *  - `filters` are the dialog's file types, e.g. `[{ name: "CSV", extensions: ["csv"] }]`
+   *    (extensions without the dot; `"*"` for all files).
+   * Resolves to `{ saved: false }` if the user cancels, otherwise `{ saved: true, fileName }`.
+   * `fileName` is the chosen file's name only: the plugin never learns the folder.
+   */
+  saveFile(
+    suggestedName: string,
+    bytes: ArrayBuffer | ArrayBufferView,
+    options?: {
+      filters?: { name: string; extensions: string[] }[];
+      rememberFolderKey?: string;
+    },
+  ): Promise<{ saved: boolean; fileName?: string }>;
+
+  /**
+   * Read this plugin's settings for the open project: the value last passed to
+   * `setProjectSettings`, or null if there is none. Requires the `projectSettings` permission.
+   */
+  getProjectSettings(): Promise<unknown>;
+
+  /**
+   * Store this plugin's settings for the open project, in the project folder, so everyone who
+   * shares the project shares them. `value` must be plain JSON (objects, arrays, strings,
+   * finite numbers, booleans, null) of at most 64 KB as JSON text; null removes the settings.
+   * Requires the `projectSettings` permission.
+   */
+  setProjectSettings(value: unknown): Promise<void>;
 
   /** Companion-file access; requires the `companionFiles` manifest permission. */
   companions: PluginCompanionsApiV1;

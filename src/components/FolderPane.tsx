@@ -162,12 +162,16 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
     // already exists in this folder (e.g. an `.eaf` it just wrote via companions); we register
     // it in the folder's file list if needed and make it the selected file, which re-drives
     // this observer and the plugin tabs (SayMore's "Start Annotating" -> "Segments" flow).
+    // A `tabId` names one of the calling plugin's own tabs. The tab is chosen by id, so it
+    // opens once that plugin's provider returns it for the new file; until then, and if it
+    // never does, the file's default tab shows.
     const handlePluginSelectFile = React.useCallback(
-      async (relPath: string): Promise<boolean> => {
+      async (pluginId: string, relPath: string, tabId?: string): Promise<boolean> => {
         const folder = props.folder;
         const abs = Path.join(folder.directory, relPath);
         const target = folder.registerExistingFile(abs);
         if (!target) return false;
+        if (tabId) setPerFileTab({ file: target, tabId: pluginTabIdFor(pluginId, tabId) });
         runInAction(() => {
           if (folder.selectedFile && folder.selectedFile !== target) folder.selectedFile.save();
           folder.selectedFile = target;
@@ -497,7 +501,9 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
                 folderDirectory={props.folder.directory}
                 languageCode={currentUILanguage}
                 appVersion={pkg.version}
-                onSelectFile={handlePluginSelectFile}
+                onSelectFile={(relPath, options) =>
+                  handlePluginSelectFile(m.pluginId, relPath, options.tabId)
+                }
               />
             </ErrorBoundary>
           )}
@@ -842,7 +848,10 @@ function getKindOfFile(file: File): string {
 
 // The id FileTabs uses for a plugin's tab, in the same list as the FileTabId values
 function pluginTabId(m: MatchedProviderTab): string {
-  return `plugin:${m.pluginId}/${m.tab.id}`;
+  return pluginTabIdFor(m.pluginId, m.tab.id);
+}
+function pluginTabIdFor(pluginId: string, tabId: string): string {
+  return `plugin:${pluginId}/${tabId}`;
 }
 
 // in the order that FileTabs shows them for this kind of file

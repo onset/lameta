@@ -420,6 +420,11 @@ export class Project extends Folder {
     return sCurrentProject?.multilingualConversionPending ?? false;
   }
 
+  /** The open project's folder, or undefined when no project is loaded. */
+  public static getCurrentProjectDirectory(): string | undefined {
+    return sCurrentProject?.directory;
+  }
+
   /**
    * Get the current project's vocabulary translations, if available.
    */

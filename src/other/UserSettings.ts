@@ -270,6 +270,16 @@ export class UserSettings {
       this.store.set("mediaFolders", projectToFolder);
     }
   }
+  // The folder each plugin last saved a file into, per plugin and per key the plugin names.
+  public GetPluginSaveFolder(pluginId: string, key: string): string | undefined {
+    const folders = this.store.get("pluginSaveFolders") || {};
+    return folders[pluginId]?.[key];
+  }
+  public SetPluginSaveFolder(pluginId: string, key: string, folder: string) {
+    const folders = this.store.get("pluginSaveFolders") || {};
+    folders[pluginId] = { ...(folders[pluginId] || {}), [key]: folder };
+    this.store.set("pluginSaveFolders", folders);
+  }
   public Get(name: string, defaultValue: string) {
     return this.store.get(name, defaultValue);
   }

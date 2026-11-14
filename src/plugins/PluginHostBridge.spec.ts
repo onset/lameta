@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import * as os from "os";
 import * as Path from "path";
 import { observable } from "mobx";
-import { PluginHostBridge, PluginBridgeOptions } from "./PluginHostBridge";
+import { PluginHostBridge, PluginBridgeOptions, PluginHostServices } from "./PluginHostBridge";
 import { PluginInitContext } from "./PluginApiTypes";
 
 // Contract tests for the host side of the plugin postMessage API. The renderer's global
@@ -391,6 +391,197 @@ describe("PluginHostBridge — selectFile", () => {
     const h = makeHarness(mediaOpts()); // no onSelectFile
     const r = await h.raw("selectFile", ["foo.wav.annotations.eaf"]);
     expect(r.error).toMatch(/not supported/);
+  });
+});
+
+describe("PluginHostBridge — selectFile with a tab id", () => {
+  it("passes the tab id to the host, and an empty options object without one", async () => {
+    const calls: { rel: string; options: { tabId?: string } }[] = [];
+    const h = makeHarness({
+      ...mediaOpts(),
+      onSelectFile: (rel, options) => {
+        calls.push({ rel, options });
+        return true;
+      },
+    });
+    expect(await h.request("selectFile", ["foo.wav.annotations.eaf", { tabId: "segments" }])).toBe(
+      true,
+    );
+    expect(await h.request("selectFile", ["foo.wav"])).toBe(true);
+    expect(calls).toEqual([
+      { rel: "foo.wav.annotations.eaf", options: { tabId: "segments" } },
+      { rel: "foo.wav", options: {} },
+    ]);
+  });
+
+  it("rejects an empty or non-string tab id", async () => {
+    const h = makeHarness({ ...mediaOpts(), onSelectFile: () => true });
+    expect((await h.raw("selectFile", ["foo.wav", { tabId: "" }])).error).toMatch(/tabId/);
+    expect((await h.raw("selectFile", ["foo.wav", { tabId: 3 }])).error).toMatch(/tabId/);
+    expect((await h.raw("selectFile", ["foo.wav", "segments"])).error).toMatch(/options/);
+  });
+});
+
+/** A PluginHostServices whose Save dialog answers with `dialogAnswer` and records its calls. */
+function fakeHost(dialogAnswer: { canceled: boolean; filePath?: string }) {
+  const dialogCalls: any[] = [];
+  const saveFolders = new Map<string, string>();
+  let projectDirectory: string | undefined = tmp;
+  const host: PluginHostServices = {
+    showSaveDialog: async (options) => {
+      dialogCalls.push(options);
+      return dialogAnswer;
+    },
+    getSaveFolder: (pluginId, key) => saveFolders.get(`${pluginId}|${key}`),
+    setSaveFolder: (pluginId, key, folder) => saveFolders.set(`${pluginId}|${key}`, folder),
+    getProjectDirectory: () => projectDirectory,
+  };
+  return {
+    host,
+    dialogCalls,
+    saveFolders,
+    closeProject: () => (projectDirectory = undefined),
+  };
+}
+
+describe("PluginHostBridge — saveFile", () => {
+  const bytes = () => te.encode("CSV,DATA").buffer;
+
+  it("rejects without the saveFile permission", async () => {
+    const { host } = fakeHost({ canceled: true });
+    const h = makeHarness({ ...mediaOpts(["companionFiles"]), host });
+    const r = await h.raw("saveFile", ["out.csv", bytes()]);
+    expect(r.error).toMatch(/saveFile permission/);
+  });
+
+  it("writes the bytes where the user chose and returns only the file name", async () => {
+    const target = Path.join(tmp, "exports", "chosen.csv");
+    fs.ensureDirSync(Path.dirname(target));
+    const { host, dialogCalls } = fakeHost({ canceled: false, filePath: target });
+    const h = makeHarness({
+      ...mediaOpts(["saveFile"]),
+      host,
+      pluginDisplayName: "Column Tool",
+    });
+    const result = await h.request("saveFile", [
+      "out.csv",
+      bytes(),
+      { filters: [{ name: "CSV", extensions: ["csv"] }] },
+    ]);
+    expect(result).toEqual({ saved: true, fileName: "chosen.csv" });
+    expect(fs.readFileSync(target, "utf8")).toBe("CSV,DATA");
+    expect(dialogCalls[0].pluginName).toBe("Column Tool");
+    expect(dialogCalls[0].filters).toEqual([{ name: "CSV", extensions: ["csv"] }]);
+    // with nothing remembered, the dialog starts in the selected file's folder
+    expect(dialogCalls[0].defaultPath).toBe(Path.join(tmp, "out.csv"));
+  });
+
+  it("returns saved:false and writes nothing when the user cancels", async () => {
+    const { host, saveFolders } = fakeHost({ canceled: true });
+    const h = makeHarness({ ...mediaOpts(["saveFile"]), host });
+    expect(await h.request("saveFile", ["out.csv", bytes()])).toEqual({ saved: false });
+    expect(fs.existsSync(Path.join(tmp, "out.csv"))).toBe(false);
+    expect(saveFolders.size).toBe(0);
+  });
+
+  it("starts the next save in the folder last used for the same plugin and key", async () => {
+    const exportsDir = Path.join(tmp, "exports");
+    fs.ensureDirSync(exportsDir);
+    const fake = fakeHost({ canceled: false, filePath: Path.join(exportsDir, "a.csv") });
+    const h = makeHarness({ ...mediaOpts(["saveFile"]), host: fake.host });
+    await h.request("saveFile", ["a.csv", bytes(), { rememberFolderKey: "csv" }]);
+    await h.request("saveFile", ["b.csv", bytes(), { rememberFolderKey: "csv" }]);
+    await h.request("saveFile", ["c.txt", bytes(), { rememberFolderKey: "text" }]);
+    expect(fake.dialogCalls[1].defaultPath).toBe(Path.join(exportsDir, "b.csv"));
+    // another key has its own memory, so it starts in the selected file's folder
+    expect(fake.dialogCalls[2].defaultPath).toBe(Path.join(tmp, "c.txt"));
+    expect(fake.saveFolders.get("org.test.plugin|csv")).toBe(exportsDir);
+  });
+
+  it("ignores a remembered folder that no longer exists", async () => {
+    const fake = fakeHost({ canceled: true });
+    fake.host.setSaveFolder("org.test.plugin", "default", Path.join(tmp, "gone"));
+    const h = makeHarness({ ...mediaOpts(["saveFile"]), host: fake.host });
+    await h.request("saveFile", ["out.csv", bytes()]);
+    expect(fake.dialogCalls[0].defaultPath).toBe(Path.join(tmp, "out.csv"));
+  });
+
+  it("rejects bad names, bytes, filters and keys before showing the dialog", async () => {
+    const fake = fakeHost({ canceled: true });
+    const h = makeHarness({ ...mediaOpts(["saveFile"]), host: fake.host });
+    expect((await h.raw("saveFile", ["../out.csv", bytes()])).error).toMatch(/bare file name/);
+    expect((await h.raw("saveFile", ["sub/out.csv", bytes()])).error).toMatch(/bare file name/);
+    expect((await h.raw("saveFile", ["out.csv", "text"])).error).toMatch(/ArrayBuffer/);
+    expect(
+      (
+        await h.raw("saveFile", [
+          "out.csv",
+          bytes(),
+          { filters: [{ name: "CSV", extensions: [".csv"] }] },
+        ])
+      ).error,
+    ).toMatch(/no dot/);
+    expect(
+      (await h.raw("saveFile", ["out.csv", bytes(), { rememberFolderKey: "a/b" }])).error,
+    ).toMatch(/rememberFolderKey/);
+    expect(fake.dialogCalls.length).toBe(0);
+  });
+
+  it("rejects when the host provides no services", async () => {
+    const h = makeHarness(mediaOpts(["saveFile"]));
+    expect((await h.raw("saveFile", ["out.csv", bytes()])).error).toMatch(/not supported/);
+  });
+});
+
+describe("PluginHostBridge — project settings", () => {
+  const settingsPath = () =>
+    Path.join(tmp, "plugin-data", "org.test.plugin", "project-settings.json");
+
+  it("rejects without the projectSettings permission", async () => {
+    const { host } = fakeHost({ canceled: true });
+    const h = makeHarness({ ...mediaOpts(["companionFiles"]), host });
+    expect((await h.raw("getProjectSettings")).error).toMatch(/projectSettings permission/);
+    expect((await h.raw("setProjectSettings", [{ a: 1 }])).error).toMatch(
+      /projectSettings permission/,
+    );
+  });
+
+  it("returns null before anything is stored, then round-trips the value", async () => {
+    const { host } = fakeHost({ canceled: true });
+    const h = makeHarness({ ...mediaOpts(["projectSettings"]), host });
+    expect(await h.request("getProjectSettings")).toBeNull();
+    const value = { columns: [{ id: "vernacular", font: "Charis SIL" }], size: 14 };
+    await h.request("setProjectSettings", [value]);
+    expect(await h.request("getProjectSettings")).toEqual(value);
+    expect(JSON.parse(fs.readFileSync(settingsPath(), "utf8"))).toEqual(value);
+  });
+
+  it("removes the stored settings when given null", async () => {
+    const { host } = fakeHost({ canceled: true });
+    const h = makeHarness({ ...mediaOpts(["projectSettings"]), host });
+    await h.request("setProjectSettings", [{ a: 1 }]);
+    await h.request("setProjectSettings", [null]);
+    expect(fs.existsSync(settingsPath())).toBe(false);
+    expect(await h.request("getProjectSettings")).toBeNull();
+  });
+
+  it("refuses values that are not plain JSON or are too large, and keeps the old value", async () => {
+    const { host } = fakeHost({ canceled: true });
+    const h = makeHarness({ ...mediaOpts(["projectSettings"]), host });
+    await h.request("setProjectSettings", [{ kept: true }]);
+    expect((await h.raw("setProjectSettings", [{ when: new Date() }])).error).toMatch(
+      /plain object/,
+    );
+    expect((await h.raw("setProjectSettings", [{ n: NaN }])).error).toMatch(/finite/);
+    expect((await h.raw("setProjectSettings", ["x".repeat(70 * 1024)])).error).toMatch(/limit/);
+    expect(await h.request("getProjectSettings")).toEqual({ kept: true });
+  });
+
+  it("rejects when no project is open", async () => {
+    const fake = fakeHost({ canceled: true });
+    fake.closeProject();
+    const h = makeHarness({ ...mediaOpts(["projectSettings"]), host: fake.host });
+    expect((await h.raw("getProjectSettings")).error).toMatch(/No project is open/);
   });
 });
 

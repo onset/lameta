@@ -49,8 +49,10 @@ Distributed as a **`.lmplug`** file — this is just a zip with a different exte
   infoUrl: "https://example.org/my-plugin",
   minLametaVersion: "3.6.0", // optional, informational
 
-  // Optional capabilities you ask the host for. Currently the only known permission is
-  // "companionFiles" (see "Companion files" below); anything else is a validation error.
+  // Optional capabilities you ask the host for. The known permissions are "companionFiles"
+  // (see "Companion files" below), "ffmpeg", "saveFile" (see "Saving a file where the user
+  // chooses") and "projectSettings" (see "Project settings"); anything else is a validation
+  // error.
   permissions: ["companionFiles"],
 
   // A plugin contributes tabs by declaring a TAB PROVIDER: a hidden page lameta loads once and
@@ -145,7 +147,11 @@ api.readFileRange(offset, length): Promise<ArrayBuffer>  // a slice of the file 
 api.readSidecar(name?): Promise<string | null>    // name defaults to "annotations"
 api.writeSidecar(contents, name?): Promise<void>
 api.listSidecars(): Promise<string[]>
-api.selectFile(relPath): Promise<boolean>         // select another file in the same folder
+api.selectFile(relPath, { tabId? }?): Promise<boolean>  // select another file in the same folder
+api.saveFile(suggestedName, bytes, { filters?, rememberFolderKey? }?)
+  : Promise<{ saved, fileName? }>                 // "saveFile" permission; see below
+api.getProjectSettings(): Promise<unknown>        // "projectSettings" permission; see below
+api.setProjectSettings(value): Promise<void>
 api.companions.…                                  // see "Companion files" below
 ```
 
@@ -248,6 +254,75 @@ resolves to `true` if a file was selected, `false` if none was found. This power
 > any pending writes first (the host still completes writes it has already received; see the
 > write-completion guarantee above), and don't expect code after the `await` to run reliably.
 
+### Opening one of your tabs on the new file
+
+Pass a tab id to land on a particular tab of yours instead of the file's default tab:
+
+```js
+await api.selectFile("<media>.annotations.eaf", { tabId: "segments" });
+```
+
+`tabId` must be an id that your own tab provider returns for the newly selected file. lameta
+selects the file, asks the providers for its tabs as usual, and opens your tab with that id once
+your provider returns it. If your provider does not return that id for the file, the file's
+default tab shows. A plugin can only open its own tabs this way.
+
+## Saving a file where the user chooses (`permissions: ["saveFile"]`)
+
+`api.saveFile(suggestedName, bytes, options?)` shows lameta's native Save dialog and writes
+`bytes` to the file the user picks. Use it for exports: a CSV of your annotations, a rendered
+image, a report.
+
+```js
+const csv = new TextEncoder().encode(rows.join("\n"));
+const { saved, fileName } = await api.saveFile("glosses.csv", csv, {
+  filters: [{ name: "CSV", extensions: ["csv"] }],
+  rememberFolderKey: "csv-export",
+});
+if (saved) showMessage(`Saved ${fileName}`);
+```
+
+- The dialog's title is your plugin's `name` followed by "Save".
+- `suggestedName` is a bare file name (no folders); the user can change it in the dialog.
+- `bytes` is an `ArrayBuffer`, or any typed array or `DataView` (only the bytes it views are
+  written). It is copied, not transferred, so your buffer stays usable afterwards.
+- `filters` are the dialog's file types. Give extensions without the dot; `"*"` means all files.
+- The dialog starts in the folder your plugin last saved into with the same
+  `rememberFolderKey`, which lameta keeps in its user settings on this machine. Use one key per
+  kind of export so that each remembers its own folder. Without a key, every save shares the key
+  `"default"`. When nothing is remembered, or the remembered folder no longer exists, the dialog
+  starts in the selected file's session or person folder. A key is letters, digits, `_`, `.` and
+  `-`, at most 64 characters.
+- The promise resolves to `{ saved: false }` if the user cancels, otherwise
+  `{ saved: true, fileName }`. `fileName` is the name of the chosen file only: lameta never tells
+  a plugin which folder the user saved into.
+- The write is atomic (a temp file beside the target, then a rename), like companion writes.
+
+## Project settings (`permissions: ["projectSettings"]`)
+
+Some settings belong to the project rather than to one file or one user: which font each column
+of an interlinear view uses, say, so that every collaborator sees the same thing.
+
+```js
+const settings = (await api.getProjectSettings()) ?? { columnFonts: {} };
+settings.columnFonts.vernacular = "Charis SIL";
+await api.setProjectSettings(settings);
+```
+
+- `getProjectSettings()` resolves to the value you last stored for the open project, or `null`
+  if there is none.
+- `setProjectSettings(value)` replaces the whole value. `value` must be plain JSON: objects,
+  arrays, strings, finite numbers, booleans and `null`, nested at most 64 levels. Dates, Maps,
+  typed arrays, `undefined` and `NaN` are refused rather than silently changed. The JSON text of
+  the value may be at most **64 KB** (UTF-8). Passing `null` removes your settings.
+- lameta stores the value as indented JSON in
+  `<project folder>/plugin-data/<pluginId>/project-settings.json`. It lives in the project
+  folder, so it travels with the project wherever the project is synced or copied, and lameta's
+  file lists never show it. lameta's own `.sprj` project file is not touched.
+- Both calls reject when no project is open.
+- There is no change event. If two people change the settings on different machines, the sync
+  service decides which file wins, so keep the value small and read it when your tab connects.
+
 ## Sidecars
 
 Your persisted data lives at:
@@ -271,6 +346,8 @@ you're persisting:
   a last-used option, "don't show this again"). Never travels with the project.
 - **Sidecars** (`readSidecar`/`writeSidecar`) — data about the specific selected file that
   should travel with the project (annotations, segment lists).
+- **Project settings** (`getProjectSettings`/`setProjectSettings`) — a small value about the
+  whole project that every collaborator should share (column fonts, a chosen layout).
 - **Companion files** (`api.companions`) — user-visible sibling files next to the media, meant
   to be read by other tools too (ELAN, SayMore).
 
@@ -456,7 +533,9 @@ persists them to a sidecar. Build its `.lmplug` with `node package-plugin.mjs`.
 - **Renames orphan sidecars.** Sidecars are keyed by file name, so renaming a session (which
   renames its files) leaves the old sidecars behind. A future version may migrate them.
 - **Deliberately not included in this version** (ask if you need them): a
-  `companions.watch` event API (poll `companions.stat()` instead), an ffmpeg conversion
-  service for producing `_StandardAudio.wav` (decode via Web Audio and write with
-  `companions.writeBytes`), and `durationMs` in the file context (read it from your media
-  element).
+  `companions.watch` event API (poll `companions.stat()` instead), and `durationMs` in the
+  file context (read it from your media element).
+- **`ffmpeg.run` needs an ffmpeg that lameta's installer does not ship.** The installer
+  includes ffprobe, so `ffmpeg.probe` works everywhere, but not ffmpeg itself, so
+  `ffmpeg.run` works only where `ffmpeg-ffprobe-static`'s ffmpeg is present (a development
+  checkout). A plugin that converts media should carry its own converter.

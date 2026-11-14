@@ -8,6 +8,7 @@
 // bridge) to the file being queried, so it decides live (e.g. `companions.exists(<media>.eaf)`).
 
 import { PluginHostBridge } from "./PluginHostBridge";
+import { pluginHostServices } from "./pluginHostServices";
 import { pluginAssetUrl } from "./pluginScheme";
 import pluginManager, { PluginRecord } from "./PluginManager";
 import { PluginTabMatch } from "./PluginManifest";
@@ -128,6 +129,8 @@ class TabProviderHost {
         folderDirectory: "",
         pluginId: record.id,
         permissions: record.manifest!.permissions || [],
+        pluginDisplayName: record.manifest!.name,
+        host: pluginHostServices,
       });
 
       document.body.appendChild(iframe);

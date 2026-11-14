@@ -28,6 +28,7 @@ import {
 } from "./sidecar";
 import { getFfmpegPath, getFfprobePath } from "../other/ffprobePath";
 import { resolveCompanionPath, isAllowedCompanionPath } from "./companions";
+import { getProjectSettingsPath, serializeProjectSettings } from "./projectSettings";
 
 // Lazily require & configure fluent-ffmpeg with the bundled binaries, once. Kept out of module
 // scope (and behind the first ffmpeg.* call) so importing the bridge — e.g. in unit tests that
@@ -63,6 +64,62 @@ function timemarkToSeconds(timemark: any): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
+/** A filter in the Save dialog's file-type list, as Electron's dialog takes it. */
+export interface SaveDialogFilter {
+  name: string;
+  extensions: string[];
+}
+
+/**
+ * What the bridge needs from the rest of lameta for `saveFile` and the project-settings calls.
+ * Injected so the bridge stays free of Electron and of the project model.
+ */
+export interface PluginHostServices {
+  /** Show the native Save dialog, titled with `pluginName` and the localized word "Save".
+   * Resolves like Electron's dialog.showSaveDialog. */
+  showSaveDialog(options: {
+    pluginName: string;
+    defaultPath: string;
+    filters?: SaveDialogFilter[];
+  }): Promise<{ canceled: boolean; filePath?: string }>;
+  /** The folder this plugin last saved into under `key`, from lameta's user settings. */
+  getSaveFolder(pluginId: string, key: string): string | undefined;
+  setSaveFolder(pluginId: string, key: string, folder: string): void;
+  /** The open project's folder, or undefined when no project is open. */
+  getProjectDirectory(): string | undefined;
+}
+
+/** `saveFile`'s `rememberFolderKey` names a user-settings entry, so keep it short and plain. */
+const REMEMBER_FOLDER_KEY_REGEX = /^[a-z0-9_.-]{1,64}$/i;
+const DEFAULT_REMEMBER_FOLDER_KEY = "default";
+const FILTER_EXTENSION_REGEX = /^(\*|[a-z0-9]+)$/i;
+
+function validateSaveFilters(filters: any): SaveDialogFilter[] | undefined {
+  if (filters === undefined || filters === null) return undefined;
+  const bad = () => new Error("saveFile: filters must be an array of {name, extensions[]}");
+  if (!Array.isArray(filters)) throw bad();
+  return filters.map((f: any) => {
+    if (!f || typeof f.name !== "string" || !Array.isArray(f.extensions)) throw bad();
+    for (const ext of f.extensions)
+      if (typeof ext !== "string" || !FILTER_EXTENSION_REGEX.test(ext))
+        throw new Error(
+          `saveFile: filter extension "${ext}" must be letters and digits with no dot, or "*"`,
+        );
+    return { name: f.name, extensions: [...f.extensions] };
+  });
+}
+
+/** Accept a bare file name only; reject anything that names a folder or climbs out of one. */
+function isBareFileName(name: string): boolean {
+  const normalized = name.replace(/\\/g, "/");
+  return (
+    !normalized.startsWith("/") &&
+    !/^[a-z]:/i.test(normalized) &&
+    !normalized.includes("..") &&
+    !normalized.includes("/")
+  );
+}
+
 export interface PluginBridgeOptions {
   iframe: HTMLIFrameElement;
   /** The init context: a content-tab context, or a tab-provider context. */
@@ -82,10 +139,15 @@ export interface PluginBridgeOptions {
   permissions: string[];
   /**
    * Host callback for the `selectFile` API: make `relPath` (relative to the owning folder)
-   * the selected file, re-driving the file-pane tabs. Returns true if a file was selected.
-   * Absent in contexts that don't support selection (then `selectFile` rejects).
+   * the selected file, re-driving the file-pane tabs, and open this plugin's tab `tabId` when
+   * given. Returns true if a file was selected. Absent in contexts that don't support
+   * selection (then `selectFile` rejects).
    */
-  onSelectFile?: (relPath: string) => Promise<boolean> | boolean;
+  onSelectFile?: (relPath: string, options: { tabId?: string }) => Promise<boolean> | boolean;
+  /** The plugin's user-facing name; the Save dialog's title starts with it. */
+  pluginDisplayName?: string;
+  /** Needed by `saveFile` and the project-settings calls, which reject without it. */
+  host?: PluginHostServices;
 }
 
 export class PluginHostBridge {
@@ -318,18 +380,39 @@ export class PluginHostBridge {
             throw new Error("selectFile: relPath must be a non-empty string");
           // Reject traversal / absolute paths / subdirectories — selection is limited to a
           // file living directly in the owning folder (the host also re-checks this).
-          const normalized = relPath.replace(/\\/g, "/");
-          if (
-            normalized.startsWith("/") ||
-            /^[a-z]:/i.test(normalized) ||
-            normalized.includes("..") ||
-            normalized.includes("/")
-          )
+          if (!isBareFileName(relPath))
             throw new Error(`selectFile: "${relPath}" must be a bare file name in the folder`);
+          const options = params[1];
+          if (options !== undefined && options !== null && typeof options !== "object")
+            throw new Error("selectFile: options must be an object");
+          const tabId = options?.tabId;
+          if (tabId !== undefined && (typeof tabId !== "string" || tabId.length === 0))
+            throw new Error("selectFile: tabId must be a non-empty string");
           if (!this.opts.onSelectFile)
             throw new Error("selectFile is not supported in this context");
-          const selected = await this.opts.onSelectFile(relPath);
+          const selected = await this.opts.onSelectFile(relPath, tabId ? { tabId } : {});
           this.post({ type: "lameta:response", id, result: !!selected });
+          return;
+        }
+        case "saveFile": {
+          const result = await this.saveFile(params[0], params[1], params[2]);
+          this.post({ type: "lameta:response", id, result });
+          return;
+        }
+        case "getProjectSettings": {
+          const path = this.projectSettingsPath();
+          const result = (await fs.pathExists(path))
+            ? JSON.parse(await fs.readFile(path, "utf8"))
+            : null;
+          this.post({ type: "lameta:response", id, result });
+          return;
+        }
+        case "setProjectSettings": {
+          const path = this.projectSettingsPath();
+          const value = params[0];
+          if (value === null || value === undefined) await fs.remove(path);
+          else await this.writeFileAtomically(path, serializeProjectSettings(value));
+          this.post({ type: "lameta:response", id, result: undefined });
           return;
         }
         case "listSidecars": {
@@ -354,6 +437,51 @@ export class PluginHostBridge {
         error: e?.message || String(e),
       });
     }
+  }
+
+  // `saveFile`: the user picks where the plugin's bytes go, in the native Save dialog. The
+  // plugin learns only the chosen file's name, never its folder.
+  private async saveFile(
+    suggestedName: any,
+    bytes: any,
+    options: any,
+  ): Promise<{ saved: boolean; fileName?: string }> {
+    if (!this.opts.permissions.includes("saveFile"))
+      throw new Error("This plugin does not have the saveFile permission");
+    if (typeof suggestedName !== "string" || suggestedName.length === 0)
+      throw new Error("saveFile: suggestedName must be a non-empty string");
+    if (!isBareFileName(suggestedName))
+      throw new Error(`saveFile: "${suggestedName}" must be a bare file name`);
+    if (!(bytes instanceof ArrayBuffer)) throw new Error("saveFile: bytes must be an ArrayBuffer");
+    if (options !== undefined && options !== null && typeof options !== "object")
+      throw new Error("saveFile: options must be an object");
+    const filters = validateSaveFilters(options?.filters);
+    const key = options?.rememberFolderKey ?? DEFAULT_REMEMBER_FOLDER_KEY;
+    if (typeof key !== "string" || !REMEMBER_FOLDER_KEY_REGEX.test(key))
+      throw new Error(`saveFile: rememberFolderKey must match ${REMEMBER_FOLDER_KEY_REGEX}`);
+    const host = this.opts.host;
+    if (!host) throw new Error("saveFile is not supported in this context");
+
+    const remembered = host.getSaveFolder(this.opts.pluginId, key);
+    const startFolder =
+      remembered && (await fs.pathExists(remembered)) ? remembered : this.sFolderDir;
+    const choice = await host.showSaveDialog({
+      pluginName: this.opts.pluginDisplayName || this.opts.pluginId,
+      defaultPath: startFolder ? Path.join(startFolder, suggestedName) : suggestedName,
+      filters,
+    });
+    if (choice.canceled || !choice.filePath) return { saved: false };
+    await this.writeFileAtomically(choice.filePath, Buffer.from(bytes));
+    host.setSaveFolder(this.opts.pluginId, key, Path.dirname(choice.filePath));
+    return { saved: true, fileName: Path.basename(choice.filePath) };
+  }
+
+  private projectSettingsPath(): string {
+    if (!this.opts.permissions.includes("projectSettings"))
+      throw new Error("This plugin does not have the projectSettings permission");
+    const projectDirectory = this.opts.host?.getProjectDirectory();
+    if (!projectDirectory) throw new Error("No project is open");
+    return getProjectSettingsPath(projectDirectory, this.opts.pluginId);
   }
 
   // The "companions.*" family: scoped access to files living beside the ACTUAL selected file
@@ -425,7 +553,7 @@ export class PluginHostBridge {
         const contents = params[1];
         if (typeof contents !== "string")
           throw new Error("companions.writeText: contents must be a string");
-        await this.writeCompanionAtomically(resolve(params[0]), contents);
+        await this.writeFileAtomically(resolve(params[0]), contents);
         this.post({ type: "lameta:response", id, result: undefined });
         return;
       }
@@ -433,7 +561,7 @@ export class PluginHostBridge {
         const data = params[1];
         if (!(data instanceof ArrayBuffer))
           throw new Error("companions.writeBytes: data must be an ArrayBuffer");
-        await this.writeCompanionAtomically(resolve(params[0]), Buffer.from(data));
+        await this.writeFileAtomically(resolve(params[0]), Buffer.from(data));
         this.post({ type: "lameta:response", id, result: undefined });
         return;
       }
@@ -585,8 +713,8 @@ export class PluginHostBridge {
   }
 
   // Atomic write: to a temp file in the target's own directory, then rename over the
-  // target, so a crash mid-write never leaves a truncated companion.
-  private async writeCompanionAtomically(target: string, data: string | Buffer) {
+  // target, so a crash mid-write never leaves a truncated file.
+  private async writeFileAtomically(target: string, data: string | Buffer) {
     await fs.ensureDir(Path.dirname(target));
     const tmp = `${target}.${Math.random().toString(36).slice(2)}.tmp`;
     try {

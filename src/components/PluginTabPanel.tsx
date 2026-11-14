@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import { Trans } from "@lingui/react/macro";
 import { PluginHostBridge } from "../plugins/PluginHostBridge";
 import { pluginAssetUrl } from "../plugins/pluginScheme";
+import { pluginHostServices } from "../plugins/pluginHostServices";
 import pluginIcon from "@assets/plugin.svg";
 import {
   LAMETA_PLUGIN_API_VERSIONS_SUPPORTED,
@@ -39,8 +40,9 @@ export interface PluginTabPanelProps {
   appVersion: string;
 
   /** Host handler for the `selectFile` plugin API: make `relPath` (a bare file name in the
-   * owning folder) the selected file. Returns true if a file was selected. */
-  onSelectFile?: (relPath: string) => Promise<boolean> | boolean;
+   * owning folder) the selected file, and open this plugin's tab `tabId` when given. Returns
+   * true if a file was selected. */
+  onSelectFile?: (relPath: string, options: { tabId?: string }) => Promise<boolean> | boolean;
 
   /** The provider-supplied tab id this content iframe is rendering (echoed as context.tab.id). */
   tabId?: string;
@@ -106,6 +108,8 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (pro
       pluginId: props.pluginId,
       permissions: props.permissions,
       onSelectFile: props.onSelectFile,
+      pluginDisplayName: props.pluginName,
+      host: pluginHostServices,
     });
 
     // Watch for evidence the plugin is alive so we can clear the timeout / hide the overlay.
