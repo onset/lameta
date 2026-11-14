@@ -199,6 +199,17 @@ describe("parsePluginManifest", () => {
     expect(result.manifest!.permissions).toEqual(["companionFiles", "ffmpeg"]);
   });
 
+  it("accepts the saveFile and projectSettings permissions", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      "infoUrl": "https://example.org",
+      permissions: ["saveFile", "projectSettings"],
+      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+    }`);
+    expect(result.errors).toBeUndefined();
+    expect(result.manifest!.permissions).toEqual(["saveFile", "projectSettings"]);
+  });
+
   it("rejects a non-array permissions value", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,

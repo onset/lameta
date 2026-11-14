@@ -73,7 +73,7 @@ export interface PluginManifest {
 
 /** The permission strings this build of lameta understands. Anything else in a
  * manifest's `permissions` array is a validation error. */
-export const KNOWN_PERMISSIONS = ["companionFiles", "ffmpeg"];
+export const KNOWN_PERMISSIONS = ["companionFiles", "ffmpeg", "saveFile", "projectSettings"];
 
 export type ParseManifestResult =
   | { manifest: PluginManifest; errors?: undefined }
