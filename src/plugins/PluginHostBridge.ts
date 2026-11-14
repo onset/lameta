@@ -17,6 +17,7 @@ import {
   FfprobeResult,
   PluginInitContext,
   PluginTabProviderContext,
+  SaveDialogFilter,
   TabDescriptor,
 } from "./PluginApiTypes";
 import {
@@ -64,12 +65,6 @@ function timemarkToSeconds(timemark: any): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
-/** A filter in the Save dialog's file-type list, as Electron's dialog takes it. */
-export interface SaveDialogFilter {
-  name: string;
-  extensions: string[];
-}
-
 /**
  * What the bridge needs from the rest of lameta for `saveFile` and the project-settings calls.
  * Injected so the bridge stays free of Electron and of the project model.
@@ -109,6 +104,12 @@ function validateSaveFilters(filters: any): SaveDialogFilter[] | undefined {
   });
 }
 
+/** Throw unless `options` is absent or an object. */
+function assertOptionsObject(method: string, options: unknown): void {
+  if (options !== undefined && options !== null && typeof options !== "object")
+    throw new Error(`${method}: options must be an object`);
+}
+
 /** Accept a bare file name only; reject anything that names a folder or climbs out of one. */
 function isBareFileName(name: string): boolean {
   const normalized = name.replace(/\\/g, "/");
@@ -143,7 +144,7 @@ export interface PluginBridgeOptions {
    * given. Returns true if a file was selected. Absent in contexts that don't support
    * selection (then `selectFile` rejects).
    */
-  onSelectFile?: (relPath: string, options: { tabId?: string }) => Promise<boolean> | boolean;
+  onSelectFile?: (relPath: string, tabId?: string) => Promise<boolean> | boolean;
   /** The plugin's user-facing name; the Save dialog's title starts with it. */
   pluginDisplayName?: string;
   /** Needed by `saveFile` and the project-settings calls, which reject without it. */
@@ -383,14 +384,13 @@ export class PluginHostBridge {
           if (!isBareFileName(relPath))
             throw new Error(`selectFile: "${relPath}" must be a bare file name in the folder`);
           const options = params[1];
-          if (options !== undefined && options !== null && typeof options !== "object")
-            throw new Error("selectFile: options must be an object");
+          assertOptionsObject("selectFile", options);
           const tabId = options?.tabId;
           if (tabId !== undefined && (typeof tabId !== "string" || tabId.length === 0))
             throw new Error("selectFile: tabId must be a non-empty string");
           if (!this.opts.onSelectFile)
             throw new Error("selectFile is not supported in this context");
-          const selected = await this.opts.onSelectFile(relPath, tabId ? { tabId } : {});
+          const selected = await this.opts.onSelectFile(relPath, tabId);
           this.post({ type: "lameta:response", id, result: !!selected });
           return;
         }
@@ -447,15 +447,13 @@ export class PluginHostBridge {
     bytes: any,
     options: any,
   ): Promise<{ saved: boolean; fileName?: string }> {
-    if (!this.opts.permissions.includes("saveFile"))
-      throw new Error("This plugin does not have the saveFile permission");
+    this.requirePermission("saveFile");
     if (typeof suggestedName !== "string" || suggestedName.length === 0)
       throw new Error("saveFile: suggestedName must be a non-empty string");
     if (!isBareFileName(suggestedName))
       throw new Error(`saveFile: "${suggestedName}" must be a bare file name`);
     if (!(bytes instanceof ArrayBuffer)) throw new Error("saveFile: bytes must be an ArrayBuffer");
-    if (options !== undefined && options !== null && typeof options !== "object")
-      throw new Error("saveFile: options must be an object");
+    assertOptionsObject("saveFile", options);
     const filters = validateSaveFilters(options?.filters);
     const key = options?.rememberFolderKey ?? DEFAULT_REMEMBER_FOLDER_KEY;
     if (typeof key !== "string" || !REMEMBER_FOLDER_KEY_REGEX.test(key))
@@ -477,9 +475,13 @@ export class PluginHostBridge {
     return { saved: true, fileName: Path.basename(choice.filePath) };
   }
 
+  private requirePermission(permission: string): void {
+    if (!this.opts.permissions.includes(permission))
+      throw new Error(`This plugin does not have the ${permission} permission`);
+  }
+
   private projectSettingsPath(): string {
-    if (!this.opts.permissions.includes("projectSettings"))
-      throw new Error("This plugin does not have the projectSettings permission");
+    this.requirePermission("projectSettings");
     const projectDirectory = this.opts.host?.getProjectDirectory();
     if (!projectDirectory) throw new Error("No project is open");
     return getProjectSettingsPath(projectDirectory, this.opts.pluginId);
@@ -492,8 +494,7 @@ export class PluginHostBridge {
   // knowledge in the host). Called from inside handleRequest's try/catch, so throwing here
   // produces a normal error response.
   private async handleCompanionRequest(id: number, method: string, params: any[]) {
-    if (!this.opts.permissions.includes("companionFiles"))
-      throw new Error("This plugin does not have the companionFiles permission");
+    this.requirePermission("companionFiles");
     const companionDir = Path.dirname(this.sFilePath);
     const scopeFileName = this.sFileName;
     const resolve = (relPath: string) => resolveCompanionPath(companionDir, scopeFileName, relPath);
@@ -594,8 +595,7 @@ export class PluginHostBridge {
   // escape the selected file's directory family. Requires the "ffmpeg" permission. Called from
   // inside handleRequest's try/catch, so throwing here produces a normal error response.
   private async handleFfmpegRequest(id: number, method: string, params: any[]) {
-    if (!this.opts.permissions.includes("ffmpeg"))
-      throw new Error("This plugin does not have the ffmpeg permission");
+    this.requirePermission("ffmpeg");
     const companionDir = Path.dirname(this.sFilePath);
     const scopeFileName = this.sFileName;
     // Input default = the selected file; otherwise a validated companion.

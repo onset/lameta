@@ -395,12 +395,12 @@ describe("PluginHostBridge — selectFile", () => {
 });
 
 describe("PluginHostBridge — selectFile with a tab id", () => {
-  it("passes the tab id to the host, and an empty options object without one", async () => {
-    const calls: { rel: string; options: { tabId?: string } }[] = [];
+  it("passes the tab id to the host, and none without one", async () => {
+    const calls: { rel: string; tabId?: string }[] = [];
     const h = makeHarness({
       ...mediaOpts(),
-      onSelectFile: (rel, options) => {
-        calls.push({ rel, options });
+      onSelectFile: (rel, tabId) => {
+        calls.push({ rel, tabId });
         return true;
       },
     });
@@ -409,8 +409,8 @@ describe("PluginHostBridge — selectFile with a tab id", () => {
     );
     expect(await h.request("selectFile", ["foo.wav"])).toBe(true);
     expect(calls).toEqual([
-      { rel: "foo.wav.annotations.eaf", options: { tabId: "segments" } },
-      { rel: "foo.wav", options: {} },
+      { rel: "foo.wav.annotations.eaf", tabId: "segments" },
+      { rel: "foo.wav", tabId: undefined },
     ]);
   });
 

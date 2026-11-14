@@ -501,8 +501,8 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
                 folderDirectory={props.folder.directory}
                 languageCode={currentUILanguage}
                 appVersion={pkg.version}
-                onSelectFile={(relPath, options) =>
-                  handlePluginSelectFile(m.pluginId, relPath, options.tabId)
+                onSelectFile={(relPath, tabId) =>
+                  handlePluginSelectFile(m.pluginId, relPath, tabId)
                 }
               />
             </ErrorBoundary>

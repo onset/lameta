@@ -42,7 +42,7 @@ export interface PluginTabPanelProps {
   /** Host handler for the `selectFile` plugin API: make `relPath` (a bare file name in the
    * owning folder) the selected file, and open this plugin's tab `tabId` when given. Returns
    * true if a file was selected. */
-  onSelectFile?: (relPath: string, options: { tabId?: string }) => Promise<boolean> | boolean;
+  onSelectFile?: (relPath: string, tabId?: string) => Promise<boolean> | boolean;
 
   /** The provider-supplied tab id this content iframe is rendering (echoed as context.tab.id). */
   tabId?: string;
