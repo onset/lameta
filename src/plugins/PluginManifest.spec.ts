@@ -319,6 +319,18 @@ describe("parsePluginManifest — platforms and binaries", () => {
     expect(result.errors!.join(" ")).toMatch(/binaries\.sox is not a known binary/);
   });
 
+  it.each([["null"], ["3"], ["{}"]])(
+    "rejects a binary path of %s with a manifest error",
+    (value) => {
+      const result = parsePluginManifest(
+        withExtra(`binaries: { ffmpeg: { "darwin-arm64": ${value} } }`),
+      );
+      expect(result.errors!.join(" ")).toMatch(
+        /binaries\.ffmpeg\."darwin-arm64" must be a relative path/,
+      );
+    },
+  );
+
   it("rejects binaries that are not objects", () => {
     expect(parsePluginManifest(withExtra(`binaries: ["ffmpeg"]`)).errors!.join(" ")).toMatch(
       /binaries must be an object/,

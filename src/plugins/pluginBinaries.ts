@@ -1,11 +1,14 @@
 // Native executables that a plugin carries inside its own package (manifest `binaries`).
 //
-// Pure path logic plus the post-install step. No electron imports, so it is unit-testable and
+// Pure path logic, the install-time check that a package contains its binaries, and the step that
+// makes a binary runnable before it is spawned. No electron imports, so it is unit-testable and
 // usable from both the install dialog and the host bridge.
 
 import Path from "path";
 import fs from "fs-extra";
 import { spawn as nodeSpawn } from "child_process";
+import { i18n } from "@lingui/core";
+import { t } from "@lingui/core/macro";
 import { PluginBinaries } from "./PluginManifest";
 
 /**
@@ -32,15 +35,17 @@ export function pluginBinaryPath(
 /**
  * Which ffmpeg `ffmpeg.run` spawns for a plugin:
  *  1. the plugin's own ffmpeg for this platform, when its manifest names one (it must exist);
- *  2. otherwise lameta's `fallbackPath` (the ffmpeg-ffprobe-static ffmpeg, present only in a
- *     development checkout), when it exists;
+ *  2. otherwise lameta's ffmpeg from `fallbackPath()` (the ffmpeg-ffprobe-static ffmpeg, present
+ *     only in a development checkout), when it exists;
  *  3. otherwise an error saying the plugin does not include ffmpeg for this platform.
+ * `fallbackPath` is called only when the plugin names no ffmpeg for this platform, because
+ * finding lameta's own path costs a synchronous call to the main process.
  */
 export function resolveFfmpegPath(args: {
   pluginDirectory: string | undefined;
   binaries: PluginBinaries | undefined;
   platformKey: string;
-  fallbackPath: string;
+  fallbackPath: () => string;
   exists?: (path: string) => boolean;
 }): string {
   const exists = args.exists ?? ((p: string) => fs.existsSync(p));
@@ -54,7 +59,8 @@ export function resolveFfmpegPath(args: {
       );
     return own;
   }
-  if (exists(args.fallbackPath)) return args.fallbackPath;
+  const fallback = args.fallbackPath();
+  if (exists(fallback)) return fallback;
   throw new Error(`This plugin does not include ffmpeg for this platform (${args.platformKey})`);
 }
 
@@ -73,41 +79,54 @@ const runCommand: RunCommand = (command, args) =>
     child.on("close", (code) => resolve({ code, stderr }));
   });
 
+export type PrepareBinaryOptions = {
+  platform?: string;
+  run?: RunCommand;
+  chmod?: (path: string, mode: number) => Promise<void>;
+};
+
 /**
- * After a package is unpacked into `pluginDirectory`, make every binary the manifest names
- * runnable. extract-zip applies the Unix mode stored in the zip, and a zip made on Windows stores
- * none, so the file arrives as 0644: chmod each binary to 0755 on every platform except Windows.
- * On macOS also remove the `com.apple.quarantine` attribute so Gatekeeper does not block the
- * spawn; "No such xattr" means the file was never quarantined and is fine.
+ * Make one binary runnable. extract-zip applies the Unix mode stored in the zip, and a zip made
+ * on Windows stores none, so a binary can arrive as 0644; a hand-copied plugin can lack the mode
+ * too. So chmod it to 0755 on every platform except Windows. On macOS also remove the
+ * `com.apple.quarantine` attribute so Gatekeeper does not block the spawn; "No such xattr" means
+ * the file was never quarantined and is fine.
  */
-export async function prepareInstalledBinaries(
-  pluginDirectory: string,
-  binaries: PluginBinaries | undefined,
-  options: {
-    platform?: string;
-    run?: RunCommand;
-    chmod?: (path: string, mode: number) => Promise<void>;
-  } = {},
+export async function prepareBinary(
+  file: string,
+  options: PrepareBinaryOptions = {},
 ): Promise<void> {
   const platform = options.platform ?? process.platform;
-  if (platform === "win32" || !binaries) return;
+  if (platform === "win32") return;
   const run = options.run ?? runCommand;
   const chmod = options.chmod ?? ((p: string, mode: number) => fs.chmod(p, mode));
+  await chmod(file, 0o755);
+  if (platform !== "darwin") return;
+  const { code, stderr } = await run("xattr", ["-d", "com.apple.quarantine", file]);
+  if (code !== 0 && !/no such xattr/i.test(stderr))
+    throw new Error(
+      `Could not remove the quarantine attribute from ${file}: ${stderr.trim() || `exit ${code}`}`,
+    );
+}
 
-  const paths = new Set<string>();
-  for (const name of Object.keys(binaries))
-    for (const platformKey of Object.keys(binaries[name])) {
-      const full = pluginBinaryPath(pluginDirectory, binaries, name, platformKey);
-      if (full && (await fs.pathExists(full))) paths.add(full);
-    }
-
-  for (const file of paths) {
-    await chmod(file, 0o755);
-    if (platform !== "darwin") continue;
-    const { code, stderr } = await run("xattr", ["-d", "com.apple.quarantine", file]);
-    if (code !== 0 && !/no such xattr/i.test(stderr))
-      throw new Error(
-        `Could not remove the quarantine attribute from ${file}: ${stderr.trim() || `exit ${code}`}`,
-      );
+/**
+ * The message that refuses to install a package whose manifest names a binary for `platformKey`
+ * that the unpacked package in `pluginDirectory` does not contain, or undefined when every such
+ * binary is present.
+ */
+export function missingBinaryMessage(
+  pluginDirectory: string,
+  binaries: PluginBinaries | undefined,
+  platformKey: string,
+  exists: (path: string) => boolean = (p) => fs.existsSync(p),
+): string | undefined {
+  for (const name of Object.keys(binaries ?? {})) {
+    const full = pluginBinaryPath(pluginDirectory, binaries, name, platformKey);
+    if (!full || exists(full)) continue;
+    const rel = binaries![name][platformKey];
+    return i18n._(
+      t`This plugin package is missing ${rel}, the ${name} that its manifest names for ${platformKey}. Get a complete package from the plugin's author.`,
+    );
   }
+  return undefined;
 }

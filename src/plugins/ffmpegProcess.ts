@@ -46,7 +46,11 @@ export function runFfmpegProcess(
   return new Promise<void>((resolve, reject) => {
     let stderr = "";
     const fail = (reason: string) => {
-      const tail = stderr.trim().split(/\r?\n|\r/).slice(-8).join("\n");
+      const tail = stderr
+        .trim()
+        .split(/\r?\n|\r/)
+        .slice(-8)
+        .join("\n");
       reject(new Error(`ffmpeg failed (${ffmpegPath}): ${reason}${tail ? "\n" + tail : ""}`));
     };
     let child: ChildProcess;

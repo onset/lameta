@@ -3,8 +3,9 @@ import * as fs from "fs-extra";
 import * as os from "os";
 import * as Path from "path";
 import {
+  missingBinaryMessage,
   pluginBinaryPath,
-  prepareInstalledBinaries,
+  prepareBinary,
   resolveFfmpegPath,
 } from "./pluginBinaries";
 import { PluginBinaries } from "./PluginManifest";
@@ -60,7 +61,7 @@ describe("resolveFfmpegPath", () => {
         pluginDirectory: pluginDir,
         binaries,
         platformKey: "darwin-arm64",
-        fallbackPath,
+        fallbackPath: () => fallbackPath,
         exists,
       }),
     ).toBe(own);
@@ -72,7 +73,7 @@ describe("resolveFfmpegPath", () => {
         pluginDirectory: pluginDir,
         binaries,
         platformKey: "darwin-arm64",
-        fallbackPath,
+        fallbackPath: () => fallbackPath,
         exists: (p) => p === fallbackPath,
       }),
     ).toThrow(/ffmpeg for darwin-arm64 is missing/);
@@ -84,7 +85,7 @@ describe("resolveFfmpegPath", () => {
         pluginDirectory: pluginDir,
         binaries,
         platformKey: "linux-x64",
-        fallbackPath,
+        fallbackPath: () => fallbackPath,
         exists: (p) => p === fallbackPath,
       }),
     ).toBe(fallbackPath);
@@ -93,7 +94,7 @@ describe("resolveFfmpegPath", () => {
         pluginDirectory: undefined,
         binaries: undefined,
         platformKey: "win32-x64",
-        fallbackPath,
+        fallbackPath: () => fallbackPath,
         exists: (p) => p === fallbackPath,
       }),
     ).toBe(fallbackPath);
@@ -105,44 +106,29 @@ describe("resolveFfmpegPath", () => {
         pluginDirectory: pluginDir,
         binaries,
         platformKey: "linux-x64",
-        fallbackPath,
+        fallbackPath: () => fallbackPath,
         exists: () => false,
       }),
     ).toThrow(/does not include ffmpeg for this platform \(linux-x64\)/);
   });
 });
 
-describe("prepareInstalledBinaries", () => {
+describe("prepareBinary", () => {
   let dir: string;
   beforeEach(() => {
     dir = fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-plugin-bin-"));
     fs.outputFileSync(Path.join(dir, "bin", "mac-arm", "ffmpeg"), "x");
-    fs.outputFileSync(Path.join(dir, "bin", "mac-intel", "ffmpeg"), "x");
-    // bin/ffmpeg.exe is named for Windows but not in this package: it is skipped.
   });
   afterEach(() => fs.removeSync(dir));
 
   const arm = () => Path.join(dir, "bin", "mac-arm", "ffmpeg");
-  const intel = () => Path.join(dir, "bin", "mac-intel", "ffmpeg");
 
-  it("on macOS, makes each present binary executable and removes its quarantine", async () => {
+  it("on macOS, makes the binary executable and removes its quarantine", async () => {
     const chmod = vi.fn(async () => {});
     const run = vi.fn(async () => ({ code: 0, stderr: "" }));
-    await prepareInstalledBinaries(dir, binaries, { platform: "darwin", chmod, run });
-    expect(chmod.mock.calls).toEqual(
-      expect.arrayContaining([
-        [arm(), 0o755],
-        [intel(), 0o755],
-      ]),
-    );
-    expect(chmod).toHaveBeenCalledTimes(2);
-    expect(run.mock.calls).toEqual(
-      expect.arrayContaining([
-        ["xattr", ["-d", "com.apple.quarantine", arm()]],
-        ["xattr", ["-d", "com.apple.quarantine", intel()]],
-      ]),
-    );
-    expect(run).toHaveBeenCalledTimes(2);
+    await prepareBinary(arm(), { platform: "darwin", chmod, run });
+    expect(chmod.mock.calls).toEqual([[arm(), 0o755]]);
+    expect(run.mock.calls).toEqual([["xattr", ["-d", "com.apple.quarantine", arm()]]]);
   });
 
   it("ignores a binary that was never quarantined", async () => {
@@ -151,11 +137,7 @@ describe("prepareInstalledBinaries", () => {
       stderr: `xattr: ${args[2]}: No such xattr: com.apple.quarantine`,
     }));
     await expect(
-      prepareInstalledBinaries(dir, binaries, {
-        platform: "darwin",
-        chmod: async () => {},
-        run,
-      }),
+      prepareBinary(arm(), { platform: "darwin", chmod: async () => {}, run }),
     ).resolves.toBeUndefined();
   });
 
@@ -165,38 +147,67 @@ describe("prepareInstalledBinaries", () => {
       stderr: "xattr: [Errno 1] Operation not permitted",
     }));
     await expect(
-      prepareInstalledBinaries(dir, binaries, { platform: "darwin", chmod: async () => {}, run }),
+      prepareBinary(arm(), { platform: "darwin", chmod: async () => {}, run }),
     ).rejects.toThrow(/quarantine.*Operation not permitted/);
   });
 
-  it("on Linux, only makes binaries executable", async () => {
+  it("on Linux, only makes the binary executable", async () => {
     const chmod = vi.fn(async () => {});
     const run = vi.fn(async () => ({ code: 0, stderr: "" }));
-    await prepareInstalledBinaries(dir, binaries, { platform: "linux", chmod, run });
-    expect(chmod).toHaveBeenCalledTimes(2);
+    await prepareBinary(arm(), { platform: "linux", chmod, run });
+    expect(chmod.mock.calls).toEqual([[arm(), 0o755]]);
     expect(run).not.toHaveBeenCalled();
   });
 
   it("on Windows, does nothing", async () => {
     const chmod = vi.fn(async () => {});
     const run = vi.fn(async () => ({ code: 0, stderr: "" }));
-    await prepareInstalledBinaries(dir, binaries, { platform: "win32", chmod, run });
+    await prepareBinary(arm(), { platform: "win32", chmod, run });
     expect(chmod).not.toHaveBeenCalled();
     expect(run).not.toHaveBeenCalled();
   });
 
-  it("does nothing for a plugin without binaries", async () => {
-    const chmod = vi.fn(async () => {});
-    await prepareInstalledBinaries(dir, undefined, { platform: "darwin", chmod });
-    expect(chmod).not.toHaveBeenCalled();
-  });
-
   // Windows has no Unix modes to check.
   it.skipIf(process.platform === "win32")("sets mode 0755 with the default chmod", async () => {
-    await prepareInstalledBinaries(dir, binaries, {
+    await prepareBinary(arm(), {
       platform: "linux",
       run: async () => ({ code: 0, stderr: "" }),
     });
     expect(fs.statSync(arm()).mode & 0o777).toBe(0o755);
+  });
+});
+
+describe("missingBinaryMessage", () => {
+  const arm = Path.join(pluginDir, "bin", "mac-arm", "ffmpeg");
+
+  it("names the relative path of this platform's binary when the package lacks it", () => {
+    const message = missingBinaryMessage(pluginDir, binaries, "darwin-arm64", () => false);
+    expect(message).toContain("bin/mac-arm/ffmpeg");
+    expect(message).toContain("darwin-arm64");
+  });
+
+  it("is undefined when this platform's binary is in the package, whatever else is missing", () => {
+    expect(missingBinaryMessage(pluginDir, binaries, "darwin-arm64", (p) => p === arm)).toBe(
+      undefined,
+    );
+  });
+
+  it("is undefined when the manifest names no binary for this platform", () => {
+    expect(missingBinaryMessage(pluginDir, binaries, "linux-x64", () => false)).toBeUndefined();
+  });
+
+  it("is undefined for a plugin without binaries", () => {
+    expect(missingBinaryMessage(pluginDir, undefined, "win32-x64", () => false)).toBeUndefined();
+  });
+
+  it("checks the real file system by default", () => {
+    const dir = fs.mkdtempSync(Path.join(os.tmpdir(), "lameta-plugin-bin-"));
+    try {
+      expect(missingBinaryMessage(dir, binaries, "win32-x64")).toContain("bin/ffmpeg.exe");
+      fs.outputFileSync(Path.join(dir, "bin", "ffmpeg.exe"), "x");
+      expect(missingBinaryMessage(dir, binaries, "win32-x64")).toBeUndefined();
+    } finally {
+      fs.removeSync(dir);
+    }
   });
 });

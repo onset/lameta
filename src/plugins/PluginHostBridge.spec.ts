@@ -14,6 +14,15 @@ vi.mock("../other/ffprobePath", () => ({
   getFfprobePath: () => ffmpegPaths.ffprobe || "no-such-ffprobe",
 }));
 
+// Records which binaries ffmpeg.run prepares; preparation itself is tested in pluginBinaries.spec.ts.
+const preparedBinaries = vi.hoisted(() => [] as string[]);
+vi.mock("./pluginBinaries", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./pluginBinaries")>()),
+  prepareBinary: async (file: string) => {
+    preparedBinaries.push(file);
+  },
+}));
+
 // Contract tests for the host side of the plugin postMessage API. The renderer's global
 // `window` is replaced by a mock (src/vitest.mock.ts) whose addEventListener is a vi.fn(), so we
 // capture the bridge's registered "message" listener and drive it with synthetic events, and we
@@ -384,25 +393,9 @@ describe("PluginHostBridge — which ffmpeg ffmpeg.run spawns", () => {
     ffmpegPaths.ffmpeg = Path.join(tmp, "no-lameta-ffmpeg", exe);
   });
 
-  it("fails clearly when neither the plugin nor lameta has an ffmpeg", async () => {
-    const h = makeHarness(mediaOpts(["companionFiles", "ffmpeg"]));
-    expect((await run(h)).error).toMatch(/does not include ffmpeg for this platform/);
-  });
-
-  it("fails clearly when the plugin's named ffmpeg is missing, without falling back", async () => {
-    // lameta's ffmpeg exists, but the plugin named its own, so the missing file is the error.
-    ffmpegPaths.ffmpeg = Path.join(tmp, "lameta-ffmpeg", exe);
-    fs.outputFileSync(ffmpegPaths.ffmpeg, "");
-    const pluginDirectory = Path.join(tmp, "plugin");
-    const h = makeHarness({
-      ...mediaOpts(["companionFiles", "ffmpeg"]),
-      pluginDirectory,
-      binaries: { ffmpeg: { [platformKey]: `bin/${exe}` } },
-    });
-    expect((await run(h)).error).toMatch(/ffmpeg for .* is missing/);
-  });
-
-  it("spawns the plugin's own ffmpeg when its manifest names one for this platform", async () => {
+  // Which path wins in each case is resolveFfmpegPath's job (pluginBinaries.spec.ts); these
+  // check that the bridge hands it the plugin's folder and manifest and spawns the result.
+  it("prepares and spawns the plugin's own ffmpeg when its manifest names one for this platform", async () => {
     const pluginDirectory = Path.join(tmp, "plugin");
     const own = Path.join(pluginDirectory, "bin", exe);
     // Not a real executable: the spawn fails, and its error names the file it tried to run.
@@ -412,8 +405,10 @@ describe("PluginHostBridge — which ffmpeg ffmpeg.run spawns", () => {
       pluginDirectory,
       binaries: { ffmpeg: { [platformKey]: `bin/${exe}` } },
     });
+    preparedBinaries.length = 0;
     const r = await run(h);
     expect(r.error).toContain(own);
+    expect(preparedBinaries).toEqual([own]);
     expect(fs.existsSync(Path.join(tmp, "foo_StandardAudio.wav"))).toBe(false);
   });
 

@@ -11,8 +11,8 @@ import fs from "fs-extra";
 import extract from "extract-zip";
 import { getPath } from "../other/windowIpc";
 import pluginManager, { platformMismatchMessage, PluginRecord } from "../plugins/PluginManager";
-import { parsePluginManifest } from "../plugins/PluginManifest";
-import { prepareInstalledBinaries } from "../plugins/pluginBinaries";
+import { currentPlatformKey, parsePluginManifest } from "../plugins/PluginManifest";
+import { missingBinaryMessage } from "../plugins/pluginBinaries";
 import { asyncTrash } from "../other/crossPlatformUtilities";
 import { NotifyError, NotifyWarning } from "./Notify";
 import { lameta_dark_green } from "../containers/theme";
@@ -87,11 +87,15 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
       return;
     }
 
-    // Make the package's binaries runnable while it is still in the staging folder, so a failure
-    // here leaves an already-installed copy of the plugin untouched. The staging folder is on the
-    // same volume as the plugins folder, so the move below is a rename that keeps file modes and
-    // extended attributes.
-    await prepareInstalledBinaries(pluginFolder, result.manifest.binaries);
+    const missingBinary = missingBinaryMessage(
+      pluginFolder,
+      result.manifest.binaries,
+      currentPlatformKey(),
+    );
+    if (missingBinary) {
+      NotifyError(missingBinary);
+      return;
+    }
 
     const id = result.manifest!.id;
     const target = Path.join(getPath("userData"), "plugins", id);

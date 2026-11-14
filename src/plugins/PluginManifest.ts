@@ -7,6 +7,7 @@
 // plugin record in the "error" state.
 
 import JSON5 from "json5";
+import { isSafeRelativePath } from "./companions";
 
 /** A localizable label: either a plain string, or a map of language code -> string
  * (with "en" used as the fallback). */
@@ -230,15 +231,6 @@ function validateTab(tab: any, index: number, errors: string[]): PluginTabManife
   };
 }
 
-/** A binary path must stay inside the plugin folder: relative, no `..` segment, no drive or
- * leading slash, no empty segments. Both separators are accepted. */
-export function isSafeRelativePluginPath(p: string): boolean {
-  if (typeof p !== "string" || p.trim().length === 0) return false;
-  const normalized = p.replace(/\\/g, "/");
-  if (normalized.startsWith("/") || /^[a-z]:/i.test(normalized)) return false;
-  return normalized.split("/").every((seg) => seg.length > 0 && seg !== "." && seg !== "..");
-}
-
 function validatePlatforms(value: any, errors: string[]): string[] | undefined {
   if (value === undefined) return undefined;
   if (!Array.isArray(value) || value.length === 0) {
@@ -281,7 +273,7 @@ function validateBinaries(value: any, errors: string[]): PluginBinaries | undefi
             ", ",
           )})`,
         );
-      else if (!isSafeRelativePluginPath(path))
+      else if (typeof path !== "string" || path.trim().length === 0 || !isSafeRelativePath(path))
         errors.push(
           `binaries.${name}."${platformKey}" must be a relative path inside the plugin folder (no "..", not absolute)`,
         );

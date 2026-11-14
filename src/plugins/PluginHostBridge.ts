@@ -28,7 +28,7 @@ import {
 } from "./sidecar";
 import { getFfmpegPath, getFfprobePath } from "../other/ffprobePath";
 import { currentPlatformKey, PluginBinaries } from "./PluginManifest";
-import { resolveFfmpegPath } from "./pluginBinaries";
+import { prepareBinary, resolveFfmpegPath } from "./pluginBinaries";
 import { ffmpegArguments, runFfmpegProcess } from "./ffmpegProcess";
 import { resolveCompanionPath, isAllowedCompanionPath } from "./companions";
 import { getProjectSettingsPath, serializeProjectSettings } from "./projectSettings";
@@ -38,13 +38,13 @@ import { getProjectSettingsPath, serializeProjectSettings } from "./projectSetti
 // e.g. in unit tests that never touch ffmpeg — doesn't pull in fluent-ffmpeg. The ffprobe path
 // comes from the app directory, because the static package's own paths point into dist/ after
 // bundling.
-let ffmpegLib: any = null;
-function getFfmpeg(): any {
-  if (ffmpegLib) return ffmpegLib;
-  const ffmpeg = require("fluent-ffmpeg");
-  ffmpeg.setFfprobePath(getFfprobePath());
-  ffmpegLib = ffmpeg;
-  return ffmpeg;
+let fluentFfprobe: any = null;
+function getFluentFfprobe(): any {
+  if (fluentFfprobe) return fluentFfprobe;
+  const fluent = require("fluent-ffmpeg");
+  fluent.setFfprobePath(getFfprobePath());
+  fluentFfprobe = fluent;
+  return fluent;
 }
 
 /** Coerce an ffprobe field (which may be a number, a numeric string, or "N/A") to a number,
@@ -631,9 +631,9 @@ export class PluginHostBridge {
 
   // ffprobe a file and map fluent-ffmpeg's raw result into the curated FfprobeResult contract.
   private ffprobe(input: string): Promise<FfprobeResult> {
-    const ffmpeg = getFfmpeg();
+    const fluent = getFluentFfprobe();
     return new Promise<FfprobeResult>((resolve, reject) => {
-      ffmpeg.ffprobe(input, (err: any, data: any) => {
+      fluent.ffprobe(input, (err: any, data: any) => {
         if (err) return reject(err);
         const fmt = data?.format || {};
         const streams = Array.isArray(data?.streams) ? data.streams : [];
@@ -672,8 +672,12 @@ export class PluginHostBridge {
       pluginDirectory: this.opts.pluginDirectory,
       binaries: this.opts.binaries,
       platformKey: currentPlatformKey(),
-      fallbackPath: getFfmpegPath(),
+      fallbackPath: getFfmpegPath,
     });
+    // Made runnable before every spawn: this covers the Developer plugin folder, plugins copied
+    // in by hand, and a plugin reinstalled during the session, whose new binary arrives at the
+    // same path without its execute bit.
+    await prepareBinary(ffmpegPath);
     // Probe once up front for the input duration → lets us turn timemark into a fraction.
     let durationSec = 0;
     try {

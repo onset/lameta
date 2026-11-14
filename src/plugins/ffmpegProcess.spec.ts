@@ -61,7 +61,12 @@ describe("runFfmpegProcess", () => {
 
   it("rejects with the binary, the exit code and the end of stderr", async () => {
     const child = fakeChild();
-    const done = runFfmpegProcess("/p/ffmpeg", [], () => {}, () => child);
+    const done = runFfmpegProcess(
+      "/p/ffmpeg",
+      [],
+      () => {},
+      () => child,
+    );
     child.stderr.emit("data", Buffer.from("line 1\nInvalid data found when processing input\n"));
     child.emit("close", 1, null);
     await expect(done).rejects.toThrow(
@@ -80,13 +85,23 @@ describe("runFfmpegProcess", () => {
 
   it("rejects, naming the binary, when spawn throws or emits an error", async () => {
     await expect(
-      runFfmpegProcess("/p/not-exe", [], () => {}, () => {
-        throw new Error("spawn UNKNOWN");
-      }),
+      runFfmpegProcess(
+        "/p/not-exe",
+        [],
+        () => {},
+        () => {
+          throw new Error("spawn UNKNOWN");
+        },
+      ),
     ).rejects.toThrow(/ffmpeg failed \(\/p\/not-exe\): spawn UNKNOWN/);
 
     const child = fakeChild();
-    const done = runFfmpegProcess("/p/missing", [], () => {}, () => child);
+    const done = runFfmpegProcess(
+      "/p/missing",
+      [],
+      () => {},
+      () => child,
+    );
     child.emit("error", new Error("spawn ENOENT"));
     await expect(done).rejects.toThrow(/ffmpeg failed \(\/p\/missing\): spawn ENOENT/);
   });

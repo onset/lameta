@@ -348,13 +348,14 @@ ffmpeg in its package and names it in the manifest:
   missing path. If you name none for this platform, `run` uses the ffmpeg in a lameta
   development checkout when there is one, and otherwise rejects with "This plugin does not
   include ffmpeg for this platform".
-- **Installing.** lameta asks the user nothing about your binaries. On macOS and Linux it sets
-  each named binary that is in the package to mode `755` after unpacking, because a zip made on
-  Windows records no Unix permissions. On macOS it also removes the `com.apple.quarantine`
-  attribute from each, so Gatekeeper does not block it. If that step fails, the install fails.
-  On Windows nothing extra happens.
-- **The Developer plugin folder** is used in place: lameta runs the ffmpeg from that folder and
-  changes nothing there. On macOS, make it executable yourself (`chmod 755 bin/ffmpeg`).
+- **Installing.** lameta asks the user nothing about your binaries. It refuses to install a
+  package whose manifest names a binary for this computer's platform that the package does not
+  contain, and the message names the missing path.
+- **Running.** On macOS and Linux, each time `ffmpeg.run` runs a binary, lameta first sets it
+  to mode `755`, because a zip made on Windows records no Unix permissions. On
+  macOS it also removes the `com.apple.quarantine` attribute, so Gatekeeper does not block it. If
+  that step fails, `run` rejects. This applies to the Developer plugin folder too, so you need
+  not `chmod` your ffmpeg there. On Windows nothing extra happens.
 - **Older lameta versions** ignore `platforms` and `binaries`, so they install a package on
   any platform and `run` fails there for lack of ffmpeg.
 
