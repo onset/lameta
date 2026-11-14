@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { parsePluginManifest, localizeLabel } from "./PluginManifest";
+import {
+  parsePluginManifest,
+  localizeLabel,
+  currentPlatformKey,
+  supportsPlatform,
+} from "./PluginManifest";
 
 const goodManifest = `{
   id: "org.example.waveform-annotator",
@@ -252,6 +257,108 @@ describe("parsePluginManifest", () => {
       }),
     );
     expect(result.errors).toBeUndefined();
+  });
+});
+
+const withExtra = (extra: string) => `{
+  id: "a.b", name: "n", version: "1", apiVersion: 1,
+  "infoUrl": "https://example.org",
+  tabs: [{ id: "t", label: "L", entry: "i.html" }],
+  ${extra}
+}`;
+
+describe("parsePluginManifest — platforms and binaries", () => {
+  it("leaves platforms and binaries undefined when absent", () => {
+    const result = parsePluginManifest(withExtra(""));
+    expect(result.errors).toBeUndefined();
+    expect(result.manifest!.platforms).toBeUndefined();
+    expect(result.manifest!.binaries).toBeUndefined();
+  });
+
+  it("accepts known platforms and per-platform binary paths, normalizing backslashes", () => {
+    const result = parsePluginManifest(
+      withExtra(`platforms: ["darwin-arm64", "darwin-x64"],
+        binaries: { ffmpeg: { "win32-x64": "bin\\\\ffmpeg.exe", "darwin-arm64": "bin/ffmpeg", "darwin-x64": "bin/ffmpeg" } }`),
+    );
+    expect(result.errors).toBeUndefined();
+    expect(result.manifest!.platforms).toEqual(["darwin-arm64", "darwin-x64"]);
+    expect(result.manifest!.binaries).toEqual({
+      ffmpeg: {
+        "win32-x64": "bin/ffmpeg.exe",
+        "darwin-arm64": "bin/ffmpeg",
+        "darwin-x64": "bin/ffmpeg",
+      },
+    });
+  });
+
+  it("rejects an unknown platform in platforms, naming the known set", () => {
+    const result = parsePluginManifest(withExtra(`platforms: ["win32-x64", "amiga-68k"]`));
+    const joined = result.errors!.join(" ");
+    expect(joined).toMatch(/platforms\[1\] "amiga-68k" is not a known platform/);
+    expect(joined).toMatch(/known: win32-x64/);
+  });
+
+  it("rejects an empty or non-array platforms", () => {
+    expect(parsePluginManifest(withExtra(`platforms: []`)).errors!.join(" ")).toMatch(
+      /platforms must be a non-empty array/,
+    );
+    expect(parsePluginManifest(withExtra(`platforms: "win32-x64"`)).errors!.join(" ")).toMatch(
+      /platforms must be a non-empty array/,
+    );
+  });
+
+  it("rejects an unknown platform key in binaries", () => {
+    const result = parsePluginManifest(
+      withExtra(`binaries: { ffmpeg: { "windows": "ffmpeg.exe" } }`),
+    );
+    expect(result.errors!.join(" ")).toMatch(/binaries\.ffmpeg\."windows" is not a known platform/);
+  });
+
+  it("rejects an unknown binary name", () => {
+    const result = parsePluginManifest(withExtra(`binaries: { sox: { "win32-x64": "sox.exe" } }`));
+    expect(result.errors!.join(" ")).toMatch(/binaries\.sox is not a known binary/);
+  });
+
+  it("rejects binaries that are not objects", () => {
+    expect(parsePluginManifest(withExtra(`binaries: ["ffmpeg"]`)).errors!.join(" ")).toMatch(
+      /binaries must be an object/,
+    );
+    expect(
+      parsePluginManifest(withExtra(`binaries: { ffmpeg: "ffmpeg.exe" }`)).errors!.join(" "),
+    ).toMatch(/binaries\.ffmpeg must be an object/);
+  });
+
+  it.each([
+    ["../ffmpeg.exe"],
+    ["bin/../../ffmpeg.exe"],
+    ["bin\\\\..\\\\..\\\\ffmpeg.exe"],
+    ["/usr/bin/ffmpeg"],
+    ["C:/tools/ffmpeg.exe"],
+    ["c:\\\\tools\\\\ffmpeg.exe"],
+    ["\\\\\\\\server\\\\share\\\\ffmpeg.exe"],
+    [""],
+    ["bin//ffmpeg.exe"],
+  ])("rejects the binary path %s", (path) => {
+    const result = parsePluginManifest(
+      withExtra(`binaries: { ffmpeg: { "win32-x64": "${path}" } }`),
+    );
+    expect(result.errors).toBeDefined();
+    expect(result.errors!.join(" ")).toMatch(/must be a relative path inside the plugin folder/);
+  });
+});
+
+describe("currentPlatformKey and supportsPlatform", () => {
+  it("joins platform and arch", () => {
+    expect(currentPlatformKey("darwin", "arm64")).toBe("darwin-arm64");
+    expect(currentPlatformKey("win32", "x64")).toBe("win32-x64");
+  });
+
+  it("supports every platform when platforms is absent, otherwise only those listed", () => {
+    const all = parsePluginManifest(withExtra("")).manifest!;
+    const mac = parsePluginManifest(withExtra(`platforms: ["darwin-arm64"]`)).manifest!;
+    expect(supportsPlatform(all, "win32-x64")).toBe(true);
+    expect(supportsPlatform(mac, "darwin-arm64")).toBe(true);
+    expect(supportsPlatform(mac, "win32-x64")).toBe(false);
   });
 });
 

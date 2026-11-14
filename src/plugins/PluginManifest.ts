@@ -69,11 +69,46 @@ export interface PluginManifest {
   tabProvider?: PluginTabProviderManifest;
   /** Legacy static tab list. Prefer `tabProvider`. */
   tabs: PluginTabManifest[];
+  /** OPTIONAL platforms (KNOWN_PLATFORMS keys) this package is built for. Absent means every
+   * platform. lameta refuses to install or load a package that excludes the current one. */
+  platforms?: string[];
+  /** OPTIONAL native executables the plugin carries, by name (KNOWN_BINARIES) and then by
+   * platform key, each a path relative to the plugin folder. */
+  binaries?: PluginBinaries;
 }
+
+/** binary name -> platform key -> path relative to the plugin folder, with "/" separators. */
+export type PluginBinaries = { [binaryName: string]: { [platformKey: string]: string } };
 
 /** The permission strings this build of lameta understands. Anything else in a
  * manifest's `permissions` array is a validation error. */
 export const KNOWN_PERMISSIONS = ["companionFiles", "ffmpeg", "saveFile", "projectSettings"];
+
+/** Platform keys are `${process.platform}-${process.arch}`, for the platforms lameta builds for. */
+export const KNOWN_PLATFORMS = [
+  "win32-x64",
+  "win32-arm64",
+  "darwin-x64",
+  "darwin-arm64",
+  "linux-x64",
+  "linux-arm64",
+];
+
+/** The executables a plugin may carry. The host only runs binaries it knows how to use. */
+export const KNOWN_BINARIES = ["ffmpeg"];
+
+/** The platform key of the machine lameta is running on, e.g. "darwin-arm64". */
+export function currentPlatformKey(
+  platform: string = process.platform,
+  arch: string = process.arch,
+): string {
+  return `${platform}-${arch}`;
+}
+
+/** True when the manifest has no `platforms` list or its list includes `platformKey`. */
+export function supportsPlatform(manifest: PluginManifest, platformKey: string): boolean {
+  return !manifest.platforms || manifest.platforms.includes(platformKey);
+}
 
 export type ParseManifestResult =
   | { manifest: PluginManifest; errors?: undefined }
@@ -195,6 +230,67 @@ function validateTab(tab: any, index: number, errors: string[]): PluginTabManife
   };
 }
 
+/** A binary path must stay inside the plugin folder: relative, no `..` segment, no drive or
+ * leading slash, no empty segments. Both separators are accepted. */
+export function isSafeRelativePluginPath(p: string): boolean {
+  if (typeof p !== "string" || p.trim().length === 0) return false;
+  const normalized = p.replace(/\\/g, "/");
+  if (normalized.startsWith("/") || /^[a-z]:/i.test(normalized)) return false;
+  return normalized.split("/").every((seg) => seg.length > 0 && seg !== "." && seg !== "..");
+}
+
+function validatePlatforms(value: any, errors: string[]): string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value) || value.length === 0) {
+    errors.push("platforms must be a non-empty array of platform keys");
+    return undefined;
+  }
+  value.forEach((p: any, i: number) => {
+    if (typeof p !== "string") errors.push(`platforms[${i}] must be a string`);
+    else if (!KNOWN_PLATFORMS.includes(p))
+      errors.push(
+        `platforms[${i}] "${p}" is not a known platform (known: ${KNOWN_PLATFORMS.join(", ")})`,
+      );
+  });
+  return value;
+}
+
+function validateBinaries(value: any, errors: string[]): PluginBinaries | undefined {
+  if (value === undefined) return undefined;
+  if (!isPlainObject(value)) {
+    errors.push("binaries must be an object");
+    return undefined;
+  }
+  const result: PluginBinaries = {};
+  for (const name of Object.keys(value)) {
+    if (!KNOWN_BINARIES.includes(name)) {
+      errors.push(`binaries.${name} is not a known binary (known: ${KNOWN_BINARIES.join(", ")})`);
+      continue;
+    }
+    const byPlatform = value[name];
+    if (!isPlainObject(byPlatform)) {
+      errors.push(`binaries.${name} must be an object of platform key -> path`);
+      continue;
+    }
+    result[name] = {};
+    for (const platformKey of Object.keys(byPlatform)) {
+      const path = byPlatform[platformKey];
+      if (!KNOWN_PLATFORMS.includes(platformKey))
+        errors.push(
+          `binaries.${name}."${platformKey}" is not a known platform (known: ${KNOWN_PLATFORMS.join(
+            ", ",
+          )})`,
+        );
+      else if (!isSafeRelativePluginPath(path))
+        errors.push(
+          `binaries.${name}."${platformKey}" must be a relative path inside the plugin folder (no "..", not absolute)`,
+        );
+      else result[name][platformKey] = path.replace(/\\/g, "/");
+    }
+  }
+  return result;
+}
+
 /**
  * Parse & validate raw manifest text (JSON5 or JSON).
  * Pure: no IO. Returns {manifest} on success or {errors} with all problems found.
@@ -277,6 +373,9 @@ export function parsePluginManifest(text: string): ParseManifestResult {
   if (!hasTabProvider && !hasTabs)
     errors.push("a manifest must declare a `tabProvider` or a non-empty `tabs` array");
 
+  const platforms = validatePlatforms(raw.platforms, errors);
+  const binaries = validateBinaries(raw.binaries, errors);
+
   if (errors.length > 0) return { errors };
 
   return {
@@ -293,6 +392,8 @@ export function parsePluginManifest(text: string): ParseManifestResult {
       permissions: Array.isArray(raw.permissions) ? raw.permissions : [],
       tabProvider,
       tabs,
+      platforms,
+      binaries,
     },
   };
 }

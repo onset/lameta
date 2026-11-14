@@ -10,8 +10,9 @@ import Path from "path";
 import fs from "fs-extra";
 import extract from "extract-zip";
 import { getPath } from "../other/windowIpc";
-import pluginManager, { PluginRecord } from "../plugins/PluginManager";
+import pluginManager, { platformMismatchMessage, PluginRecord } from "../plugins/PluginManager";
 import { parsePluginManifest } from "../plugins/PluginManifest";
+import { prepareInstalledBinaries } from "../plugins/pluginBinaries";
 import { asyncTrash } from "../other/crossPlatformUtilities";
 import { NotifyError, NotifyWarning } from "./Notify";
 import { lameta_dark_green } from "../containers/theme";
@@ -80,6 +81,11 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
       NotifyError(i18n._(t`The plugin's manifest has problems:`) + "\n" + result.errors.join("\n"));
       return;
     }
+    const platformMismatch = platformMismatchMessage(result.manifest);
+    if (platformMismatch) {
+      NotifyError(platformMismatch);
+      return;
+    }
 
     const id = result.manifest!.id;
     const target = Path.join(getPath("userData"), "plugins", id);
@@ -98,6 +104,13 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
 
     await fs.ensureDir(Path.dirname(target));
     await fs.move(pluginFolder, target, { overwrite: true });
+    try {
+      await prepareInstalledBinaries(target, result.manifest.binaries);
+    } catch (e) {
+      // A plugin whose binaries cannot run must not stay installed.
+      await fs.remove(target).catch(() => {});
+      throw e;
+    }
     pluginManager.reload();
   } catch (e: any) {
     NotifyError(i18n._(t`Could not install the plugin.`) + " " + (e?.message || e));
