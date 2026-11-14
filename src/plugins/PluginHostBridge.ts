@@ -28,21 +28,24 @@ import {
   DEFAULT_SIDECAR_NAME,
 } from "./sidecar";
 import { getFfmpegPath, getFfprobePath } from "../other/ffprobePath";
+import { currentPlatformKey, PluginBinaries } from "./PluginManifest";
+import { prepareBinary, resolveFfmpegPath } from "./pluginBinaries";
+import { ffmpegArguments, runFfmpegProcess } from "./ffmpegProcess";
 import { resolveCompanionPath, isAllowedCompanionPath } from "./companions";
 import { getProjectSettingsPath, serializeProjectSettings } from "./projectSettings";
 
-// Lazily require & configure fluent-ffmpeg with the bundled binaries, once. Kept out of module
-// scope (and behind the first ffmpeg.* call) so importing the bridge — e.g. in unit tests that
-// never touch ffmpeg — doesn't pull in fluent-ffmpeg. The binary paths come from the app
-// directory, because the static package's own paths point into dist/ after bundling.
-let ffmpegLib: any = null;
-function getFfmpeg(): any {
-  if (ffmpegLib) return ffmpegLib;
-  const ffmpeg = require("fluent-ffmpeg");
-  ffmpeg.setFfmpegPath(getFfmpegPath());
-  ffmpeg.setFfprobePath(getFfprobePath());
-  ffmpegLib = ffmpeg;
-  return ffmpeg;
+// Lazily require fluent-ffmpeg (used only for ffprobe) and point it at lameta's shipped ffprobe,
+// once. Kept out of module scope (and behind the first ffmpeg.* call) so importing the bridge —
+// e.g. in unit tests that never touch ffmpeg — doesn't pull in fluent-ffmpeg. The ffprobe path
+// comes from the app directory, because the static package's own paths point into dist/ after
+// bundling.
+let fluentFfprobe: any = null;
+function getFluentFfprobe(): any {
+  if (fluentFfprobe) return fluentFfprobe;
+  const fluent = require("fluent-ffmpeg");
+  fluent.setFfprobePath(getFfprobePath());
+  fluentFfprobe = fluent;
+  return fluent;
 }
 
 /** Coerce an ffprobe field (which may be a number, a numeric string, or "N/A") to a number,
@@ -50,18 +53,6 @@ function getFfmpeg(): any {
 function numOrUndef(v: any): number | undefined {
   if (v === undefined || v === null) return undefined;
   const n = typeof v === "number" ? v : Number(v);
-  return Number.isFinite(n) ? n : undefined;
-}
-
-/** Parse an ffmpeg progress `timemark` ("HH:MM:SS.xx", occasionally bare seconds) to seconds. */
-function timemarkToSeconds(timemark: any): number | undefined {
-  const parts = String(timemark).split(":");
-  if (parts.length === 3) {
-    const [h, m, s] = parts.map(Number);
-    if ([h, m, s].every((n) => Number.isFinite(n))) return h * 3600 + m * 60 + s;
-    return undefined;
-  }
-  const n = Number(timemark);
   return Number.isFinite(n) ? n : undefined;
 }
 
@@ -138,6 +129,11 @@ export interface PluginBridgeOptions {
   pluginId: string;
   /** the plugin's granted manifest permissions, e.g. ["companionFiles"]. */
   permissions: string[];
+  /** The plugin's folder (installed or the Developer plugin folder); `binaries` paths are
+   * relative to it. */
+  pluginDirectory?: string;
+  /** The manifest's `binaries`; `ffmpeg.run` spawns `binaries.ffmpeg[<this platform>]`. */
+  binaries?: PluginBinaries;
   /**
    * Host callback for the `selectFile` API: make `relPath` (relative to the owning folder)
    * the selected file, re-driving the file-pane tabs, and open this plugin's tab `tabId` when
@@ -635,9 +631,9 @@ export class PluginHostBridge {
 
   // ffprobe a file and map fluent-ffmpeg's raw result into the curated FfprobeResult contract.
   private ffprobe(input: string): Promise<FfprobeResult> {
-    const ffmpeg = getFfmpeg();
+    const fluent = getFluentFfprobe();
     return new Promise<FfprobeResult>((resolve, reject) => {
-      ffmpeg.ffprobe(input, (err: any, data: any) => {
+      fluent.ffprobe(input, (err: any, data: any) => {
         if (err) return reject(err);
         const fmt = data?.format || {};
         const streams = Array.isArray(data?.streams) ? data.streams : [];
@@ -672,7 +668,15 @@ export class PluginHostBridge {
     args: string[],
     inputArgs: string[],
   ): Promise<void> {
-    const ffmpeg = getFfmpeg();
+    const ffmpegPath = resolveFfmpegPath({
+      pluginDirectory: this.opts.pluginDirectory,
+      binaries: this.opts.binaries,
+      platformKey: currentPlatformKey(),
+      fallbackPath: getFfmpegPath,
+    });
+    // Made runnable before every spawn as well as at install: the Developer plugin folder and
+    // plugins copied in by hand never pass through the install dialog.
+    await prepareBinary(ffmpegPath);
     // Probe once up front for the input duration → lets us turn timemark into a fraction.
     let durationSec = 0;
     try {
@@ -685,26 +689,11 @@ export class PluginHostBridge {
     const tmp = `${output}.${Math.random().toString(36).slice(2)}.lameta-tmp${ext}`;
 
     try {
-      await new Promise<void>((resolve, reject) => {
-        const command = ffmpeg(input);
-        if (inputArgs.length) command.inputOptions(inputArgs);
-        command
-          .outputOptions(args)
-          .on("progress", (p: any) => {
-            if (durationSec > 0 && p?.timemark) {
-              const done = timemarkToSeconds(p.timemark);
-              if (done !== undefined) {
-                const fraction = Math.max(0, Math.min(1, done / durationSec));
-                this.post({ type: "lameta:progress", id, fraction });
-              }
-            }
-          })
-          .on("error", (err: any, _stdout: any, stderr: any) => {
-            const tail = (stderr || "").toString().trim().split("\n").slice(-8).join("\n");
-            reject(new Error(`ffmpeg failed: ${err?.message || err}${tail ? "\n" + tail : ""}`));
-          })
-          .on("end", () => resolve())
-          .save(tmp);
+      await runFfmpegProcess(ffmpegPath, ffmpegArguments(input, inputArgs, args, tmp), (done) => {
+        if (durationSec > 0) {
+          const fraction = Math.max(0, Math.min(1, done / durationSec));
+          this.post({ type: "lameta:progress", id, fraction });
+        }
       });
     } catch (e) {
       await fs.remove(tmp).catch(() => {});

@@ -139,8 +139,10 @@ export interface PluginFfmpegApiV1 {
   probe(relPath?: string): Promise<FfprobeResult>;
 
   /**
-   * Run one ffmpeg conversion to a companion file.
-   *  - input   = the selected file (default) OR companion `inputRelPath`
+   * Run one ffmpeg conversion to a companion file, with the ffmpeg the plugin's manifest names
+   * in `binaries.ffmpeg` for this platform. lameta's installer does not ship ffmpeg, so a
+   * plugin that calls `run` carries its own.
+   *  - input  = the selected file (default) OR companion `inputRelPath`
    *  - output  = companion `outputRelPath` (same allowlist + atomic tmp+rename as
    *              `companions.writeBytes`; ffmpeg writes the tmp, the host renames it into
    *              place on success). Give it a real extension for the container you want:

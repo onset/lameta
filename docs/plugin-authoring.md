@@ -50,10 +50,16 @@ Distributed as a **`.lmplug`** file — this is just a zip with a different exte
   minLametaVersion: "3.6.0", // optional, informational
 
   // Optional capabilities you ask the host for. The known permissions are "companionFiles"
-  // (see "Companion files" below), "ffmpeg", "saveFile" (see "Saving a file where the user
-  // chooses") and "projectSettings" (see "Project settings"); anything else is a validation
-  // error.
+  // (see "Companion files" below), "ffmpeg" (see "Converting media with ffmpeg"), "saveFile"
+  // (see "Saving a file where the user chooses") and "projectSettings" (see "Project
+  // settings"); anything else is a validation error.
   permissions: ["companionFiles"],
+
+  // OPTIONAL: the platforms this package is built for. Omit it if the package runs everywhere.
+  platforms: ["win32-x64"],
+  // OPTIONAL: native programs the package carries, by platform (see "Converting media with
+  // ffmpeg").
+  binaries: { ffmpeg: { "win32-x64": "bin/ffmpeg.exe" } },
 
   // A plugin contributes tabs by declaring a TAB PROVIDER: a hidden page lameta loads once and
   // asks, on every file selection, which tabs to show for that file (see "Tab provider" below).
@@ -298,6 +304,75 @@ if (saved) showMessage(`Saved ${fileName}`);
   a plugin which folder the user saved into.
 - The write is atomic (a temp file beside the target, then a rename), like companion writes.
 
+## Converting media with ffmpeg (`permissions: ["ffmpeg"]`)
+
+```ts
+api.ffmpeg.probe(relPath?): Promise<FfprobeResult>
+api.ffmpeg.run({ inputRelPath?, outputRelPath, args, inputArgs?, onProgress? }): Promise<void>
+```
+
+Both take the selected file by default, or a companion path, under the same rules as
+`api.companions`; `run` writes its output to a companion path. `probe` uses the ffprobe that
+lameta ships. lameta does **not** ship ffmpeg, so a plugin that calls `run` carries its own
+ffmpeg in its package and names it in the manifest:
+
+```json5
+{
+  platforms: ["darwin-arm64", "darwin-x64"],
+  binaries: {
+    ffmpeg: {
+      "win32-x64": "bin/ffmpeg.exe",
+      "darwin-arm64": "bin/ffmpeg",
+      "darwin-x64": "bin/ffmpeg",
+    },
+  },
+}
+```
+
+- **Platform keys** are `<platform>-<arch>` as Node reports them: `win32-x64`, `win32-arm64`,
+  `darwin-x64`, `darwin-arm64`, `linux-x64`, `linux-arm64`. Any other key is a manifest error.
+- **`binaries.ffmpeg`** maps a platform key to a path relative to your plugin folder, with `/`
+  or `\` separators. A path that is absolute or contains `..` is a manifest error. `ffmpeg` is
+  the only binary name lameta knows.
+- **Make one `.lmplug` per platform.** ffmpeg is large, so each package carries only the
+  ffmpeg for its own platform, and its `platforms` lists the platforms that package is for. The
+  `binaries` map can name every platform's path, so all your packages can share one manifest
+  apart from `platforms`. A macOS universal ffmpeg can serve both `darwin-arm64` and
+  `darwin-x64` from one file, as above.
+- **`platforms`** stops a package from being used on a computer it was not built for. lameta
+  refuses to install such a package, and shows a package that is already in the plugins folder
+  as an error in File → Plugins…. Both messages name the package's platforms. Without
+  `platforms`, lameta installs the package everywhere.
+- **Which ffmpeg runs.** `ffmpeg.run` runs the ffmpeg your manifest names for the current
+  platform. If you name one and the file is missing, `run` rejects with an error that names the
+  missing path. If you name none for this platform, `run` uses the ffmpeg in a lameta
+  development checkout when there is one, and otherwise rejects with "This plugin does not
+  include ffmpeg for this platform".
+- **Installing.** lameta asks the user nothing about your binaries. It refuses to install a
+  package whose manifest names a binary for this computer's platform that the package does not
+  contain, and the message names the missing path. On macOS and Linux it then prepares that
+  binary as described under **Running**, before it replaces any installed copy of your plugin;
+  if that fails, the install fails and the installed copy is kept.
+- **Running.** On macOS and Linux, each time `ffmpeg.run` runs a binary, lameta first sets it
+  to mode `755`, because a zip made on Windows records no Unix permissions. On
+  macOS it also removes the `com.apple.quarantine` attribute, so Gatekeeper does not block it. If
+  that step fails, `run` rejects. This applies to the Developer plugin folder too, so you need
+  not `chmod` your ffmpeg there. On Windows nothing extra happens.
+- **Older lameta versions** ignore `platforms` and `binaries`, so they install a package on
+  any platform and `run` fails there for lack of ffmpeg.
+
+### Licensing the ffmpeg you ship
+
+ffmpeg is licensed under the LGPL, or under the GPL when it is built with GPL components such
+as libx264, and most prebuilt ffmpeg binaries are GPL builds. Your package distributes that
+ffmpeg as a separate executable beside your plugin, so the package must carry what its license
+requires:
+
+- Put ffmpeg's license text beside the binary in your package (e.g. `bin/ffmpeg.LICENSE`).
+- Say where its exact source code can be had: a link to the source of the build you ship (the
+  build provider's page or tag), in that file or in a `bin/README`.
+- State the version and the build's configuration, or link to the build's page that does.
+
 ## Project settings (`permissions: ["projectSettings"]`)
 
 Some settings belong to the project rather than to one file or one user: which font each column
@@ -535,7 +610,3 @@ persists them to a sidecar. Build its `.lmplug` with `node package-plugin.mjs`.
 - **Deliberately not included in this version** (ask if you need them): a
   `companions.watch` event API (poll `companions.stat()` instead), and `durationMs` in the
   file context (read it from your media element).
-- **`ffmpeg.run` needs an ffmpeg that lameta's installer does not ship.** The installer
-  includes ffprobe, so `ffmpeg.probe` works everywhere, but not ffmpeg itself, so
-  `ffmpeg.run` works only where `ffmpeg-ffprobe-static`'s ffmpeg is present (a development
-  checkout). A plugin that converts media should carry its own converter.

@@ -1,10 +1,27 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as fs from "fs-extra";
 import * as os from "os";
 import * as Path from "path";
 import { observable } from "mobx";
 import { PluginHostBridge, PluginBridgeOptions, PluginHostServices } from "./PluginHostBridge";
 import { PluginInitContext } from "./PluginApiTypes";
+import { currentPlatformKey } from "./PluginManifest";
+
+// lameta's own ffmpeg/ffprobe paths come from the app path over IPC; tests choose them here.
+const ffmpegPaths = vi.hoisted(() => ({ ffmpeg: "", ffprobe: "" }));
+vi.mock("../other/ffprobePath", () => ({
+  getFfmpegPath: () => ffmpegPaths.ffmpeg,
+  getFfprobePath: () => ffmpegPaths.ffprobe || "no-such-ffprobe",
+}));
+
+// Records which binaries ffmpeg.run prepares; preparation itself is tested in pluginBinaries.spec.ts.
+const preparedBinaries = vi.hoisted(() => [] as string[]);
+vi.mock("./pluginBinaries", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./pluginBinaries")>()),
+  prepareBinary: async (file: string) => {
+    preparedBinaries.push(file);
+  },
+}));
 
 // Contract tests for the host side of the plugin postMessage API. The renderer's global
 // `window` is replaced by a mock (src/vitest.mock.ts) whose addEventListener is a vi.fn(), so we
@@ -363,6 +380,48 @@ describe("PluginHostBridge — ffmpeg permission gating & validation", () => {
     const h = makeHarness(mediaOpts(["companionFiles", "ffmpeg"]));
     const r = await h.raw("ffmpeg.run", [{ outputRelPath: "../escape.wav", args: ["-vn"] }]);
     expect(r.error).toMatch(/not an allowed companion path|outside the file/);
+  });
+});
+
+describe("PluginHostBridge — which ffmpeg ffmpeg.run spawns", () => {
+  const platformKey = currentPlatformKey();
+  const exe = process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg";
+  const run = (h: Harness) =>
+    h.raw("ffmpeg.run", [{ outputRelPath: "foo_StandardAudio.wav", args: ["-vn"] }]);
+
+  beforeEach(() => {
+    ffmpegPaths.ffmpeg = Path.join(tmp, "no-lameta-ffmpeg", exe);
+  });
+
+  // Which path wins in each case is resolveFfmpegPath's job (pluginBinaries.spec.ts); these
+  // check that the bridge hands it the plugin's folder and manifest and spawns the result.
+  it("prepares and spawns the plugin's own ffmpeg when its manifest names one for this platform", async () => {
+    const pluginDirectory = Path.join(tmp, "plugin");
+    const own = Path.join(pluginDirectory, "bin", exe);
+    // Not a real executable: the spawn fails, and its error names the file it tried to run.
+    fs.outputFileSync(own, "not an executable");
+    const h = makeHarness({
+      ...mediaOpts(["companionFiles", "ffmpeg"]),
+      pluginDirectory,
+      binaries: { ffmpeg: { [platformKey]: `bin/${exe}` } },
+    });
+    preparedBinaries.length = 0;
+    const r = await run(h);
+    expect(r.error).toContain(own);
+    expect(preparedBinaries).toEqual([own]);
+    expect(fs.existsSync(Path.join(tmp, "foo_StandardAudio.wav"))).toBe(false);
+  });
+
+  it("spawns lameta's ffmpeg when the plugin names none for this platform", async () => {
+    ffmpegPaths.ffmpeg = Path.join(tmp, "lameta-ffmpeg", exe);
+    fs.outputFileSync(ffmpegPaths.ffmpeg, "not an executable");
+    const otherPlatform = platformKey === "darwin-arm64" ? "win32-x64" : "darwin-arm64";
+    const h = makeHarness({
+      ...mediaOpts(["companionFiles", "ffmpeg"]),
+      pluginDirectory: Path.join(tmp, "plugin"),
+      binaries: { ffmpeg: { [otherPlatform]: "bin/ffmpeg" } },
+    });
+    expect((await run(h)).error).toContain(ffmpegPaths.ffmpeg);
   });
 });
 

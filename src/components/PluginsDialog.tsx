@@ -10,8 +10,9 @@ import Path from "path";
 import fs from "fs-extra";
 import extract from "extract-zip";
 import { getPath } from "../other/windowIpc";
-import pluginManager, { PluginRecord } from "../plugins/PluginManager";
-import { parsePluginManifest } from "../plugins/PluginManifest";
+import pluginManager, { platformMismatchMessage, PluginRecord } from "../plugins/PluginManager";
+import { currentPlatformKey, parsePluginManifest } from "../plugins/PluginManifest";
+import { missingBinaryMessage, prepareBinariesForPlatform } from "../plugins/pluginBinaries";
 import { asyncTrash } from "../other/crossPlatformUtilities";
 import { NotifyError, NotifyWarning } from "./Notify";
 import { lameta_dark_green } from "../containers/theme";
@@ -80,6 +81,22 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
       NotifyError(i18n._(t`The plugin's manifest has problems:`) + "\n" + result.errors.join("\n"));
       return;
     }
+    const platformMismatch = platformMismatchMessage(result.manifest);
+    if (platformMismatch) {
+      NotifyError(platformMismatch);
+      return;
+    }
+
+    const platformKey = currentPlatformKey();
+    const missingBinary = missingBinaryMessage(pluginFolder, result.manifest.binaries, platformKey);
+    if (missingBinary) {
+      NotifyError(missingBinary);
+      return;
+    }
+    // While the package is still in the staging folder, so that a failure leaves an installed
+    // copy untouched. The staging folder is on the same volume as the plugins folder, so the move
+    // below is a rename that keeps file modes and extended attributes.
+    await prepareBinariesForPlatform(pluginFolder, result.manifest.binaries, platformKey);
 
     const id = result.manifest!.id;
     const target = Path.join(getPath("userData"), "plugins", id);
