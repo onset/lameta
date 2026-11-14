@@ -70,6 +70,9 @@ export type TabProviderHandler = (
   query: TabProviderQuery,
 ) => TabDescriptor[] | Promise<TabDescriptor[]>;
 
+/** How often `lameta:ready` is re-posted until the host answers with `lameta:init`. */
+export const READY_RESEND_MS = 150;
+
 // Shared plumbing: a pending-response map + a `request()` and the typed `api` built on it.
 function makeApiPlumbing() {
   let nextId = 1;
@@ -184,6 +187,7 @@ export function connectToLameta(timeoutMs = 10000): Promise<LametaConnection> {
 
     let initTimer: any = setTimeout(() => {
       if (!connected) {
+        clearInterval(readyTimer);
         window.removeEventListener("message", onMessage);
         reject(new Error("Timed out waiting for lameta:init from host"));
       }
@@ -231,9 +235,14 @@ export function connectToLameta(timeoutMs = 10000): Promise<LametaConnection> {
     }
 
     window.addEventListener("message", onMessage);
-    // Announce we're ready; the host replies with lameta:init (and also re-sends it on our load,
-    // so a missed early ready self-heals).
-    window.parent.postMessage({ type: "lameta:ready" }, "*");
+    // Announce we're ready, and keep announcing until lameta:init arrives: the host's listener
+    // may not exist yet when the first `ready` is posted.
+    const announce = () => window.parent.postMessage({ type: "lameta:ready" }, "*");
+    announce();
+    const readyTimer = setInterval(() => {
+      if (connected) clearInterval(readyTimer);
+      else announce();
+    }, READY_RESEND_MS);
   });
 }
 

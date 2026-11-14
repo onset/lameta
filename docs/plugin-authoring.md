@@ -334,7 +334,7 @@ request, so recording works with no setup on your side — just call
 
 ## The handshake
 
-1. Your page loads and posts `{type:"lameta:ready"}` to the parent (the client kit does this).
+1. Your page loads and posts `{type:"lameta:ready"}` to the parent (the client kit does this, and repeats it every 150 ms until `lameta:init` arrives).
 2. lameta replies with `{type:"lameta:init", context}`.
 3. API calls are `{type:"lameta:request", id, method, params}` → `{type:"lameta:response", id, result|error}`.
 
