@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import { Trans } from "@lingui/react/macro";
 import { PluginHostBridge } from "../plugins/PluginHostBridge";
 import { pluginAssetUrl } from "../plugins/pluginScheme";
+import { PluginBinaries } from "../plugins/PluginManifest";
 import { pluginHostServices } from "../plugins/pluginHostServices";
 import pluginIcon from "@assets/plugin.svg";
 import {
@@ -19,6 +20,8 @@ export interface PluginTabPanelProps {
   /** Manifest `infoUrl` (required); the corner badge is an "About Plugin: <name>" link to it. */
   pluginInfoUrl: string;
   pluginDir: string;
+  /** The manifest's `binaries`; `ffmpeg.run` spawns the plugin's own ffmpeg from it. */
+  binaries?: PluginBinaries;
   entry: string;
   apiVersion: number;
   /** the plugin's granted manifest permissions, e.g. ["companionFiles"]. */
@@ -107,6 +110,8 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (pro
       folderDirectory: props.folderDirectory,
       pluginId: props.pluginId,
       permissions: props.permissions,
+      pluginDirectory: props.pluginDir,
+      binaries: props.binaries,
       onSelectFile: props.onSelectFile,
       pluginDisplayName: props.pluginName,
       host: pluginHostServices,

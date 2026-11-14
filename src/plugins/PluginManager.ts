@@ -10,8 +10,40 @@ import Path from "path";
 import fs from "fs-extra";
 import { getPath } from "../other/windowIpc";
 import userSettings from "../other/UserSettings";
-import { parsePluginManifest, PluginManifest } from "./PluginManifest";
+import { i18n } from "@lingui/core";
+import { t } from "@lingui/core/macro";
+import {
+  currentPlatformKey,
+  parsePluginManifest,
+  ParseManifestResult,
+  PluginManifest,
+  supportsPlatform,
+} from "./PluginManifest";
 import { MatchablePlugin } from "./pluginMatching";
+
+/** The message shown when a package's `platforms` list excludes this computer, or undefined
+ * when the package can run here. */
+export function platformMismatchMessage(
+  manifest: PluginManifest,
+  platformKey: string = currentPlatformKey(),
+): string | undefined {
+  if (supportsPlatform(manifest, platformKey)) return undefined;
+  const platforms = (manifest.platforms || []).join(", ");
+  return i18n._(
+    t`This plugin package is for ${platforms}, but this computer is ${platformKey}. Get the package made for ${platformKey}.`,
+  );
+}
+
+/** Parse a manifest and treat a package built for another platform as a manifest error. */
+export function parseManifestForThisPlatform(
+  text: string,
+  platformKey: string = currentPlatformKey(),
+): ParseManifestResult {
+  const result = parsePluginManifest(text);
+  if (result.errors) return result;
+  const mismatch = platformMismatchMessage(result.manifest, platformKey);
+  return mismatch ? { errors: [mismatch] } : result;
+}
 
 export type PluginSource = "user" | "dev";
 
@@ -109,7 +141,7 @@ export class PluginManager {
     let record: PluginRecord;
     try {
       const text = fs.readFileSync(manifestPath, "utf8");
-      const result = parsePluginManifest(text);
+      const result = parseManifestForThisPlatform(text);
       if (result.errors) {
         record = {
           id: Path.basename(dir),
@@ -205,7 +237,7 @@ export class PluginManager {
       if (manifestPath) {
         try {
           const text = fs.readFileSync(manifestPath, "utf8");
-          const result = parsePluginManifest(text);
+          const result = parseManifestForThisPlatform(text);
           if (result.errors) {
             record.manifest = undefined;
             record.errors = result.errors;

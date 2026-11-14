@@ -129,6 +129,8 @@ class TabProviderHost {
         folderDirectory: "",
         pluginId: record.id,
         permissions: record.manifest!.permissions || [],
+        pluginDirectory: record.directory,
+        binaries: record.manifest!.binaries,
         pluginDisplayName: record.manifest!.name,
         host: pluginHostServices,
       });

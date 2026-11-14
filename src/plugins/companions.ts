@@ -49,20 +49,26 @@ export function isAllowedCompanionFirstSegment(fileName: string, segment: string
 }
 
 /**
+ * True if `relPath` is a relative path that stays inside the folder it is relative to: not
+ * absolute (no leading slash, no drive letter), and no empty, "." or ".." segment. "\" and "/"
+ * are equivalent.
+ */
+export function isSafeRelativePath(relPath: string): boolean {
+  if (typeof relPath !== "string" || relPath.length === 0) return false;
+  const normalized = relPath.replace(/\\/g, "/");
+  if (normalized.startsWith("/") || /^[a-z]:/i.test(normalized)) return false;
+  return normalized.split("/").every((s) => s !== "" && s !== "." && s !== "..");
+}
+
+/**
  * True if `relPath` (relative to the selected file's directory) names an allowed companion of
  * `fileName` under the generic prefix rule. Case-insensitive; "\" and "/" are equivalent.
  */
 export function isAllowedCompanionPath(fileName: string, relPath: string): boolean {
-  if (typeof relPath !== "string" || relPath.length === 0) return false;
-  const normalized = relPath.replace(/\\/g, "/");
-  // Reject absolute paths in either flavor (leading slash or a drive letter).
-  if (normalized.startsWith("/") || /^[a-z]:/i.test(normalized)) return false;
-
-  const segments = normalized.split("/");
+  if (!isSafeRelativePath(relPath)) return false;
+  const segments = relPath.replace(/\\/g, "/").split("/");
   // At most one directory level.
-  if (segments.length < 1 || segments.length > 2) return false;
-  // Reject empty segments (trailing slash, "//") and any traversal.
-  if (segments.some((s) => s === "" || s === "." || s === "..")) return false;
+  if (segments.length > 2) return false;
 
   // The first segment must anchor on the selected file's name-stem. The second segment (if
   // present) may be any non-empty file name — already guaranteed non-empty above.

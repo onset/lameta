@@ -486,6 +486,7 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
                 pluginName={record?.manifest?.name || m.pluginId}
                 pluginInfoUrl={record?.manifest?.infoUrl ?? ""}
                 pluginDir={record?.directory || ""}
+                binaries={record?.manifest?.binaries}
                 entry={m.entry}
                 tabId={m.tab.id}
                 apiVersion={record?.manifest?.apiVersion ?? 1}
