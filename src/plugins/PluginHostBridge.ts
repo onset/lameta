@@ -26,23 +26,19 @@ import {
   isValidSidecarName,
   DEFAULT_SIDECAR_NAME,
 } from "./sidecar";
+import { getFfmpegPath, getFfprobePath } from "../other/ffprobePath";
 import { resolveCompanionPath, isAllowedCompanionPath } from "./companions";
 
-// Lazily require & configure the bundled ffmpeg/ffprobe binaries, once. Kept out of module
+// Lazily require & configure fluent-ffmpeg with the bundled binaries, once. Kept out of module
 // scope (and behind the first ffmpeg.* call) so importing the bridge — e.g. in unit tests that
-// never touch ffmpeg — doesn't pull in fluent-ffmpeg or resolve the static binary paths.
+// never touch ffmpeg — doesn't pull in fluent-ffmpeg. The binary paths come from the app
+// directory, because the static package's own paths point into dist/ after bundling.
 let ffmpegLib: any = null;
 function getFfmpeg(): any {
   if (ffmpegLib) return ffmpegLib;
   const ffmpeg = require("fluent-ffmpeg");
-  const statics = require("ffmpeg-ffprobe-static");
-  // For a packaged app the binaries are unpacked out of the asar (see MediaStats.tsx).
-  const unpack = (p: string | null | undefined) =>
-    p ? p.replace("app.asar", "app.asar.unpacked") : p;
-  const ffmpegPath = unpack(statics.ffmpegPath);
-  const ffprobePath = unpack(statics.ffprobePath);
-  if (ffmpegPath) ffmpeg.setFfmpegPath(ffmpegPath);
-  if (ffprobePath) ffmpeg.setFfprobePath(ffprobePath);
+  ffmpeg.setFfmpegPath(getFfmpegPath());
+  ffmpeg.setFfprobePath(getFfprobePath());
   ffmpegLib = ffmpeg;
   return ffmpeg;
 }
