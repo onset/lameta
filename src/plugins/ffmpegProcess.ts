@@ -38,7 +38,10 @@ export function runFfmpegProcess(
   ffmpegPath: string,
   args: string[],
   onProgress: (seconds: number) => void,
-  spawn: SpawnProcess = (command, a) => nodeSpawn(command, a, { windowsHide: true }),
+  // Only stderr is read. stdin and stdout are not connected: a pipe that nothing reads fills up,
+  // and ffmpeg then blocks, e.g. when a plugin passes `-progress pipe:1`.
+  spawn: SpawnProcess = (command, a) =>
+    nodeSpawn(command, a, { windowsHide: true, stdio: ["ignore", "ignore", "pipe"] }),
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     let stderr = "";

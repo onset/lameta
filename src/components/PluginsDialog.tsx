@@ -87,6 +87,12 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
       return;
     }
 
+    // Make the package's binaries runnable while it is still in the staging folder, so a failure
+    // here leaves an already-installed copy of the plugin untouched. The staging folder is on the
+    // same volume as the plugins folder, so the move below is a rename that keeps file modes and
+    // extended attributes.
+    await prepareInstalledBinaries(pluginFolder, result.manifest.binaries);
+
     const id = result.manifest!.id;
     const target = Path.join(getPath("userData"), "plugins", id);
 
@@ -104,13 +110,6 @@ async function installPluginFromZip(zipPath: string): Promise<void> {
 
     await fs.ensureDir(Path.dirname(target));
     await fs.move(pluginFolder, target, { overwrite: true });
-    try {
-      await prepareInstalledBinaries(target, result.manifest.binaries);
-    } catch (e) {
-      // A plugin whose binaries cannot run must not stay installed.
-      await fs.remove(target).catch(() => {});
-      throw e;
-    }
     pluginManager.reload();
   } catch (e: any) {
     NotifyError(i18n._(t`Could not install the plugin.`) + " " + (e?.message || e));

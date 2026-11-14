@@ -69,6 +69,15 @@ describe("runFfmpegProcess", () => {
     );
   });
 
+  it("finishes when the process writes more to stdout than a pipe holds", async () => {
+    // Node stands in for an ffmpeg that was given `-progress pipe:1`.
+    const script =
+      "process.stdout.write('x'.repeat(5e6)); process.stderr.write('time=00:00:01.00 ');";
+    const progress: number[] = [];
+    await runFfmpegProcess(process.execPath, ["-e", script], (s) => progress.push(s));
+    expect(progress).toEqual([1]);
+  }, 20000);
+
   it("rejects, naming the binary, when spawn throws or emits an error", async () => {
     await expect(
       runFfmpegProcess("/p/not-exe", [], () => {}, () => {
