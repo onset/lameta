@@ -44,7 +44,7 @@ import { getSessionFormClass } from "./session/SessionFormVariant";
 import { CloudFilePanel } from "./CloudFilePanel";
 import { File } from "../model/file/File";
 import { navigationState } from "../navigation/NavigationState";
-import pluginManager from "../plugins/PluginManager";
+import pluginManager, { bridgePluginFor } from "../plugins/PluginManager";
 import { computeDefaultIndex } from "../plugins/pluginMatching";
 import tabProviderHost, { MatchedProviderTab } from "../plugins/tabProviderHost";
 import { localizeLabel } from "../plugins/PluginManifest";
@@ -472,26 +472,21 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
 
     const pluginPanels = matchedPluginTabs.map((m) => {
       const record = pluginManager.getById(m.pluginId);
+      // A plugin removed since its provider answered has no record left to run it from.
+      const plugin = record && bridgePluginFor(record);
       return (
         <TabPanel key={pluginTabId(m)}>
           {/* Like the built-in viewers: a plugin would read the file, which downloads a
               cloud-only placeholder in full, so offer the CloudFilePanel instead. */}
           {previewBlocked ? (
             <CloudFilePanel file={file} />
-          ) : (
+          ) : record && plugin ? (
             <ErrorBoundary>
               <PluginTabPanel
-                pluginId={m.pluginId}
-                pluginVersion={m.pluginVersion}
-                pluginName={record?.manifest?.name || m.pluginId}
-                pluginInfoUrl={record?.manifest?.infoUrl ?? ""}
-                pluginDir={record?.directory || ""}
-                binaries={record?.manifest?.binaries}
+                plugin={plugin}
                 entry={m.entry}
                 tabId={m.tab.id}
-                apiVersion={record?.manifest?.apiVersion ?? 1}
-                permissions={m.permissions}
-                reloadCounter={record?.reloadCounter ?? 0}
+                reloadCounter={record.reloadCounter}
                 filePath={path}
                 fileName={filename}
                 fileExtension={extNoDot}
@@ -502,12 +497,12 @@ const FileTabs: React.FunctionComponent<IProps & React.HTMLAttributes<HTMLDivEle
                 folderDirectory={props.folder.directory}
                 languageCode={currentUILanguage}
                 appVersion={pkg.version}
-                onSelectFile={(relPath, options) =>
-                  handlePluginSelectFile(m.pluginId, relPath, options.tabId)
+                onSelectFile={(relPath, tabId) =>
+                  handlePluginSelectFile(m.pluginId, relPath, tabId)
                 }
               />
             </ErrorBoundary>
-          )}
+          ) : null}
         </TabPanel>
       );
     });

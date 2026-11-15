@@ -181,6 +181,17 @@ export interface FfprobeResult {
   }>;
 }
 
+/** A file type in the Save dialog's list, e.g. `{ name: "CSV", extensions: ["csv"] }`. */
+export interface SaveDialogFilter {
+  name: string;
+  extensions: string[];
+}
+
+/** The options of `selectFile`. */
+export interface SelectFileOptions {
+  tabId?: string;
+}
+
 /**
  * The RPC surface a plugin can call on the host. In the iframe, a plugin obtains an
  * object implementing this interface from `connectToLameta()` in the client kit; each
@@ -219,7 +230,7 @@ export interface PluginHostApiV1 {
    * `options.tabId` opens one of this plugin's own tabs: an id its tab provider returns for the
    * newly selected file. If the provider does not return that id, the file's default tab shows.
    */
-  selectFile(relPath: string, options?: { tabId?: string }): Promise<boolean>;
+  selectFile(relPath: string, options?: SelectFileOptions): Promise<boolean>;
 
   /**
    * Show lameta's native Save dialog, titled with the plugin's name, and write `bytes` to the
@@ -237,7 +248,7 @@ export interface PluginHostApiV1 {
     suggestedName: string,
     bytes: ArrayBuffer | ArrayBufferView,
     options?: {
-      filters?: { name: string; extensions: string[] }[];
+      filters?: SaveDialogFilter[];
       rememberFolderKey?: string;
     },
   ): Promise<{ saved: boolean; fileName?: string }>;

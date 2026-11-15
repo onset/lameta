@@ -17,6 +17,7 @@ import {
   FfprobeResult,
   PluginInitContext,
   PluginTabProviderContext,
+  SaveDialogFilter,
   TabDescriptor,
 } from "./PluginApiTypes";
 import {
@@ -27,7 +28,7 @@ import {
   DEFAULT_SIDECAR_NAME,
 } from "./sidecar";
 import { getFfmpegPath, getFfprobePath } from "../other/ffprobePath";
-import { currentPlatformKey, PluginBinaries } from "./PluginManifest";
+import { currentPlatformKey, PluginManifest } from "./PluginManifest";
 import { prepareBinary, resolveFfmpegPath } from "./pluginBinaries";
 import { ffmpegArguments, runFfmpegProcess } from "./ffmpegProcess";
 import { resolveCompanionPath, isAllowedCompanionPath } from "./companions";
@@ -53,12 +54,6 @@ function numOrUndef(v: any): number | undefined {
   if (v === undefined || v === null) return undefined;
   const n = typeof v === "number" ? v : Number(v);
   return Number.isFinite(n) ? n : undefined;
-}
-
-/** A filter in the Save dialog's file-type list, as Electron's dialog takes it. */
-export interface SaveDialogFilter {
-  name: string;
-  extensions: string[];
 }
 
 /**
@@ -100,6 +95,12 @@ function validateSaveFilters(filters: any): SaveDialogFilter[] | undefined {
   });
 }
 
+/** Throw unless `options` is absent or an object. */
+function assertOptionsObject(method: string, options: unknown): void {
+  if (options !== undefined && options !== null && typeof options !== "object")
+    throw new Error(`${method}: options must be an object`);
+}
+
 /** Accept a bare file name only; reject anything that names a folder or climbs out of one. */
 function isBareFileName(name: string): boolean {
   const normalized = name.replace(/\\/g, "/");
@@ -125,25 +126,19 @@ export interface PluginBridgeOptions {
   fileName: string;
   /** owning folder directory — sidecars live under here. */
   folderDirectory: string;
-  pluginId: string;
-  /** the plugin's granted manifest permissions, e.g. ["companionFiles"]. */
-  permissions: string[];
-  /** The plugin's folder (installed or the Developer plugin folder); `binaries` paths are
-   * relative to it. */
-  pluginDirectory?: string;
-  /** The manifest's `binaries`; `ffmpeg.run` spawns `binaries.ffmpeg[<this platform>]`. */
-  binaries?: PluginBinaries;
+  /** The fields of the plugin's PluginRecord that the bridge reads. `directory` is the plugin's
+   * folder (installed or the Developer plugin folder), which `manifest.binaries` paths are
+   * relative to; `manifest.permissions` are the granted permissions, and `manifest.name` starts
+   * the Save dialog's title. */
+  plugin: { id: string; directory: string; manifest: PluginManifest };
   /**
    * Host callback for the `selectFile` API: make `relPath` (relative to the owning folder)
    * the selected file, re-driving the file-pane tabs, and open this plugin's tab `tabId` when
    * given. Returns true if a file was selected. Absent in contexts that don't support
    * selection (then `selectFile` rejects).
    */
-  onSelectFile?: (relPath: string, options: { tabId?: string }) => Promise<boolean> | boolean;
-  /** The plugin's user-facing name; the Save dialog's title starts with it. */
-  pluginDisplayName?: string;
-  /** Needed by `saveFile` and the project-settings calls, which reject without it. */
-  host?: PluginHostServices;
+  onSelectFile?: (relPath: string, tabId?: string) => Promise<boolean> | boolean;
+  host: PluginHostServices;
 }
 
 export class PluginHostBridge {
@@ -354,7 +349,7 @@ export class PluginHostBridge {
         }
         case "readSidecar": {
           const name = params[0] || DEFAULT_SIDECAR_NAME;
-          const path = getSidecarPath(this.sFolderDir, this.opts.pluginId, this.sFileName, name);
+          const path = getSidecarPath(this.sFolderDir, this.opts.plugin.id, this.sFileName, name);
           const result = (await fs.pathExists(path)) ? await fs.readFile(path, "utf8") : null;
           this.post({ type: "lameta:response", id, result });
           return;
@@ -364,7 +359,7 @@ export class PluginHostBridge {
           const name = params[1] || DEFAULT_SIDECAR_NAME;
           if (typeof contents !== "string")
             throw new Error("writeSidecar: contents must be a string");
-          const path = getSidecarPath(this.sFolderDir, this.opts.pluginId, this.sFileName, name);
+          const path = getSidecarPath(this.sFolderDir, this.opts.plugin.id, this.sFileName, name);
           await fs.ensureDir(Path.dirname(path));
           await fs.writeFile(path, contents, "utf8");
           this.post({ type: "lameta:response", id, result: undefined });
@@ -379,14 +374,13 @@ export class PluginHostBridge {
           if (!isBareFileName(relPath))
             throw new Error(`selectFile: "${relPath}" must be a bare file name in the folder`);
           const options = params[1];
-          if (options !== undefined && options !== null && typeof options !== "object")
-            throw new Error("selectFile: options must be an object");
+          assertOptionsObject("selectFile", options);
           const tabId = options?.tabId;
           if (tabId !== undefined && (typeof tabId !== "string" || tabId.length === 0))
             throw new Error("selectFile: tabId must be a non-empty string");
           if (!this.opts.onSelectFile)
             throw new Error("selectFile is not supported in this context");
-          const selected = await this.opts.onSelectFile(relPath, tabId ? { tabId } : {});
+          const selected = await this.opts.onSelectFile(relPath, tabId);
           this.post({ type: "lameta:response", id, result: !!selected });
           return;
         }
@@ -413,7 +407,7 @@ export class PluginHostBridge {
           return;
         }
         case "listSidecars": {
-          const dir = getPluginDataDir(this.sFolderDir, this.opts.pluginId);
+          const dir = getPluginDataDir(this.sFolderDir, this.opts.plugin.id);
           let names: string[] = [];
           if (await fs.pathExists(dir)) {
             const entries = await fs.readdir(dir);
@@ -443,42 +437,42 @@ export class PluginHostBridge {
     bytes: any,
     options: any,
   ): Promise<{ saved: boolean; fileName?: string }> {
-    if (!this.opts.permissions.includes("saveFile"))
-      throw new Error("This plugin does not have the saveFile permission");
+    this.requirePermission("saveFile");
     if (typeof suggestedName !== "string" || suggestedName.length === 0)
       throw new Error("saveFile: suggestedName must be a non-empty string");
     if (!isBareFileName(suggestedName))
       throw new Error(`saveFile: "${suggestedName}" must be a bare file name`);
     if (!(bytes instanceof ArrayBuffer)) throw new Error("saveFile: bytes must be an ArrayBuffer");
-    if (options !== undefined && options !== null && typeof options !== "object")
-      throw new Error("saveFile: options must be an object");
+    assertOptionsObject("saveFile", options);
     const filters = validateSaveFilters(options?.filters);
     const key = options?.rememberFolderKey ?? DEFAULT_REMEMBER_FOLDER_KEY;
     if (typeof key !== "string" || !REMEMBER_FOLDER_KEY_REGEX.test(key))
       throw new Error(`saveFile: rememberFolderKey must match ${REMEMBER_FOLDER_KEY_REGEX}`);
     const host = this.opts.host;
-    if (!host) throw new Error("saveFile is not supported in this context");
-
-    const remembered = host.getSaveFolder(this.opts.pluginId, key);
+    const remembered = host.getSaveFolder(this.opts.plugin.id, key);
     const startFolder =
       remembered && (await fs.pathExists(remembered)) ? remembered : this.sFolderDir;
     const choice = await host.showSaveDialog({
-      pluginName: this.opts.pluginDisplayName || this.opts.pluginId,
+      pluginName: this.opts.plugin.manifest.name,
       defaultPath: startFolder ? Path.join(startFolder, suggestedName) : suggestedName,
       filters,
     });
     if (choice.canceled || !choice.filePath) return { saved: false };
     await this.writeFileAtomically(choice.filePath, Buffer.from(bytes));
-    host.setSaveFolder(this.opts.pluginId, key, Path.dirname(choice.filePath));
+    host.setSaveFolder(this.opts.plugin.id, key, Path.dirname(choice.filePath));
     return { saved: true, fileName: Path.basename(choice.filePath) };
   }
 
+  private requirePermission(permission: string): void {
+    if (!this.opts.plugin.manifest.permissions.includes(permission))
+      throw new Error(`This plugin does not have the ${permission} permission`);
+  }
+
   private projectSettingsPath(): string {
-    if (!this.opts.permissions.includes("projectSettings"))
-      throw new Error("This plugin does not have the projectSettings permission");
-    const projectDirectory = this.opts.host?.getProjectDirectory();
+    this.requirePermission("projectSettings");
+    const projectDirectory = this.opts.host.getProjectDirectory();
     if (!projectDirectory) throw new Error("No project is open");
-    return getProjectSettingsPath(projectDirectory, this.opts.pluginId);
+    return getProjectSettingsPath(projectDirectory, this.opts.plugin.id);
   }
 
   // The "companions.*" family: scoped access to files living beside the ACTUAL selected file
@@ -488,8 +482,7 @@ export class PluginHostBridge {
   // knowledge in the host). Called from inside handleRequest's try/catch, so throwing here
   // produces a normal error response.
   private async handleCompanionRequest(id: number, method: string, params: any[]) {
-    if (!this.opts.permissions.includes("companionFiles"))
-      throw new Error("This plugin does not have the companionFiles permission");
+    this.requirePermission("companionFiles");
     const companionDir = Path.dirname(this.sFilePath);
     const scopeFileName = this.sFileName;
     const resolve = (relPath: string) => resolveCompanionPath(companionDir, scopeFileName, relPath);
@@ -590,8 +583,7 @@ export class PluginHostBridge {
   // escape the selected file's directory family. Requires the "ffmpeg" permission. Called from
   // inside handleRequest's try/catch, so throwing here produces a normal error response.
   private async handleFfmpegRequest(id: number, method: string, params: any[]) {
-    if (!this.opts.permissions.includes("ffmpeg"))
-      throw new Error("This plugin does not have the ffmpeg permission");
+    this.requirePermission("ffmpeg");
     const companionDir = Path.dirname(this.sFilePath);
     const scopeFileName = this.sFileName;
     // Input default = the selected file; otherwise a validated companion.
@@ -669,8 +661,8 @@ export class PluginHostBridge {
     inputArgs: string[],
   ): Promise<void> {
     const ffmpegPath = resolveFfmpegPath({
-      pluginDirectory: this.opts.pluginDirectory,
-      binaries: this.opts.binaries,
+      pluginDirectory: this.opts.plugin.directory,
+      binaries: this.opts.plugin.manifest.binaries,
       platformKey: currentPlatformKey(),
       fallbackPath: getFfmpegPath,
     });

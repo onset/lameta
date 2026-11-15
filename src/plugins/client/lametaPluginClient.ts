@@ -130,14 +130,18 @@ function makeApiPlumbing() {
     readSidecar: (name?: string) => request("readSidecar", [name]),
     writeSidecar: (contents: string, name?: string) => request("writeSidecar", [contents, name]),
     listSidecars: () => request("listSidecars", []),
-    selectFile: (relPath: string, options?: { tabId?: string }) =>
+    selectFile: (relPath, options) =>
       request("selectFile", options ? [relPath, options] : [relPath]),
-    // The bytes are copied, not transferred, so the plugin's buffer stays usable after a save.
-    saveFile: (
-      suggestedName: string,
-      bytes: ArrayBuffer | ArrayBufferView,
-      options?: { filters?: { name: string; extensions: string[] }[]; rememberFolderKey?: string },
-    ) => request("saveFile", [suggestedName, toArrayBuffer(bytes), options]),
+    // The plugin's own ArrayBuffer is copied, not transferred, so it stays usable after a save.
+    // The copy that toArrayBuffer makes of a typed array or DataView is transferred.
+    saveFile: (suggestedName, bytes, options) => {
+      const buffer = toArrayBuffer(bytes);
+      return request(
+        "saveFile",
+        [suggestedName, buffer, options],
+        buffer === bytes ? undefined : [buffer],
+      );
+    },
     getProjectSettings: () => request("getProjectSettings", []),
     setProjectSettings: (value: unknown) => request("setProjectSettings", [value]),
     companions: {

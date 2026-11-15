@@ -20,6 +20,7 @@ import {
   supportsPlatform,
 } from "./PluginManifest";
 import { MatchablePlugin } from "./pluginMatching";
+import type { PluginBridgeOptions } from "./PluginHostBridge";
 
 /** The message shown when a package's `platforms` list excludes this computer, or undefined
  * when the package can run here. */
@@ -61,6 +62,14 @@ export interface PluginRecord {
   enabled: boolean;
   /** bumped by the dev watcher on file change; PluginTabPanel keys its iframe on it. observable. */
   reloadCounter: number;
+}
+
+/** The fields of `record` that a PluginHostBridge reads, or undefined when its manifest could not
+ * be loaded. */
+export function bridgePluginFor(record: PluginRecord): PluginBridgeOptions["plugin"] | undefined {
+  return (
+    record.manifest && { id: record.id, directory: record.directory, manifest: record.manifest }
+  );
 }
 
 const MANIFEST_FILENAMES = ["plugin.json5", "plugin.json"];

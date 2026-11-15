@@ -81,7 +81,7 @@ export function getPluginTabsForFile(
         result.push({
           pluginId: plugin.manifest.id,
           pluginVersion: plugin.manifest.version,
-          permissions: plugin.manifest.permissions ?? [],
+          permissions: plugin.manifest.permissions,
           tab,
         });
       }

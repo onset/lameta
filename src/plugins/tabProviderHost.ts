@@ -10,7 +10,7 @@
 import { PluginHostBridge } from "./PluginHostBridge";
 import { pluginHostServices } from "./pluginHostServices";
 import { pluginAssetUrl } from "./pluginScheme";
-import pluginManager, { PluginRecord } from "./PluginManager";
+import pluginManager, { bridgePluginFor, PluginRecord } from "./PluginManager";
 import { PluginTabMatch } from "./PluginManifest";
 import { tabMatchesFile } from "./pluginMatching";
 import { PluginTabProviderContext, TabDescriptor } from "./PluginApiTypes";
@@ -34,8 +34,6 @@ export interface TabProviderFolder {
 /** A tab a provider claimed for the selected file, plus the info the panel needs to load it. */
 export interface MatchedProviderTab {
   pluginId: string;
-  pluginVersion: string;
-  permissions: string[];
   /** the plugin's tabProvider.entry — the content iframe loads this and self-renders by tab id. */
   entry: string;
   tab: TabDescriptor;
@@ -114,7 +112,7 @@ class TabProviderHost {
         plugin: {
           id: record.id,
           version: record.manifest!.version,
-          grantedPermissions: [...(record.manifest!.permissions || [])],
+          grantedPermissions: [...record.manifest!.permissions],
         },
         ui: { languageCode: currentUILanguage, appVersion: pkg.version },
         role: "tabProvider",
@@ -127,11 +125,7 @@ class TabProviderHost {
         filePath: "",
         fileName: "",
         folderDirectory: "",
-        pluginId: record.id,
-        permissions: record.manifest!.permissions || [],
-        pluginDirectory: record.directory,
-        binaries: record.manifest!.binaries,
-        pluginDisplayName: record.manifest!.name,
+        plugin: bridgePluginFor(record)!,
         host: pluginHostServices,
       });
 
@@ -188,8 +182,6 @@ class TabProviderHost {
           const tabs = await p.bridge.getTabs({ file, folder });
           return tabs.map((tab) => ({
             pluginId: p.record.id,
-            pluginVersion: p.record.manifest!.version,
-            permissions: p.record.manifest!.permissions || [],
             entry: p.record.manifest!.tabProvider!.entry,
             tab,
           }));
