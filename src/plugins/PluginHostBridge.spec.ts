@@ -5,7 +5,7 @@ import * as Path from "path";
 import { observable } from "mobx";
 import { PluginHostBridge, PluginBridgeOptions, PluginHostServices } from "./PluginHostBridge";
 import { PluginInitContext } from "./PluginApiTypes";
-import { currentPlatformKey } from "./PluginManifest";
+import { currentPlatformKey, PluginBinaries } from "./PluginManifest";
 
 // lameta's own ffmpeg/ffprobe paths come from the app path over IPC; tests choose them here.
 const ffmpegPaths = vi.hoisted(() => ({ ffmpeg: "", ffprobe: "" }));
@@ -63,7 +63,16 @@ interface Harness {
 
 let nextReqId = 1;
 
-function makeHarness(opts: Partial<PluginBridgeOptions>): Harness {
+/** PluginBridgeOptions with the plugin's fields given one by one; makeHarness builds the
+ * `plugin` from them. */
+type HarnessOptions = Partial<Omit<PluginBridgeOptions, "plugin">> & {
+  permissions?: string[];
+  pluginDirectory?: string;
+  binaries?: PluginBinaries;
+  pluginDisplayName?: string;
+};
+
+function makeHarness(opts: HarnessOptions): Harness {
   const posted: { msg: any; transfer?: Transferable[] }[] = [];
   const contentWindow: any = {
     postMessage: (msg: any, _origin: string, transfer?: Transferable[]) =>
@@ -78,15 +87,35 @@ function makeHarness(opts: Partial<PluginBridgeOptions>): Harness {
     removeEventListener: () => {},
   };
 
+  const {
+    permissions = [],
+    pluginDirectory = "",
+    binaries,
+    pluginDisplayName = "org.test.plugin",
+    ...bridgeOpts
+  } = opts;
   const full: PluginBridgeOptions = {
     iframe,
     context: makeContext(),
     filePath: "",
     fileName: "foo.wav",
     folderDirectory: "",
-    pluginId: "org.test.plugin",
-    permissions: [],
-    ...opts,
+    host: fakeHost({ canceled: true }).host,
+    ...bridgeOpts,
+    plugin: {
+      id: "org.test.plugin",
+      directory: pluginDirectory,
+      manifest: {
+        id: "org.test.plugin",
+        name: pluginDisplayName,
+        version: "1.0.0",
+        apiVersion: 1,
+        infoUrl: "https://example.org/plugin",
+        permissions,
+        tabs: [],
+        binaries,
+      },
+    },
   };
 
   const callsBefore = (window.addEventListener as any).mock.calls.length;
@@ -130,7 +159,7 @@ afterEach(() => {
 });
 
 /** Options wired to a real media file at <tmp>/foo.wav with companionFiles granted. */
-function mediaOpts(perms: string[] = ["companionFiles"]): Partial<PluginBridgeOptions> {
+function mediaOpts(perms: string[] = ["companionFiles"]): HarnessOptions {
   const filePath = Path.join(tmp, "foo.wav");
   fs.writeFileSync(filePath, "MEDIA-BYTES");
   return {
@@ -584,11 +613,6 @@ describe("PluginHostBridge — saveFile", () => {
       (await h.raw("saveFile", ["out.csv", bytes(), { rememberFolderKey: "a/b" }])).error,
     ).toMatch(/rememberFolderKey/);
     expect(fake.dialogCalls.length).toBe(0);
-  });
-
-  it("rejects when the host provides no services", async () => {
-    const h = makeHarness(mediaOpts(["saveFile"]));
-    expect((await h.raw("saveFile", ["out.csv", bytes()])).error).toMatch(/not supported/);
   });
 });
 

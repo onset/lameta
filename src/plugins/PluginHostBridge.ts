@@ -28,7 +28,7 @@ import {
   DEFAULT_SIDECAR_NAME,
 } from "./sidecar";
 import { getFfmpegPath, getFfprobePath } from "../other/ffprobePath";
-import { currentPlatformKey, PluginBinaries } from "./PluginManifest";
+import { currentPlatformKey, PluginManifest } from "./PluginManifest";
 import { prepareBinary, resolveFfmpegPath } from "./pluginBinaries";
 import { ffmpegArguments, runFfmpegProcess } from "./ffmpegProcess";
 import { resolveCompanionPath, isAllowedCompanionPath } from "./companions";
@@ -126,14 +126,11 @@ export interface PluginBridgeOptions {
   fileName: string;
   /** owning folder directory — sidecars live under here. */
   folderDirectory: string;
-  pluginId: string;
-  /** the plugin's granted manifest permissions, e.g. ["companionFiles"]. */
-  permissions: string[];
-  /** The plugin's folder (installed or the Developer plugin folder); `binaries` paths are
-   * relative to it. */
-  pluginDirectory?: string;
-  /** The manifest's `binaries`; `ffmpeg.run` spawns `binaries.ffmpeg[<this platform>]`. */
-  binaries?: PluginBinaries;
+  /** The fields of the plugin's PluginRecord that the bridge reads. `directory` is the plugin's
+   * folder (installed or the Developer plugin folder), which `manifest.binaries` paths are
+   * relative to; `manifest.permissions` are the granted permissions, and `manifest.name` starts
+   * the Save dialog's title. */
+  plugin: { id: string; directory: string; manifest: PluginManifest };
   /**
    * Host callback for the `selectFile` API: make `relPath` (relative to the owning folder)
    * the selected file, re-driving the file-pane tabs, and open this plugin's tab `tabId` when
@@ -141,10 +138,7 @@ export interface PluginBridgeOptions {
    * selection (then `selectFile` rejects).
    */
   onSelectFile?: (relPath: string, tabId?: string) => Promise<boolean> | boolean;
-  /** The plugin's user-facing name; the Save dialog's title starts with it. */
-  pluginDisplayName?: string;
-  /** Needed by `saveFile` and the project-settings calls, which reject without it. */
-  host?: PluginHostServices;
+  host: PluginHostServices;
 }
 
 export class PluginHostBridge {
@@ -355,7 +349,7 @@ export class PluginHostBridge {
         }
         case "readSidecar": {
           const name = params[0] || DEFAULT_SIDECAR_NAME;
-          const path = getSidecarPath(this.sFolderDir, this.opts.pluginId, this.sFileName, name);
+          const path = getSidecarPath(this.sFolderDir, this.opts.plugin.id, this.sFileName, name);
           const result = (await fs.pathExists(path)) ? await fs.readFile(path, "utf8") : null;
           this.post({ type: "lameta:response", id, result });
           return;
@@ -365,7 +359,7 @@ export class PluginHostBridge {
           const name = params[1] || DEFAULT_SIDECAR_NAME;
           if (typeof contents !== "string")
             throw new Error("writeSidecar: contents must be a string");
-          const path = getSidecarPath(this.sFolderDir, this.opts.pluginId, this.sFileName, name);
+          const path = getSidecarPath(this.sFolderDir, this.opts.plugin.id, this.sFileName, name);
           await fs.ensureDir(Path.dirname(path));
           await fs.writeFile(path, contents, "utf8");
           this.post({ type: "lameta:response", id, result: undefined });
@@ -413,7 +407,7 @@ export class PluginHostBridge {
           return;
         }
         case "listSidecars": {
-          const dir = getPluginDataDir(this.sFolderDir, this.opts.pluginId);
+          const dir = getPluginDataDir(this.sFolderDir, this.opts.plugin.id);
           let names: string[] = [];
           if (await fs.pathExists(dir)) {
             const entries = await fs.readdir(dir);
@@ -455,32 +449,30 @@ export class PluginHostBridge {
     if (typeof key !== "string" || !REMEMBER_FOLDER_KEY_REGEX.test(key))
       throw new Error(`saveFile: rememberFolderKey must match ${REMEMBER_FOLDER_KEY_REGEX}`);
     const host = this.opts.host;
-    if (!host) throw new Error("saveFile is not supported in this context");
-
-    const remembered = host.getSaveFolder(this.opts.pluginId, key);
+    const remembered = host.getSaveFolder(this.opts.plugin.id, key);
     const startFolder =
       remembered && (await fs.pathExists(remembered)) ? remembered : this.sFolderDir;
     const choice = await host.showSaveDialog({
-      pluginName: this.opts.pluginDisplayName || this.opts.pluginId,
+      pluginName: this.opts.plugin.manifest.name,
       defaultPath: startFolder ? Path.join(startFolder, suggestedName) : suggestedName,
       filters,
     });
     if (choice.canceled || !choice.filePath) return { saved: false };
     await this.writeFileAtomically(choice.filePath, Buffer.from(bytes));
-    host.setSaveFolder(this.opts.pluginId, key, Path.dirname(choice.filePath));
+    host.setSaveFolder(this.opts.plugin.id, key, Path.dirname(choice.filePath));
     return { saved: true, fileName: Path.basename(choice.filePath) };
   }
 
   private requirePermission(permission: string): void {
-    if (!this.opts.permissions.includes(permission))
+    if (!this.opts.plugin.manifest.permissions.includes(permission))
       throw new Error(`This plugin does not have the ${permission} permission`);
   }
 
   private projectSettingsPath(): string {
     this.requirePermission("projectSettings");
-    const projectDirectory = this.opts.host?.getProjectDirectory();
+    const projectDirectory = this.opts.host.getProjectDirectory();
     if (!projectDirectory) throw new Error("No project is open");
-    return getProjectSettingsPath(projectDirectory, this.opts.pluginId);
+    return getProjectSettingsPath(projectDirectory, this.opts.plugin.id);
   }
 
   // The "companions.*" family: scoped access to files living beside the ACTUAL selected file
@@ -669,8 +661,8 @@ export class PluginHostBridge {
     inputArgs: string[],
   ): Promise<void> {
     const ffmpegPath = resolveFfmpegPath({
-      pluginDirectory: this.opts.pluginDirectory,
-      binaries: this.opts.binaries,
+      pluginDirectory: this.opts.plugin.directory,
+      binaries: this.opts.plugin.manifest.binaries,
       platformKey: currentPlatformKey(),
       fallbackPath: getFfmpegPath,
     });

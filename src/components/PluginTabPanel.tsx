@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { css } from "@emotion/react";
 import { Trans } from "@lingui/react/macro";
-import { PluginHostBridge } from "../plugins/PluginHostBridge";
+import { PluginBridgeOptions, PluginHostBridge } from "../plugins/PluginHostBridge";
 import { pluginAssetUrl } from "../plugins/pluginScheme";
-import { PluginBinaries } from "../plugins/PluginManifest";
 import { pluginHostServices } from "../plugins/pluginHostServices";
 import pluginIcon from "@assets/plugin.svg";
 import {
@@ -13,19 +12,10 @@ import {
 } from "../plugins/PluginApiTypes";
 
 export interface PluginTabPanelProps {
-  pluginId: string;
-  pluginVersion: string;
-  /** Manifest `name`, shown in the pane's corner badge as "About Plugin: <name>". */
-  pluginName: string;
-  /** Manifest `infoUrl` (required); the corner badge is an "About Plugin: <name>" link to it. */
-  pluginInfoUrl: string;
-  pluginDir: string;
-  /** The manifest's `binaries`; `ffmpeg.run` spawns the plugin's own ffmpeg from it. */
-  binaries?: PluginBinaries;
+  /** The plugin's record; its manifest `name` is shown in the pane's corner badge as
+   * "About Plugin: <name>". */
+  plugin: PluginBridgeOptions["plugin"];
   entry: string;
-  apiVersion: number;
-  /** the plugin's granted manifest permissions, e.g. ["companionFiles"]. */
-  permissions: string[];
   /** bumped by the dev watcher; changing it remounts the iframe (hot reload). */
   reloadCounter: number;
 
@@ -64,9 +54,11 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (pro
   // (dev hot-reload, or the user clicking "Reload" after a handshake timeout).
   const [attempt, setAttempt] = useState(0);
 
-  const apiSupported = LAMETA_PLUGIN_API_VERSIONS_SUPPORTED.includes(props.apiVersion);
+  const apiSupported = LAMETA_PLUGIN_API_VERSIONS_SUPPORTED.includes(
+    props.plugin.manifest.apiVersion,
+  );
 
-  const iframeKey = `${props.pluginId}:${props.tabId ?? ""}:${props.reloadCounter}:${attempt}`;
+  const iframeKey = `${props.plugin.id}:${props.tabId ?? ""}:${props.reloadCounter}:${attempt}`;
 
   useEffect(() => {
     if (!apiSupported) return;
@@ -76,13 +68,13 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (pro
     setStatus("connecting");
 
     const context: PluginInitContext = {
-      apiVersion: props.apiVersion,
+      apiVersion: props.plugin.manifest.apiVersion,
       role: "tab",
       tab: props.tabId ? { id: props.tabId } : undefined,
       plugin: {
-        id: props.pluginId,
-        version: props.pluginVersion,
-        grantedPermissions: props.permissions,
+        id: props.plugin.id,
+        version: props.plugin.manifest.version,
+        grantedPermissions: props.plugin.manifest.permissions,
       },
       file: {
         path: props.filePath,
@@ -108,12 +100,8 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (pro
       filePath: props.filePath,
       fileName: props.fileName,
       folderDirectory: props.folderDirectory,
-      pluginId: props.pluginId,
-      permissions: props.permissions,
-      pluginDirectory: props.pluginDir,
-      binaries: props.binaries,
+      plugin: props.plugin,
       onSelectFile: props.onSelectFile,
-      pluginDisplayName: props.pluginName,
       host: pluginHostServices,
     });
 
@@ -150,7 +138,8 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (pro
       <div className="plugin-unsupported" css={messageCss}>
         <p>
           <Trans>
-            This plugin requires a newer version of lameta (plugin API version {props.apiVersion}).
+            This plugin requires a newer version of lameta (plugin API version{" "}
+            {props.plugin.manifest.apiVersion}).
           </Trans>
         </p>
       </div>
@@ -159,21 +148,21 @@ export const PluginTabPanel: React.FunctionComponent<PluginTabPanelProps> = (pro
 
   // Served over the custom secure scheme (not file://) so the iframe has a real tuple origin
   // and can receive the microphone Permissions-Policy delegation. See pluginScheme.ts.
-  const src = pluginAssetUrl(props.pluginId, props.entry);
+  const src = pluginAssetUrl(props.plugin.id, props.entry);
 
   const cornerBadge = (
     <a
       css={cornerBadgeCss}
       data-testid="plugin-about-link"
-      title={props.pluginInfoUrl}
-      href={props.pluginInfoUrl}
+      title={props.plugin.manifest.infoUrl}
+      href={props.plugin.manifest.infoUrl}
       onClick={(e) => {
         e.preventDefault();
-        require("electron").shell.openExternal(props.pluginInfoUrl);
+        require("electron").shell.openExternal(props.plugin.manifest.infoUrl);
       }}
     >
       <img src={pluginIcon} alt="" css={cornerIconCss} />
-      <Trans>About Plugin: {props.pluginName}</Trans>
+      <Trans>About Plugin: {props.plugin.manifest.name}</Trans>
     </a>
   );
 
