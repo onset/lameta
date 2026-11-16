@@ -1,0 +1,359 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Plugin API Test</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        font-size: 13px;
+      }
+      li[data-status="error"] {
+        color: #b00020;
+      }
+    </style>
+  </head>
+  <body>
+    <ol id="results"></ol>
+    <div id="footer"></div>
+    <!-- One inline script that speaks the postMessage protocol directly, so the plugin needs no
+         build and no copy of the client kit. lameta loads this page twice: hidden, as the tab
+         provider, and visibly, as the content of each tab the provider claims. -->
+    <script>
+      const pending = new Map();
+      let nextId = 1;
+      let started = false;
+
+      function call(method, params, onProgress) {
+        const id = nextId++;
+        return new Promise((resolve, reject) => {
+          pending.set(id, { resolve, reject, onProgress });
+          parent.postMessage({ type: "lameta:request", id, method, params: params || [] }, "*");
+        });
+      }
+
+      window.addEventListener("message", (e) => {
+        const d = e.data;
+        if (!d || typeof d !== "object") return;
+        if (d.type === "lameta:init") {
+          if (started) return; // the host may send init more than once
+          started = true;
+          clearInterval(readyTimer);
+          if (d.context.role === "tabProvider") return; // it answers lameta:getTabs below
+          if (d.context.tab && d.context.tab.id === "selected") showSelectedFile(d.context);
+          else void runAllCalls(d.context);
+        } else if (d.type === "lameta:getTabs") {
+          void answerGetTabs(d);
+        } else if (d.type === "lameta:progress") {
+          const p = pending.get(d.id);
+          if (p && p.onProgress) p.onProgress(d.fraction);
+        } else if (d.type === "lameta:response") {
+          const p = pending.get(d.id);
+          if (!p) return;
+          pending.delete(d.id);
+          if (d.error) p.reject(new Error(d.error));
+          else p.resolve(d.result);
+        }
+      });
+
+      // The name of a file up to its first ".", which every companion path must start with.
+      function anchorOf(fileName) {
+        const i = fileName.indexOf(".");
+        return i === -1 ? fileName : fileName.slice(0, i);
+      }
+
+      // ---- Tab provider ---------------------------------------------------------------------
+      async function answerGetTabs(query) {
+        const tabs = [];
+        if (query.file.lametaType === "Audio") {
+          // The companions call is scoped to the queried file while this query is open. If it
+          // fails, the tab id says so and the content tab reports it.
+          let id = "main";
+          let label = "Plugin API Test";
+          try {
+            await call("companions.exists", [anchorOf(query.file.name) + ".apitest.txt"]);
+          } catch (err) {
+            id = "main-provider-error";
+            label = "Plugin API Test (tab provider error: " + err.message + ")";
+          }
+          tabs.push({ id, label, claimDefault: true, defaultPriority: 1000 });
+        } else if (query.file.name.endsWith(".apitest.txt")) {
+          tabs.push({
+            id: "selected",
+            label: "Plugin API Test",
+            claimDefault: true,
+            defaultPriority: 1000,
+          });
+        }
+        parent.postMessage({ type: "lameta:tabs", id: query.id, tabs }, "*");
+      }
+
+      // ---- The tab that selectFile opens ----------------------------------------------------
+      function showSelectedFile(context) {
+        const el = document.createElement("div");
+        el.setAttribute("data-testid", "selected-file");
+        el.setAttribute("data-file-name", context.file.name);
+        el.setAttribute("data-tab-id", context.tab.id);
+        el.textContent = "Selected by selectFile: " + context.file.name;
+        document.body.appendChild(el);
+      }
+
+      // ---- The main tab: call every API ----------------------------------------------------
+      function check(condition, message) {
+        if (!condition) throw new Error(message);
+      }
+      function same(a, b) {
+        return JSON.stringify(a) === JSON.stringify(b);
+      }
+      function bytesOf(buffer) {
+        return Array.from(new Uint8Array(buffer));
+      }
+      function describe(value) {
+        if (value instanceof ArrayBuffer) return "ArrayBuffer(" + value.byteLength + ")";
+        if (value === undefined) return "done";
+        return JSON.stringify(value);
+      }
+      // Resolves to the error's message when `promise` rejects; throws when it resolves.
+      async function rejects(promise) {
+        try {
+          await promise;
+        } catch (err) {
+          return "rejected: " + err.message;
+        }
+        throw new Error("expected the host to refuse this call, but it succeeded");
+      }
+
+      function report(name, status, detail) {
+        const li = document.createElement("li");
+        li.setAttribute("data-testid", "api-result");
+        li.setAttribute("data-name", name);
+        li.setAttribute("data-status", status);
+        li.textContent = name + ": " + detail;
+        document.getElementById("results").appendChild(li);
+      }
+
+      async function runAllCalls(context) {
+        const name = context.file.name;
+        const anchor = anchorOf(name);
+        const text = anchor + ".apitest.txt";
+        const bin = anchor + ".apitest.bin";
+        const subdir = anchor + "_Annotations";
+        const moved = subdir + "/moved.bin";
+        const wav = anchor + ".apitest.wav";
+        let fileBytes = null;
+        let progressCount = 0;
+
+        const steps = [
+          [
+            "tab provider companions call",
+            async () => {
+              check(context.tab && context.tab.id === "main", "the tab provider's call failed");
+              return context.tab.id;
+            },
+          ],
+          [
+            "getFileBytes",
+            async () => {
+              fileBytes = await call("getFileBytes");
+              check(fileBytes instanceof ArrayBuffer && fileBytes.byteLength > 0, "no bytes");
+              return fileBytes;
+            },
+          ],
+          [
+            "readFileRange",
+            async () => {
+              const head = await call("readFileRange", [0, 4]);
+              check(same(bytesOf(head), bytesOf(fileBytes.slice(0, 4))), "wrong first bytes");
+              const tail = await call("readFileRange", [fileBytes.byteLength - 2, 100]);
+              check(tail.byteLength === 2, "a range past the end was not clamped");
+              return head;
+            },
+          ],
+          ["writeSidecar", () => call("writeSidecar", ['{"n":1}', "apitest"])],
+          [
+            "readSidecar",
+            async () => {
+              const got = await call("readSidecar", ["apitest"]);
+              check(got === '{"n":1}', "read back " + got);
+              check((await call("readSidecar", ["missing"])) === null, "missing was not null");
+              return got;
+            },
+          ],
+          [
+            "listSidecars",
+            async () => {
+              const names = await call("listSidecars");
+              check(names.includes("apitest"), "apitest not listed");
+              return names;
+            },
+          ],
+          ["companions.writeText", () => call("companions.writeText", [text, "hello"])],
+          [
+            "companions.exists",
+            async () => {
+              check((await call("companions.exists", [text])) === true, "written file missing");
+              check((await call("companions.exists", [anchor + ".nope"])) === false, "phantom");
+              return true;
+            },
+          ],
+          [
+            "companions.readText",
+            async () => {
+              const got = await call("companions.readText", [text]);
+              check(got === "hello", "read back " + got);
+              return got;
+            },
+          ],
+          [
+            "companions.stat",
+            async () => {
+              const s = await call("companions.stat", [text]);
+              check(s && s.size === 5 && s.mtimeMs > 0, "stat " + JSON.stringify(s));
+              check((await call("companions.stat", [anchor + ".nope"])) === null, "phantom stat");
+              return s;
+            },
+          ],
+          [
+            "companions.writeBytes",
+            () => call("companions.writeBytes", [bin, new Uint8Array([1, 2, 3]).buffer]),
+          ],
+          [
+            "companions.readBytes",
+            async () => {
+              const got = await call("companions.readBytes", [bin]);
+              check(same(bytesOf(got), [1, 2, 3]), "read back " + bytesOf(got));
+              return got;
+            },
+          ],
+          [
+            "companions.rename",
+            async () => {
+              await call("companions.rename", [bin, moved]);
+              check((await call("companions.exists", [bin])) === false, "old name remains");
+              check((await call("companions.exists", [moved])) === true, "new name missing");
+            },
+          ],
+          [
+            "companions.list",
+            async () => {
+              const top = (await call("companions.list")).map((e) => e.name);
+              check(top.includes(text), "top level lacks " + text);
+              const inSubdir = (await call("companions.list", [subdir])).map((e) => e.name);
+              check(same(inSubdir, ["moved.bin"]), "subdirectory lists " + inSubdir);
+              return top;
+            },
+          ],
+          [
+            "companions.delete",
+            async () => {
+              await call("companions.delete", [moved]);
+              check((await call("companions.exists", [moved])) === false, "still there");
+            },
+          ],
+          [
+            "companions refuses a path outside the file's family",
+            () => rejects(call("companions.readText", ["../outside.txt"])),
+          ],
+          [
+            "ffmpeg.probe",
+            async () => {
+              const p = await call("ffmpeg.probe");
+              check(p.format.durationSec > 0, "no duration");
+              check(
+                p.streams.some((s) => s.codecType === "audio"),
+                "no audio stream",
+              );
+              return p.format;
+            },
+          ],
+          [
+            "ffmpeg.run",
+            async () => {
+              await call(
+                "ffmpeg.run",
+                [
+                  {
+                    outputRelPath: wav,
+                    args: ["-vn", "-ac", "1", "-ar", "8000", "-t", "2", "-acodec", "pcm_s16le"],
+                  },
+                ],
+                () => progressCount++,
+              );
+              const p = await call("ffmpeg.probe", [wav]);
+              check(
+                p.streams.some((s) => s.codecName === "pcm_s16le"),
+                "output is not 16-bit PCM",
+              );
+              return { output: wav, progressMessages: progressCount };
+            },
+          ],
+          [
+            "saveFile",
+            async () => {
+              const bytes = new TextEncoder().encode("saved by plugin").buffer;
+              const options = {
+                filters: [{ name: "Text", extensions: ["txt"] }],
+                rememberFolderKey: "apitest",
+              };
+              const first = await call("saveFile", ["apitest-out.txt", bytes, options]);
+              check(first.saved === true && !!first.fileName, "first " + JSON.stringify(first));
+              const second = await call("saveFile", ["apitest-out2.txt", bytes, options]);
+              check(second.saved === true, "second " + JSON.stringify(second));
+              const third = await call("saveFile", ["apitest-out3.txt", bytes, options]);
+              check(third.saved === false, "cancel " + JSON.stringify(third));
+              return [first, second, third];
+            },
+          ],
+          [
+            "getProjectSettings",
+            async () => {
+              const got = await call("getProjectSettings");
+              check(got === null, "a new project has settings " + JSON.stringify(got));
+              return got;
+            },
+          ],
+          [
+            "setProjectSettings",
+            async () => {
+              const value = { a: 1, list: [1, "x", true, null] };
+              await call("setProjectSettings", [value]);
+              check(same(await call("getProjectSettings"), value), "did not round-trip");
+              await call("setProjectSettings", [null]);
+              check((await call("getProjectSettings")) === null, "null did not remove them");
+              await call("setProjectSettings", [{ kept: true }]);
+              return await call("getProjectSettings");
+            },
+          ],
+          [
+            "selectFile refuses a path outside the folder",
+            () => rejects(call("selectFile", ["../outside.txt"])),
+          ],
+        ];
+
+        for (const [stepName, run] of steps) {
+          try {
+            report(stepName, "ok", describe(await run()));
+          } catch (err) {
+            report(stepName, "error", err && err.message ? err.message : String(err));
+          }
+        }
+
+        // selectFile replaces this page, so the test triggers it after reading the results.
+        const button = document.createElement("button");
+        button.setAttribute("data-testid", "select-file");
+        button.textContent = "selectFile(" + text + ")";
+        button.onclick = () => call("selectFile", [text, { tabId: "selected" }]);
+        document.getElementById("footer").appendChild(button);
+
+        const done = document.createElement("div");
+        done.setAttribute("data-testid", "api-done");
+        done.textContent = "All calls finished.";
+        document.getElementById("footer").appendChild(done);
+      }
+
+      // Tell the host we're ready for lameta:init, until it answers.
+      const readyTimer = setInterval(() => parent.postMessage({ type: "lameta:ready" }, "*"), 250);
+      parent.postMessage({ type: "lameta:ready" }, "*");
+    </script>
+  </body>
+</html>

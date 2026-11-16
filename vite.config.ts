@@ -83,10 +83,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // Renderer code still has many bare `path` imports. In the browser/Electron
-      // renderer bundle we must not resolve those to `node:path`, so we alias them
-      // to the small browser-only shim instead.
-      path: path.resolve(rootDir, "./src/other/browserPath.ts"),
+      // No alias for `path` here: renderer() below gives the renderer Node's own `path`, in
+      // `vp dev` as in the build, and an alias here would take precedence over it.
       "@assets": path.resolve(rootDir, "./assets"),
       "@mui/system/createStyled": path.resolve(
         rootDir,

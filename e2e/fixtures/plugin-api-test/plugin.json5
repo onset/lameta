@@ -1,0 +1,12 @@
+// A plugin for e2e/pluginApi.e2e.ts. It calls every host API a plugin can use and writes each
+// call's result into its page. No build step: index.html is the whole plugin.
+{
+  id: "org.lameta.test.plugin-api",
+  name: "Plugin API Test",
+  version: "1.0.0",
+  apiVersion: 1,
+  description: "Calls every plugin host API and reports each result, for lameta's e2e tests.",
+  infoUrl: "https://example.org/plugin-api-test",
+  permissions: ["companionFiles", "ffmpeg", "saveFile", "projectSettings"],
+  tabProvider: { entry: "index.html" },
+}
