@@ -5,14 +5,5 @@
   apiVersion: 1,
   description: "E2E fixture plugin.",
   infoUrl: "https://example.org/test-plugin",
-  tabs: [
-    {
-      id: "main",
-      label: "Test Plugin",
-      entry: "index.html",
-      match: { lametaTypes: ["Audio"] },
-      claimDefault: true,
-      defaultPriority: 100,
-    },
-  ],
+  tabProvider: { entry: "index.html" },
 }

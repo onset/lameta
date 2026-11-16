@@ -13,6 +13,7 @@ import { isSafeRelativePath } from "./companions";
  * (with "en" used as the fallback). */
 export type LocalizableLabel = string | { [languageCode: string]: string };
 
+/** Which files a tab provider is asked about (its `handles`); any one criterion may match. */
 export interface PluginTabMatch {
   /** lameta file-type strings, e.g. ["Audio"]. */
   lametaTypes?: string[];
@@ -22,24 +23,10 @@ export interface PluginTabMatch {
   mimePatterns?: string[];
 }
 
-export interface PluginTabManifest {
-  id: string;
-  label: LocalizableLabel;
-  /** HTML file (relative to the plugin folder) loaded into the tab's iframe. */
-  entry: string;
-  /** A tab matches a file if ANY criterion hits. All fields are optional; an empty/absent
-   * match object never matches anything. */
-  match?: PluginTabMatch;
-  /** If true, this tab wants to be the initially-selected tab for matching files. */
-  claimDefault?: boolean;
-  /** Tiebreak among default claimants (higher wins); then plugin id, then tab id. */
-  defaultPriority?: number;
-}
-
 /**
  * A tab PROVIDER: a hidden page lameta loads once and queries (on every selection change) for
- * which tabs to show. This is the current model; it supersedes a static `tabs` list by letting
- * the plugin decide tabs + labels live per file. See docs/plugin-authoring.md "Tab provider".
+ * which tabs to show, so the plugin decides its tabs and their labels live for each file. It is
+ * the only way a plugin supplies tabs. See docs/plugin-authoring.md "Tab provider".
  */
 export interface PluginTabProviderManifest {
   /** HTML file (relative to the plugin folder) lameta loads hidden to answer tab queries. */
@@ -65,11 +52,8 @@ export interface PluginManifest {
   /** Capabilities the plugin asks the host for. Each must be one of KNOWN_PERMISSIONS;
    * absent in the manifest text normalizes to []. */
   permissions: string[];
-  /** The tab provider (current model). A manifest must declare `tabProvider` OR a non-empty
-   * `tabs` list (legacy static tabs). */
-  tabProvider?: PluginTabProviderManifest;
-  /** Legacy static tab list. Prefer `tabProvider`. */
-  tabs: PluginTabManifest[];
+  /** The tab provider, which every manifest must declare. */
+  tabProvider: PluginTabProviderManifest;
   /** OPTIONAL platforms (KNOWN_PLATFORMS keys) this package is built for. Absent means every
    * platform. lameta refuses to install or load a package that excludes the current one. */
   platforms?: string[];
@@ -184,53 +168,6 @@ function validateTabProvider(tp: any, errors: string[]): PluginTabProviderManife
   return { entry: tp.entry, handles };
 }
 
-function validateTab(tab: any, index: number, errors: string[]): PluginTabManifest | undefined {
-  const path = `tabs[${index}]`;
-  if (!isPlainObject(tab)) {
-    errors.push(`${path} must be an object`);
-    return undefined;
-  }
-  if (typeof tab.id !== "string" || tab.id.trim().length === 0)
-    errors.push(`${path}.id is required and must be a non-empty string`);
-  validateLabel(tab.label, `${path}.label`, errors);
-  if (typeof tab.entry !== "string" || tab.entry.trim().length === 0)
-    errors.push(`${path}.entry is required and must be a non-empty string`);
-
-  if (tab.match !== undefined) {
-    if (!isPlainObject(tab.match)) {
-      errors.push(`${path}.match must be an object`);
-    } else {
-      validateStringArray(tab.match.lametaTypes, `${path}.match.lametaTypes`, errors);
-      validateStringArray(tab.match.extensions, `${path}.match.extensions`, errors);
-      validateStringArray(tab.match.mimePatterns, `${path}.match.mimePatterns`, errors);
-    }
-  }
-  if (tab.claimDefault !== undefined && typeof tab.claimDefault !== "boolean")
-    errors.push(`${path}.claimDefault must be a boolean`);
-  if (tab.defaultPriority !== undefined && typeof tab.defaultPriority !== "number")
-    errors.push(`${path}.defaultPriority must be a number`);
-
-  // Return the (possibly partially-invalid) shape; caller only uses it when errors empty.
-  const match: PluginTabMatch | undefined = isPlainObject(tab.match)
-    ? {
-        lametaTypes: tab.match.lametaTypes,
-        extensions: tab.match.extensions
-          ? tab.match.extensions.map((e: string) => e.toLowerCase().replace(/^\./, ""))
-          : undefined,
-        mimePatterns: tab.match.mimePatterns,
-      }
-    : undefined;
-
-  return {
-    id: tab.id,
-    label: tab.label,
-    entry: tab.entry,
-    match,
-    claimDefault: tab.claimDefault === true,
-    defaultPriority: typeof tab.defaultPriority === "number" ? tab.defaultPriority : 0,
-  };
-}
-
 function validatePlatforms(value: any, errors: string[]): string[] | undefined {
   if (value === undefined) return undefined;
   if (!Array.isArray(value) || value.length === 0) {
@@ -337,33 +274,14 @@ export function parsePluginManifest(text: string): ParseManifestResult {
     }
   }
 
-  // A manifest declares a tab PROVIDER (current model) OR a non-empty static `tabs` list (legacy).
-  const hasTabProvider = raw.tabProvider !== undefined;
-  const hasTabs = Array.isArray(raw.tabs) && raw.tabs.length > 0;
-
+  // Tabs come only from the tab provider; a static `tabs` list is refused rather than ignored,
+  // so a plugin written for it learns why it shows no tabs.
   let tabProvider: PluginTabProviderManifest | undefined;
-  if (hasTabProvider) tabProvider = validateTabProvider(raw.tabProvider, errors);
-
-  let tabs: PluginTabManifest[] = [];
-  if (raw.tabs !== undefined) {
-    if (!Array.isArray(raw.tabs)) {
-      errors.push("tabs must be an array");
-    } else {
-      tabs = raw.tabs
-        .map((tab: any, i: number) => validateTab(tab, i, errors))
-        .filter(Boolean) as PluginTabManifest[];
-
-      // tab ids must be unique within a plugin
-      const seen = new Set<string>();
-      for (const tab of tabs) {
-        if (seen.has(tab.id)) errors.push(`duplicate tab id "${tab.id}"`);
-        seen.add(tab.id);
-      }
-    }
-  }
-
-  if (!hasTabProvider && !hasTabs)
-    errors.push("a manifest must declare a `tabProvider` or a non-empty `tabs` array");
+  if (raw.tabProvider === undefined)
+    errors.push("tabProvider is required: a plugin supplies its tabs through a `tabProvider`");
+  else tabProvider = validateTabProvider(raw.tabProvider, errors);
+  if (raw.tabs !== undefined)
+    errors.push("tabs is not supported: a plugin supplies its tabs through a `tabProvider`");
 
   const platforms = validatePlatforms(raw.platforms, errors);
   const binaries = validateBinaries(raw.binaries, errors);
@@ -382,8 +300,7 @@ export function parsePluginManifest(text: string): ParseManifestResult {
       author: raw.author,
       minLametaVersion: raw.minLametaVersion,
       permissions: Array.isArray(raw.permissions) ? raw.permissions : [],
-      tabProvider,
-      tabs,
+      tabProvider: tabProvider!,
       platforms,
       binaries,
     },

@@ -19,7 +19,6 @@ import {
   PluginManifest,
   supportsPlatform,
 } from "./PluginManifest";
-import { MatchablePlugin } from "./pluginMatching";
 import type { PluginBridgeOptions } from "./PluginHostBridge";
 
 /** The message shown when a package's `platforms` list excludes this computer, or undefined
@@ -294,13 +293,6 @@ export class PluginManager {
       }
     }
     this.watchers = [];
-  }
-
-  /** Enabled plugins that have a valid manifest — the input to tab matching. */
-  public getEnabledMatchablePlugins(): MatchablePlugin[] {
-    return this.plugins
-      .filter((p) => p.enabled && p.manifest)
-      .map((p) => ({ manifest: p.manifest! }));
   }
 
   /** Enabled, valid plugins that declare a `tabProvider` — the input to the tab-provider host

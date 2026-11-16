@@ -1,8 +1,8 @@
 # Writing a lameta file-handler plugin
 
 A **file-handler plugin** adds one or more tabs to lameta's lower-right file pane. When the
-user selects a file, lameta shows the built-in viewer tab plus any plugin tabs that match the
-file. A plugin tab's content is a plain `<iframe>` loading the plugin's own HTML; it talks to
+user selects a file, lameta shows the built-in viewer tab plus the tabs that each plugin's tab
+provider asks for. A plugin tab's content is a plain `<iframe>` loading the plugin's own HTML; it talks to
 lameta over a small, versioned `postMessage` API.
 
 This is a **stability boundary, not a security sandbox.** lameta doesn't defend against
@@ -61,8 +61,9 @@ Distributed as a **`.lmplug`** file — this is just a zip with a different exte
   // ffmpeg").
   binaries: { ffmpeg: { "win32-x64": "bin/ffmpeg.exe" } },
 
-  // A plugin contributes tabs by declaring a TAB PROVIDER: a hidden page lameta loads once and
-  // asks, on every file selection, which tabs to show for that file (see "Tab provider" below).
+  // REQUIRED: the TAB PROVIDER, the only way a plugin supplies tabs. It is a hidden page lameta
+  // loads once and asks, on every file selection, which tabs to show for that file (see "Tab
+  // provider" below). A manifest with a static `tabs` list is rejected.
   tabProvider: {
     entry: "index.html", // the page lameta loads (hidden) to answer tab queries
     handles: {
@@ -81,8 +82,8 @@ provider returns them.
 
 ## Tab provider — lameta asks your plugin which tabs to show
 
-Instead of a static tab list, lameta **asks your plugin, on every selection change, which tabs it
-wants for the selected file** — and never caches the answer. This lets the _same_ file yield
+lameta **asks your plugin, on every selection change, which tabs it wants for the selected
+file** — and never caches the answer. This lets the _same_ file yield
 different tabs over time: an audio file with no annotations can show a "Start Annotating" tab, and
 once your plugin creates the annotation companion (and `api.selectFile`s to it), the next query for
 that audio file can return `[]` (no tab).
@@ -524,14 +525,9 @@ audio file, and you'll see a "Hello" tab that shows the file name and remembers 
   name: "Hello Plugin",
   version: "1.0.0",
   apiVersion: 1,
-  tabs: [
-    {
-      id: "hello",
-      label: "Hello",
-      entry: "index.html",
-      match: { lametaTypes: ["Audio"] },
-    },
-  ],
+  infoUrl: "https://example.com/hello",
+  // index.html is also the tab provider; main.js answers its questions.
+  tabProvider: { entry: "index.html", handles: { lametaTypes: ["Audio"] } },
 }
 ```
 
@@ -566,8 +562,12 @@ function call(method, params) {
 window.addEventListener("message", (e) => {
   const d = e.data;
   if (!d || typeof d !== "object") return;
-  if (d.type === "lameta:init") start(d.context);
-  else if (d.type === "lameta:response") {
+  // lameta loads this page twice: hidden, as the tab provider, and as the "Hello" tab.
+  if (d.type === "lameta:init" && d.context.role !== "tabProvider") start(d.context);
+  else if (d.type === "lameta:getTabs") {
+    const tabs = [{ id: "hello", label: "Hello" }];
+    parent.postMessage({ type: "lameta:tabs", id: d.id, tabs }, "*");
+  } else if (d.type === "lameta:response") {
     const p = pending.get(d.id);
     if (!p) return;
     pending.delete(d.id);

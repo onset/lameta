@@ -12,7 +12,7 @@ import { pluginHostServices } from "./pluginHostServices";
 import { pluginAssetUrl } from "./pluginScheme";
 import pluginManager, { bridgePluginFor, PluginRecord } from "./PluginManager";
 import { PluginTabMatch } from "./PluginManifest";
-import { tabMatchesFile } from "./pluginMatching";
+import { matchesFile } from "./pluginMatching";
 import { PluginTabProviderContext, TabDescriptor } from "./PluginApiTypes";
 import { currentUILanguage } from "../other/localization";
 import pkg from "package.json";
@@ -47,7 +47,7 @@ interface ProviderInstance {
 }
 
 /** True if a provider whose `handles` filter is `handles` should be queried for `file`. An absent
- * or empty `handles` means "query for every file"; otherwise it matches like a tab `match`. */
+ * or empty `handles` means "query for every file"; otherwise any of its criteria must hit. */
 export function providerHandlesFile(
   handles: PluginTabMatch | undefined,
   file: { extension: string; mimeType: string; lametaType: string },
@@ -58,7 +58,7 @@ export function providerHandlesFile(
     (handles.extensions && handles.extensions.length > 0) ||
     (handles.mimePatterns && handles.mimePatterns.length > 0);
   if (!hasCriteria) return true;
-  return tabMatchesFile({ id: "", label: "", entry: "", match: handles }, file);
+  return matchesFile(handles, file);
 }
 
 const READY_TIMEOUT_MS = 4000;

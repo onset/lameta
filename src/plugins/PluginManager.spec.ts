@@ -5,7 +5,7 @@ import { parsePluginManifest } from "./PluginManifest";
 const manifestFor = (platforms?: string[]) => `{
   id: "org.example.convert", name: "Convert", version: "1", apiVersion: 1,
   "infoUrl": "https://example.org",
-  tabs: [{ id: "t", label: "L", entry: "i.html" }],
+  tabProvider: { entry: "i.html" },
   ${platforms ? `platforms: ${JSON.stringify(platforms)},` : ""}
 }`;
 

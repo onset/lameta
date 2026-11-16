@@ -14,7 +14,7 @@
 
 import WaveSurfer from "./lib/wavesurfer.esm.js";
 import RegionsPlugin from "./lib/regions.esm.js";
-import { connectToLameta } from "./lametaPluginClient.js";
+import { connectToLameta, serveTabProvider } from "./lametaPluginClient.js";
 
 // --- tiny hand-rolled localization (en + es) -------------------------------
 const STRINGS = {
@@ -139,8 +139,26 @@ async function restore() {
   }
 }
 
+// One "Waveform" tab for every audio file, opened instead of lameta's built-in audio player.
+function waveformTabs({ file }) {
+  if (file.lametaType !== "Audio") return [];
+  return [
+    {
+      id: "waveform",
+      label: { en: "Waveform", es: "Forma de onda", fr: "Forme d'onde" },
+      claimDefault: true,
+      defaultPriority: 100,
+    },
+  ];
+}
+
 async function main() {
   const conn = await connectToLameta();
+  // lameta also loads this page hidden, as the tab provider; there it only answers tab queries.
+  if (conn.context.role === "tabProvider") {
+    serveTabProvider(waveformTabs);
+    return;
+  }
   api = conn.api;
   t = stringsFor(conn.context.ui.languageCode);
   hintEl.textContent = t.ready;

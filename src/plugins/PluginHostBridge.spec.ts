@@ -112,7 +112,7 @@ function makeHarness(opts: HarnessOptions): Harness {
         apiVersion: 1,
         infoUrl: "https://example.org/plugin",
         permissions,
-        tabs: [],
+        tabProvider: { entry: "index.html" },
         binaries,
       },
     },

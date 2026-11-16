@@ -14,16 +14,10 @@ const goodManifest = `{
   description: "Annotate audio",
   author: "Example",
   "infoUrl": "https://example.org/waveform",
-  tabs: [
-    {
-      id: "waveform",
-      label: { en: "Waveform", fr: "Forme d'onde" },
-      entry: "index.html",
-      match: { lametaTypes: ["Audio"], extensions: ["WAV", ".mp3"] },
-      claimDefault: true,
-      defaultPriority: 100
-    }
-  ]
+  tabProvider: {
+    entry: "index.html",
+    handles: { lametaTypes: ["Audio"], extensions: ["WAV", ".mp3"] }
+  }
 }`;
 
 describe("parsePluginManifest", () => {
@@ -31,25 +25,12 @@ describe("parsePluginManifest", () => {
     const result = parsePluginManifest(goodManifest);
     expect(result.errors).toBeUndefined();
     expect(result.manifest!.id).toBe("org.example.waveform-annotator");
-    expect(result.manifest!.tabs).toHaveLength(1);
-    expect(result.manifest!.tabs[0].claimDefault).toBe(true);
-    expect(result.manifest!.tabs[0].defaultPriority).toBe(100);
+    expect(result.manifest!.tabProvider.entry).toBe("index.html");
   });
 
   it("lowercases and strips dots from extensions", () => {
     const result = parsePluginManifest(goodManifest);
-    expect(result.manifest!.tabs[0].match!.extensions).toEqual(["wav", "mp3"]);
-  });
-
-  it("defaults claimDefault to false and defaultPriority to 0", () => {
-    const result = parsePluginManifest(`{
-      id: "a.b", name: "n", version: "1", apiVersion: 1,
-      "infoUrl": "https://example.org",
-      tabs: [{ id: "t", label: "L", entry: "i.html", match: { extensions: ["x"] } }]
-    }`);
-    expect(result.errors).toBeUndefined();
-    expect(result.manifest!.tabs[0].claimDefault).toBe(false);
-    expect(result.manifest!.tabs[0].defaultPriority).toBe(0);
+    expect(result.manifest!.tabProvider.handles!.extensions).toEqual(["wav", "mp3"]);
   });
 
   it("accepts a required infoUrl and an optional plugin-level label", () => {
@@ -57,7 +38,7 @@ describe("parsePluginManifest", () => {
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       label: { en: "Nice Name", es: "Buen nombre" },
       "infoUrl": "https://example.org/about",
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors).toBeUndefined();
     expect(result.manifest!.label).toEqual({
@@ -71,7 +52,7 @@ describe("parsePluginManifest", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       "infoUrl": "https://example.org/about",
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors).toBeUndefined();
     expect(result.manifest!.label).toBeUndefined();
@@ -80,7 +61,7 @@ describe("parsePluginManifest", () => {
   it("requires infoUrl", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors).toBeDefined();
     expect(result.errors!.join(" ")).toMatch(/infoUrl is required/);
@@ -90,7 +71,7 @@ describe("parsePluginManifest", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       label: "", "infoUrl": 7,
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors).toBeDefined();
     expect(result.errors!.join(" ")).toMatch(/infoUrl is required/);
@@ -107,54 +88,31 @@ describe("parsePluginManifest", () => {
   it("rejects a bad id", () => {
     const result = parsePluginManifest(`{
       id: "Bad Id!", name: "n", version: "1", apiVersion: 1,
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors).toBeDefined();
     expect(result.errors!.join(" ")).toMatch(/id/);
   });
 
-  it("requires name, version, apiVersion, and non-empty tabs", () => {
+  it("requires name, version, apiVersion, and a tabProvider", () => {
     const result = parsePluginManifest(`{ id: "a.b" }`);
     expect(result.errors).toBeDefined();
     const joined = result.errors!.join(" ");
     expect(joined).toMatch(/name/);
     expect(joined).toMatch(/version/);
     expect(joined).toMatch(/apiVersion/);
-    expect(joined).toMatch(/tabs/);
+    expect(joined).toMatch(/tabProvider/);
   });
 
   it("requires apiVersion to be a number", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: "one",
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors!.join(" ")).toMatch(/apiVersion/);
   });
 
-  it("validates each tab's required fields", () => {
-    const result = parsePluginManifest(`{
-      id: "a.b", name: "n", version: "1", apiVersion: 1,
-      tabs: [{ label: 123 }]
-    }`);
-    expect(result.errors).toBeDefined();
-    const joined = result.errors!.join(" ");
-    expect(joined).toMatch(/tabs\[0\]\.id/);
-    expect(joined).toMatch(/tabs\[0\]\.label/);
-    expect(joined).toMatch(/tabs\[0\]\.entry/);
-  });
-
-  it("rejects duplicate tab ids", () => {
-    const result = parsePluginManifest(`{
-      id: "a.b", name: "n", version: "1", apiVersion: 1,
-      tabs: [
-        { id: "t", label: "L", entry: "i.html", match: { extensions: ["x"] } },
-        { id: "t", label: "L2", entry: "j.html", match: { extensions: ["y"] } }
-      ]
-    }`);
-    expect(result.errors!.join(" ")).toMatch(/duplicate tab id/);
-  });
-
-  it("accepts a tabProvider manifest with no static tabs (and normalizes handles.extensions)", () => {
+  it("accepts a tabProvider manifest (and normalizes handles.extensions)", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       "infoUrl": "https://example.org",
@@ -163,7 +121,6 @@ describe("parsePluginManifest", () => {
     expect(result.errors).toBeUndefined();
     expect(result.manifest!.tabProvider!.entry).toBe("index.html");
     expect(result.manifest!.tabProvider!.handles!.extensions).toEqual(["eaf"]);
-    expect(result.manifest!.tabs).toEqual([]);
   });
 
   it("requires tabProvider.entry when tabProvider is present", () => {
@@ -174,9 +131,30 @@ describe("parsePluginManifest", () => {
     expect(result.errors!.join(" ")).toMatch(/tabProvider\.entry/);
   });
 
-  it("errors when neither tabProvider nor tabs is declared", () => {
+  it("errors when no tabProvider is declared", () => {
     const result = parsePluginManifest(`{ id: "a.b", name: "n", version: "1", apiVersion: 1 }`);
-    expect(result.errors!.join(" ")).toMatch(/tabProvider|tabs/);
+    expect(result.errors!.join(" ")).toMatch(/tabProvider/);
+  });
+
+  it("rejects a manifest whose only tabs are a static tabs list", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      "infoUrl": "https://example.org",
+      tabs: [{ id: "t", label: "L", entry: "i.html", match: { lametaTypes: ["Audio"] } }]
+    }`);
+    expect(result.manifest).toBeUndefined();
+    expect(result.errors!.join(" ")).toMatch(/tabProvider/);
+  });
+
+  it("rejects a static tabs list even alongside a tabProvider", () => {
+    const result = parsePluginManifest(`{
+      id: "a.b", name: "n", version: "1", apiVersion: 1,
+      "infoUrl": "https://example.org",
+      tabProvider: { entry: "index.html" },
+      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+    }`);
+    expect(result.manifest).toBeUndefined();
+    expect(result.errors!.join(" ")).toMatch(/\btabs\b/);
   });
 
   it("accepts a known permission and normalizes absent permissions to []", () => {
@@ -184,7 +162,7 @@ describe("parsePluginManifest", () => {
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       "infoUrl": "https://example.org",
       permissions: ["companionFiles"],
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(withPermission.errors).toBeUndefined();
     expect(withPermission.manifest!.permissions).toEqual(["companionFiles"]);
@@ -198,7 +176,7 @@ describe("parsePluginManifest", () => {
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       "infoUrl": "https://example.org",
       permissions: ["companionFiles", "ffmpeg"],
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors).toBeUndefined();
     expect(result.manifest!.permissions).toEqual(["companionFiles", "ffmpeg"]);
@@ -209,7 +187,7 @@ describe("parsePluginManifest", () => {
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       "infoUrl": "https://example.org",
       permissions: ["saveFile", "projectSettings"],
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors).toBeUndefined();
     expect(result.manifest!.permissions).toEqual(["saveFile", "projectSettings"]);
@@ -219,7 +197,7 @@ describe("parsePluginManifest", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       permissions: "companionFiles",
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors!.join(" ")).toMatch(/permissions must be an array/);
   });
@@ -228,7 +206,7 @@ describe("parsePluginManifest", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       permissions: [42],
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors!.join(" ")).toMatch(/permissions\[0\] must be a string/);
   });
@@ -237,7 +215,7 @@ describe("parsePluginManifest", () => {
     const result = parsePluginManifest(`{
       id: "a.b", name: "n", version: "1", apiVersion: 1,
       permissions: ["companionFiles", "totalWorldDomination"],
-      tabs: [{ id: "t", label: "L", entry: "i.html" }]
+      tabProvider: { entry: "i.html" }
     }`);
     expect(result.errors).toBeDefined();
     const joined = result.errors!.join(" ");
@@ -253,7 +231,7 @@ describe("parsePluginManifest", () => {
         version: "1",
         apiVersion: 1,
         infoUrl: "https://example.org",
-        tabs: [{ id: "t", label: "L", entry: "i.html" }],
+        tabProvider: { entry: "i.html" },
       }),
     );
     expect(result.errors).toBeUndefined();
@@ -263,7 +241,7 @@ describe("parsePluginManifest", () => {
 const withExtra = (extra: string) => `{
   id: "a.b", name: "n", version: "1", apiVersion: 1,
   "infoUrl": "https://example.org",
-  tabs: [{ id: "t", label: "L", entry: "i.html" }],
+  tabProvider: { entry: "i.html" },
   ${extra}
 }`;
 

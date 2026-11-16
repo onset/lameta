@@ -1,21 +1,7 @@
-// Pure logic for deciding which plugin tabs apply to a file, in what order, and which
-// (if any) claims the default tab. No IO, no react, no electron — unit-tested directly.
+// Pure logic for deciding whether a tab provider's `handles` filter covers a file, and which
+// plugin tab (if any) claims the default tab. No IO, no react, no electron — unit-tested directly.
 
-import { PluginManifest, PluginTabManifest } from "./PluginManifest";
-
-/** The minimal shape matching needs from a plugin record. */
-export interface MatchablePlugin {
-  manifest: PluginManifest;
-}
-
-/** A plugin tab that matched the current file, carrying enough to render & namespace it. */
-export interface MatchedPluginTab {
-  pluginId: string;
-  pluginVersion: string;
-  /** the plugin's granted manifest permissions, e.g. ["companionFiles"]. */
-  permissions: string[];
-  tab: PluginTabManifest;
-}
+import { PluginTabMatch } from "./PluginManifest";
 
 /** The file attributes matching cares about. */
 export interface MatchableFile {
@@ -35,10 +21,8 @@ function mimeMatches(pattern: string, mimeType: string): boolean {
   return p === m;
 }
 
-/** True if a single tab's match criteria hit the file. A tab matches if ANY criterion
- * hits; a tab with no (or empty) match object never matches. */
-export function tabMatchesFile(tab: PluginTabManifest, file: MatchableFile): boolean {
-  const match = tab.match;
+/** True if any criterion of `match` hits the file; an absent or empty `match` never matches. */
+export function matchesFile(match: PluginTabMatch | undefined, file: MatchableFile): boolean {
   if (!match) return false;
 
   if (match.lametaTypes && file.lametaType && match.lametaTypes.includes(file.lametaType))
@@ -61,48 +45,18 @@ export function tabMatchesFile(tab: PluginTabManifest, file: MatchableFile): boo
   return false;
 }
 
-/**
- * All plugin tabs that apply to a file, ordered: plugins alphabetical by id, and within a
- * plugin, tabs in manifest order. These insert AFTER the built-in viewer tab (index 0) and
- * BEFORE the standard metadata tabs.
- */
-export function getPluginTabsForFile(
-  file: MatchableFile,
-  enabledPlugins: MatchablePlugin[],
-): MatchedPluginTab[] {
-  const sortedPlugins = [...enabledPlugins].sort((a, b) =>
-    a.manifest.id < b.manifest.id ? -1 : a.manifest.id > b.manifest.id ? 1 : 0,
-  );
-
-  const result: MatchedPluginTab[] = [];
-  for (const plugin of sortedPlugins) {
-    for (const tab of plugin.manifest.tabs) {
-      if (tabMatchesFile(tab, file)) {
-        result.push({
-          pluginId: plugin.manifest.id,
-          pluginVersion: plugin.manifest.version,
-          permissions: plugin.manifest.permissions,
-          tab,
-        });
-      }
-    }
-  }
-  return result;
-}
-
-/**
- * The index the <Tabs> element should default to. The built-in viewer tab is index 0 and
- * the matched plugin tabs occupy indices 1..N (in `matchedTabs` order). If any matched tab
- * claims the default, the winner (max defaultPriority; ties broken by plugin id then tab
- * id) gets selected; otherwise the viewer tab (0) stays selected.
- */
-/** The minimal shape computeDefaultIndex needs — satisfied by both MatchedPluginTab (static) and
- * MatchedProviderTab (tab-provider), whose `tab`s differ but share these fields. */
+/** The minimal shape computeDefaultIndex needs from a tab that a provider returned. */
 export interface DefaultClaimant {
   pluginId: string;
   tab: { id: string; claimDefault?: boolean; defaultPriority?: number };
 }
 
+/**
+ * The index the <Tabs> element should default to. The built-in viewer tab is index 0 and
+ * the plugin tabs occupy indices 1..N (in `matchedTabs` order). If any of them claims the
+ * default, the winner (max defaultPriority; ties broken by plugin id then tab id) gets
+ * selected; otherwise the viewer tab (0) stays selected.
+ */
 export function computeDefaultIndex(matchedTabs: DefaultClaimant[]): number {
   let winnerIndex = -1;
   let winner: DefaultClaimant | undefined;

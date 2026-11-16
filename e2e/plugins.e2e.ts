@@ -243,14 +243,22 @@ test.describe("Developer plugin folder hot-reloads on save", () => {
     fs.writeFileSync(
       Path.join(devDir, "plugin.json5"),
       `{ id: "org.lameta.test.dev", name: "Dev Plugin", version: "1.0.0", apiVersion: 1,
-         tabs: [{ id: "main", label: "Dev Plugin", entry: "index.html",
-                  match: { lametaTypes: ["Audio"] }, claimDefault: true, defaultPriority: 200 }] }`,
+         infoUrl: "https://example.org/dev-plugin",
+         tabProvider: { entry: "index.html", handles: { lametaTypes: ["Audio"] } } }`,
     );
+    // The same page is the hidden tab provider, which answers lameta:getTabs, and the tab.
     fs.writeFileSync(
       Path.join(devDir, "index.html"),
       `<!doctype html><html><body>
          <div data-testid="dev-marker">${marker}</div>
-         <script>parent.postMessage({type:"lameta:ready"},"*");</script>
+         <script>
+           addEventListener("message", (e) => {
+             if (e.data && e.data.type === "lameta:getTabs")
+               parent.postMessage({ type: "lameta:tabs", id: e.data.id, tabs: [
+                 { id: "main", label: "Dev Plugin", claimDefault: true, defaultPriority: 200 }] }, "*");
+           });
+           parent.postMessage({type:"lameta:ready"},"*");
+         </script>
        </body></html>`,
     );
   }

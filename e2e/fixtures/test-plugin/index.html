@@ -7,11 +7,13 @@
   <body>
     <div id="err" style="color: red"></div>
     <!-- Single inline script: implements the postMessage protocol directly (no imports) so the
-         fixture stays buildless and self-contained. On init it writes a sidecar and renders a
-         marker element the e2e test asserts on. -->
+         fixture stays buildless and self-contained. lameta loads this page hidden, as the tab
+         provider, where it answers which tabs to show; in the tab itself, on init it writes a
+         sidecar and renders a marker element the e2e test asserts on. -->
     <script>
       const pending = new Map();
       let nextId = 1;
+      let started = false;
 
       function call(method, params) {
         const id = nextId++;
@@ -25,7 +27,16 @@
         const d = e.data;
         if (!d || typeof d !== "object") return;
         if (d.type === "lameta:init") {
+          // The host may send init more than once.
+          if (started || d.context.role === "tabProvider") return;
+          started = true;
           onInit(d.context);
+        } else if (d.type === "lameta:getTabs") {
+          const tabs =
+            d.file.lametaType === "Audio"
+              ? [{ id: "main", label: "Test Plugin", claimDefault: true, defaultPriority: 100 }]
+              : [];
+          parent.postMessage({ type: "lameta:tabs", id: d.id, tabs }, "*");
         } else if (d.type === "lameta:response") {
           const p = pending.get(d.id);
           if (!p) return;
